@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions", "AutoMoqExtensions\AutoMoqExtensions\AutoMoqExtensions.csproj", "{0A86D3CC-EB9F-4C3A-9D62-8CEB26E33E72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions.CodeFixes", "AutoMoqExtensions\AutoMoqExtensions.CodeFixes\AutoMoqExtensions.CodeFixes.csproj", "{DD6992DE-A788-4873-8C8B-7F7C52A6B3B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions.Package", "AutoMoqExtensions\AutoMoqExtensions.Package\AutoMoqExtensions.Package.csproj", "{C96A7A7C-F6AE-4D93-8200-A37B5BCF1143}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions.Test", "AutoMoqExtensions\AutoMoqExtensions.Test\AutoMoqExtensions.Test.csproj", "{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions.Vsix", "AutoMoqExtensions\AutoMoqExtensions.Vsix\AutoMoqExtensions.Vsix.csproj", "{75B929C7-7546-41A5-9E72-7F598D6A07D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A86D3CC-EB9F-4C3A-9D62-8CEB26E33E72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A86D3CC-EB9F-4C3A-9D62-8CEB26E33E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A86D3CC-EB9F-4C3A-9D62-8CEB26E33E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A86D3CC-EB9F-4C3A-9D62-8CEB26E33E72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD6992DE-A788-4873-8C8B-7F7C52A6B3B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD6992DE-A788-4873-8C8B-7F7C52A6B3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD6992DE-A788-4873-8C8B-7F7C52A6B3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD6992DE-A788-4873-8C8B-7F7C52A6B3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C96A7A7C-F6AE-4D93-8200-A37B5BCF1143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C96A7A7C-F6AE-4D93-8200-A37B5BCF1143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C96A7A7C-F6AE-4D93-8200-A37B5BCF1143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C96A7A7C-F6AE-4D93-8200-A37B5BCF1143}.Release|Any CPU.Build.0 = Release|Any CPU
+		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DF38A59-03B9-453C-A538-1B857004BAC7}
+	EndGlobalSection
+EndGlobal
