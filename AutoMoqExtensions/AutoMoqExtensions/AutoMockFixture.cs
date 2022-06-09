@@ -22,12 +22,12 @@ namespace AutoMoqExtensions
                                         new ExactTypeSpecification(
                                             typeof(ISpecimenBuilder)))));
 
-            //Customizations.Add(new Postprocessor(
-            //                        new AutoMockMethodInvoker(
-            //                            new CustomConstructorQueryWrapper(
-            //                                new ModestConstructorQuery())),
-            //                        new CustomAutoPropertiesCommand(),
-            //                        new AnyTypeSpecification()));
+            Customizations.Add(new Postprocessor(
+                                    new AutoMockMethodInvoker(
+                                        new CustomConstructorQueryWrapper(
+                                            new ModestConstructorQuery())),
+                                    new CustomAutoPropertiesCommand(),
+                                    new AnyTypeSpecification()));
 
             // Console.WriteLine("Moqfixture.ctor {0}", Environment.StackTrace);
             Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });

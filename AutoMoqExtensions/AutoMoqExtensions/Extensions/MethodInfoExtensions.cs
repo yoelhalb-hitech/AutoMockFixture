@@ -8,7 +8,7 @@ namespace AutoMoqExtensions.Extensions
 {
     internal static class MethodInfoExtensions
     {
-        public static bool IsInternal(this MethodInfo methodInfo) => methodInfo.IsFamily || methodInfo.IsFamilyOrAssembly || methodInfo.IsFamilyAndAssembly;
+        public static bool IsInternal(this MethodInfo methodInfo) => methodInfo.IsAssembly || methodInfo.IsFamilyOrAssembly || methodInfo.IsFamilyAndAssembly;
         public static bool IsPublicOrInternal(this MethodInfo methodInfo) => methodInfo.IsPublic || methodInfo.IsInternal();
 
 

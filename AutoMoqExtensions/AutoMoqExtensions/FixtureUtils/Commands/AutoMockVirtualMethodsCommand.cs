@@ -150,8 +150,8 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
         private static IEnumerable<MethodInfo> SkipWritablePropertyGetters(Type type, IEnumerable<MethodInfo> methods)
         {
             var getterMethods = type.GetAllProperties()
-                .Where(p => p.GetGetMethod() != null && p.GetSetMethod() != null)
-                .Select(p => p.GetGetMethod());
+                .Where(p => p.GetMethod != null && p.SetMethod != null)
+                .Select(p => p.GetMethod);
 
             return methods.Except(getterMethods);
         }

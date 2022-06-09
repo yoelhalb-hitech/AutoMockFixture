@@ -102,7 +102,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
         protected IEnumerable<PropertyInfo> GetPropertiesWithSet(object specimen)
         {
             return from pi in GetSpecimenType(specimen).GetTypeInfo().GetAllProperties()
-                   where pi.GetSetMethod() != null
+                   where pi.SetMethod != null
                    && pi.SetMethod.IsPublicOrInternal()
                    && pi.GetIndexParameters().Length == 0
                    && Specification?.IsSatisfiedBy(pi) != false

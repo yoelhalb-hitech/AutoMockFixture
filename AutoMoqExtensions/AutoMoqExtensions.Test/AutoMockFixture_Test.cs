@@ -23,6 +23,9 @@ namespace AutoMoqExtensions.Test
             var obj = fixture.Create<InternalTestClass>();
             // Assert
             obj.Should().NotBeNull();
+            obj.Should().BeOfType<InternalTestClass>();
+
+            obj.InternalTest.Should().NotBeNull();
         }
 
         public class AutoMockTestClass
