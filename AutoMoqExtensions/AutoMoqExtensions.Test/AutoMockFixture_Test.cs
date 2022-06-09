@@ -70,6 +70,59 @@ namespace AutoMoqExtensions.Test
         }
 
         [Test]
+        public void Test_CreateAutoMock_NonGeneric()
+        {
+            // Arrange
+            var fixture = new AutoMockFixture();
+            // Act
+            InternalTestClass obj = (InternalTestClass)fixture.CreateAutoMock(typeof(InternalTestClass));
+
+            // Assert
+            obj.Should().NotBeNull();
+            AutoMockUtils.AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+            obj.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Test_CreateAutoMock_NoCtorParams()
+        {
+            // Arrange
+            var fixture = new AutoMockFixture();
+            // Act
+            var obj = fixture.CreateAutoMock<InternalTestClass>();
+
+            // Assert
+            obj.Should().NotBeNull();
+            AutoMockUtils.AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();            
+            obj.Should().NotBeNull();
+        }
+        [Test]
+        public void Test_CreateAutoMock_WithCtorParams()
+        {
+            // Arrange
+            var fixture = new AutoMockFixture();
+            // Act
+            var obj = fixture.CreateAutoMock<AutoMockTestClass>();
+            // Assert
+            obj.Should().NotBeNull();
+            obj.Should().BeAssignableTo<AutoMockTestClass>();
+
+            var inner = (AutoMockTestClass)obj;
+
+            inner.TestCtorArg.Should().NotBeNull();
+            AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestCtorArg).Should().NotBeNull();
+
+            inner.TestClassProp.Should().NotBeNull();
+            AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
+
+            inner.TestClassPropGet.Should().NotBeNull();
+            AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
+
+            inner.TestClassField.Should().NotBeNull();
+            AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassField).Should().NotBeNull();
+        }
+
+        [Test]
         public void Test_CtorArguments_AutoMocked()
         {
             // Arrange

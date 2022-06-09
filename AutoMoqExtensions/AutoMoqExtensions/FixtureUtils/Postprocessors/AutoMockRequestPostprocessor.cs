@@ -21,7 +21,9 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             var type = mockRequest.Request;
             if (!AutoMockHelpers.IsAutoMock(type)) type = AutoMockHelpers.GetAutoMockType(type);
 
-            var specimen = context.Resolve(new AutoMockDirectRequest(type));
+            var directRequest = new AutoMockDirectRequest(type);
+
+            var specimen = context.Resolve(directRequest);
 
             if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
                 return specimen;

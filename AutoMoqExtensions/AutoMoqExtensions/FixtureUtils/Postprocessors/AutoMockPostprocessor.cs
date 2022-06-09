@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Kernel;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using Moq;
 using System;
@@ -43,7 +44,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             var seeded = request as SeededRequest;
             if(seeded is not null) request = seeded.Request;
             
-            var t = request as Type ?? (request as ParameterInfo)?.ParameterType;
+            var t = request as Type ?? (request as ParameterInfo)?.ParameterType ?? (request as AutoMockDirectRequest)?.Request;
             if (!AutoMockHelpers.IsAutoMock(t))
             {
                 return new NoSpecimen();

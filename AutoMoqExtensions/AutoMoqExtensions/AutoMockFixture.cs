@@ -34,7 +34,13 @@ namespace AutoMoqExtensions
         }
 
         public T Create<T>() => new SpecimenContext(this).Create<T>();
-        public object CreateAutoMock(Type t) => new SpecimenContext(this).Resolve(new AutoMockRequest(t));
-        public T CreateAutoMock<T>() => (T)CreateAutoMock(typeof(T));
+        public object CreateAutoMock(Type t)
+        {
+            if (t.IsValueType) throw new Exception("Type must be a reference type");
+
+            var result = new SpecimenContext(this).Resolve(new SeededRequest(AutoMockHelpers.GetAutoMockType(t), default));
+            return AutoMockHelpers.GetFromObj(result)!.GetMocked();
+        }
+        public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));
     }
 }
