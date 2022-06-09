@@ -22,15 +22,17 @@ namespace AutoMoqExtensions
                                         new ExactTypeSpecification(
                                             typeof(ISpecimenBuilder)))));
 
+
+            // Console.WriteLine("Moqfixture.ctor {0}", Environment.StackTrace);
+            Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
+        
+            // Needs to be after the automock customization, otherwise it will first try this
             Customizations.Add(new Postprocessor(
                                     new AutoMockMethodInvoker(
                                         new CustomConstructorQueryWrapper(
                                             new ModestConstructorQuery())),
                                     new CustomAutoPropertiesCommand(),
                                     new AnyTypeSpecification()));
-
-            // Console.WriteLine("Moqfixture.ctor {0}", Environment.StackTrace);
-            Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
         }
 
         public T Create<T>() => new SpecimenContext(this).Create<T>();
