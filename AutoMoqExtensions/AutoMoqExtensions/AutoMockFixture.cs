@@ -22,12 +22,12 @@ namespace AutoMoqExtensions
                                         new ExactTypeSpecification(
                                             typeof(ISpecimenBuilder)))));
 
-            Customizations.Add(new Postprocessor(
-                                    new AutoMockMethodInvoker(
-                                        new CustomConstructorQueryWrapper(
-                                            new ModestConstructorQuery())),
-                                    new CustomAutoPropertiesCommand(),
-                                    new AnyTypeSpecification()));
+            //Customizations.Add(new Postprocessor(
+            //                        new AutoMockMethodInvoker(
+            //                            new CustomConstructorQueryWrapper(
+            //                                new ModestConstructorQuery())),
+            //                        new CustomAutoPropertiesCommand(),
+            //                        new AnyTypeSpecification()));
 
             // Console.WriteLine("Moqfixture.ctor {0}", Environment.StackTrace);
             Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
@@ -38,8 +38,8 @@ namespace AutoMoqExtensions
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
-            var result = new SpecimenContext(this).Resolve(new SeededRequest(AutoMockHelpers.GetAutoMockType(t), default));
-            return AutoMockHelpers.GetFromObj(result)!.GetMocked();
+            var result = new SpecimenContext(this).Resolve(new AutoMockRequest(t));
+            return AutoMockHelpers.GetFromObj(result)!.GetMocked(); // It appears that the cast operators only work when statically typed
         }
         public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));
     }
