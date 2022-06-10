@@ -42,7 +42,7 @@ namespace AutoMoqExtensions.AutoMockUtils
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            foreach (var ci in this.GetConstructors((request as Type) ?? (request as AutoMockDirectRequest)?.Request))
+            foreach (var ci in this.GetConstructors((request as Type) ?? (request as AutoMockDirectRequest)?.Request ?? (request as AutoMockDependenciesRequest)?.Request))
             {
                 var paramValues = (from pi in ci.Parameters
                                     select ResolveParameter(context, pi)).ToList();
