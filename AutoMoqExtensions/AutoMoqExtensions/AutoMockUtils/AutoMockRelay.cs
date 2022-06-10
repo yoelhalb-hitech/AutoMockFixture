@@ -40,6 +40,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (result is NoSpecimen || result is OmitSpecimen || result is null)
                 return result;
 
+            return t.IsAssignableFrom(result.GetType()) ? result :  new NoSpecimen();
         }
     }
 }
