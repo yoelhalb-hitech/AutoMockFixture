@@ -2,6 +2,7 @@
 using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.Extensions;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -53,10 +54,11 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                     {
                         try
                         {
+                            var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method));
                             GetType()
                                 .GetMethod(nameof(SetupMethod), BindingFlags.NonPublic | BindingFlags.Static)
                                 .MakeGenericMethod(mockedType, returnType)
-                                .Invoke(this, new object[] { mock, methodInvocationLambda, context });
+                                .Invoke(this, new object[] { mock, methodInvocationLambda, returnValue, context });
                         }
                         catch { }
                     }
@@ -75,62 +77,14 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method is invoked through reflection.")]
         private static void SetupMethod<TMock, TResult>(
-            AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression, ISpecimenContext context)
+            AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
+                                    TResult result, ISpecimenContext context)
             where TMock : class
         {
             mock.Setup(methodCallExpression)
 #pragma warning disable CS8603 // Possible null reference return.
-                .Returns(() => GetReturn<TResult>(context));
+                .Returns(result);
 #pragma warning restore CS8603 // Possible null reference return.
-        }
-
-        private static TResult? GetReturn<TResult>(ISpecimenContext context)
-        {
-            var specimen = ResolveReturn<TResult>(context);
-
-            // check if specimen is null but member is non-nullable value type
-            if (specimen == null && default(TResult) != null)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture,
-                    "Tried to setup a member with a return type of {0}, but null was found instead.", typeof(TResult)));
-            }
-
-            // check if specimen can be safely converted to TResult
-            if (specimen != null && specimen is not TResult
-                    && (specimen is not IAutoMock mock || !typeof(TResult).IsAssignableFrom(mock.GetInnerType())))
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture,
-                        "Tried to setup a member with a return type of {0}, but an instance of {1} was found instead.",
-                        typeof(TResult), specimen.GetType()));
-            }
-
-            return (TResult?)specimen;
-        }
-
-        private static object ResolveReturn<TResult>(ISpecimenContext context)
-        {
-            var type = typeof(TResult);
-            if (!AutoMockHelpers.IsAutoMockAllowed(type))
-            {
-                return context.Resolve(type);
-            }
-
-            try
-            {
-                var mockType = AutoMockHelpers.GetAutoMockType(type);
-                var specimen = context.Resolve(mockType);
-
-                if (specimen is NoSpecimen || specimen is OmitSpecimen
-                    || specimen is null || specimen is not IAutoMock mock || mock.GetInnerType() != type)
-                    return context.Resolve(type);
-
-                return mock.GetMocked();
-            }
-            catch
-            {
-
-                return context.Resolve(type);
-            }
         }
 
         private static IEnumerable<MethodInfo> GetConfigurableMethods(Type type)
@@ -161,6 +115,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             => (type.IsInterface || method.IsOverridable()) &&
                    !method.IsGenericMethod &&
                    !method.HasRefParameters() &&
+                    method.DeclaringType != typeof(object) && // Overriding .Equals etc. can cause problems
                     (!method.IsVoid() || method.HasOutParameters()); // No point in setting up a void method...
 
         private static Expression? MakeMethodInvocationLambda(Type mockedType, MethodInfo method,

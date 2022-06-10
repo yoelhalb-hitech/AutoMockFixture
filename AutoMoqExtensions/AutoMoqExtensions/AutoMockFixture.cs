@@ -3,6 +3,7 @@ using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Commands;
+using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using NUnit.Framework.Constraints;
 using System;

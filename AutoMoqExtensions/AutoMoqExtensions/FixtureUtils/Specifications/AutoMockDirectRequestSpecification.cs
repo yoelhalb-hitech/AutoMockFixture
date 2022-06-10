@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Kernel;
+using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.AutoMockUtils.Specifications;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
@@ -13,9 +14,9 @@ namespace AutoMoqExtensions.FixtureUtils.Specifications
         public bool IsSatisfiedBy(object request)
         {
             var mockRequest = request as AutoMockDirectRequest;
-            if (mockRequest is null) return false;
+            if (mockRequest is null || !AutoMockHelpers.IsAutoMock(mockRequest.Request)) return false;
 
-            return autoMockableSpecification.IsSatisfiedBy(mockRequest.Request);
+            return autoMockableSpecification.IsSatisfiedBy(AutoMockHelpers.GetMockedType(mockRequest.Request)!);
         }
     }
 }

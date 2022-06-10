@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests
+namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 {
     public class CorrectPostprocessor : ISpecimenBuilder
     {
@@ -12,8 +12,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public CorrectPostprocessor(ISpecimenBuilder builder, ISpecimenCommand command, IRequestSpecification? specification = null)
         {
-            if(builder is null) throw new ArgumentNullException(nameof(builder));
-            if(command is null) throw new ArgumentNullException(nameof(command));
+            if (builder is null) throw new ArgumentNullException(nameof(builder));
+            if (command is null) throw new ArgumentNullException(nameof(command));
 
             Builder = builder;
             Command = command;
@@ -26,9 +26,9 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public object Create(object request, ISpecimenContext context)
         {
-            if (!this.Specification.IsSatisfiedBy(request)) return new NoSpecimen();
+            if (!Specification.IsSatisfiedBy(request)) return new NoSpecimen();
 
-            var specimen = this.Builder.Create(request, context);
+            var specimen = Builder.Create(request, context);
             Command.Execute(specimen, context);
 
             return specimen;

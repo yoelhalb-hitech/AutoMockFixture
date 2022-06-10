@@ -29,12 +29,23 @@ namespace AutoMoqExtensions.AutoMockUtils
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockConstructorArgumentPostprocessor(),
-                                            new AutoMockConstructorArgumentSpecification()));
+                                            new TypeMatchSpecification(typeof(AutoMockConstructorArgumentRequest))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new AutoMockPropertyPostprocessor(),
+                                            new TypeMatchSpecification(typeof(AutoMockPropertyRequest))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new AutoMockFieldPostprocessor(),
+                                            new TypeMatchSpecification(typeof(AutoMockFieldRequest))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new AutoMockReturnPostprocessor(),
+                                            new TypeMatchSpecification(typeof(AutoMockReturnRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockRequestPostprocessor(),
                                             new AutoMockRequestSpecification()));
-
 
             ISpecimenBuilder mockBuilder = new AutoMockPostprocessor(
                                               new AutoMockMethodInvoker(

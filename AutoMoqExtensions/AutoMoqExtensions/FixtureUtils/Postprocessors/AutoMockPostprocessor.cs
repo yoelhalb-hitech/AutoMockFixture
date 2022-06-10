@@ -41,29 +41,15 @@ namespace AutoMoqExtensions.AutoMockUtils
         /// </returns>
         public object? Create(object request, ISpecimenContext context)
         {
-            var seeded = request as SeededRequest;
-            if(seeded is not null) request = seeded.Request;
-            
-            var t = request as Type ?? (request as ParameterInfo)?.ParameterType ?? (request as AutoMockDirectRequest)?.Request;
-            if (!AutoMockHelpers.IsAutoMock(t))
-            {
+            if (!requestSpecification.IsSatisfiedBy(request) || request is not AutoMockDirectRequest mockRequest)
                 return new NoSpecimen();
-            }
 
             var specimen = this.Builder.Create(request, context);
             if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
                 return specimen;
 
             var type = specimen.GetType();
-            if (!AutoMockHelpers.IsAutoMock(type))
-            {
-                return new NoSpecimen();
-            }
-           
-            if (type != t)
-            {
-                return new NoSpecimen();
-            }
+            if (!AutoMockHelpers.IsAutoMock(type) || type != mockRequest.Request) return new NoSpecimen();
 
             ((Mock)specimen).DefaultValue = DefaultValue.Mock;
 

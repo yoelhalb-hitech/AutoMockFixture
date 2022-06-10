@@ -21,7 +21,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public override int GetHashCode() => HashCode.Combine(DeclaringType, ParameterInfo);
 
-        public bool Equals(ConstructorArgumentRequest other)
+        public virtual bool Equals(ConstructorArgumentRequest other)
             => other is not null &&this.DeclaringType == other.DeclaringType && this.ParameterInfo == other.ParameterInfo;       
     }
 }

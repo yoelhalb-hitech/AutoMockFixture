@@ -12,8 +12,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
     internal class EnsureObjectCommand : ISpecimenCommand
     {
         public void Execute(object specimen, ISpecimenContext context)
-        {
-            System.Diagnostics.Debugger.Break();
+        {            
             var mock = AutoMockHelpers.GetFromObj(specimen);
             if (mock is not null)
             {

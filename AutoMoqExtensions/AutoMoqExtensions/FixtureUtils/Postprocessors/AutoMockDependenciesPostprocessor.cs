@@ -13,7 +13,6 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 {
     internal class AutoMockDependenciesPostprocessor : ISpecimenBuilder
     {
-
         public AutoMockDependenciesPostprocessor(ISpecimenBuilder builder)
         {
             Builder = builder ?? throw new ArgumentNullException(nameof(builder));

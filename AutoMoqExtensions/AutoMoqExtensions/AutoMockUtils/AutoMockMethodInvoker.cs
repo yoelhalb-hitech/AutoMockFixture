@@ -42,60 +42,28 @@ namespace AutoMoqExtensions.AutoMockUtils
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            foreach (var ci in this.GetConstructors((request as Type) ?? (request as AutoMockDirectRequest)?.Request ?? (request as AutoMockDependenciesRequest)?.Request))
-            {
-                var paramValues = (from pi in ci.Parameters
-                                    select ResolveParameter(context, pi)).ToList();
+            var mockRequest = request as AutoMockDirectRequest;
+            var dependencyRequest = request as AutoMockDependenciesRequest;
 
-                if (paramValues.All(IsValueValid))
-                {
+            if (mockRequest is null && dependencyRequest is null) return new NoSpecimen();
+
+            var type = mockRequest?.Request ?? dependencyRequest?.Request;
+            foreach (var ci in Query.SelectMethods(type))
+            {
+                var paramValues = ci.Parameters
+                                    .Select(pi => new AutoMockConstructorArgumentRequest(type!, pi))
+                                    .Select(r =>
+                                    {
+                                        var r1 = context.Resolve(r);
+                                        return r1;
+                                    })
+                                    .ToList();
+
+                if (paramValues.All(v => v is not NoSpecimen && v is not OmitSpecimen))
                     return ci.Invoke(paramValues.ToArray());
-                }
             }
 
             return new NoSpecimen();
-        }
-
-        private object ResolveParameter(ISpecimenContext context, ParameterInfo parameter)
-        {
-            if(!AutoMockHelpers.IsAutoMockAllowed(parameter.ParameterType))
-            {
-                return context.Resolve(parameter);
-            }
-
-            try
-            {
-                var newParam = new AutoMockParameterInfo(parameter);
-                var specimen = context.Resolve(newParam);
-
-                if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
-                    return context.Resolve(parameter);
-
-                return specimen;
-            }
-            catch
-            {
-                   
-                return context.Resolve(parameter);
-            }
-        }
-
-
-        private IEnumerable<IMethod> GetConstructors(object request)
-        {
-            var requestedType = request as Type;
-            if (requestedType == null)
-            {
-                return Enumerable.Empty<IMethod>();
-            }
-
-            return this.Query.SelectMethods(requestedType);
-        }
-
-        private static bool IsValueValid(object value)
-        {
-            return !(value is NoSpecimen)
-                && !(value is OmitSpecimen);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -27,58 +28,42 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         protected override void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi)
         {
-            if (!AutoMockHelpers.IsAutoMockAllowed(pi.PropertyType))
-            {
-                base.HandleProperty(specimen, context, pi);
-                return;
-            }
-
             try
             {
-                var newProp = new AutoMockPropertyInfo(pi);
-                var propertyValue = context.Resolve(newProp);
+                var propertyValue = context.Resolve(new AutoMockPropertyRequest(GetSpecimenType(specimen), pi));
 
-                if (propertyValue is NoSpecimen || propertyValue is OmitSpecimen
-                    || propertyValue is null || propertyValue is not IAutoMock mock || mock.GetInnerType() != pi.PropertyType)
+                if (propertyValue is NoSpecimen || propertyValue is OmitSpecimen) { return; }
+                else if (propertyValue is null || propertyValue is not IAutoMock mock)
                 {
-                    base.HandleProperty(specimen, context, pi);
+                    pi.SetValue(specimen, propertyValue, null);
                     return;
                 }
-
-                pi.SetValue(specimen, mock.GetMocked(), null);
+                else if(mock.GetInnerType() == pi.PropertyType) pi.SetValue(specimen, mock.GetMocked(), null);
             }
             catch
             {
 
+                Console.WriteLine("In catch");
                 base.HandleProperty(specimen, context, pi);
             }
         }
 
         protected override void HandleField(object specimen, ISpecimenContext context, FieldInfo fi)
         {
-            if (!AutoMockHelpers.IsAutoMockAllowed(fi.FieldType))
-            {
-                base.HandleField(specimen, context, fi);
-                return;
-            }
-
             try
             {
-                var newField = new AutoMockFieldInfo(fi);
-                var fieldValue = context.Resolve(newField);
+                var fieldValue = context.Resolve(new AutoMockFieldRequest(GetSpecimenType(specimen), fi));
 
-                if (fieldValue is NoSpecimen || fieldValue is OmitSpecimen
-                    || fieldValue is null || fieldValue is not IAutoMock mock || mock.GetInnerType() != fi.FieldType)
+                if (fieldValue is NoSpecimen || fieldValue is OmitSpecimen) { return; }
+                else if (fieldValue is null || fieldValue is not IAutoMock mock)
                 {
-                    base.HandleField(specimen, context, fi);
+                    fi.SetValue(specimen, fieldValue);
                     return;
                 }
-
-                fi.SetValue(specimen, mock.GetMocked());
+                else if (mock.GetInnerType() == fi.FieldType) fi.SetValue(specimen, mock.GetMocked());
             }
             catch
             {
-
                 base.HandleField(specimen, context, fi);
             }
         }

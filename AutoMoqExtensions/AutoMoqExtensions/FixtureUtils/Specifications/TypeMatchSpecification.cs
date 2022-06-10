@@ -9,18 +9,14 @@ namespace AutoMoqExtensions.FixtureUtils.Specifications
     {
         public TypeMatchSpecification(Type targetType)
         {
+            Console.WriteLine(targetType.Name);
+            if(targetType is null) throw new ArgumentNullException(nameof(targetType));
+
             TargetType = targetType;
         }
 
         public Type TargetType { get; }
 
-        public bool IsSatisfiedBy(object request)
-        {
-            if (request is null) return false;
-
-            var t = (request as Type) ?? request.GetType();            
-
-            return t == TargetType;
-        }
+        public bool IsSatisfiedBy(object request) => TargetType.IsInstanceOfType(request);
     }
 }

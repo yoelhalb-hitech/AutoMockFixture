@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils.Specifications;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,22 +28,18 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (!this.MockableSpecification.IsSatisfiedBy(request))
                 return new NoSpecimen();
 
-            var t = request as Type;
-            if (t == null)
-                return new NoSpecimen();
 
-            var type = AutoMockHelpers.GetAutoMockType(t);
-            var result = context.Resolve(type);
+            var t = request as Type ?? (request as SeededRequest)?.Request as Type;
+            if (t is null)
+                return new NoSpecimen();
+            
+            var mockRequest = new AutoMockRequest(t);
+            var result = context.Resolve(mockRequest);
 
             // Note: null is a valid specimen (e.g., returned by NullRecursionHandler)
-            if (result is NoSpecimen || result is OmitSpecimen || result == null)
+            if (result is NoSpecimen || result is OmitSpecimen || result is null)
                 return result;
 
-            var m = result as IAutoMock;
-            if (m == null)
-                return new NoSpecimen();
-
-            return m;
         }
     }
 }
