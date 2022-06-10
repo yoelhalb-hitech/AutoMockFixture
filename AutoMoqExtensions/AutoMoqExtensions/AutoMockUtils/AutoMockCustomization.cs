@@ -44,6 +44,10 @@ namespace AutoMoqExtensions.AutoMockUtils
                                             new TypeMatchSpecification(typeof(AutoMockReturnRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new AutoMockOutParameterPostprocessor(),
+                                            new TypeMatchSpecification(typeof(AutoMockOutParameterRequest))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockRequestPostprocessor(),
                                             new AutoMockRequestSpecification()));
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using AutoMoqExtensions;
 using System.Reflection;
-
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace AutoMoqExtensions.Test
 {
     public class AutoMockFixture_Test
@@ -18,9 +18,16 @@ namespace AutoMoqExtensions.Test
         {
             internal string? InternalTest { get; set; }
         }
-        public class InternalTestClass2
+        public abstract class InternalTestClass2
         {
             internal string? InternalTest { get; set; }
+            // TODO... for setting up internal methods we need to have InternalsVisibleTo
+            //     We might need to warn for that
+            internal virtual string TestMethod() => "67";
+            // TODO... It has a weird DynamicCastle error when the method is internal abstract, we need to simplify
+            // TODO... It has an issue setting up out when the method has implementation
+            internal abstract string TestOutParam(out string test);// => test = "43";
+            //public string TestOutParam1(out string test1) => test1 = "43";
         }
 
         [Test]
@@ -56,6 +63,19 @@ namespace AutoMoqExtensions.Test
         }
 
         [Test]
+        public void Test_AutoMock_Abstract()
+        {
+            // Arrange
+            var fixture = new AutoMockFixture();
+            // Act
+            var obj = fixture.Create<AutoMock<InternalTestClass2>>();
+            // Assert
+            obj.Should().NotBeNull();
+            obj.Should().BeOfType<AutoMock<InternalTestClass2>>();
+            obj.GetMocked().InternalTest.Should().NotBeNull();
+        }
+
+        [Test]
         public void Test_AutoMock()
         { 
             // Arrange
@@ -79,6 +99,18 @@ namespace AutoMoqExtensions.Test
 
             inner.TestClassPropGet.Should().NotBeNull();
             inner.TestClassPropGet!.InternalTest.Should().NotBeNull();
+            inner.TestClassPropGet!.TestMethod().Should().NotBeNull();            
+            inner.TestClassPropGet!.TestMethod().Should().NotBe("67");
+            var result = inner.TestClassPropGet!.TestOutParam(out var s);
+            s.Should().NotBeNull();
+            result.Should().NotBeNull();
+            s.Should().NotBe(result); // Unlike in the original code...
+            // TODO... so far we have an issue with these
+            //var result1 = inner.TestClassPropGet!.TestOutParam1(out var s1);
+            //s1.Should().NotBeNull();
+            //result1.Should().NotBeNull();
+            //s1.Should().NotBe(result1); // Unlike in the original code...
+
             inner.TestClassPropGet!.Should().NotBe(inner.TestCtorArg);
             inner.TestClassPropGet!.Should().NotBe(inner.TestClassProp);
             AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
