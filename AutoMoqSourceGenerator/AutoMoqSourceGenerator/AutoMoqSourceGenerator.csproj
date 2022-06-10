@@ -1,31 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-
 	<LangVersion>10.0</LangVersion>
+    <IsPackable>false</IsPackable>
 	<Nullable>enable</Nullable>
-	  
+
     <!-- Avoid ID conflicts with the package project. -->
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
-	<PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
-	<PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
-
-	<PackageReference Include="Moq" Version="4.17.2" />
-	<PackageReference Include="Moq.Analyzers" Version="0.0.9">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
-	<PackageReference Include="NUnit" Version="3.13.2" />
-	<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
-	  
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.8" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
+	<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions.Test", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqExtensions.Vsix", "AutoMoqExtensions\AutoMoqExtensions.Vsix\AutoMoqExtensions.Vsix.csproj", "{75B929C7-7546-41A5-9E72-7F598D6A07D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqSourceGenerator", "AutoMoqSourceGenerator\AutoMoqSourceGenerator\AutoMoqSourceGenerator.csproj", "{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMoqSourceGenerator.Test", "AutoMoqSourceGenerator\AutoMoqSourceGenerator.Test\AutoMoqSourceGenerator.Test.csproj", "{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75B929C7-7546-41A5-9E72-7F598D6A07D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
