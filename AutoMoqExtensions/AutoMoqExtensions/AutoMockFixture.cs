@@ -29,7 +29,7 @@ namespace AutoMoqExtensions
             Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
         
             // Needs to be after the automock customization, otherwise it will first try this
-            Customizations.Add(new CorrectPostprocessor(
+            Customizations.Add(new Postprocessor(
                                     new AutoMockMethodInvoker(
                                         new CustomConstructorQueryWrapper(
                                             new ModestConstructorQuery())),
