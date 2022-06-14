@@ -1,16 +1,14 @@
-﻿using AutoMoqExtensions.Expressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils;
 using Moq;
-using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 
 namespace AutoMoqExtensions
 {
+    public partial class AutoMock<T> : Mock<T>, IAutoMock where T : class
     {
         public List<IVerifyInfo<T>> VerifyList { get; } = new List<IVerifyInfo<T>>();
         private T? mocked;
