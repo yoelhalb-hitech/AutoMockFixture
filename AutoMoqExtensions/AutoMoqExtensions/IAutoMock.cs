@@ -19,5 +19,39 @@ namespace AutoMoqExtensions
         void EnsureMocked();
         Type GetInnerType();
         object GetMocked();
+        ITracker? Tracker { get; set; }
+
+        void VerifyAll();
+
+        #region MethodInfo
+        public IAutoMock Setup(MethodInfo method, Times times);
+        public IAutoMock Setup<TAnon>(MethodInfo method, TAnon paramData) where TAnon : class;
+        // Doing TAnon : class to avoid overload resolution issues
+        public IAutoMock Setup<TAnon>(MethodInfo method, TAnon paramData, Times times) where TAnon : class;
+
+        public IAutoMock Setup<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result) where TAnon : class;
+        // Doing TAnon : class to avoid overload resolution issues
+        public IAutoMock Setup<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times times) where TAnon : class;
+
+        #endregion
+
+        #region string
+
+        public IAutoMock Setup(string methodName);
+        public IAutoMock Setup(string methodName, Times times);
+
+        // Doing TAnon : class to avoid overload resolution issues
+        public IAutoMock Setup<TAnon>(string methodName, TAnon paramData) where TAnon : class;
+
+        // Doing TAnon : class to avoid overload resolution issues
+        public IAutoMock Setup<TAnon>(string methodName, TAnon paramData, Times times) where TAnon : class;
+
+        // Doing TAnon : class to avoid overload resolution issues
+
+
+        public IAutoMock Setup<TAnon, TResult>(string methodName, TAnon paramData, TResult result) where TAnon : class;
+        public IAutoMock Setup<TAnon, TResult>(string methodName, TAnon paramData, TResult result, Times times) where TAnon : class;
+
+        #endregion
     }
 }
