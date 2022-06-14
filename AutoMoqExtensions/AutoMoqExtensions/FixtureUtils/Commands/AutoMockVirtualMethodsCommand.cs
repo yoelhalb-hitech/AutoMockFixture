@@ -39,7 +39,18 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
                     if (methodInvocationLambda == null) continue;
 
-                    if (method.IsVoid())
+                    if(method.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
+                    {
+                        try
+                        {
+                            GetType()
+                                .GetMethod(nameof(SetupCallbaseMethod), BindingFlags.NonPublic | BindingFlags.Static)
+                                .MakeGenericMethod(mockedType, returnType)
+                                .Invoke(this, new object[] { mock, methodInvocationLambda });
+                        }
+                        catch { }
+                    }
+                    else if (method.IsVoid())
                     {
                         try
                         {
@@ -73,6 +84,13 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
     where TMock : class
         {
             mock.Setup(methodCallExpression);
+        }
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method is invoked through reflection.")]
+        private static void SetupCallbaseMethod<TMock, TResult>(AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
+where TMock : class
+        {
+            mock.Setup(methodCallExpression).CallBase();
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method is invoked through reflection.")]
@@ -114,8 +132,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
         private static bool CanBeConfigured(Type type, MethodInfo method)
             => (type.IsInterface || method.IsOverridable()) &&
                    !method.IsGenericMethod &&
-                   !method.HasRefParameters() &&
-                    method.DeclaringType != typeof(object) && // Overriding .Equals etc. can cause problems
+                   !method.HasRefParameters() &&                    
                     (!method.IsVoid() || method.HasOutParameters()); // No point in setting up a void method...
 
         private static Expression? MakeMethodInvocationLambda(Type mockedType, MethodInfo method,
