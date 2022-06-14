@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Kernel;
+using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Commands;
 using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
@@ -9,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AutoMoqExtensions.AutoMockUtils
+namespace AutoMoqExtensions.FixtureUtils.Customizations
 {
     public class AutoMockCustomization : ICustomization
     {
@@ -17,18 +18,19 @@ namespace AutoMoqExtensions.AutoMockUtils
         public bool GenerateDelegates { get; set; } = true;
         public void Customize(IFixture fixture)
         {
-            if (fixture == null) throw new ArgumentNullException(nameof(fixture));
+            if (fixture == null || fixture is not AutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
 
-            fixture.Customizations.Add(new CorrectPostprocessor(
-                                            new AutoMockDependenciesPostprocessor(
-                                                new AutoMockMethodInvoker(
-                                                    new CustomConstructorQueryWrapper(
-                                                        new ModestConstructorQuery()))),
-                                            new CustomAutoPropertiesCommand(),
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new Postprocessor(
+                                                new AutoMockDependenciesPostprocessor(
+                                                    new AutoMockMethodInvoker(
+                                                        new CustomConstructorQueryWrapper(
+                                                            new ModestConstructorQuery()))),
+                                                new CustomAutoPropertiesCommand()),
                                             new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                            new AutoMockConstructorArgumentPostprocessor(),
+                                            new AutoMockConstructorArgumentPostprocessor(mockFixture.ConstructorArgumentValues),
                                             new TypeMatchSpecification(typeof(AutoMockConstructorArgumentRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -57,24 +59,28 @@ namespace AutoMoqExtensions.AutoMockUtils
                                                     new AutoMockConstructorQuery())));
 
             // If members should be automatically configured, wrap the builder with members setup postprocessor.
-            if (this.ConfigureMembers)
+            if (ConfigureMembers)
             {
-                mockBuilder = new CorrectPostprocessor(
-                    builder: mockBuilder,
-                    command: new CompositeSpecimenCommand(
-                                new EnsureObjectCommand(),
-                                new SetCallBaseCommand(),
-                                new StubPropertiesCommand(),
-                                new AutoMockVirtualMethodsCommand(),
-                                new AutoMockAutoPropertiesCommand()),
-                    specification: new TypeMatchSpecification(typeof(AutoMockDirectRequest)));
+                mockBuilder = new FilteringSpecimenBuilder(
+                                    new Postprocessor(
+                                        builder: mockBuilder,
+                                        command: new CompositeSpecimenCommand(
+                                                    // First stub so we should be able to have ready for constructing the object
+                                                    new StubPropertiesCommand(),
+                                                    new AutoMockVirtualMethodsCommand(),
+                                                    // TODO... as of now when constructing the actual object the auto properties won't have values, maybe we should change that
+                                                    new EnsureObjectCommand(),
+                                                    new SetCallBaseCommand(),
+                                                    // Only after constructing the object we can set the other properties on the object directly
+                                                    new AutoMockAutoPropertiesCommand())),
+                                    new TypeMatchSpecification(typeof(AutoMockDirectRequest)));
             }
 
             fixture.Customizations.Add(mockBuilder);
 
             fixture.ResidueCollectors.Add(new AutoMockRelay());
 
-            if (this.GenerateDelegates)
+            if (GenerateDelegates)
             {
                 fixture.Customizations.Add(new AutoMockRelay(new DelegateSpecification()));
             }
