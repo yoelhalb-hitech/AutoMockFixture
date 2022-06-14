@@ -7,8 +7,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     internal class AutoMockFieldRequest : FieldRequest, IEquatable<AutoMockFieldRequest>
     {
-        public AutoMockFieldRequest(Type declaringType, FieldInfo fieldInfo) 
-            : base(declaringType, fieldInfo)
+        public AutoMockFieldRequest(Type declaringType, FieldInfo fieldInfo, ITracker? tracker) 
+            : base(declaringType, fieldInfo, tracker)
         {
         }
 

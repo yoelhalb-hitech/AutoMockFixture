@@ -10,6 +10,7 @@ namespace AutoMoqExtensions
 {
     public partial class AutoMock<T> : Mock<T>, IAutoMock where T : class
     {
+        public virtual ITracker? Tracker { get; set; }
         public List<IVerifyInfo<T>> VerifyList { get; } = new List<IVerifyInfo<T>>();
         private T? mocked;
         public Type GetInnerType() => typeof(T);

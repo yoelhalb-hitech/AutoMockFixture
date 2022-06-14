@@ -19,9 +19,24 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
             // Out param types can be different than the ParameterInfo.ParameterType
             var type = mockRequest.ParameterType;
-            if (autoMockableSpecification.IsSatisfiedBy(type)) return context.Resolve(new AutoMockRequest(type));
+            if (!autoMockableSpecification.IsSatisfiedBy(type))
+            {
+                var result = context.Resolve(type);
+                mockRequest.SetResult(result);
+                return result;
+            }
 
-            return context.Resolve(type);
+            var specimen = context.Resolve(new AutoMockRequest(type, mockRequest));
+
+            if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
+            {
+                mockRequest.SetResult(specimen);
+                return specimen;
+            }
+
+            mockRequest.Completed();
+
+            return specimen;
         }
     }
 }

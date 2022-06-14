@@ -32,10 +32,12 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 var mockedType = mock.GetInnerType();
                 var methods = GetConfigurableMethods(mockedType);
 
+                var tracker = mock.Tracker;
+
                 foreach (var method in methods)
                 {
                     var returnType = method.ReturnType;
-                    var methodInvocationLambda = MakeMethodInvocationLambda(mockedType, method, context);
+                    var methodInvocationLambda = MakeMethodInvocationLambda(mockedType, method, context, tracker);
 
                     if (methodInvocationLambda == null) continue;
 
@@ -65,7 +67,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                     {
                         try
                         {
-                            var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method));
+                            var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method, tracker));
                             GetType()
                                 .GetMethod(nameof(SetupMethod), BindingFlags.NonPublic | BindingFlags.Static)
                                 .MakeGenericMethod(mockedType, returnType)
@@ -136,13 +138,13 @@ where TMock : class
                     (!method.IsVoid() || method.HasOutParameters()); // No point in setting up a void method...
 
         private static Expression? MakeMethodInvocationLambda(Type mockedType, MethodInfo method,
-                                                      ISpecimenContext context)
+                                                      ISpecimenContext context, ITracker? tracker)
         {
             var lambdaParam = Expression.Parameter(mockedType, "x");
 
             var methodCallParams = method.GetParameters()
-                                         .Select(param => MakeParameterExpression(param, context))
-                                         .ToList();
+                            .Select(param => MakeParameterExpression(mockedType, method,  param, context, tracker))
+                            .ToList();
 
             if (methodCallParams.Any(exp => exp == null))
                 return null;
@@ -165,7 +167,7 @@ where TMock : class
         }
 
         // TODO... add generic support using IsAnyType?
-        private static Expression? MakeParameterExpression(ParameterInfo parameter, ISpecimenContext context)
+        private static Expression? MakeParameterExpression(Type mockedType, MethodInfo method, ParameterInfo parameter, ISpecimenContext context, ITracker? tracker)
         {
             // check if parameter is an "out" parameter
             if (parameter.IsOut)
@@ -175,8 +177,8 @@ where TMock : class
                 var underlyingType = parameter.ParameterType.GetElementType();
 
                 // resolve the "out" param from the context
-                object variable = context.Resolve(underlyingType);
-
+                var request = new AutoMockOutParameterRequest(mockedType, method, parameter, underlyingType, tracker);
+                object variable = context.Resolve(request);
                 if (variable is OmitSpecimen)
                     return null;
 

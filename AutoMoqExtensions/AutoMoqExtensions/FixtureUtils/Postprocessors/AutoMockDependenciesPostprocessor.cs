@@ -26,11 +26,21 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
                 return new NoSpecimen();
 
             var specimen = Builder.Create(request, context);
-            if (specimen is NoSpecimen || specimen is OmitSpecimen 
-                || specimen is null || specimen.GetType() == dependencyRequest.Request)
+            if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
+            {
+                dependencyRequest.SetResult(specimen);
                 return specimen;
+            }
 
-            return new NoSpecimen();
+            if (specimen.GetType() != dependencyRequest.Request)
+            {
+                var result = new NoSpecimen();
+                dependencyRequest.SetResult(result);
+                return result;
+            }
+
+            dependencyRequest.SetResult(specimen);
+            return specimen;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Kernel;
+using AutoMoqExtensions.FixtureUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
@@ -47,14 +48,17 @@ namespace AutoMoqExtensions.AutoMockUtils
 
             if (mockRequest is null && dependencyRequest is null) return new NoSpecimen();
 
+            ITracker tracker = (ITracker?)mockRequest ?? dependencyRequest!;
             var type = mockRequest?.Request ?? dependencyRequest?.Request;
             foreach (var ci in Query.SelectMethods(type))
             {
                 var paramValues = ci.Parameters
-                                    .Select(pi => new AutoMockConstructorArgumentRequest(type!, pi))
+                                    .Select(pi => new AutoMockConstructorArgumentRequest(type!, pi, tracker))
                                     .Select(r =>
                                     {
+                                        Console.WriteLine("\t\t\t\t\t\tBefore args: " + r.ParameterInfo.Name);
                                         var r1 = context.Resolve(r);
+                                        Console.WriteLine("\t\t\t\t\t\tAfter args: " + r1.GetType().FullName);
                                         return r1;
                                     })
                                     .ToList();

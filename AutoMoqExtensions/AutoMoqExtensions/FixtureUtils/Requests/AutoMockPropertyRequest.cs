@@ -7,8 +7,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     internal class AutoMockPropertyRequest : PropertyRequest, IEquatable<AutoMockPropertyRequest>
     {
-        public AutoMockPropertyRequest(Type declaringType, PropertyInfo propertyInfo) 
-            : base(declaringType, propertyInfo)
+        public AutoMockPropertyRequest(Type declaringType, PropertyInfo propertyInfo, ITracker? tracker) 
+            : base(declaringType, propertyInfo, tracker)
         {
         }
 

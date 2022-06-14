@@ -9,8 +9,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         : OutParameterRequest, IEquatable<AutoMockOutParameterRequest>
     {
         public AutoMockOutParameterRequest(Type declaringType, MethodInfo methodInfo, 
-                ParameterInfo parameterInfo, Type parameterType) 
-            : base(declaringType, methodInfo, parameterInfo, parameterType)
+                ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) 
+            : base(declaringType, methodInfo, parameterInfo, parameterType, tracker)
         {
         }
 

@@ -5,23 +5,25 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class PropertyRequest : IEquatable<PropertyRequest>
+    internal class PropertyRequest : BaseTracker, IEquatable<PropertyRequest>
     {
-        public PropertyRequest(Type declaringType, PropertyInfo propertyInfo)
+        public PropertyRequest(Type declaringType, PropertyInfo propertyInfo, ITracker? tracker) : base(tracker)
         {
             DeclaringType = declaringType;
             PropertyInfo = propertyInfo;
         }
 
-        public Type DeclaringType { get; }
-        public PropertyInfo PropertyInfo { get; }
+        public virtual Type DeclaringType { get; }
+        public virtual PropertyInfo PropertyInfo { get; }
 
-        public override bool Equals(object obj) 
-            => obj is PropertyRequest other ? this.Equals(other) : base.Equals(obj);
+        public override string InstancePath => "." + PropertyInfo.Name;
 
-        public override int GetHashCode() => HashCode.Combine(DeclaringType, PropertyInfo);
+        public override bool Equals(BaseTracker obj) 
+                        => obj is PropertyRequest other && this.Equals(other);
+
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, PropertyInfo);
 
         public virtual bool Equals(PropertyRequest other)
-            => other is not null &&this.DeclaringType == other.DeclaringType && this.PropertyInfo == other.PropertyInfo;       
+            => base.Equals((BaseTracker)other) && this.DeclaringType == other.DeclaringType && this.PropertyInfo == other.PropertyInfo;       
     }
 }

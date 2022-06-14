@@ -33,7 +33,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (t is null)
                 return new NoSpecimen();
             
-            var mockRequest = new AutoMockRequest(t);
+            var mockRequest = new AutoMockRequest(t, null);
             var result = context.Resolve(mockRequest);
 
             // Note: null is a valid specimen (e.g., returned by NullRecursionHandler)

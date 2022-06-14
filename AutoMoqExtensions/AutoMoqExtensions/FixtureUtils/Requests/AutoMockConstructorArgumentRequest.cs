@@ -8,8 +8,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
     internal class AutoMockConstructorArgumentRequest 
         : ConstructorArgumentRequest, IEquatable<AutoMockConstructorArgumentRequest>
     {
-        public AutoMockConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo) 
-            : base(declaringType, parameterInfo)
+        public AutoMockConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo, ITracker? tracker) 
+            : base(declaringType, parameterInfo, tracker)
         {
         }
 

@@ -18,9 +18,25 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             if (request is not AutoMockConstructorArgumentRequest mockRequest) return new NoSpecimen();
 
             var type = mockRequest.ParameterInfo.ParameterType;
-            if (autoMockableSpecification.IsSatisfiedBy(type)) return context.Resolve(new AutoMockRequest(type));
 
-            return context.Resolve(mockRequest.ParameterInfo);
+            if (!autoMockableSpecification.IsSatisfiedBy(type))
+            {
+                var result = context.Resolve(mockRequest.ParameterInfo);
+                mockRequest.SetResult(result);
+                return result;
+            }
+
+            var specimen = context.Resolve(new AutoMockRequest(type, mockRequest));
+
+            if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
+            {
+                mockRequest.SetResult(specimen);
+                return specimen;
+            }                
+
+            mockRequest.Completed();
+            return specimen;
+        }
         }
     }
 }

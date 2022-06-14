@@ -1,13 +1,15 @@
-﻿using System;
+﻿using AutoMoqExtensions.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class OutParameterRequest : IEquatable<OutParameterRequest>
+    internal class OutParameterRequest : BaseTracker, IEquatable<OutParameterRequest>
     {
-        public OutParameterRequest(Type declaringType, MethodInfo methodInfo, ParameterInfo parameterInfo, Type parameterType)
+        public OutParameterRequest(Type declaringType, MethodInfo methodInfo, 
+            ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) : base(tracker)
         {
             DeclaringType = declaringType;
             MethodInfo = methodInfo;
@@ -15,10 +17,12 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
             ParameterType = parameterType;
         }
 
-        public Type DeclaringType { get; }
-        public MethodInfo MethodInfo { get; }
-        public ParameterInfo ParameterInfo { get; }
-        public Type ParameterType { get; }
+        public virtual Type DeclaringType { get; }
+        public virtual MethodInfo MethodInfo { get; }
+        public virtual ParameterInfo ParameterInfo { get; }
+        public virtual Type ParameterType { get; }
+
+        public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo;
 
         public override bool Equals(object obj) 
             => obj is OutParameterRequest other ? this.Equals(other) : base.Equals(obj);

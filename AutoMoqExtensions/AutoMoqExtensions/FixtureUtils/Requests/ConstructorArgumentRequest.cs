@@ -5,16 +5,19 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class ConstructorArgumentRequest : IEquatable<ConstructorArgumentRequest>
+    internal class ConstructorArgumentRequest : BaseTracker, IEquatable<ConstructorArgumentRequest>
     {
-        public ConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo)
+        public ConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo, ITracker? tracker)
+            : base(tracker)
         {
             DeclaringType = declaringType;
             ParameterInfo = parameterInfo;
         }
 
-        public Type DeclaringType { get; }
-        public ParameterInfo ParameterInfo { get; }
+        public virtual Type DeclaringType { get; }
+        public virtual ParameterInfo ParameterInfo { get; }
+
+        public override string InstancePath => "->" + ParameterInfo.Name;
 
         public override bool Equals(object obj) 
             => obj is ConstructorArgumentRequest other ? this.Equals(other) : base.Equals(obj);

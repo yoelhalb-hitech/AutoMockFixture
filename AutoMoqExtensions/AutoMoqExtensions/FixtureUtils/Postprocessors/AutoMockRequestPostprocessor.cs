@@ -21,17 +21,29 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             var type = mockRequest.Request;
             if (!AutoMockHelpers.IsAutoMock(type)) type = AutoMockHelpers.GetAutoMockType(type);
 
-            var directRequest = new AutoMockDirectRequest(type);
+            var directRequest = new AutoMockDirectRequest(type, mockRequest);
 
             var specimen = context.Resolve(directRequest);
-
-            if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
+            if(specimen is null)
+            {
+                mockRequest.SetResult(null);
                 return specimen;
+            }
 
             var t = specimen.GetType();
-            if (!AutoMockHelpers.IsAutoMock(t) || t != type) return new NoSpecimen();
+            if (specimen is NoSpecimen || specimen is OmitSpecimen || !AutoMockHelpers.IsAutoMock(t) || t != type)
+            {
+                // Try to unwrap it and see if we can get anything
+                var unwrapResult = context.Resolve(AutoMockHelpers.GetMockedType(type));
 
-            return AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
+                mockRequest.SetResult(unwrapResult);
+                return unwrapResult;
+            }
+
+            var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
+            mockRequest.Completed();
+
+            return result;
         }
     }
 }

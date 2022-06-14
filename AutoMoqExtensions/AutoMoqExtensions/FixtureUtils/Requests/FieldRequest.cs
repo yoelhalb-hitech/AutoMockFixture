@@ -5,16 +5,18 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class FieldRequest : IEquatable<FieldRequest>
+    internal class FieldRequest : BaseTracker, IEquatable<FieldRequest>
     {
-        public FieldRequest(Type declaringType, FieldInfo fieldInfo)
+        public FieldRequest(Type declaringType, FieldInfo fieldInfo, ITracker? tracker) : base(tracker)
         {
             DeclaringType = declaringType;
             FieldInfo = fieldInfo;
         }
 
-        public Type DeclaringType { get; }
-        public FieldInfo FieldInfo { get; }
+        public virtual Type DeclaringType { get; }
+        public virtual FieldInfo FieldInfo { get; }
+
+        public override string InstancePath => "." + FieldInfo.Name;
 
         public override bool Equals(object obj) 
             => obj is FieldRequest other ? this.Equals(other) : base.Equals(obj);

@@ -34,6 +34,21 @@ namespace AutoMoqExtensions.Extensions
 
         // "out" parameters are also considered "byref", so we have to filter these out
         internal static bool HasRefParameters(this MethodInfo method) => method.GetParameters()
-                         .Any(p => p.ParameterType.IsByRef && !p.IsOut);        
+                         .Any(p => p.ParameterType.IsByRef && !p.IsOut);
+
+        internal static bool HasOverloads(this MethodInfo method)
+            => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name && m != method);
+
+        internal static bool HasOverloadSameCount(this MethodInfo method)
+            => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name 
+                                                        && m.GetParameters().Length == method.GetParameters().Length 
+                                                        && m != method);
+        internal static string GetTrackingPath(this MethodInfo method)
+                => method.Name + method.HasOverloads() switch
+                {
+                    false => "",
+                    true when !method.HasOverloadSameCount() => "`" + method.GetParameters().Length,
+                    _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+                };
     }
 }

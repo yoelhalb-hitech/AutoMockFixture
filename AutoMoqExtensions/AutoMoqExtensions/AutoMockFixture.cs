@@ -37,21 +37,33 @@ namespace AutoMoqExtensions
                                     new AnyTypeSpecification()));
         }
 
+        internal ITracker? GetTracker(object obj) => TrackerDict[AutoMockHelpers.GetFromObj(obj) ?? obj];
+        internal Dictionary<object, ITracker> TrackerDict = new Dictionary<object, ITracker>();
+        private object Execute(ITracker request)
+        {
+            var result = new SpecimenContext(this).Resolve(request);
+            request.Completed();
+
+            // We will rather deal with the underlying mock for consistance
+            var key = AutoMockHelpers.GetFromObj(result) ?? result;
+            TrackerDict[key] = request;
+            return result;
+        }
         public T Create<T>() => (T)Create(typeof(T));
         public object Create(Type t)
         {
-            var context = new SpecimenContext(this);
-            if (t.IsValueType) return context.Resolve(new SeededRequest(t, t.GetDefault()));
+            if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
 
-            if(AutoMockHelpers.IsAutoMock(t)) return context.Resolve(new AutoMockDirectRequest(t));
+            if (AutoMockHelpers.IsAutoMock(t)) return Execute(new AutoMockDirectRequest(t, null));
 
-            return context.Resolve(new AutoMockDependenciesRequest(t));
+            return Execute(new AutoMockDependenciesRequest(t, null));
         }
         public object CreateAutoMock(Type t)
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
-            var result = new SpecimenContext(this).Resolve(new AutoMockRequest(t));
+            var result = Execute(new AutoMockRequest(t, null));
+           
             return AutoMockHelpers.GetFromObj(result)!.GetMocked(); // It appears that the cast operators only work when statically typed
         }
         public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));

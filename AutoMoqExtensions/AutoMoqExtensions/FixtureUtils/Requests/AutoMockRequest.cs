@@ -4,18 +4,21 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockRequest : IEquatable<AutoMockRequest>
+    internal class AutoMockRequest : BaseTracker, IEquatable<AutoMockRequest>
     {
-        public AutoMockRequest(Type request)
+        public AutoMockRequest(Type request, ITracker? tracker) : base(tracker)
         {
-            Request = request;
+            Request = request;            
         }
 
-        public Type Request { get; }
-        public override bool Equals(object obj)
-            => obj is AutoMockRequest other ? this.Equals(other) : base.Equals(obj);
+        public virtual Type Request { get; }
 
-        public override int GetHashCode() => HashCode.Combine(Request);
-        public bool Equals(AutoMockRequest other) => other is not null && other.Request == Request;
+        public override string InstancePath => "";
+
+        public override bool Equals(BaseTracker other) => other is AutoMockRequest r && this.Equals(r);
+
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
+        public bool Equals(AutoMockRequest other) => base.Equals((BaseTracker)other) // Force the correct overload
+                                                            && other.Request == Request;
     }
 }

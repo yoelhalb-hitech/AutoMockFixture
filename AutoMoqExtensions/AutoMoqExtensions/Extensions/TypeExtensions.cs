@@ -35,6 +35,8 @@ namespace AutoMoqExtensions.Extensions
             return default(T);
         }
 
+        public static bool IsNullAllowed(this Type t) => t.GetDefault() is null;  // If type.GetDefault() is null then null is allowed, otherwise it's not...
+
         internal static IEnumerable<PropertyInfo> GetAllProperties(this Type type)
         {
             IEnumerable<PropertyInfo> result = type.GetProperties(AllBindings);

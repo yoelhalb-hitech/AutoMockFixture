@@ -1,20 +1,24 @@
-﻿using System;
+﻿using AutoMoqExtensions.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests;
 
-internal class ReturnRequest : IEquatable<ReturnRequest>
+internal class ReturnRequest : BaseTracker, IEquatable<ReturnRequest>
 {
-    public ReturnRequest(Type declaringType, MethodInfo methodInfo)
+    public ReturnRequest(Type declaringType, MethodInfo methodInfo, ITracker? tracker)
+        : base(tracker)
     {
         DeclaringType = declaringType;
         MethodInfo = methodInfo;
     }
 
-    public Type DeclaringType { get; }
-    public MethodInfo MethodInfo { get; }
+    public virtual Type DeclaringType { get; }
+    public virtual MethodInfo MethodInfo { get; }
+
+    public override string InstancePath => "." + MethodInfo.GetTrackingPath() + ".";
 
     public override bool Equals(object obj) 
         => obj is ReturnRequest other ? this.Equals(other) : base.Equals(obj);

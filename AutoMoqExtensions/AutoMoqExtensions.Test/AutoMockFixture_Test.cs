@@ -5,11 +5,37 @@ using System.Collections.Generic;
 using System.Text;
 using AutoMoqExtensions;
 using System.Reflection;
+using AutoFixture;
+using System.Linq;
+using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.AutoMockUtils;
+using Moq;
+
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace AutoMoqExtensions.Test
 {
     public class AutoMockFixture_Test
     {
+        [Test]
+        public void Test_Create_AddsToTrackerDict()
+        {
+            var fixture = new AutoMockFixture();
+            var result = fixture.Create<AutoMockRequest>();
+
+            fixture.TrackerDict.Should().HaveCount(1);
+            fixture.TrackerDict.First().Key.Should().Be(result);
+        }
+
+        [Test]
+        public void Test_Create_AddsUnderlyingMockToTrackerDict()
+        {
+            var fixture = new AutoMockFixture();
+            var result = fixture.CreateAutoMock<AutoMockRequest>();
+
+            fixture.TrackerDict.Should().HaveCount(1);
+            fixture.TrackerDict.First().Key.Should().Be(Mock.Get(result));
+        }
+
         public class InternalTestClass
         {
             internal string? InternalTest { get; set; }
