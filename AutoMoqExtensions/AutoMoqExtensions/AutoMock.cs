@@ -11,22 +11,7 @@ using System.Text;
 
 namespace AutoMoqExtensions
 {
-    // TODO... add analyzer for:
-    // 1) TAnon to ensure the properties are actually parameters of the method and the correct type
-    // 2) method name as string that it is correct and there is only one overload
-    // 3) return tyhpe is correct for the method provided
-    // TODO... maybe split it in partial classes for readability
-
-    // TODO... hanlde out and ref methods
-    public interface IAutoMock 
     {
-        bool CallBase { get; set; }
-        void EnsureMocked();
-        Type GetInnerType();
-        object GetMocked();
-    }
-    public class AutoMock<T> : Mock<T>, IAutoMock where T : class
-    {        
         public List<IVerifyInfo<T>> VerifyList { get; } = new List<IVerifyInfo<T>>();
         private T? mocked;
         public Type GetInnerType() => typeof(T);
