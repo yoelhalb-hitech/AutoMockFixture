@@ -32,11 +32,25 @@ namespace AutoMoqExtensions.FixtureUtils
 
         public virtual List<IAutoMock>? GetAllMocks() => allMocks;
         public object? Result => result;
-        protected Dictionary<string, object?>? childrensPaths;
-        public Dictionary<string, object?>? GetChildrensPaths() => childrensPaths;
-        public void Completed()
+        protected Dictionary<string, List<object?>>? childrensPaths;
+        public Dictionary<string, List<object?>>? GetChildrensPaths() => childrensPaths;
+        protected bool completed;
+        public bool IsCompleted => completed;
+        
+        public void SetCompleted()
         {
-            allMocks = Children.SelectMany(c => c.GetAllMocks()).ToList();
+            if (completed) return;
+
+            completed = true;
+            this.UpdateResult();
+        }
+        public void UpdateResult()
+        {
+            // TODO... what about setting up something that hasn't been created yet?
+            // Note: It can happen by a generic method that hasn't been called yet and so the result is not yet set up
+            var childrenWithResult = Children.Where(c => c.IsCompleted).ToList();
+
+            allMocks = childrenWithResult.SelectMany(c => c.GetAllMocks()).ToList();
             if (result is not null && AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock);
 
             // Probably not worth to do Distinct here (as the caller will do it), unless it is the last one
@@ -45,14 +59,24 @@ namespace AutoMoqExtensions.FixtureUtils
             if (result is null && Children.Count == 1 && Children[0].InstancePath == "") result = Children[0].Result;
 
             //if (result is null) throw new Exception("Expected result but there isn't"); can actually be null...
+            try
+            {
+                childrensPaths = childrenWithResult.SelectMany(c => c.GetChildrensPaths())
+                            .GroupBy(c => c.Key) // We don't need null and it can cause duplicates (for example in factory method calling multiple times a constructor with different values)
+                            .ToDictionary(c => c.Key, c => c.SelectMany(x => x.Value).Distinct().ToList());
+                if (this.InstancePath != "" && !childrensPaths.ContainsKey(Path)) childrensPaths.Add(Path, new List<object?> { result });
+                else if (this.InstancePath != "" && !childrensPaths[Path].Contains(result)) childrensPaths[Path].Add(result);
+            }
+            catch (Exception ex) 
+            {
+            }
 
-            childrensPaths = Children.SelectMany(c => c.GetChildrensPaths()).ToDictionary(c => c.Key, c => c.Value);
-            if (this.InstancePath != "") childrensPaths.Add(Path, result);
+            Parent?.UpdateResult();
         }
         public virtual void SetResult(object? result)
         {
             this.result = result;
-            Completed();
+            SetCompleted();
         }
 
         public override bool Equals(object obj)

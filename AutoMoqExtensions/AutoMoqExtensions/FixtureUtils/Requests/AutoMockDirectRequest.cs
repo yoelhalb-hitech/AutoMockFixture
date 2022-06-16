@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockDirectRequest : BaseTracker, IEquatable<AutoMockDirectRequest>
+    internal class AutoMockDirectRequest : BaseTracker, IEquatable<AutoMockDirectRequest>, IDisposable
     {
         public AutoMockDirectRequest(Type request, ITracker? tracker) : base(tracker)
         {
@@ -20,5 +20,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public override int GetHashCode() => HashCode.Combine(Request);
         public bool Equals(AutoMockDirectRequest other) => other is not null && other.Request == Request;
+
+        public void Dispose() => SetCompleted();
     }
 }

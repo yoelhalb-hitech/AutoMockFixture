@@ -47,8 +47,12 @@ namespace AutoMoqExtensions.AutoMockUtils
             var specimen = this.Builder.Create(request, context);
             if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
                 return specimen;
-           
-            if (specimen is not IAutoMock autoMock || specimen.GetType() != mockRequest.Request) return new NoSpecimen();
+
+            if (specimen is not IAutoMock autoMock || specimen.GetType() != mockRequest.Request)
+            {
+                mockRequest.SetCompleted();
+                return new NoSpecimen();
+            }
 
             autoMock.DefaultValue = DefaultValue.Mock;
             autoMock.Tracker = mockRequest;

@@ -23,27 +23,36 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
             var directRequest = new AutoMockDirectRequest(type, mockRequest);
 
-            var specimen = context.Resolve(directRequest);
-            if(specimen is null)
+            try
             {
-                mockRequest.SetResult(null);
-                return specimen;
-            }
+                var specimen = context.Resolve(directRequest);
+                if (specimen is null)
+                {
+                    mockRequest.SetResult(null);
+                    return specimen;
+                }
 
-            var t = specimen.GetType();
-            if (specimen is NoSpecimen || specimen is OmitSpecimen || !AutoMockHelpers.IsAutoMock(t) || t != type)
+                var t = specimen.GetType();
+                if (specimen is NoSpecimen || specimen is OmitSpecimen || !AutoMockHelpers.IsAutoMock(t) || t != type)
+                {
+                    // Try to unwrap it and see if we can get anything
+                    var unwrapResult = context.Resolve(AutoMockHelpers.GetMockedType(type));
+
+                    mockRequest.SetResult(unwrapResult);
+                    return unwrapResult;
+                }
+
+                var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
+                mockRequest.SetCompleted(); // Result was set by the AutoMockPostprocessor
+
+                return result;
+            }
+            catch
             {
-                // Try to unwrap it and see if we can get anything
-                var unwrapResult = context.Resolve(AutoMockHelpers.GetMockedType(type));
-
-                mockRequest.SetResult(unwrapResult);
-                return unwrapResult;
+                var other = context.Resolve(mockRequest.Request);
+                mockRequest.SetResult(other);
+                return other;
             }
-
-            var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
-            mockRequest.Completed();
-
-            return result;
         }
     }
 }

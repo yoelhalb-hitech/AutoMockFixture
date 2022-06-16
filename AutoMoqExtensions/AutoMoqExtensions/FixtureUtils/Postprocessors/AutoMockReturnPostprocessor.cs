@@ -33,7 +33,7 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
                 return specimen;
             }
 
-            mockRequest.Completed();
+            mockRequest.SetCompleted();
 
             return specimen;
         }

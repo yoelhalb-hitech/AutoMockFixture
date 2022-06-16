@@ -47,13 +47,23 @@ namespace AutoMoqExtensions
         internal Dictionary<object, ITracker> TrackerDict = new Dictionary<object, ITracker>();
         private object Execute(ITracker request)
         {
-            var result = new SpecimenContext(this).Resolve(request);
-            request.Completed();
+            try
+            {
+                var result = new SpecimenContext(this).Resolve(request);
+                request.SetCompleted();
 
-            // We will rather deal with the underlying mock for consistance
-            var key = AutoMockHelpers.GetFromObj(result) ?? result;
-            TrackerDict[key] = request;
-            return result;
+                // We will rather deal with the underlying mock for consistance
+                var key = AutoMockHelpers.GetFromObj(result) ?? result;
+                TrackerDict[key] = request;
+                return result;
+            }
+            catch (ObjectCreationException ex)
+            {
+                throw new Exception(@"Unable to create object, please check inner exception for details
+This can happen if the object (or a dependendent object) constructor calls a method or property that has not been setup corretly.
+You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.
+You can laso try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
+            }
         }
         public T Create<T>() => (T)Create(typeof(T));
         public object Create(Type t)
@@ -74,7 +84,7 @@ namespace AutoMoqExtensions
         }
         public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));
 
-        public object? GetAt(object obj, string path)
+        public List<object?> GetAt(object obj, string path)
         {
             if (!TrackerDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
             if (string.IsNullOrWhiteSpace(path)) throw new Exception(nameof(path) + " doesn't have a value");
@@ -87,9 +97,10 @@ namespace AutoMoqExtensions
             
             return paths[path];
         }
+        public object? GetSingleAt(object obj, string path) => GetAt(obj, path).Single();
         public IAutoMock GetAutoMock(object obj, string path)
         {
-            var result = GetAt(obj, path);
+            var result = GetSingleAt(obj, path);
             if (result is null) throw new Exception($"Result object is null and not an `{nameof(AutoMock<object>)}`");
 
             var mock = AutoMockHelpers.GetFromObj(result);

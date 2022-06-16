@@ -32,15 +32,36 @@ namespace AutoMoqExtensions.AutoMockUtils
             var t = request as Type ?? (request as SeededRequest)?.Request as Type;
             if (t is null)
                 return new NoSpecimen();
+
+            try
+            {
+                if(!t.IsInterface && !t.IsAbstract)
+                {
+                    var dependeciesRequest = new AutoMockDependenciesRequest(t, null);
+                    var dependeciesResult = context.Resolve(dependeciesRequest);
+
+                    if (dependeciesResult is not NoSpecimen)
+                    {
+                        dependeciesRequest.SetResult(dependeciesResult);
+                        return dependeciesResult;
+                    }
+                }
+            }
+            catch { }
             
-            var mockRequest = new AutoMockRequest(t, null);
-            var result = context.Resolve(mockRequest);
+            if (!AutoMockHelpers.IsAutoMock(t)) t = AutoMockHelpers.GetAutoMockType(t);
+            using var directRequest = new AutoMockDirectRequest(t, null); // We do direct to bypass the specification test
+            
+            var result = context.Resolve(directRequest);
 
             // Note: null is a valid specimen (e.g., returned by NullRecursionHandler)
             if (result is NoSpecimen || result is OmitSpecimen || result is null)
                 return result;
 
-            return t.IsAssignableFrom(result.GetType()) ? result :  new NoSpecimen();
+            if (!t.IsAssignableFrom(result.GetType())) return new NoSpecimen();
+
+            directRequest.SetResult(result);
+            return result;            
         }
     }
 }

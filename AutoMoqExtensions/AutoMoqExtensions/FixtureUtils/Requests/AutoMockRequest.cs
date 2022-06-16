@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockRequest : BaseTracker, IEquatable<AutoMockRequest>
+    internal class AutoMockRequest : BaseTracker, IEquatable<AutoMockRequest>, IDisposable
     {
         public AutoMockRequest(Type request, ITracker? tracker) : base(tracker)
         {
@@ -22,5 +22,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
         public bool Equals(AutoMockRequest other) => base.Equals((BaseTracker)other) // Force the correct overload
                                                             && other.Request == Request;
+
+        public void Dispose() => SetCompleted();
     }
 }
