@@ -58,7 +58,8 @@ namespace System
 
     public struct HashCode
     {
-        private static readonly uint s_seed = GenerateGlobalSeed();
+        static object _rngAccess = new object();
+        private static readonly uint s_seed = new HashCode().GenerateGlobalSeed(); // Nedds to be an instacne as otherwise there  is no guarantee that the lock object is already setup
 
         private const uint Prime1 = 2654435761U;
         private const uint Prime2 = 2246822519U;
@@ -69,12 +70,12 @@ namespace System
         private uint _v1, _v2, _v3, _v4;
         private uint _queue1, _queue2, _queue3;
         private uint _length;
-        static object _rngAccess = new object();
+        
         static RNGCryptoServiceProvider? _rng;
 
-        private static uint GenerateGlobalSeed()
+        private uint GenerateGlobalSeed()
         {
-            var bytes = new byte[] { sizeof(uint) };
+            var bytes = new byte[sizeof(uint)];
             lock (_rngAccess)
             {
                 if (_rng == null)
