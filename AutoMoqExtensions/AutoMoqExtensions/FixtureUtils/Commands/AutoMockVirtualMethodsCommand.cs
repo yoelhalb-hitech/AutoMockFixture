@@ -45,10 +45,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                     {
                         try
                         {
-                            GetType()
-                                .GetMethod(nameof(SetupCallbaseMethod), BindingFlags.NonPublic | BindingFlags.Static)
-                                .MakeGenericMethod(mockedType, returnType)
-                                .Invoke(this, new object[] { mock, methodInvocationLambda });
+                            SetupHelpers.SetupCallbaseMethod(mockedType, returnType, mock, methodInvocationLambda);
                         }
                         catch { }
                     }
@@ -56,10 +53,9 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                     {
                         try
                         {
-                            GetType()
-                                .GetMethod(nameof(SetupVoidMethod), BindingFlags.NonPublic | BindingFlags.Static)
-                                .MakeGenericMethod(mockedType)
-                                .Invoke(this, new object[] { mock, methodInvocationLambda });
+                            SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);
+                            var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker));                                
+                            SetupHelpers.SetupMethodWithResult(mockedType, returnType, mock, methodInvocationLambda, returnValue);
                         }
                         catch { }
                     }
@@ -67,11 +63,6 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                     {
                         try
                         {
-                            var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method, tracker));
-                            GetType()
-                                .GetMethod(nameof(SetupMethod), BindingFlags.NonPublic | BindingFlags.Static)
-                                .MakeGenericMethod(mockedType, returnType)
-                                .Invoke(this, new object[] { mock, methodInvocationLambda, returnValue, context });
                         }
                         catch { }
                     }
@@ -79,32 +70,6 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 }
             }
             catch { }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method is invoked through reflection.")]
-        private static void SetupVoidMethod<TMock>(AutoMock<TMock> mock, Expression<Action<TMock>> methodCallExpression)
-    where TMock : class
-        {
-            mock.Setup(methodCallExpression);
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method is invoked through reflection.")]
-        private static void SetupCallbaseMethod<TMock, TResult>(AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
-where TMock : class
-        {
-            mock.Setup(methodCallExpression).CallBase();
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method is invoked through reflection.")]
-        private static void SetupMethod<TMock, TResult>(
-            AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
-                                    TResult result, ISpecimenContext context)
-            where TMock : class
-        {
-            mock.Setup(methodCallExpression)
-#pragma warning disable CS8603 // Possible null reference return.
-                .Returns(result);
-#pragma warning restore CS8603 // Possible null reference return.
         }
 
         private static IEnumerable<MethodInfo> GetConfigurableMethods(Type type)
