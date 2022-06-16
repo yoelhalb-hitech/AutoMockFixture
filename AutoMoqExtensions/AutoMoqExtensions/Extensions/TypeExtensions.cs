@@ -74,5 +74,10 @@ namespace AutoMoqExtensions.Extensions
         {
             return typeof(MulticastDelegate).IsAssignableFrom(type.GetTypeInfo().BaseType);
         }
+
+        internal static string GetTagForTypes(this IEnumerable<Type> types)
+        {
+            return string.Join("#", types.OrderBy(t => t.FullName).Select(t => t.FullName));
+        }
     }
 }
