@@ -1,4 +1,5 @@
 ﻿using AutoMoqExtensions.FixtureUtils;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using Moq;
 using System;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace AutoMoqExtensions
     public interface IAutoMock
     {
         bool CallBase { get; set; }
+        AutoMockFixture Fixture { get; }
         DefaultValue DefaultValue { get; set; }
         void EnsureMocked();
         Type GetInnerType();

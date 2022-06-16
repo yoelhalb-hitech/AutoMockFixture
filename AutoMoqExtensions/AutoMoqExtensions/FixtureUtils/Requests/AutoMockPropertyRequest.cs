@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockPropertyRequest : PropertyRequest, IEquatable<AutoMockPropertyRequest>
+    internal class AutoMockPropertyRequest : PropertyRequest, IEquatable<AutoMockPropertyRequest>, IAutoMockRequest
     {
         public AutoMockPropertyRequest(Type declaringType, PropertyInfo propertyInfo, ITracker? tracker) 
             : base(declaringType, propertyInfo, tracker)

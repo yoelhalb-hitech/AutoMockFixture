@@ -16,6 +16,9 @@ using System.Text;
 
 namespace AutoMoqExtensions
 {
+    /// <summary>
+    /// Caustion the methods are not thread safe
+    /// </summary>
     public partial class AutoMockFixture : Fixture
     {
         public AutoMockFixture(bool configureMembers = true, bool generateDelegates = true)
@@ -37,14 +40,74 @@ namespace AutoMoqExtensions
                                     new AutoMockMethodInvoker(
                                         new CustomConstructorQueryWrapper(
                                             new ModestConstructorQuery())),
-                                    new CustomAutoPropertiesCommand(),
+                                    new CustomAutoPropertiesCommand(this),
                                     new AnyTypeSpecification()));
         }
+
+        #region Create from Tracker
+
+        // TODO... make freeze if it has singleton or scoped attributes
+        // We might do it in the depdendecny and request handlers and just inject it directly after creating it
+        // TODO... test to make sure it is safe to do it multiple times
+        internal T Freeze<T>(ITracker tracker)
+        {
+            var value = this.Create<T>(tracker);
+            this.Inject(value);
+            return value;
+        }
+
+        internal T Create<T>(ITracker tracker) => (T)Create(typeof(T), tracker);
+        internal object Create(Type t, ITracker tracker)
+        {
+            if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
+
+            if (AutoMockHelpers.IsAutoMock(t)) return Execute(new AutoMockDirectRequest(t, tracker));
+
+            return Execute(new AutoMockDependenciesRequest(t, tracker));
+        }
+
+        #endregion
+
+        #region Create
+        // Override to use our own
+        public T Freeze<T>()
+        {
+            var value = this.Create<T>();
+            this.Inject(value);
+            return value;
+        }
+
+        public T Create<T>() => (T)Create(typeof(T));
+
+        internal object Create(Type t)
+        {
+            if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
+
+            if (AutoMockHelpers.IsAutoMock(t)) return Execute(new AutoMockDirectRequest(t, this));
+
+            return Execute(new AutoMockDependenciesRequest(t, this));
+        }
+        public object CreateAutoMock(Type t)
+        {
+            if (t.IsValueType) throw new Exception("Type must be a reference type");
+
+            var result = Execute(new AutoMockRequest(t, this));
+
+            return AutoMockHelpers.GetFromObj(result)!.GetMocked(); // It appears that the cast operators only work when statically typed
+        }
+        public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));
+
+        #endregion
+
+        #region Utils
 
         internal List<ConstructorArgumentValue> ConstructorArgumentValues = new List<ConstructorArgumentValue>();
 
         internal ITracker? GetTracker(object obj) => TrackerDict[AutoMockHelpers.GetFromObj(obj) ?? obj];
+
         internal Dictionary<object, ITracker> TrackerDict = new Dictionary<object, ITracker>();
+        internal Dictionary<object, ITracker> ProcessingTrackerDict = new Dictionary<object, ITracker>(); // To track while processing
+        
         private object Execute(ITracker request)
         {
             try
@@ -55,6 +118,7 @@ namespace AutoMoqExtensions
                 // We will rather deal with the underlying mock for consistance
                 var key = AutoMockHelpers.GetFromObj(result) ?? result;
                 TrackerDict[key] = request;
+                ProcessingTrackerDict.Clear(); // No need to keep it around, to make it thread safe we should keep it around till all requests are done
                 return result;
             }
             catch (ObjectCreationException ex)
@@ -62,27 +126,13 @@ namespace AutoMoqExtensions
                 throw new Exception(@"Unable to create object, please check inner exception for details
 This can happen if the object (or a dependendent object) constructor calls a method or property that has not been setup corretly.
 You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.
-You can laso try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
+You can also try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
             }
         }
-        public T Create<T>() => (T)Create(typeof(T));
-        public object Create(Type t)
-        {
-            if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
 
-            if (AutoMockHelpers.IsAutoMock(t)) return Execute(new AutoMockDirectRequest(t, null));
+        #endregion
 
-            return Execute(new AutoMockDependenciesRequest(t, null));
-        }
-        public object CreateAutoMock(Type t)
-        {
-            if (t.IsValueType) throw new Exception("Type must be a reference type");
-
-            var result = Execute(new AutoMockRequest(t, null));
-           
-            return AutoMockHelpers.GetFromObj(result)!.GetMocked(); // It appears that the cast operators only work when statically typed
-        }
-        public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));
+        #region Getters
 
         public List<object?> GetAt(object obj, string path)
         {
@@ -119,6 +169,10 @@ You can laso try to move out the call in a separate method and call it from your
             return mock;
         }
 
+        #endregion
+
+        #region Verify
+
         public void VerifyAll(object obj)
         {
             if (!TrackerDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
@@ -132,5 +186,7 @@ You can laso try to move out the call in a separate method and call it from your
         {
             TrackerDict.Keys.ToList().ForEach(k => VerifyAll(k));
         }
+
+        #endregion
     }
 }

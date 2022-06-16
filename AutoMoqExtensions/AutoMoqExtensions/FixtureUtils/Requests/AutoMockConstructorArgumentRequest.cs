@@ -1,12 +1,15 @@
-﻿using System;
+﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     internal class AutoMockConstructorArgumentRequest 
-        : ConstructorArgumentRequest, IEquatable<AutoMockConstructorArgumentRequest>
+        : ConstructorArgumentRequest, IEquatable<AutoMockConstructorArgumentRequest>, IAutoMockRequest
     {
         public AutoMockConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo, ITracker? tracker) 
             : base(declaringType, parameterInfo, tracker)

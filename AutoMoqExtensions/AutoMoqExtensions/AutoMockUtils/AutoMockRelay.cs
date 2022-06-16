@@ -1,6 +1,8 @@
 ﻿using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils.Specifications;
+using AutoMoqExtensions.FixtureUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,17 +11,20 @@ namespace AutoMoqExtensions.AutoMockUtils
 {
     internal class AutoMockRelay : ISpecimenBuilder
     {
-        public AutoMockRelay()
-                 : this(new AutoMockableSpecification())
+        public AutoMockRelay(AutoMockFixture fixture)
+                 : this(new AutoMockableSpecification(), fixture)
         {
+            
         }
 
-        public AutoMockRelay(IRequestSpecification mockableSpecification)
+        public AutoMockRelay(IRequestSpecification mockableSpecification, AutoMockFixture fixture)
         {
             this.MockableSpecification = mockableSpecification ?? throw new ArgumentNullException(nameof(mockableSpecification));
+            Fixture = fixture;
         }
 
         public IRequestSpecification MockableSpecification { get; }
+        public AutoMockFixture Fixture { get; }
 
         public object? Create(object request, ISpecimenContext context)
         {
@@ -28,6 +33,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (!this.MockableSpecification.IsSatisfiedBy(request))
                 return new NoSpecimen();
 
+            Console.WriteLine("In relay");
 
             var t = request as Type ?? (request as SeededRequest)?.Request as Type;
             if (t is null)
@@ -37,12 +43,12 @@ namespace AutoMoqExtensions.AutoMockUtils
             {
                 if(!t.IsInterface && !t.IsAbstract)
                 {
-                    var dependeciesRequest = new AutoMockDependenciesRequest(t, null);
+                    var dependeciesRequest = new AutoMockDependenciesRequest(t, Fixture);
                     var dependeciesResult = context.Resolve(dependeciesRequest);
 
                     if (dependeciesResult is not NoSpecimen)
                     {
-                        dependeciesRequest.SetResult(dependeciesResult);
+                        HandleResult(dependeciesResult, dependeciesRequest, context);
                         return dependeciesResult;
                     }
                 }
@@ -50,7 +56,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             catch { }
             
             if (!AutoMockHelpers.IsAutoMock(t)) t = AutoMockHelpers.GetAutoMockType(t);
-            using var directRequest = new AutoMockDirectRequest(t, null); // We do direct to bypass the specification test
+            using var directRequest = new AutoMockDirectRequest(t, Fixture); // We do direct to bypass the specification test
             
             var result = context.Resolve(directRequest);
 
@@ -60,8 +66,15 @@ namespace AutoMoqExtensions.AutoMockUtils
 
             if (!t.IsAssignableFrom(result.GetType())) return new NoSpecimen();
 
-            directRequest.SetResult(result);
-            return result;            
+            HandleResult(result, directRequest, context);
+            return result;
+        }
+
+        private void HandleResult(object result, ITracker tracker, ISpecimenContext context)
+        {            
+            tracker.SetResult(result);
+
+            Fixture.TrackerDict[result] = tracker;
         }
     }
 }

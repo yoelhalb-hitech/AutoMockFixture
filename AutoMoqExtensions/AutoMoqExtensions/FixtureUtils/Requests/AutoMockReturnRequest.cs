@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockReturnRequest : ReturnRequest, IEquatable<AutoMockReturnRequest>
+    internal class AutoMockReturnRequest : ReturnRequest, IEquatable<AutoMockReturnRequest>, IAutoMockRequest
     {
         public AutoMockReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType, ITracker? tracker) 
             : base(declaringType, methodInfo, returnType, tracker)

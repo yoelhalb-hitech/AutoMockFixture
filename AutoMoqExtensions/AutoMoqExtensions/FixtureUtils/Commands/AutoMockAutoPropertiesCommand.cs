@@ -24,7 +24,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             public IAutoMock Mock { get; }
 
             public AutoMockAutoPropertiesInternalCommand(IAutoMock mock) 
-                    : base(new IgnoreProxyMembersSpecification())
+                    : base(new IgnoreProxyMembersSpecification(), mock.Fixture)
             {
                 if (mock == null) throw new ArgumentNullException(nameof(mock));
                 Mock = mock;

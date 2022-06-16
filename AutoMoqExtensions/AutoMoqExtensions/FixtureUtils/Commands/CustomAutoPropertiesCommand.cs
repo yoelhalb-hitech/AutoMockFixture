@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using AutoMoqExtensions.Extensions;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,27 +13,18 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
     {
         public Type? ExplicitSpecimenType { get; }
         public IRequestSpecification? Specification { get; }
-        public CustomAutoPropertiesCommand()
-            : this(new TrueRequestSpecification())
+
+        public CustomAutoPropertiesCommand(AutoMockFixture fixture)
+            : this(new TrueRequestSpecification(), fixture)
         {
-            ExplicitSpecimenType = null;
+            ExplicitSpecimenType = null;            
         }
 
-        public CustomAutoPropertiesCommand(IRequestSpecification specification)
+        public CustomAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture)
         {
             Specification = specification ?? throw new ArgumentNullException(nameof(specification));
+            Fixture = fixture;
             ExplicitSpecimenType = null;
-        }
-
-        public CustomAutoPropertiesCommand(Type specimenType, IRequestSpecification specification)
-        {
-            Specification = specification ?? throw new ArgumentNullException(nameof(specification));
-            ExplicitSpecimenType = specimenType ?? throw new ArgumentNullException(nameof(specimenType));
-        }
-
-        public CustomAutoPropertiesCommand(Type specimenType)
-        {
-            ExplicitSpecimenType = specimenType ?? throw new ArgumentNullException(nameof(specimenType));
         }
 
         public virtual void Execute(object specimen, ISpecimenContext context)
@@ -44,8 +36,8 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             {
                 try
                 {
-                    // If is static and it is already set then no need to set again
-                    if (pi.GetMethod.IsStatic && pi.GetValue(null) != pi.PropertyType.GetDefault()) continue;
+                    // If it is already set (possibly by the constructor or if it's static) then no need to set again
+                    if (pi.GetValue(specimen) != pi.PropertyType.GetDefault()) continue;
 
                     HandleProperty(specimen, context, pi);
                 }
@@ -56,8 +48,8 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             {
                 try
                 {
-                    // If is static and it is already set then no need to set again
-                    if (fi.IsStatic && fi.GetValue(null) != fi.FieldType.GetDefault()) continue;
+                    // If it is already set (possibly by the constructor or if it's static) then no need to set again
+                    if (fi.GetValue(specimen) != fi.FieldType.GetDefault()) continue;
 
                     HandleField(specimen, context, fi);
                 }
@@ -67,14 +59,21 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi)
         {
-            var propertyValue = context.Resolve(pi);
+            // TODO... if we want to have `Create on demend` we have to cache here the original tracker
+            var tracker = Fixture.ProcessingTrackerDict.ContainsKey(specimen) ? Fixture.ProcessingTrackerDict[specimen] : new TrackerWithFixture(Fixture);
+            var propertyValue = context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));
+
+            if(tracker is TrackerWithFixture) tracker.SetCompleted();
             if (!(propertyValue is OmitSpecimen))
                 pi.SetValue(specimen, propertyValue, null);
         }
 
         protected virtual void HandleField(object specimen, ISpecimenContext context, FieldInfo fi)
         {
-            var fieldValue = context.Resolve(fi);
+            // TODO... maybe we should do one TrackerWithFixture per object, and maybe save it
+            var tracker = Fixture.ProcessingTrackerDict.ContainsKey(specimen) ? Fixture.ProcessingTrackerDict[specimen] : new TrackerWithFixture(Fixture);
+            var fieldValue = context.Resolve(new FieldRequest(fi.DeclaringType, fi, tracker));
+            if (tracker is TrackerWithFixture) tracker.SetCompleted();
             if (!(fieldValue is OmitSpecimen))
                 fi.SetValue(specimen, fieldValue);
         }

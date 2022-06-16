@@ -1,4 +1,5 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,21 @@ namespace AutoMoqExtensions.FixtureUtils
         {
             Parent = tracker;
             tracker?.AddChild(this);
+            // Note: Even if StartTracker.IsInAutoMockChain the parent might not necessarily be as there might an object that couldn't be an automocked
+            // Note: At this point our `StartTracker` might still be null so we use the parents
+            IsInAutoMockChain = Parent?.StartTracker.IsInAutoMockChain == true 
+                                    || Parent?.IsInAutoMockChain == true || this is IAutoMockRequest;
         }
 
         protected object? result;
         protected List<ITracker> children = new List<ITracker>();
         protected List<IAutoMock>? allMocks;
 
-        public virtual ITracker StartTracker => Parent?.StartTracker ?? this;
+        public virtual IFixtureTracker StartTracker => Parent?.StartTracker ?? this as IFixtureTracker ?? throw new Exception("No valid start tracker provided");
         public virtual object? StartObject => Parent?.StartObject ?? result;
 
         public virtual ITracker? Parent { get; }
+        public virtual bool IsInAutoMockChain { get; }
         
         public virtual List<ITracker> Children => children;
         public virtual void AddChild(ITracker tracker) => Children.Add(tracker);
@@ -46,6 +52,7 @@ namespace AutoMoqExtensions.FixtureUtils
         }
         public void UpdateResult()
         {
+            // TODO... maybe we should rather take it out from the ProcessingTrackerDict
             // TODO... what about setting up something that hasn't been created yet?
             // Note: It can happen by a generic method that hasn't been called yet and so the result is not yet set up
             var childrenWithResult = Children.Where(c => c.IsCompleted).ToList();
@@ -76,6 +83,7 @@ namespace AutoMoqExtensions.FixtureUtils
         public virtual void SetResult(object? result)
         {
             this.result = result;
+            if(result is not null) StartTracker.Fixture.ProcessingTrackerDict[result] = this;
             SetCompleted();
         }
 

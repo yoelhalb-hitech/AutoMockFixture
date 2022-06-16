@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace AutoMoqExtensions.FixtureUtils
+namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     public interface ITracker
     {
-        public ITracker StartTracker { get; }
+        public IFixtureTracker StartTracker { get; }
         public object? StartObject { get; }
         public ITracker? Parent { get; }
         public List<ITracker>? Children { get; }
@@ -20,5 +20,6 @@ namespace AutoMoqExtensions.FixtureUtils
         public void SetCompleted();
         public void UpdateResult();
         public void AddChild(ITracker tracker);
+        public bool IsInAutoMockChain { get; }
     }
 }

@@ -15,25 +15,25 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
         public object? Create(object request, ISpecimenContext context)
         {
-            if (request is not AutoMockPropertyRequest mockRequest) return new NoSpecimen();
+            if (request is not PropertyRequest propRequest) return new NoSpecimen();
 
-            var type = mockRequest.PropertyInfo.PropertyType;
-            if (!autoMockableSpecification.IsSatisfiedBy(type))
+            var type = propRequest.PropertyInfo.PropertyType;
+            if (!propRequest.IsInAutoMockChain || !autoMockableSpecification.IsSatisfiedBy(type))
             {
-                var result = context.Resolve(mockRequest.PropertyInfo);
-                mockRequest.SetResult(result);
+                var result = context.Resolve(propRequest.PropertyInfo);
+                propRequest.SetResult(result);
                 return result;
             }
 
-            var specimen = context.Resolve(new AutoMockRequest(type, mockRequest));
+            var specimen = context.Resolve(new AutoMockRequest(type, propRequest));
 
             if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
             {
-                mockRequest.SetResult(specimen);
+                propRequest.SetResult(specimen);
                 return specimen;
             }
 
-            mockRequest.SetCompleted();
+            propRequest.SetCompleted();
 
             return specimen;
         }

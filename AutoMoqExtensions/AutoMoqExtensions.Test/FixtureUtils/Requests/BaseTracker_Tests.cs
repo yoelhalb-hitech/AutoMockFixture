@@ -32,7 +32,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Requests
 
         public void GetHashCode_doesNotCauseStackOverflow()
         {
-            var request = new AutoMockRequest(typeof(BaseTracker), null);            
+            var request = new AutoMockRequest(typeof(BaseTracker), (ITracker?)null);            
             Assert.DoesNotThrow(() => request.GetHashCode());
         }
     }

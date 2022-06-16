@@ -6,7 +6,7 @@ using System.Text;
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     internal class AutoMockOutParameterRequest
-        : OutParameterRequest, IEquatable<AutoMockOutParameterRequest>
+        : OutParameterRequest, IEquatable<AutoMockOutParameterRequest>, IAutoMockRequest
     {
         public AutoMockOutParameterRequest(Type declaringType, MethodInfo methodInfo, 
                 ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) 

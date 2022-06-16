@@ -26,7 +26,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
                                                     new AutoMockMethodInvoker(
                                                         new CustomConstructorQueryWrapper(
                                                             new ModestConstructorQuery()))),
-                                                new CustomAutoPropertiesCommand()),
+                                                new CustomAutoPropertiesCommand(mockFixture)),
                                             new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -35,11 +35,11 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockPropertyPostprocessor(),
-                                            new TypeMatchSpecification(typeof(AutoMockPropertyRequest))));
+                                            new TypeMatchSpecification(typeof(PropertyRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockFieldPostprocessor(),
-                                            new TypeMatchSpecification(typeof(AutoMockFieldRequest))));
+                                            new TypeMatchSpecification(typeof(FieldRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockReturnPostprocessor(),
@@ -78,11 +78,11 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
 
             fixture.Customizations.Add(mockBuilder);
 
-            fixture.ResidueCollectors.Add(new AutoMockRelay());
+            fixture.ResidueCollectors.Add(new AutoMockRelay(mockFixture));
 
             if (GenerateDelegates)
             {
-                fixture.Customizations.Add(new AutoMockRelay(new DelegateSpecification()));
+                fixture.Customizations.Add(new AutoMockRelay(new DelegateSpecification(), mockFixture));
             }
         }
     }

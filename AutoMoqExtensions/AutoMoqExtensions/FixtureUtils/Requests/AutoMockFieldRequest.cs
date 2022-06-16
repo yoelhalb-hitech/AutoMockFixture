@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockFieldRequest : FieldRequest, IEquatable<AutoMockFieldRequest>
+    internal class AutoMockFieldRequest : FieldRequest, IEquatable<AutoMockFieldRequest>, IAutoMockRequest
     {
         public AutoMockFieldRequest(Type declaringType, FieldInfo fieldInfo, ITracker? tracker) 
             : base(declaringType, fieldInfo, tracker)
