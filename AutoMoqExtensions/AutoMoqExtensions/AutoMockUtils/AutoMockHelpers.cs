@@ -34,7 +34,7 @@ namespace AutoMoqExtensions.AutoMockUtils
         {
            
             if (t is null || t.IsPrimitive || t == typeof(string) || t.IsValueType
-                        //|| t == typeof(Array) || typeof(IEnumerable).IsAssignableFrom(t)
+                        //|| t == typeof(Array) || typeof(IEnumerable).IsAssignableFrom(t) // TODO... we need to handle better this
                         || t == typeof(IntPtr) || t == typeof(UIntPtr)
                         //|| (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
                         //|| t == typeof(Mock)

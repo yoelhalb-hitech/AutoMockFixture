@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.AutoMockUtils.Specifications;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using System;
@@ -11,12 +12,34 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 {
     internal class AutoMockRequestPostprocessor : ISpecimenBuilder
     {
-        private static readonly AutoMockRequestSpecification autoMockRequestSpecification = new();
-        
+        private static readonly AutoMockableSpecification autoMockableSpecification = new();
+
         public object? Create(object request, ISpecimenContext context)
         {            
-            if (!autoMockRequestSpecification.IsSatisfiedBy(request) || request is not AutoMockRequest mockRequest)
+            if (request is not AutoMockRequest mockRequest)
                         return new NoSpecimen();
+
+            if (!autoMockableSpecification.IsSatisfiedBy(mockRequest.Request))
+            {
+                try
+                {
+                    var dependencyRequest = new AutoMockDependenciesRequest(mockRequest.Request, mockRequest);
+                    var dependencyResult = context.Resolve(mockRequest.Request);
+
+                    if(dependencyResult is not NoSpecimen)
+                    {
+                        mockRequest.SetResult(dependencyResult);
+                        return dependencyResult;
+                    }
+                }
+                catch{}
+
+                // Handle it here so we should be able to set the result
+                var otherResult = context.Resolve(mockRequest.Request);
+                   
+                mockRequest.SetResult(otherResult);
+                return otherResult;
+            }
 
             var type = mockRequest.Request;
             if (!AutoMockHelpers.IsAutoMock(type)) type = AutoMockHelpers.GetAutoMockType(type);
