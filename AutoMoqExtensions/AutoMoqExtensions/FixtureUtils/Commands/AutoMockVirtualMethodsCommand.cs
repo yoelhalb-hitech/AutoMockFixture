@@ -37,7 +37,8 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 foreach (var method in methods)
                 {
                     var returnType = method.ReturnType;
-                    var methodInvocationLambda = MakeMethodInvocationLambda(mockedType, method, context, tracker);
+                    var methodInvocationLambda = new ExpressionGenerator(mockedType, method, context, tracker)
+                                                                .MakeMethodInvocationLambda();
 
                     if (methodInvocationLambda == null) continue;
 
@@ -54,6 +55,13 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                         try
                         {
                             SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);
+                        }
+                        catch { }
+                    }
+                    else if(!method.ReturnType.ContainsGenericParameters)
+                    {
+                        try
+                        {
                             var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker));                                
                             SetupHelpers.SetupMethodWithResult(mockedType, returnType, mock, methodInvocationLambda, returnValue);
                         }
@@ -63,10 +71,53 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                     {
                         try
                         {
+                            Dictionary<string, object?> resultDict = new Dictionary<string, object?>();                            
+                            Console.WriteLine("\t\t\tBefore return: " + method.ReturnType.Name);
+                            var invocationFunc = new InvocationFunc((Func<IInvocation, object?>)(invocation =>
+                                {
+                                    var tag = invocation.Method.GetGenericArguments().GetTagForTypes();
+                                    if (resultDict.ContainsKey(tag)) return resultDict[tag];
+
+                                    lock (resultDict)
+                                    {
+                                        if (resultDict.ContainsKey(tag)) return resultDict[tag];
+                                        var result = GenerateResult(invocation, method);
+                                        resultDict[tag] = result;
+
+                                        Console.WriteLine("Resolved type: " + (result?.GetType().FullName ?? "null"));
+                                        return result;
+                                    }
+                                }));
+                            
+                            var genericArgs = returnType.GetGenericArguments().Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray();
+                            var newReturnType = returnType.IsGenericParameter ? MatcherGenerator.GetGenericMatcher(returnType) : returnType.GetGenericTypeDefinition().MakeGenericType(genericArgs);
+                            
+                            SetupHelpers.SetupMethodWithGenericResult(mockedType, newReturnType, mock, methodInvocationLambda, invocationFunc);
                         }
                         catch { }
                     }
 
+                }
+
+                object? GenerateResult(IInvocation invocation, MethodInfo method)
+                {
+                    var typeGenerics = method.GetGenericArguments().ToList();
+                    var returnGenerics = method.ReturnType.GetGenericArguments();
+                    var returnGenericsToTypeGenerics = returnGenerics.Select(rg => typeGenerics.First(tg => rg == tg)).ToList();
+                    var returnTypes = returnGenericsToTypeGenerics
+                        .Select(g => typeGenerics.IndexOf(g))
+                        .Select(i => invocation.Method.GetGenericArguments()[i]).ToArray();
+
+                    var actualReturnType = method.ReturnType.IsGenericParameter
+                            ? invocation.Method.GetGenericArguments().First()
+                            : method.ReturnType.GetGenericTypeDefinition().MakeGenericType(returnTypes);
+                    Console.WriteLine("\t\tResolving return: " + actualReturnType.FullName);
+
+                    var request = new AutoMockReturnRequest(mockedType, method, actualReturnType, tracker);
+                    Console.WriteLine("\t\tResolving return for containing path: " + request.Path);
+
+                    var result = context.Resolve(request);
+                    return result;
                 }
             }
             catch { }
@@ -98,65 +149,9 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         private static bool CanBeConfigured(Type type, MethodInfo method)
             => (type.IsInterface || method.IsOverridable()) &&
-                   !method.IsGenericMethod &&
-                   !method.HasRefParameters() &&                    
+                   //!method.IsGenericMethod && TODO...  we have to setup args and out for generic etc.
+                   !method.HasRefParameters() &&           
                     (!method.IsVoid() || method.HasOutParameters()); // No point in setting up a void method...
-
-        private static Expression? MakeMethodInvocationLambda(Type mockedType, MethodInfo method,
-                                                      ISpecimenContext context, ITracker? tracker)
-        {
-            var lambdaParam = Expression.Parameter(mockedType, "x");
-
-            var methodCallParams = method.GetParameters()
-                            .Select(param => MakeParameterExpression(mockedType, method,  param, context, tracker))
-                            .ToList();
-
-            if (methodCallParams.Any(exp => exp == null))
-                return null;
-
-            Expression methodCall;
-            if (DelegateSpecification.IsSatisfiedBy(mockedType))
-            {
-                // e.g. "x(It.IsAny<string>(), out parameter)"
-                methodCall = Expression.Invoke(lambdaParam, methodCallParams);
-            }
-            else
-            {
-                // e.g. "x.Method(It.IsAny<string>(), out parameter)"
-                methodCall = Expression.Call(lambdaParam, method, methodCallParams);
-            }
-
-            // e.g. "x => x.Method(It.IsAny<string>(), out parameter)"
-            // or "x => x(It.IsAny<string>(), out parameter)"
-            return Expression.Lambda(methodCall, lambdaParam);
-        }
-
-        // TODO... add generic support using IsAnyType?
-        private static Expression? MakeParameterExpression(Type mockedType, MethodInfo method, ParameterInfo parameter, ISpecimenContext context, ITracker? tracker)
-        {
-            // check if parameter is an "out" parameter
-            if (parameter.IsOut)
-            {
-                // gets the type corresponding to this "byref" type
-                // e.g., the underlying type of "System.String&" is "System.String"
-                var underlyingType = parameter.ParameterType.GetElementType();
-
-                // resolve the "out" param from the context
-                var request = new AutoMockOutParameterRequest(mockedType, method, parameter, underlyingType, tracker);
-                object variable = context.Resolve(request);
-                if (variable is OmitSpecimen)
-                    return null;
-
-                return Expression.Constant(variable, underlyingType);
-            }
-            else
-            {
-                // for any non-out parameter, invoke "It.IsAny<T>()"
-                var isAnyMethod = typeof(It).GetMethod(nameof(It.IsAny)).MakeGenericMethod(parameter.ParameterType);
-
-                return Expression.Call(isAnyMethod);
-            }
-        }
 
     }
 }

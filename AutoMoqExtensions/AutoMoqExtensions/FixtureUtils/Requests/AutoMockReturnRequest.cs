@@ -7,8 +7,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     internal class AutoMockReturnRequest : ReturnRequest, IEquatable<AutoMockReturnRequest>
     {
-        public AutoMockReturnRequest(Type declaringType, MethodInfo methodInfo, ITracker? tracker) 
-            : base(declaringType, methodInfo, tracker)
+        public AutoMockReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType, ITracker? tracker) 
+            : base(declaringType, methodInfo, returnType, tracker)
         {
         }
 

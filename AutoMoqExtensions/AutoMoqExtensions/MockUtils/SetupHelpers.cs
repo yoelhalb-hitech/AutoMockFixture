@@ -37,6 +37,13 @@ namespace AutoMoqExtensions.MockUtils
                    .Invoke(null, new object?[] { mock, methodInvocationLambda, returnValue });
         }
         
+        public static void SetupMethodWithGenericResult(Type mockedType, Type newReturnType, 
+                        IAutoMock mock, Expression methodInvocationLambda, InvocationFunc invocationFunc)
+        {
+            GetMethod(nameof(SetupMethodWithGenericResult)).MakeGenericMethod(mockedType, newReturnType)
+                .Invoke(null, new object[] { mock, methodInvocationLambda, invocationFunc });
+        }
+
         private static MethodInfo GetMethod(string name) => typeof(SetupHelpers)
                 .GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -52,6 +59,14 @@ where TMock : class
 where TMock : class
         {
             mock.Setup(methodCallExpression).CallBase();
+        }
+        
+        private static void SetupMethodWithGenericResult<TMock, TResult>(
+            AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
+                                    InvocationFunc invocationFunc)
+            where TMock : class
+        {
+            mock.Setup(methodCallExpression).Returns(invocationFunc);
         }
         
         private static void SetupMethodWithResult<TMock, TResult>(

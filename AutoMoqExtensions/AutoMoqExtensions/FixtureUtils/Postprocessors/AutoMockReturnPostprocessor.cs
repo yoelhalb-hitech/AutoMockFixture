@@ -17,7 +17,7 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
         {
             if (request is not AutoMockReturnRequest mockRequest) return new NoSpecimen();
 
-            var type = mockRequest.MethodInfo.ReturnType;
+            var type = mockRequest.ReturnType;
             if (!autoMockableSpecification.IsSatisfiedBy(type))
             {
                 var result = context.Resolve(type);
