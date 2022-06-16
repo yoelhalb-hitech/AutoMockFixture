@@ -34,13 +34,13 @@ namespace AutoMoqExtensions.AutoMockUtils
         {
            
             if (t is null || t.IsPrimitive || t == typeof(string) || t.IsValueType
-                       // || t == typeof(Array) || typeof(IEnumerable).IsAssignableFrom(t)
+                        //|| t == typeof(Array) || typeof(IEnumerable).IsAssignableFrom(t)
                         || t == typeof(IntPtr) || t == typeof(UIntPtr)
                         //|| (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
                         //|| t == typeof(Mock)
                         //|| (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(AutoMock<>))
                         //|| (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
-                        || t == typeof(Type)
+                        || typeof(Type).IsAssignableFrom(t)
                         || (t.Assembly == typeof(Mock).Assembly && !typeof(Mock).IsAssignableFrom(t))
                         // TODO...have to figure out why it has a problem to mock it and hwo we can expect it in general
                         //     but maybe with our CustomMockVirtualMethodsCommand it is already fixed

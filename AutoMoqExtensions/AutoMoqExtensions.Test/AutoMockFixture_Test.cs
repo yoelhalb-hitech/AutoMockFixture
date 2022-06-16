@@ -11,7 +11,6 @@ using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.AutoMockUtils;
 using Moq;
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace AutoMoqExtensions.Test
 {
     public class AutoMockFixture_Test
