@@ -79,72 +79,22 @@ namespace AutoMoqExtensions.MockUtils
             lock (lockObject)
             {
                 if (matcherDict.ContainsKey(tag)) return matcherDict[tag];
+                
+                var newType = CreateTypeMatcher(types);
 
-                // Making sure that the name is unique but staring with a alpha letter
-                var newType = CompileTypeMatcher("D" + Guid.NewGuid().ToString("N"), types.FirstOrDefault(c => !c.IsInterface), types.Where(c => c.IsInterface).ToArray());
                 matcherDict[tag] = newType;
                 return newType;
             }
         }
 
-        // TODO... Maybe we can improve perfomance by batching them together in 1 assembly,
-        //        (my benchmarks showed that until 10k there is a performance benefit, but afterwards it degardes)
-        // We can do it even intially to round up all generics of the object and have it created in a background thread while executing the other methods
-        // However in this case I would recommend doing only small batches at once, so we should be able to start setting up as soon as it compiles some
-        private static Type CompileTypeMatcher(string name, Type? parent, Type[] interfaces)
+        private static Type CreateTypeMatcher(IEnumerable<Type> types)
         {
-            var methods = interfaces.SelectMany(i => i.GetAllMethods()).Union(parent?.GetAllMethods().Where(m => m.IsAbstract) ?? new MethodInfo[] { }).ToArray();
+            var name = "D" + Guid.NewGuid().ToString("N"); // Making sure that the name is unique but staring with a alpha letter
+            var parent = types.FirstOrDefault(c => !c.IsInterface);
+            var interfaces = types.Where(c => c.IsInterface).ToArray();
 
-            interfaces = interfaces.Union(new[] { typeof(ITypeMatcher) }).ToArray();
-            var an = new AssemblyName(name);
-            //AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
-            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndCollect);
-            var moduleBuilder = assemblyBuilder.DefineDynamicModule("MainModule");
-            var tb = moduleBuilder.DefineType(name,
-                    TypeAttributes.Public |
-                    TypeAttributes.Class |
-                    TypeAttributes.AutoClass |
-                    TypeAttributes.AnsiClass |
-                    TypeAttributes.BeforeFieldInit |
-                    TypeAttributes.AutoLayout,
-                    parent, interfaces);
-            tb.SetCustomAttribute(new CustomAttributeBuilder(typeof(TypeMatcherAttribute).GetConstructor(new Type[] { }), new object[] { }));
-
-            ConstructorBuilder constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
-            // TODO... we might need to handle the case when there is a base and the base doesn't have a default constructor
-
-
-            var matchesMthdBldr = tb.DefineMethod(nameof(ITypeMatcher.Matches), MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, typeof(bool), new[] { typeof(Type) });
-            var matchesIl = matchesMthdBldr.GetILGenerator();
-            matchesIl.Emit(OpCodes.Ldc_I4_1);
-            matchesIl.Emit(OpCodes.Ret);
-            tb.DefineMethodOverride(matchesMthdBldr, typeof(ITypeMatcher).GetMethod(nameof(ITypeMatcher.Matches)));
-            foreach (var method in methods)
-            {
-                var accessMethod = method switch
-                {
-                    { IsPublic: true } => MethodAttributes.Public,
-                    { IsPrivate: true } => MethodAttributes.Private,
-                    { IsFamily: true } => MethodAttributes.Family,
-                    { IsFamilyAndAssembly: true } => MethodAttributes.FamANDAssem,
-                    { IsFamilyOrAssembly: true } => MethodAttributes.FamORAssem,
-                    { IsAssembly: true } => MethodAttributes.Assembly,
-                    _ => MethodAttributes.Public,
-                };
-                if (method.IsStatic) accessMethod = accessMethod | MethodAttributes.Static;
-                if (method.DeclaringType.IsInterface) accessMethod = accessMethod | MethodAttributes.Virtual;
-                
-                var mthdBldr = tb.DefineMethod(method.Name, accessMethod | MethodAttributes.HideBySig, method.ReturnType, method.GetParameters().Select(p => p.ParameterType).ToArray());
-                var il = mthdBldr.GetILGenerator();
-                il.Emit(OpCodes.Nop);
-                il.Emit(OpCodes.Newobj, typeof(NotImplementedException));
-                il.Emit(OpCodes.Throw);
-
-                if (method.DeclaringType.IsInterface) tb.DefineMethodOverride(mthdBldr, method);
-            }
-
-            Type objectType = tb.CreateType();
-            return objectType;
+            var emitter = new TypeMatcherEmitter(name, parent, interfaces);
+            return emitter.EmitTypeMatcher();
         }
     }
 }
