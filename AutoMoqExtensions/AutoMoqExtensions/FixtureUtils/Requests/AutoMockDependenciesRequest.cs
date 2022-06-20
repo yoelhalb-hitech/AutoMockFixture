@@ -4,26 +4,23 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockDependenciesRequest : BaseTracker,
-            IEquatable<AutoMockDependenciesRequest>, IAutoMockRequest, IFixtureTracker
+    internal class AutoMockDependenciesRequest : TrackerWithFixture,
+            IEquatable<AutoMockDependenciesRequest>, IFixtureTracker
     {
-        public AutoMockDependenciesRequest(Type request, ITracker tracker) : base(tracker)
+        public AutoMockDependenciesRequest(Type request, ITracker tracker) : base(tracker.StartTracker.Fixture, tracker)
         {
             Request = request;
-            if (tracker is not null) Fixture = tracker.StartTracker.Fixture;
-            else throw new Exception("Either tracker or fixture must be provided");
+            if (tracker is null) throw new Exception("Either tracker or fixture must be provided");
         }
 
-        public AutoMockDependenciesRequest(Type request, AutoMockFixture fixture) : base(null)
+        public AutoMockDependenciesRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
         {
-            Request = request;
-            Fixture = fixture;
+            Request = request;            
         }
 
         public virtual Type Request { get; }
 
-        public override string InstancePath => "";
-        public AutoMockFixture Fixture { get; }
+        public override string InstancePath => "";        
 
 
         public override bool Equals(object obj) 

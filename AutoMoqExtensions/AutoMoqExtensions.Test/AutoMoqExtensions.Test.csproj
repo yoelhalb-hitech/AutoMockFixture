@@ -48,4 +48,13 @@
     <ProjectReference Include="..\AutoMoqExtensions\AutoMoqExtensions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<Reference Include="netstandard">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MustInitializeAnalyzer">
+      <HintPath>..\..\..\MustInitializeAnalyzer\MustInitializeAnalyzer\MustInitializeAnalyzer\bin\Release\netstandard2.0\MustInitializeAnalyzer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

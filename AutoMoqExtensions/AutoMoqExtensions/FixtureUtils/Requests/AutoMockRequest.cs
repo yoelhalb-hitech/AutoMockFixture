@@ -6,32 +6,29 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockRequest : BaseTracker, IEquatable<AutoMockRequest>, IAutoMockRequest, IDisposable, IFixtureTracker
+    internal class AutoMockRequest : TrackerWithFixture, IEquatable<AutoMockRequest>,
+                IAutoMockRequest, IDisposable, IFixtureTracker
     {
-        public AutoMockRequest(Type request, ITracker tracker) : base(tracker)
+        public AutoMockRequest(Type request, ITracker tracker) : base(tracker.StartTracker.Fixture, tracker)
         {
             Request = request;
-            if (tracker is not null) Fixture = tracker.StartTracker.Fixture;
-            else throw new Exception("Either tracker or fixture must be provided");
+            if (tracker is null) throw new Exception("Either tracker or fixture must be provided");
         }
 
-        public AutoMockRequest(Type request, AutoMockFixture fixture) : base(null)
+        public AutoMockRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
         {
-            Request = request;
-            Fixture = fixture;
+            Request = request;            
         }
 
         public virtual Type Request { get; }
 
         public override string InstancePath => "";
 
-        public AutoMockFixture Fixture { get; }
-
         public override bool Equals(BaseTracker other) => other is AutoMockRequest r && this.Equals(r);
 
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
-        public bool Equals(AutoMockRequest other) => base.Equals((BaseTracker)other) // Force the correct overload
-                                                            && other.Request == Request;
+        public bool Equals(AutoMockRequest other) => //base.Equals((BaseTracker)other) && // Force the correct overload
+                                                            other.Request == Request;
 
         public void Dispose() => SetCompleted();
     }

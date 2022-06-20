@@ -10,7 +10,9 @@ using System.Linq;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.AutoMockUtils;
 using Moq;
+using MustInitializeAnalyzer.DependencyManagement;
 
+[assembly: System.Runtime.CompilerServices.IgnoresAccessChecksTo("AutoMoqExtensions")]
 namespace AutoMoqExtensions.Test
 {
     public class AutoMockFixture_Test
@@ -33,6 +35,56 @@ namespace AutoMoqExtensions.Test
 
             fixture.TrackerDict.Should().HaveCount(1);
             fixture.TrackerDict.First().Key.Should().Be(Mock.Get(result));
+        }
+        [Singleton]
+        public class SingletonClass{}
+        
+        public class SingletonUserClass 
+        {
+            public SingletonClass Class1 { get; }
+            public SingletonClass Class2 { get; }
+            public SingletonUserClass(SingletonClass class1, SingletonClass class2)
+            {
+                Class1 = class1;
+                Class2 = class2;
+            }
+            public SingletonClass? SingletonProp { get; set; }
+            public virtual SingletonClass? SingletonPropGet { get; }
+            public SingletonClass? SingletonField;
+        }
+
+        [Test]
+        public void Test_ClassMarkedSingleton_IsFrozen()
+        {
+            var fixture = new AutoMockFixture();
+    //        fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+    //.ForEach(b => fixture.Behaviors.Remove(b));
+    //        fixture.Behaviors.Add(new OmitOnRecursionBehavior(3));
+            var obj1 = fixture.Create<SingletonUserClass>();
+            var obj2 = fixture.Create<SingletonUserClass>();
+            var obj3 = fixture.CreateAutoMock<SingletonUserClass>();            
+            var singletonMock = fixture.CreateAutoMock<SingletonClass>();
+            var mock = fixture.Create<AutoMock<SingletonClass>>();
+
+            obj1.Class1.Should().NotBeNull();
+            obj1.Class1.Should().BeAssignableTo<SingletonClass>();
+            obj1.Class2.Should().Be(obj1.Class1);
+            obj1.SingletonProp.Should().Be(obj1.Class1);            
+            obj1.SingletonField.Should().Be(obj1.Class1);
+
+            obj2.Class1.Should().Be(obj1.Class1);
+            obj2.Class2.Should().Be(obj1.Class1);
+            obj2.SingletonProp.Should().Be(obj1.Class1);            
+            obj2.SingletonField.Should().Be(obj1.Class1);
+
+            obj3.Class1.Should().Be(obj1.Class1);
+            obj3.Class2.Should().Be(obj1.Class1);
+            obj3.SingletonProp.Should().Be(obj1.Class1);
+            obj3.SingletonPropGet.Should().Be(obj1.Class1);
+            obj3.SingletonField.Should().Be(obj1.Class1);
+
+            singletonMock.Should().Be(obj1.Class1);
+            mock.GetMocked().Should().Be(obj1.Class1);
         }
 
         public class InternalTestClass

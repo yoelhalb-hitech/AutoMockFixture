@@ -24,6 +24,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, PropertyInfo);
 
         public virtual bool Equals(PropertyRequest other)
-            => base.Equals((BaseTracker)other) && this.DeclaringType == other.DeclaringType && this.PropertyInfo == other.PropertyInfo;       
+            => // base.Equals((BaseTracker)other) &&
+            this.DeclaringType == other.DeclaringType && this.PropertyInfo == other.PropertyInfo;       
     }
 }

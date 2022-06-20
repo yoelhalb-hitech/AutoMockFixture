@@ -36,6 +36,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="MustInitializeAnalyzer">
+      <HintPath>..\..\..\MustInitializeAnalyzer\MustInitializeAnalyzer\MustInitializeAnalyzer\bin\Release\netstandard2.0\MustInitializeAnalyzer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
     <EmbeddedResource Update="Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
   </ItemGroup>

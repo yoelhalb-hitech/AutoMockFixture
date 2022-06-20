@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
     /// <summary>
-    /// For use with objects that don't have a start tracker
+    /// For use with objects that don't have a start tracker, and as a base for IFixtureTracker
     /// </summary>
     internal class TrackerWithFixture : BaseTracker, IFixtureTracker
     {
-        public TrackerWithFixture(AutoMockFixture fixture) : base(null)
+        public TrackerWithFixture(AutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
         {
             Fixture = fixture;
         }
@@ -19,5 +19,12 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public AutoMockFixture Fixture { get; }
 
         public override string InstancePath => "";
+
+        public override void SetResult(object? result)
+        {
+            base.SetResult(result);
+
+            Fixture.Cache.AddIfNeeded(this, result);
+        }
     }
 }

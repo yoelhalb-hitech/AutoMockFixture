@@ -26,7 +26,9 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
                                                     new AutoMockMethodInvoker(
                                                         new CustomConstructorQueryWrapper(
                                                             new ModestConstructorQuery()))),
-                                                new CustomAutoPropertiesCommand(mockFixture)),
+                                                new CompositeSpecimenCommand(
+                                                    new CacheCommand(mockFixture.Cache),
+                                                    new CustomAutoPropertiesCommand(mockFixture))),
                                             new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -50,7 +52,9 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
                                             new TypeMatchSpecification(typeof(AutoMockOutParameterRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                            new AutoMockRequestPostprocessor(),
+                                            new Postprocessor(
+                                                builder: new AutoMockRequestPostprocessor(),
+                                                command: new CacheCommand(mockFixture.Cache)),
                                             new AutoMockRequestSpecification()));
 
             ISpecimenBuilder mockBuilder = new AutoMockPostprocessor(
@@ -65,6 +69,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
                                     new Postprocessor(
                                         builder: mockBuilder,
                                         command: new CompositeSpecimenCommand(
+                                                    new CacheCommand(mockFixture.Cache),
                                                     // First stub so we should be able to have ready for constructing the object
                                                     new StubPropertiesCommand(),
                                                     new AutoMockVirtualMethodsCommand(),

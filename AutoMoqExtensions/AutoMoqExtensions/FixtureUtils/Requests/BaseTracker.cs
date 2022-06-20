@@ -16,6 +16,8 @@ namespace AutoMoqExtensions.FixtureUtils
             // Note: At this point our `StartTracker` might still be null so we use the parents
             IsInAutoMockChain = Parent?.StartTracker.IsInAutoMockChain == true 
                                     || Parent?.IsInAutoMockChain == true || this is IAutoMockRequest;
+            IsInAutoMockDepnedencyChain = Parent?.StartTracker.IsInAutoMockDepnedencyChain == true
+                                    || Parent?.IsInAutoMockDepnedencyChain == true || this is AutoMockDependenciesRequest;
         }
 
         protected object? result;
@@ -27,6 +29,7 @@ namespace AutoMoqExtensions.FixtureUtils
 
         public virtual ITracker? Parent { get; }
         public virtual bool IsInAutoMockChain { get; }
+        public virtual bool IsInAutoMockDepnedencyChain { get; }
         
         public virtual List<ITracker> Children => children;
         public virtual void AddChild(ITracker tracker) => Children.Add(tracker);

@@ -17,9 +17,10 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
         {
             if (request is not FieldRequest fieldRequest) return new NoSpecimen();
 
-            var type = fieldRequest.FieldInfo.FieldType;            
+            var type = fieldRequest.FieldInfo.FieldType;
 
-            if (!fieldRequest.IsInAutoMockChain || !autoMockableSpecification.IsSatisfiedBy(type))
+            if ((!fieldRequest.IsInAutoMockChain && !fieldRequest.IsInAutoMockDepnedencyChain) 
+                        || !autoMockableSpecification.IsSatisfiedBy(type))
             {
                 var result = context.Resolve(fieldRequest.FieldInfo);
                 fieldRequest.SetResult(result);

@@ -7,7 +7,9 @@ using AutoMoqExtensions.FixtureUtils.Commands;
 using AutoMoqExtensions.FixtureUtils.Customizations;
 using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Specifications;
 using Moq;
+using MustInitializeAnalyzer.DependencyManagement;
 using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,8 @@ namespace AutoMoqExtensions
     {
         public AutoMockFixture(bool configureMembers = true, bool generateDelegates = true)
         {
+            Customizations.Add(new CachePostprocessor(Cache));
+
             Customizations.Add(new FilteringSpecimenBuilder(
                                     new FixedBuilder(this),
                                     new OrRequestSpecification(
@@ -40,9 +44,16 @@ namespace AutoMoqExtensions
                                     new AutoMockMethodInvoker(
                                         new CustomConstructorQueryWrapper(
                                             new ModestConstructorQuery())),
-                                    new CustomAutoPropertiesCommand(this),
+                                    new CompositeSpecimenCommand(
+                                        new CacheCommand(this.Cache),
+                                        new CustomAutoPropertiesCommand(this)),
                                     new AnyTypeSpecification()));
+
+            Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)))));
+            Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute))))); // Considering it scoped as it is per fixture whcih is normally scoped
         }
+
+        internal Cache Cache { get; } = new Cache();
 
         #region Create from Tracker
 
@@ -51,9 +62,9 @@ namespace AutoMoqExtensions
         // TODO... test to make sure it is safe to do it multiple times
         internal T Freeze<T>(ITracker tracker)
         {
-            var value = this.Create<T>(tracker);
-            this.Inject(value);
-            return value;
+            Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeMatchSpecification(typeof(T)))));
+
+            return Create<T>(tracker);
         }
 
         internal T Create<T>(ITracker tracker) => (T)Create(typeof(T), tracker);
@@ -72,9 +83,9 @@ namespace AutoMoqExtensions
         // Override to use our own
         public T Freeze<T>()
         {
-            var value = this.Create<T>();
-            this.Inject(value);
-            return value;
+            Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeMatchSpecification(typeof(T)))));
+            
+            return Create<T>();
         }
 
         public T Create<T>() => (T)Create(typeof(T));
