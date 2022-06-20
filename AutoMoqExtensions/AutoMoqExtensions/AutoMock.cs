@@ -11,6 +11,7 @@ namespace AutoMoqExtensions
 {
     public partial class AutoMock<T> : Mock<T>, IAutoMock where T : class
     {
+        public override T Object => GetMocked();
         public virtual ITracker? Tracker { get; set; }
         public virtual AutoMockFixture Fixture  => Tracker?.StartTracker.Fixture 
                 ?? throw new Exception($"Fixture not set, was this created by `{nameof(AutoMockFixture)}`?");
@@ -20,7 +21,7 @@ namespace AutoMoqExtensions
         public void EnsureMocked()
         {
             if (mocked is null)
-                mocked = this.Object;
+                mocked = base.Object;
         }
         object IAutoMock.GetMocked() => GetMocked();
         public T GetMocked()
