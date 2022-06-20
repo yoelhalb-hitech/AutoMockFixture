@@ -13,6 +13,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
     {
         public Type? ExplicitSpecimenType { get; }
         public IRequestSpecification? Specification { get; }
+        public AutoMockFixture Fixture { get; }
 
         public CustomAutoPropertiesCommand(AutoMockFixture fixture)
             : this(new TrueRequestSpecification(), fixture)
