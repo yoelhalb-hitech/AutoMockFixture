@@ -1,10 +1,12 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.MockUtils;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace AutoMoqExtensions
@@ -16,6 +18,10 @@ namespace AutoMoqExtensions
         public virtual AutoMockFixture Fixture  => Tracker?.StartTracker.Fixture 
                 ?? throw new Exception($"Fixture not set, was this created by `{nameof(AutoMockFixture)}`?");
         public List<IVerifyInfo<T>> VerifyList { get; } = new List<IVerifyInfo<T>>();
+        public Dictionary<string, MemberInfo> MethodsSetup { get; } = new Dictionary<string, MemberInfo>();
+        public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; } 
+                                            = new Dictionary<string, CannotSetupMethodException>();
+
         private T? mocked;
         public Type GetInnerType() => typeof(T);
         public void EnsureMocked()

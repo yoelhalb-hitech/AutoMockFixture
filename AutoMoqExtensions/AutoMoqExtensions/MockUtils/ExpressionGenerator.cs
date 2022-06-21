@@ -87,7 +87,7 @@ namespace AutoMoqExtensions.MockUtils
 
                 return Expression.Constant(variable, underlyingType);
             }
-            else
+            else // Appears to work perfectly for ref
             {
                 // for any non-out parameter, invoke "It.IsAny<T>()"
                 var type = MatcherGenerator.GetGenericMatcher(parameter);

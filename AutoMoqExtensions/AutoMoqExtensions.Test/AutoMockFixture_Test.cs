@@ -11,6 +11,7 @@ using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.AutoMockUtils;
 using Moq;
 using MustInitializeAnalyzer.DependencyManagement;
+using AutoMoqExtensions.MockUtils;
 
 [assembly: System.Runtime.CompilerServices.IgnoresAccessChecksTo("AutoMoqExtensions")]
 namespace AutoMoqExtensions.Test
@@ -150,6 +151,18 @@ namespace AutoMoqExtensions.Test
             obj.Should().NotBeNull();
             obj.Should().BeOfType<AutoMock<InternalTestClass2>>();
             obj.GetMocked().InternalTest.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Test_ListsSetupMethods()
+        {
+            var fixture = new AutoMockFixture();
+            var result = fixture.CreateAutoMock<AutoMockTestClass>();
+            var mock = AutoMockHelpers.GetAutoMock(result);
+
+            mock!.MethodsSetup.Should().ContainKey("TestClassPropGet");
+            mock!.MethodsNotSetup.Should().ContainKey("TestClassProp");
+            mock!.MethodsNotSetup["TestClassProp"].Reason.Should().Be(CannotSetupMethodException.CannotSetupReason.NonVirtual);
         }
 
         [Test]

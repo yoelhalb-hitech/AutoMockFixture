@@ -1,7 +1,9 @@
 ﻿using AutoMoqExtensions.FixtureUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.MockUtils;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace AutoMoqExtensions
@@ -24,6 +26,9 @@ namespace AutoMoqExtensions
         ITracker? Tracker { get; set; }
 
         void VerifyAll();
+
+        Dictionary<string, MemberInfo> MethodsSetup { get; }
+        Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; }
 
         #region MethodInfo
         public IAutoMock Setup(MethodInfo method, Times times);
