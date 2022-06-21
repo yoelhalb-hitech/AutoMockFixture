@@ -15,15 +15,13 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Postprocessors
 {
     internal class AutoMockPostprocessor_Tests
     {
+        public class Test { }
         [Test]
         public void Test_SetsTracker()
         {
-            var autoMock = new AutoMock<Fixture>();
+            var autoMock = new AutoMock<Test>();
 
-            var requestMock = new Mock<AutoMockDirectRequest>(autoMock.GetType(), new AutoMockFixture());
-            requestMock.SetupGet(x => x.Request).Returns(autoMock.GetType());
-            requestMock.Setup(m => m.Equals(It.IsAny<object>())).CallBase(); // We need to do it for .Be() to work
-            var request = requestMock.Object;
+            var request = new AutoMockDirectRequest(autoMock.GetType(), new AutoMockFixture());           
 
             var context = Mock.Of<ISpecimenContext>();
             var builder = new Mock<ISpecimenBuilder>();
@@ -39,11 +37,10 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Postprocessors
         [Test]
         public void Test_SetsResult()
         {
-            var autoMock = new AutoMock<Fixture>();
+            var autoMock = new AutoMock<Test>();
 
-            var requestMock = new Mock<AutoMockDirectRequest>(autoMock.GetType(), new AutoMockFixture());       
-            requestMock.SetupGet(x => x.Request).Returns(autoMock.GetType());
-            requestMock.Setup(m => m.Equals(It.IsAny<object>())).CallBase(); // We need to do it for .Be() to work
+            var requestMock = new Mock<AutoMockDirectRequest>(autoMock.GetType(), new AutoMockFixture());
+            requestMock.CallBase = true;
             var request = requestMock.Object;
 
             var context = Mock.Of<ISpecimenContext>();

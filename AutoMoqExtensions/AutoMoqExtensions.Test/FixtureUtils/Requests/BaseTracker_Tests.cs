@@ -17,7 +17,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Requests
         public void GetChildrensPaths_ReturnsCurrentPath()
         {
             var fixture = new AutoMockFixture(); // Plain Autofixture doesn't work... because of constructors
-            var trackerMock = fixture.Create<AutoMock<BaseTracker>>();
+            var trackerMock = new Mock<TrackerWithFixture>(fixture, null);
             trackerMock.SetupGet(t => t.InstancePath).Returns("Test");
             trackerMock.CallBase = true;
 
@@ -30,9 +30,10 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Requests
             result.First().Key.Should().EndWith("Test");
         }
 
-        public void GetHashCode_doesNotCauseStackOverflow()
+        [Test]
+        public void GetHashCode_DoesNotCauseStackOverflow()
         {
-            var request = new AutoMockRequest(typeof(BaseTracker), (ITracker?)null);            
+            var request = new AutoMockRequest(typeof(BaseTracker), new AutoMockFixture());
             Assert.DoesNotThrow(() => request.GetHashCode());
         }
     }

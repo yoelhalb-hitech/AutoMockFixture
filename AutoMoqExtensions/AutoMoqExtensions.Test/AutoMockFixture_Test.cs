@@ -22,7 +22,7 @@ namespace AutoMoqExtensions.Test
         public void Test_Create_AddsToTrackerDict()
         {
             var fixture = new AutoMockFixture();
-            var result = fixture.Create<AutoMockRequest>();
+            var result = fixture.Create<SingletonUserClass>();
 
             fixture.TrackerDict.Should().HaveCount(1);
             fixture.TrackerDict.First().Key.Should().Be(result);
@@ -32,7 +32,7 @@ namespace AutoMoqExtensions.Test
         public void Test_Create_AddsUnderlyingMockToTrackerDict()
         {
             var fixture = new AutoMockFixture();
-            var result = fixture.CreateAutoMock<AutoMockRequest>();
+            var result = fixture.CreateAutoMock<SingletonUserClass>();
 
             fixture.TrackerDict.Should().HaveCount(1);
             fixture.TrackerDict.First().Key.Should().Be(Mock.Get(result));
