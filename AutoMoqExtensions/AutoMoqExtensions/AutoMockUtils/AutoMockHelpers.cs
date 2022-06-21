@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using AutoFixture;
+using AutoMoqExtensions.FixtureUtils.Requests;
+using Moq;
 using System;
 using System.Collections;
 using System.Linq;
@@ -34,7 +36,8 @@ namespace AutoMoqExtensions.AutoMockUtils
         {
            
             if (t is null || t.IsPrimitive || t == typeof(string) || t.IsValueType
-                        //|| t == typeof(Array) || typeof(IEnumerable).IsAssignableFrom(t) // TODO... we need to handle better this
+                        || t == typeof(Array) || typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
+                        //|| typeof(IEnumerable).IsAssignableFrom(t) // TODO... we need to handle better this
                         || t == typeof(IntPtr) || t == typeof(UIntPtr)
                         //|| (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
                         //|| t == typeof(Mock)
@@ -42,6 +45,7 @@ namespace AutoMoqExtensions.AutoMockUtils
                         //|| (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
                         || typeof(Type).IsAssignableFrom(t)
                         || (t.Assembly == typeof(Mock).Assembly && !typeof(Mock).IsAssignableFrom(t))
+                        || typeof(IFixture).IsAssignableFrom(t) || typeof(IAutoMock).IsAssignableFrom(t) || typeof(ITracker).IsAssignableFrom(t)
                         // TODO...have to figure out why it has a problem to mock it and hwo we can expect it in general
                         //     but maybe with our CustomMockVirtualMethodsCommand it is already fixed
                         || new[] { typeof(Assembly).Namespace, typeof(Thread).Namespace, typeof(Task).Namespace }.Contains(t.Namespace))

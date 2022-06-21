@@ -30,10 +30,9 @@ namespace AutoMoqExtensions
             Customizations.Add(new FilteringSpecimenBuilder(
                                     new FixedBuilder(this),
                                     new OrRequestSpecification(
-                                        new ExactTypeSpecification(typeof(AutoMockFixture)),
-                                        new ExactTypeSpecification(typeof(IFixture)),
-                                        new ExactTypeSpecification(
-                                            typeof(ISpecimenBuilder)))));
+                                        new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixture))),
+                                        new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture))),
+                                        new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder))))));
 
 
             // Console.WriteLine("Moqfixture.ctor {0}", Environment.StackTrace);
