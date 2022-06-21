@@ -6,8 +6,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockRequest : TrackerWithFixture, IEquatable<AutoMockRequest>,
-                IAutoMockRequest, IDisposable, IFixtureTracker
+    internal class AutoMockRequest : TrackerWithFixture, IAutoMockRequest, IDisposable, IFixtureTracker
     {
         public AutoMockRequest(Type request, ITracker tracker) : base(tracker.StartTracker.Fixture, tracker)
         {
@@ -17,18 +16,18 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public AutoMockRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
         {
-            Request = request;            
         }
+            Request = request;
 
         public virtual Type Request { get; }
 
         public override string InstancePath => "";
 
-        public override bool Equals(BaseTracker other) => other is AutoMockRequest r && this.Equals(r);
 
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
-        public bool Equals(AutoMockRequest other) => //base.Equals((BaseTracker)other) && // Force the correct overload
-                                                            other.Request == Request;
+
+        public override bool IsRequestEquals(ITracker other)
+            => other is AutoMockRequest request && request.Request == Request && base.IsRequestEquals(other);
 
         public void Dispose() => SetCompleted();
     }

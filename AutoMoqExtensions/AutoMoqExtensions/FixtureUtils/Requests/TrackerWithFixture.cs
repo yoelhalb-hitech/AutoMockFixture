@@ -20,6 +20,10 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public override string InstancePath => "";
 
+        public override bool IsRequestEquals(ITracker other)
+            => other is TrackerWithFixture tracker
+                    && Object.ReferenceEquals(tracker.Fixture, Fixture);
+
         public override void SetResult(object? result)
         {
             base.SetResult(result);

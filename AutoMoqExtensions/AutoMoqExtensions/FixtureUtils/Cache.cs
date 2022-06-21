@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Kernel;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,28 @@ namespace AutoMoqExtensions.FixtureUtils
         public List<IRequestSpecification> CacheSpecifications { get; } = new List<IRequestSpecification>();
         public Dictionary<object, object?> CacheDictionary { get; } = new Dictionary<object, object?>();
 
+        public (bool HasValue, object? Value) Get(object request)
+        {
+            if (CacheDictionary.ContainsKey(request)) return (true, CacheDictionary[request]);
+
+            if (request is ITracker tracker && CacheDictionary.Any(c => (c.Key as ITracker)?.IsRequestEquals(tracker) == true))
+            {               
+                var existing = CacheDictionary.First(c => (c.Key as ITracker)?.IsRequestEquals(tracker) == true);
+                return (true, existing.Value);
+            }
+
+            return (false, null);
+        }
+
         public void AddIfNeeded(object request, object? specimen)
         {
             if (!CacheSpecifications.Any(s => s.IsSatisfiedBy(request))) return;
 
-            if (CacheDictionary.ContainsKey(request)
-                    && CacheDictionary[request] == specimen) return;
-
-            if (CacheDictionary.ContainsKey(request)
-                    && CacheDictionary[request] != specimen) throw new Exception("A different object is already in cache");
-
+            var existing = Get(request);
+            if(existing.HasValue && existing.Value == specimen) return;
+            
+            if(existing.HasValue) throw new Exception("A different object is already in cache");            
+            
             CacheDictionary[request] = specimen;
         }
     }

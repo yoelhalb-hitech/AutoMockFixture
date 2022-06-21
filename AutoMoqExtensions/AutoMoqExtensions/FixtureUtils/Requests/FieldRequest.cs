@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class FieldRequest : BaseTracker, IEquatable<FieldRequest>
+    internal class FieldRequest : BaseTracker
     {
         public FieldRequest(Type declaringType, FieldInfo fieldInfo, ITracker? tracker) : base(tracker)
         {
@@ -18,12 +18,10 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public override string InstancePath => "." + FieldInfo.Name;
 
-        public override bool Equals(object obj) 
-            => obj is FieldRequest other ? this.Equals(other) : base.Equals(obj);
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, FieldInfo);
 
-        public override int GetHashCode() => HashCode.Combine(DeclaringType, FieldInfo);
-
-        public virtual bool Equals(FieldRequest other)
-            => other is not null && this.DeclaringType == other.DeclaringType && this.FieldInfo == other.FieldInfo;       
+        public override bool IsRequestEquals(ITracker other)
+         => other is FieldRequest otherRequest 
+                && this.DeclaringType == otherRequest.DeclaringType && this.FieldInfo == otherRequest.FieldInfo;
     }
 }

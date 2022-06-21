@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class OutParameterRequest : BaseTracker, IEquatable<OutParameterRequest>
+    internal class OutParameterRequest : BaseTracker
     {
         public OutParameterRequest(Type declaringType, MethodInfo methodInfo, 
             ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) : base(tracker)
@@ -24,14 +24,12 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo;
 
-        public override bool Equals(object obj) 
-            => obj is OutParameterRequest other ? this.Equals(other) : base.Equals(obj);
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, 
+                                                                MethodInfo, ParameterInfo, ParameterType);
 
-        public override int GetHashCode() => HashCode.Combine(DeclaringType, MethodInfo, ParameterInfo, ParameterType);
-
-        public virtual bool Equals(OutParameterRequest other)
-            => other is not null && this.DeclaringType == other.DeclaringType
-            && this.MethodInfo == other.MethodInfo      
-            && this.ParameterInfo == other.ParameterInfo && this.ParameterType == other.ParameterType;       
+        public override bool IsRequestEquals(ITracker other)
+            => other is OutParameterRequest outRequest && this.DeclaringType == outRequest.DeclaringType
+            && this.MethodInfo == outRequest.MethodInfo
+            && this.ParameterInfo == outRequest.ParameterInfo && this.ParameterType == outRequest.ParameterType;
     }
 }

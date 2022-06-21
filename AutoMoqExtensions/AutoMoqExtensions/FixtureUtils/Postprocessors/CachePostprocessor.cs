@@ -20,7 +20,8 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
         public object? Create(object request, ISpecimenContext context)
         {
-            if(Cache.CacheDictionary.ContainsKey(request)) return Cache.CacheDictionary[request];
+            var existing =  Cache.Get(request);
+            if(existing.HasValue) return existing.Value;
 
             return new NoSpecimen();
         }

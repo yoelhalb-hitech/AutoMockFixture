@@ -4,8 +4,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockDependenciesRequest : TrackerWithFixture,
-            IEquatable<AutoMockDependenciesRequest>, IFixtureTracker
+    internal class AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracker
     {
         public AutoMockDependenciesRequest(Type request, ITracker tracker) : base(tracker.StartTracker.Fixture, tracker)
         {
@@ -20,13 +19,13 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public virtual Type Request { get; }
 
-        public override string InstancePath => "";        
+        public override string InstancePath => "";
 
 
-        public override bool Equals(object obj) 
-            => obj is AutoMockDependenciesRequest other ? this.Equals(other) : base.Equals(obj);
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);     
 
-        public override int GetHashCode() => HashCode.Combine(Request);
-        public bool Equals(AutoMockDependenciesRequest other) => other is not null && other.Request == Request;
+        public override bool IsRequestEquals(ITracker other) 
+            => other is AutoMockDependenciesRequest request 
+                    && request.Request == Request && base.IsRequestEquals(other);
     }
 }

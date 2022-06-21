@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests;
 
-internal class ReturnRequest : BaseTracker, IEquatable<ReturnRequest>
+internal class ReturnRequest : BaseTracker
 {
     public ReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType, ITracker? tracker)
         : base(tracker)
@@ -22,13 +22,10 @@ internal class ReturnRequest : BaseTracker, IEquatable<ReturnRequest>
 
     public override string InstancePath => "." + MethodInfo.GetTrackingPath() + ".";
 
-    public override bool Equals(object obj) 
-        => obj is ReturnRequest other ? this.Equals(other) : base.Equals(obj);
+    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, MethodInfo, ReturnType);
 
-    public override int GetHashCode() => HashCode.Combine(DeclaringType, MethodInfo, ReturnType);
-
-    public virtual bool Equals(ReturnRequest other)
-        => other is not null && this.DeclaringType == other.DeclaringType 
-            && this.MethodInfo == other.MethodInfo && this.ReturnType == other.ReturnType;       
+    public override bool IsRequestEquals(ITracker other)
+        => other is ReturnRequest request && this.DeclaringType == request.DeclaringType
+            && this.MethodInfo == request.MethodInfo && this.ReturnType == request.ReturnType;
 }
 

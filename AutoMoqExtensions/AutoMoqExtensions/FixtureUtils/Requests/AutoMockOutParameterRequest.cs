@@ -5,8 +5,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockOutParameterRequest
-        : OutParameterRequest, IEquatable<AutoMockOutParameterRequest>, IAutoMockRequest
+    internal class AutoMockOutParameterRequest : OutParameterRequest, IAutoMockRequest
     {
         public AutoMockOutParameterRequest(Type declaringType, MethodInfo methodInfo, 
                 ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) 
@@ -14,10 +13,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         {
         }
 
-        public override bool Equals(OutParameterRequest other)
-            => other is AutoMockOutParameterRequest r && this.Equals(r);
-
-        public virtual bool Equals(AutoMockOutParameterRequest other)
-            => base.Equals((OutParameterRequest)other); // Force the correct overload
+        public override bool IsRequestEquals(ITracker other) 
+            => other is AutoMockOutParameterRequest && base.IsRequestEquals(other);
     }
 }

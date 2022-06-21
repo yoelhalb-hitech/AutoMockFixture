@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class ConstructorArgumentRequest : BaseTracker, IEquatable<ConstructorArgumentRequest>
+    internal class ConstructorArgumentRequest : BaseTracker
     {
         public ConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo, ITracker? tracker)
             : base(tracker)
@@ -19,12 +19,11 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public override string InstancePath => "->" + ParameterInfo.Name;
 
-        public override bool Equals(object obj) 
-            => obj is ConstructorArgumentRequest other ? this.Equals(other) : base.Equals(obj);
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, ParameterInfo);
 
-        public override int GetHashCode() => HashCode.Combine(DeclaringType, ParameterInfo);
-
-        public virtual bool Equals(ConstructorArgumentRequest other)
-            => other is not null &&this.DeclaringType == other.DeclaringType && this.ParameterInfo == other.ParameterInfo;       
+        public override bool IsRequestEquals(ITracker other)
+            =>other is ConstructorArgumentRequest argumentRequest
+                && this.DeclaringType == argumentRequest.DeclaringType 
+                && this.ParameterInfo == argumentRequest.ParameterInfo;       
     }
 }

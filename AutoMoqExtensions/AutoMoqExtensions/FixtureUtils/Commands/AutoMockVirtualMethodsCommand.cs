@@ -19,7 +19,6 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 var mock = AutoMockHelpers.GetFromObj(specimen);
                 if (mock is null) return;
 
-
                 var setupService = new MockSetupService(mock, context);
                 setupService.Setup();               
             }

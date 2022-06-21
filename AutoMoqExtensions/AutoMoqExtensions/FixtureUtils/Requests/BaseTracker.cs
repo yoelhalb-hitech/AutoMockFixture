@@ -90,14 +90,17 @@ namespace AutoMoqExtensions.FixtureUtils
             SetCompleted();
         }
 
+        public abstract bool IsRequestEquals(ITracker other);
+
         public override bool Equals(object obj)
             => obj is BaseTracker other ? this.Equals(other) : base.Equals(obj);
 
         public override int GetHashCode() => HashCode.Combine(BasePath, StartTracker != this ? StartTracker : (ITracker?)null, 
                 StartTracker == this ? "StartTracker".GetHashCode() * 34526 : (int?)null, Parent, Children);
+
         public virtual bool Equals(BaseTracker other) => other is not null
                 && other.BasePath == BasePath && other.StartTracker == this.StartTracker
-                && other.Parent == Parent && other.Children.SequenceEqual(Children);
+                && other.Parent == Parent && other.Children.SequenceEqual(Children) && IsRequestEquals(other);
 
     }
 }

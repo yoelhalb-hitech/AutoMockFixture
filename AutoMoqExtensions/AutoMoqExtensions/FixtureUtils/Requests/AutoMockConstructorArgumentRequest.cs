@@ -8,8 +8,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockConstructorArgumentRequest 
-        : ConstructorArgumentRequest, IEquatable<AutoMockConstructorArgumentRequest>, IAutoMockRequest
+    internal class AutoMockConstructorArgumentRequest : ConstructorArgumentRequest, IAutoMockRequest
     {
         public AutoMockConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo, ITracker? tracker) 
             : base(declaringType, parameterInfo, tracker)
@@ -37,10 +36,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
             base.SetResult(result);
         }
 
-        public override bool Equals(ConstructorArgumentRequest other)
-            => other is AutoMockConstructorArgumentRequest r && this.Equals(r);
-
-        public virtual bool Equals(AutoMockConstructorArgumentRequest other)
-            => base.Equals((ConstructorArgumentRequest)other); // Force the correct overload
+        public override bool IsRequestEquals(ITracker other)
+            => other is AutoMockConstructorArgumentRequest && base.IsRequestEquals(other);
     }
 }
