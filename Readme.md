@@ -23,13 +23,16 @@
 - Sets up `GetHashCode` and `.Equals` to work correctly even when `Callbase` is false
 - Tries to set `Callbase` to `false` and `true` for non delagates, in order to create the object 
             - (sometimes a ctor calls a function that sets up something that can't be mocked, on the other hand sometimes a ctor expects a function to work correctly)
+- Defaults to `Callbase = false` however for Relay obejcts it sets `Callbase = true` and does not setup implemented methods (i.e. not in an interface and the method is not abstract)
+- On Mock/AutoMock sets up all virtual properties with default values before constructing the object, this way if the constructor needs any property it is ready to go
 
 ####### TODO
 - Get the fixture from the object without having to call it manually
 - Make sure that the `Frozen` attribute works with out new system
-- Give the option of passing Constructor arugemts via attributes
+- Give the option of passing Constructor arugmets via attributes
 - Add support for constructors marked with `ForMock` (also it should better remove all readonly warning for it, and disallow newing it up with this constructor, [we might even control it with reflection by restricting getting the type of it... by using our special Stub type])
 - Take a list of paths to verify
+- Make a `UnitFixture` and `IntegrationFixture` with different default creation approaches
 
 ## Comparison Demo
 

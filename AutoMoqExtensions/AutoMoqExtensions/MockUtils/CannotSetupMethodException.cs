@@ -16,6 +16,7 @@ namespace AutoMoqExtensions.MockUtils
             NonVirtual,
             Private,
             Protected,
+            CallBaseNoAbstract,
             Exception
         }
 

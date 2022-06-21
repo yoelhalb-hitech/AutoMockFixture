@@ -18,15 +18,17 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             {
                 try
                 {
-                    // While it anyway calls the base ctor, if the ctor calls another method we want that mocked
-                    mock.CallBase = false;
                     mock.EnsureMocked();
                 }
                 catch
                 {
+                    if (!mock.CallBase && mock.GetInnerType().IsDelegate()) throw; // Delagates aren't allowed callbase anyway
+
                     // Sometimes the mocked method doesn't work, either it hasn't been setup because of an error, or it's private/protected, or for other issues
-                    mock.CallBase = !mock.GetInnerType().IsDelegate(); // Delagate aren't allowed callbase anyway
+                    // Similarly if Callbase is true then we might run into an error from the base ctor
+                    mock.CallBase = !mock.CallBase;
                     mock.EnsureMocked();
+                    mock.CallBase = !mock.CallBase;
                 }
             }
         }

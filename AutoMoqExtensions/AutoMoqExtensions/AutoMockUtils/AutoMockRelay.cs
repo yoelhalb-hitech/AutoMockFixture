@@ -43,7 +43,8 @@ namespace AutoMoqExtensions.AutoMockUtils
             {
                 if(!t.IsInterface && !t.IsAbstract)
                 {
-                    var dependeciesRequest = new AutoMockDependenciesRequest(t, Fixture);
+                    // Do MockShouldCallbase so it should have the expected behaviour
+                    var dependeciesRequest = new AutoMockDependenciesRequest(t, Fixture) { MockShouldCallbase = true };
                     var dependeciesResult = context.Resolve(dependeciesRequest);
 
                     if (dependeciesResult is not NoSpecimen)
@@ -56,7 +57,8 @@ namespace AutoMoqExtensions.AutoMockUtils
             catch { }
             
             if (!AutoMockHelpers.IsAutoMock(t)) t = AutoMockHelpers.GetAutoMockType(t);
-            using var directRequest = new AutoMockDirectRequest(t, Fixture); // We do direct to bypass the specification test
+            // We do direct to bypass the specification test
+            using var directRequest = new AutoMockDirectRequest(t, Fixture) { MockShouldCallbase = true };
             
             var result = context.Resolve(directRequest);
 

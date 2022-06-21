@@ -18,117 +18,115 @@ namespace AutoMoqExtensions.MockUtils
         private readonly IAutoMock mock;
         private readonly ISpecimenContext context;
         private readonly Type mockedType;
+        private readonly ITracker? tracker;
 
         public MockSetupService(IAutoMock mock, ISpecimenContext context)
         {
             this.mock = mock;
             this.context = context;
             this.mockedType = mock.GetInnerType();
+            this.tracker = mock.Tracker;
         }
 
         public void Setup()
         {
-            var tracker = mock.Tracker;
-            var properties = GetConfigurableAutoProperties();
-            foreach (var prop in properties) // We setup here all virtual properties in case the constructor needs them
-            {
-                try
-                {
-                    var propValue = context.Resolve(new AutoMockPropertyRequest(mockedType, prop, tracker));
-                    SetupHelpers.SetupAutoProperty(mockedType, prop.PropertyType, mock, prop, propValue);
+            var allProperties = mockedType.GetAllProperties();
 
-                    mock.MethodsSetup.Add(prop.GetTrackingPath(), prop);
-                }
-                catch (Exception ex)
-                {
-                    HandleCannotSetup(prop.GetTrackingPath(), ex);
-                }
+            var propertiesWithSetAndGet = allProperties.Where(p => p.HasGetAndSet());
+            foreach (var prop in propertiesWithSetAndGet) // We setup here all virtual properties in case the constructor needs them
+            {
+                SetupAutoProperty(prop);
             }
 
-            var singleMethodProperties = GetConfigurableSingleMethodProperties();
+            var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet());
             foreach (var prop in singleMethodProperties)
             {
-                try
-                {
-                    var method = prop.GetAccessors(true).First();
-
-                    new MethodSetupService(mock, mockedType, method, context).Setup();
-                    mock.MethodsSetup.Add(prop.GetTrackingPath(), method);
-                }
-                catch (Exception ex)
-                {
-                    HandleCannotSetup(prop.GetTrackingPath(), ex);
-                }
+                SetupSingleMethodProperty(prop);
             }
 
-            var methods = GetConfigurableMethods();
+            var methods = GetMethods();
             foreach (var method in methods)
             {
-                try
-                {
-                    new MethodSetupService(mock, mockedType, method, context).Setup();
-                    mock.MethodsSetup.Add(method.GetTrackingPath(), method);
-                }
-                catch (Exception ex)
-                {
-                    HandleCannotSetup(method.GetTrackingPath(), ex);
-                }
+                SetupMethod(method);
             }
         }
 
-        private IEnumerable<MethodInfo> GetConfigurableMethods()
+        private void Setup(MemberInfo member, Action action)
+        {
+            var method = member as MethodInfo;
+            var prop = member as PropertyInfo;
+
+            var trackingPath = method?.GetTrackingPath() ?? prop!.GetTrackingPath();
+            var methods = prop?.GetMethods() ?? new[] { method! };
+
+            if (mock.CallBase && !mock.GetInnerType().IsInterface && !methods.Any(m => m.IsAbstract))
+            {
+                HandleCannotSetup(trackingPath, CannotSetupReason.CallBaseNoAbstract);
+                return;
+            }
+
+            var configureInfo = CanBeConfigured(methods);
+            if (!configureInfo.CanConfigure)
+            {
+                HandleCannotSetup(trackingPath, configureInfo.Reason!.Value);
+                return;
+            }
+
+            try
+            {
+                action();                
+                mock.MethodsSetup.Add(trackingPath, member);                               
+            }
+            catch (Exception ex)
+            {
+                mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(CannotSetupReason.Exception, ex));
+            }
+        }
+
+        private void SetupMethod(MethodInfo method)
+        {
+            Setup(method, () => new MethodSetupService(mock, mockedType, method, context).Setup());          
+        }
+
+        private void SetupSingleMethodProperty(PropertyInfo prop)
+        {
+            var method = prop.GetMethods().First();
+
+            Setup(prop, () => new MethodSetupService(mock, mockedType, method, context).Setup());
+        }
+
+        private void SetupAutoProperty(PropertyInfo prop)
+        {
+            Setup(prop, () =>
+            {
+                var propValue = context.Resolve(new AutoMockPropertyRequest(mockedType, prop, tracker));
+                SetupHelpers.SetupAutoProperty(mockedType, prop.PropertyType, mock, prop, propValue);
+            });
+        }
+
+        private IEnumerable<MethodInfo> GetMethods()
         {
             // If "type" is a delegate, return "Invoke" method only and skip the rest of the methods.
             var methods = delegateSpecification.IsSatisfiedBy(mockedType)
                 ? new[] { mockedType.GetTypeInfo().GetMethod("Invoke") }
                 : mockedType.GetAllMethods();
 
-            var propMethods = mockedType.GetAllProperties().SelectMany(p => p.GetAccessors(true));
-            methods = methods.Except(propMethods);
-
-            return methods.Where(m => CanBeConfigured(m));
+            var propMethods = mockedType.GetAllProperties().SelectMany(p => p.GetMethods());
+            return methods.Except(propMethods);
         }
-
-        private IEnumerable<PropertyInfo> GetConfigurableAutoProperties() 
-            => mockedType.GetAllProperties().Where(p => p.HasGetAndSet()).Where(p => CanBeConfigured(p));
-
-        private IEnumerable<PropertyInfo> GetConfigurableSingleMethodProperties()
-            => mockedType.GetAllProperties().Where(p => !p.HasGetAndSet()).Where(m => CanBeConfigured(m));
-
-        private bool CanBeConfigured(PropertyInfo property)
-              => CanBeConfiguredInternal(property.GetAccessors(true), property.GetTrackingPath());        
-
-        private bool CanBeConfigured(MethodInfo method)
-            => CanBeConfiguredInternal(new[] { method }, method.GetTrackingPath());
 
         private void HandleCannotSetup(string trackingPath, CannotSetupReason reason) 
             => mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(reason));
 
-        private void HandleCannotSetup(string trackingPath, Exception ex)
-            => mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(CannotSetupReason.Exception, ex));
-
-
-        private bool CanBeConfiguredInternal(MethodInfo[] methods, string trackingPath)
+        private (bool CanConfigure, CannotSetupReason? Reason) CanBeConfigured(MethodInfo[] methods)
         {
-            if (!mockedType.IsInterface && methods.Any(m => !m.IsOverridable()))
-            {
-                HandleCannotSetup(trackingPath, CannotSetupReason.NonVirtual);
-                return false;
-            }
+            if (!mockedType.IsInterface && methods.Any(m => !m.IsOverridable())) return (false, CannotSetupReason.NonVirtual);
 
-            if (methods.Any(m => m.IsPrivate))
-            {
-                HandleCannotSetup(trackingPath, CannotSetupReason.Private);
-                return false;
-            }
+            if (methods.Any(m => m.IsPrivate)) return (false, CannotSetupReason.Private);           
 
-            if (methods.Any(m => !m.IsPublicOrInternal()))
-            {
-                HandleCannotSetup(trackingPath, CannotSetupReason.Protected);
-                return false;
-            }
+            if (methods.Any(m => !m.IsPublicOrInternal())) return (false, CannotSetupReason.Protected);            
 
-            return true;
+            return (true, null);
         }
     }
 }

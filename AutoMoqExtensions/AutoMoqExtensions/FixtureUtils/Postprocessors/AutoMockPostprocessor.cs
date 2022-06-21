@@ -56,6 +56,7 @@ namespace AutoMoqExtensions.AutoMockUtils
 
             autoMock.DefaultValue = DefaultValue.Mock;
             autoMock.Tracker = mockRequest;
+            autoMock.CallBase = mockRequest.StartTracker.MockShouldCallbase;
 
             mockRequest.SetResult(specimen);
 
