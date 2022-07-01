@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Kernel;
+using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using Moq;
@@ -56,7 +57,7 @@ namespace AutoMoqExtensions.AutoMockUtils
 
             autoMock.DefaultValue = DefaultValue.Mock;
             autoMock.Tracker = mockRequest;
-            autoMock.CallBase = mockRequest.StartTracker.MockShouldCallbase;
+            autoMock.CallBase = !autoMock.GetInnerType().IsDelegate() && mockRequest.StartTracker.MockShouldCallbase;
 
             mockRequest.SetResult(specimen);
 

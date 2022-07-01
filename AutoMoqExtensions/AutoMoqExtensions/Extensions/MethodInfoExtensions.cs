@@ -40,15 +40,41 @@ namespace AutoMoqExtensions.Extensions
             => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name && m != method);
 
         internal static bool HasOverloadSameCount(this MethodInfo method)
-            => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name 
-                                                        && m.GetParameters().Length == method.GetParameters().Length 
+            => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name
+                                                        && m.GetParameters().Length == method.GetParameters().Length
+                                                        && m.IsGenericMethod == method.IsGenericMethod
+                                                        && (!m.IsGenericMethod 
+                                                            || m.GetGenericArguments().Length == method.GetParameters().Length)
                                                         && m != method);
         internal static string GetTrackingPath(this MethodInfo method)
-                => method.Name + method.HasOverloads() switch
+        {
+            var str = method.Name;
+
+            var hasOverloads = method.HasOverloads();
+            var hasSameCount = hasOverloads && method.HasOverloadSameCount();
+
+            if (method.IsGenericMethod && !method.IsGenericMethodDefinition)
+            {
+                // TODO... do we have to be concerned that there will be two different types with the same name?...
+                str += "<" + String.Join(",", method.GetGenericArguments().Select(m => m.Name)) + ">";
+            }
+            else if(method.IsGenericMethodDefinition)
+            {
+                str += hasOverloads switch
                 {
                     false => "",
-                    true when !method.HasOverloadSameCount() => "`" + method.GetParameters().Length,
-                    _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+                    true when hasSameCount => $"<`{method.GetGenericArguments().Length}>",
+                    _ => $"<`{String.Join(",", method.GetGenericArguments().Select(a => a.Name))}>",
                 };
+            }
+
+            return str + hasOverloads switch
+            {
+                false => "",
+                true when hasSameCount => "`" + method.GetParameters().Length,
+                _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+            };
+        }
+             
     }
 }

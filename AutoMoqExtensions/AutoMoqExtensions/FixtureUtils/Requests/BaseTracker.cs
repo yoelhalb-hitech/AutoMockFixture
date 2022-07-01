@@ -98,9 +98,10 @@ namespace AutoMoqExtensions.FixtureUtils
         public override int GetHashCode() => HashCode.Combine(BasePath, StartTracker != this ? StartTracker : (ITracker?)null, 
                 StartTracker == this ? "StartTracker".GetHashCode() * 34526 : (int?)null, Parent, Children);
 
+        // AutoFixture uses this to determine recursion
         public virtual bool Equals(BaseTracker other) => other is not null
-                && other.BasePath == BasePath && other.StartTracker == this.StartTracker
-                && other.Parent == Parent && other.Children.SequenceEqual(Children) && IsRequestEquals(other);
+                && other.StartTracker == this.StartTracker
+                && IsRequestEquals(other);
 
     }
 }

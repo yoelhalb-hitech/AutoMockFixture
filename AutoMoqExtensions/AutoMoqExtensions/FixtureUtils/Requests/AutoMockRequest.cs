@@ -16,10 +16,12 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public AutoMockRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
         {
-        }
             Request = request;
+        }
+
 
         public virtual Type Request { get; }
+        public virtual bool BypassChecks { get; set; }
 
         public override string InstancePath => "";
 
@@ -27,7 +29,9 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
 
         public override bool IsRequestEquals(ITracker other)
-            => other is AutoMockRequest request && request.Request == Request && base.IsRequestEquals(other);
+            => other is AutoMockRequest request 
+                && request.Request == Request && request.BypassChecks == BypassChecks
+                && base.IsRequestEquals(other);
 
         public void Dispose() => SetCompleted();
     }

@@ -51,14 +51,13 @@ namespace AutoMoqExtensions.MockUtils
                 CreateEmptyMethod(tb, method);
             }
 
-            return tb.CreateType();
+            return tb.CreateTypeInfo();
         }
 
         private AssemblyBuilder CreateAssemblyBuilder()
-        {           
+        {
             var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.RunAndCollect);
-            var assemblyNames = interfaces.Union(new[] { parent }).Where(t => t is not null).Select(t => t!.Assembly.FullName.Split(',').First()).Distinct().ToList();
-
+            
             foreach (var refName in AssemblyNames)
             {
                 var builder = new CustomAttributeBuilder(ignoreAccessCtor, new object[] { refName });

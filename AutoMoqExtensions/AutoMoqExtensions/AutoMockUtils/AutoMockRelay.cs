@@ -56,9 +56,8 @@ namespace AutoMoqExtensions.AutoMockUtils
             }
             catch { }
             
-            if (!AutoMockHelpers.IsAutoMock(t)) t = AutoMockHelpers.GetAutoMockType(t);
             // We do direct to bypass the specification test
-            using var directRequest = new AutoMockDirectRequest(t, Fixture) { MockShouldCallbase = true };
+            using var directRequest = new AutoMockRequest(t, Fixture) { MockShouldCallbase = true, BypassChecks = true };
             
             var result = context.Resolve(directRequest);
 

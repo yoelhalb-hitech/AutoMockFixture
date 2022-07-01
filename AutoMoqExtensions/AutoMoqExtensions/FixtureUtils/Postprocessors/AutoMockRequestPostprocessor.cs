@@ -19,7 +19,7 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             if (request is not AutoMockRequest mockRequest)
                         return new NoSpecimen();
 
-            if (!autoMockableSpecification.IsSatisfiedBy(mockRequest.Request))
+            if (!mockRequest.BypassChecks && !autoMockableSpecification.IsSatisfiedBy(mockRequest.Request))
             {
                 try
                 {

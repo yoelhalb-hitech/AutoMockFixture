@@ -15,11 +15,11 @@ namespace AutoMoqExtensions
     {
         public override T Object => GetMocked();
         public virtual ITracker? Tracker { get; set; }
-        public virtual AutoMockFixture Fixture  => Tracker?.StartTracker.Fixture 
+        public virtual AutoMockFixture Fixture => Tracker?.StartTracker.Fixture
                 ?? throw new Exception($"Fixture not set, was this created by `{nameof(AutoMockFixture)}`?");
         public List<IVerifyInfo<T>> VerifyList { get; } = new List<IVerifyInfo<T>>();
         public Dictionary<string, MemberInfo> MethodsSetup { get; } = new Dictionary<string, MemberInfo>();
-        public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; } 
+        public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; }
                                             = new Dictionary<string, CannotSetupMethodException>();
 
         private T? mocked;

@@ -56,7 +56,7 @@ namespace AutoMoqExtensions.MockUtils
             else
             { 
                 Console.WriteLine("\t\t\tBefore return: " + method.ReturnType.Name);
-                var invocationFunc = new InvocationFunc(HandleInvocationFunc);                
+                var invocationFunc = new InvocationFunc(HandleInvocationFunc); // TODO... we have to handle recursion, RecursionGuard won't work for that...           
 
                 var genericArgs = returnType.GetGenericArguments().Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray();
                 var newReturnType = returnType.IsGenericParameter ? MatcherGenerator.GetGenericMatcher(returnType) : returnType.GetGenericTypeDefinition().MakeGenericType(genericArgs);
@@ -65,44 +65,49 @@ namespace AutoMoqExtensions.MockUtils
             }
         }
 
-        private Dictionary<string, object?> resultDict = new Dictionary<string, object?>();
+        private Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
         private object lockObject = new object(); // Not static as it is only local to the object
 
         private object? HandleInvocationFunc(IInvocation invocation)
-        {
-            var tag = invocation.Method.GetGenericArguments().GetTagForTypes();
-            if (resultDict.ContainsKey(tag)) return resultDict[tag];
+        {            
+            if (resultDict.ContainsKey(invocation.Method)) return resultDict[invocation.Method];
 
             lock (resultDict)
             {
-                if (resultDict.ContainsKey(tag)) return resultDict[tag];
-                var result = GenerateResult(invocation, method);
-                resultDict[tag] = result;
+                if (resultDict.ContainsKey(invocation.Method)) return resultDict[invocation.Method];
+                var result = GenerateResult(invocation.Method);
+                resultDict[invocation.Method] = result;
 
                 Console.WriteLine("Resolved type: " + (result?.GetType().FullName ?? "null"));
                 return result;
             }
         }
 
-        private object? GenerateResult(IInvocation invocation, MethodInfo method)
+        private object? GenerateResult(MethodInfo method)
         {
-            var typeGenerics = method.GetGenericArguments().ToList();
-            var returnGenerics = method.ReturnType.GetGenericArguments();
-            var returnGenericsToTypeGenerics = returnGenerics.Select(rg => typeGenerics.First(tg => rg == tg)).ToList();
-            var returnTypes = returnGenericsToTypeGenerics
-                .Select(g => typeGenerics.IndexOf(g))
-                .Select(i => invocation.Method.GetGenericArguments()[i]).ToArray();
+            var trackingPath = method.GetTrackingPath();
 
-            var actualReturnType = method.ReturnType.IsGenericParameter
-                    ? invocation.Method.GetGenericArguments().First()
-                    : method.ReturnType.GetGenericTypeDefinition().MakeGenericType(returnTypes);
-            Console.WriteLine("\t\tResolving return: " + actualReturnType.FullName);
-
-            var request = new AutoMockReturnRequest(mockedType, method, actualReturnType, tracker);
+            if (mock.MethodsNotSetup.ContainsKey(trackingPath))
+                    throw mock.MethodsNotSetup[trackingPath].Exception 
+                    ?? new Exception("Method not setup but without an exception, shouldn't arrive here");
+            
+            var request = new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
             Console.WriteLine("\t\tResolving return for containing path: " + request.Path);
 
-            var result = context.Resolve(request);
-            return result;
-        }    
+            try
+            {
+                var result = context.Resolve(request);        
+
+                if (mock.MethodsSetup.ContainsKey(trackingPath)) throw new Exception("Method was already setup");
+                mock.MethodsSetup.Add(trackingPath, method);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                mock.MethodsNotSetup[trackingPath] = new CannotSetupMethodException(CannotSetupMethodException.CannotSetupReason.Exception, ex);
+                throw;
+            }            
+        }
     }
 }

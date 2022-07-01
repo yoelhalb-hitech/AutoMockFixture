@@ -77,7 +77,7 @@ namespace AutoMoqExtensions.Extensions
 
         internal static string GetTagForTypes(this IEnumerable<Type> types)
         {
-            return string.Join("#", types.OrderBy(t => t.FullName).Select(t => t.FullName));
+            return string.Join("#", types.OrderBy(t => t.AssemblyQualifiedName).Select(t => t.AssemblyQualifiedName));
         }
     }
 }
