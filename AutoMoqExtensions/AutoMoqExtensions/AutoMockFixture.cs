@@ -9,7 +9,7 @@ using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using Moq;
-using MustInitializeAnalyzer.DependencyManagement;
+using DotNetPowerExtensions.DependencyManagement;
 using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;

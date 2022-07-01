@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <IsPackable>false</IsPackable>
 
 	<LangVersion>10.0</LangVersion>
@@ -9,17 +9,27 @@
 	  
     <!-- Avoid ID conflicts with the package project. -->
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>AutoMoqExtensions.Test</_Parameter1>
     </AssemblyAttribute>
-	  <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+	
 
   <ItemGroup>
+    <PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>     
+    </PackageReference>
+	<PackageReference Include="MustInitializeAnalyzer" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+	  
 	<PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
 	<PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
 
@@ -33,12 +43,6 @@
 	  
     <!--<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.8" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />-->
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="MustInitializeAnalyzer">
-      <HintPath>..\..\..\MustInitializeAnalyzer\MustInitializeAnalyzer\MustInitializeAnalyzer\bin\Release\netstandard2.0\MustInitializeAnalyzer.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
