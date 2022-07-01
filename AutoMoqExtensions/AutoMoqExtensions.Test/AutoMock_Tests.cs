@@ -18,6 +18,21 @@ namespace AutoMoqExtensions.Test
             l.Should().BeSameAs(mock.Object);
         }
 
+        public class TestingTarget
+        {
+            public virtual string? Testing { get; set; }
+        }
+
+        [Test]
+        public void Test_AutoMock_SetTarget()
+        {
+            var target = new TestingTarget { Testing = "FromTarget" };
+            var mock = new AutoMock<TestingTarget>();
+            mock.CallBase = true;
+            mock.SetTarget(target);
+            mock.Object.Testing.Should().Be(target.Testing);
+        }
+
         #region Action
 
         [Test]

@@ -22,12 +22,48 @@ namespace AutoMoqExtensions
         public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; }
                                             = new Dictionary<string, CannotSetupMethodException>();
 
+        private static object castleProxyFactoryInstance;
+        private static FieldInfo generatorFieldInfo;
+        static AutoMock()
+        {
+            var moqAssembly = typeof(Mock).Assembly;
+
+            var proxyFactoryType = moqAssembly.GetType("Moq.ProxyFactory");
+            castleProxyFactoryInstance = proxyFactoryType.GetProperty("Instance").GetValue(null);
+
+            var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
+            generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+        private void SetupGenerator() 
+            => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target));
+        private T? target;
+        public bool TrySetTarget(T target)
+        {
+            if (mocked is not null || this.target is not null) return false;
+
+            SetTarget(target);
+            return true;
+        }
+        public void SetTarget(T target)
+        {
+            if (mocked is not null) throw new Exception("Cannot set target when object is already created");
+            if (this.target is not null) throw new Exception("Can only set target once");
+
+            this.target = target;
+        }
+
         private T? mocked;
         public Type GetInnerType() => typeof(T);
         public void EnsureMocked()
         {
             if (mocked is null)
+            {
+                // The generator is static so we have to reduce it to the minimum
+                SetupGenerator();
                 mocked = base.Object;
+                this.target = null;
+                SetupGenerator();
+            } 
         }
         object IAutoMock.GetMocked() => GetMocked();
         public T GetMocked()
@@ -39,10 +75,14 @@ namespace AutoMoqExtensions
 
         public static implicit operator T(AutoMock<T> m) => m.GetMocked();
 
-        public AutoMock(MockBehavior behavior) : base(behavior) { setupUtils = new SetupUtils<T>(this); }
-        public AutoMock(params object?[] args) : base(args) { setupUtils = new SetupUtils<T>(this); }
-        public AutoMock(MockBehavior behavior, params object?[] args) : base(behavior, args) { setupUtils = new SetupUtils<T>(this); }
-        public AutoMock() : base() { setupUtils = new SetupUtils<T>(this); }
+        public AutoMock(MockBehavior behavior) : base(behavior) { setupUtils = new SetupUtils<T>(this); SetupGenerator(); }
+        public AutoMock(params object?[] args) : base(args) { setupUtils = new SetupUtils<T>(this); SetupGenerator(); }
+        public AutoMock(MockBehavior behavior, params object?[] args) : base(behavior, args)
+        {
+            setupUtils = new SetupUtils<T>(this);
+            SetupGenerator();
+        }
+        public AutoMock() : base() { setupUtils = new SetupUtils<T>(this); SetupGenerator(); }
 
         public new void VerifyAll()
         {
