@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AutoMoqExtensions.FixtureUtils.MethodInvokers;
 
 namespace AutoMoqExtensions
 {
@@ -40,7 +41,7 @@ namespace AutoMoqExtensions
         
             // Needs to be after the automock customization, otherwise it will first try this
             Customizations.Add(new Postprocessor(
-                                    new AutoMockMethodInvoker(
+                                    new MethodInvokerWithRecursion(
                                         new CustomConstructorQueryWrapper(
                                             new ModestConstructorQuery())),
                                     new CompositeSpecimenCommand(
@@ -50,6 +51,10 @@ namespace AutoMoqExtensions
 
             Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)))));
             Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute))))); // Considering it scoped as it is per fixture whcih is normally scoped
+
+            Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                            .ForEach(b => Behaviors.Remove(b));
+            Behaviors.Add(new FreezeRecursionBehavior());
         }
 
         internal Cache Cache { get; } = new Cache();
@@ -122,7 +127,7 @@ namespace AutoMoqExtensions
         {
             try
             {
-                var result = new SpecimenContext(this).Resolve(request);
+                var result = new RecursionContext(this).Resolve(request);
                 request.SetCompleted();
 
                 // We will rather deal with the underlying mock for consistance
@@ -133,10 +138,12 @@ namespace AutoMoqExtensions
             }
             catch (ObjectCreationException ex)
             {
-                throw new Exception(@"Unable to create object, please check inner exception for details
-This can happen if the object (or a dependendent object) constructor calls a method or property that has not been setup corretly.
-You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.
-You can also try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
+                throw;
+                // Only use the following if callbase is false, but specified to call the base constructors, so far we don't support that
+//                throw new Exception(@"Unable to create object, please check inner exception for details
+//This can happen if the object (or a dependendent object) constructor calls a method or property that has not been setup corretly.
+//You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.
+//You can also try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
             }
         }
 

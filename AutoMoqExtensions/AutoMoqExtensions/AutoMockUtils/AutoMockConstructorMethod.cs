@@ -23,6 +23,11 @@ namespace AutoMoqExtensions.AutoMockUtils
             var paramsArray = new object[] { parameters.ToArray() };
             return this.ctor.Invoke(paramsArray);
         }
-        
+
+        public object Invoke(IEnumerable<object> parameters, object owner)
+        {
+            var paramsArray = new object[] { parameters.ToArray() };
+            return this.ctor.Invoke(owner, paramsArray);
+        }
     }
 }

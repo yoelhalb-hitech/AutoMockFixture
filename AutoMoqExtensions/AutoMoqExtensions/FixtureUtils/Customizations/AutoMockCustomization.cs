@@ -3,6 +3,7 @@ using AutoFixture.AutoMoq;
 using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Commands;
+using AutoMoqExtensions.FixtureUtils.MethodInvokers;
 using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
@@ -23,7 +24,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new Postprocessor(
                                                 new AutoMockDependenciesPostprocessor(
-                                                    new AutoMockMethodInvoker(
+                                                    new DependencyInjectionMethodinvoker(
                                                         new CustomConstructorQueryWrapper(
                                                             new ModestConstructorQuery()))),
                                                 new CompositeSpecimenCommand(
