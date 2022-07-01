@@ -20,15 +20,12 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 {
                     mock.EnsureMocked();
                 }
-                catch
+                catch(Exception ex)
                 {
-                    if (!mock.CallBase && mock.GetInnerType().IsDelegate()) throw; // Delagates aren't allowed callbase anyway
-
-                    // Sometimes the mocked method doesn't work, either it hasn't been setup because of an error, or it's private/protected, or for other issues
-                    // Similarly if Callbase is true then we might run into an error from the base ctor
-                    mock.CallBase = !mock.CallBase;
-                    mock.EnsureMocked();
-                    mock.CallBase = !mock.CallBase;
+                    throw new Exception(@"Unable to create the object.
+It's possible that changing `CallBase` setting will make a difference.
+Otherwise please read carefully the inner messages.
+Note that the inner messages are not neccesarily the actual error, for example CastleDynamicProxy can report that `it could not find a parameterless constructor` while actually having found more than one...", ex);
                 }
             }
         }

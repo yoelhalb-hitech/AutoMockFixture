@@ -34,8 +34,13 @@ namespace AutoMoqExtensions
             var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
             generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
         }
-        private void SetupGenerator() 
-            => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target));
+        public override bool CallBase { get => base.CallBase; set
+              {
+                if (mocked is not null) throw new Exception("Cannot set callbase after object has been created");
+                base.CallBase = value;
+            } }
+        private void SetupGenerator()
+            => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target, this.CallBase));
         private T? target;
         public bool TrySetTarget(T target)
         {

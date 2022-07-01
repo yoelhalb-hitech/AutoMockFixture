@@ -18,6 +18,27 @@ namespace AutoMoqExtensions.Test
             l.Should().BeSameAs(mock.Object);
         }
 
+        internal class TestingCtor 
+        {
+            public TestingCtor() { throw new Exception(); }        
+        }
+
+        [Test]
+        public void Test_AutoMock_DoesNotCallCtor_WhenNotCallBase()
+        {
+            var mock = new AutoMock<TestingCtor>();
+            mock.CallBase = false;
+            Assert.DoesNotThrow(() => mock.GetMocked());
+        }
+
+        [Test]
+        public void Test_AutoMock_CallsCtor_WhenCallBase()
+        {
+            var mock = new AutoMock<TestingCtor>();
+            mock.CallBase = true;
+            Assert.Catch(() => mock.GetMocked());
+        }
+
         public class TestingTarget
         {
             public virtual string? Testing { get; set; }
