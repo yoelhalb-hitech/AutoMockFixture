@@ -9,7 +9,7 @@ namespace AutoMoqExtensions.FixtureUtils.Specifications
     {
         public TypeMatchSpecification(Type targetType)
         {
-            Console.WriteLine(targetType.Name);
+            Logger.LogInfo(targetType.Name);
             if(targetType is null) throw new ArgumentNullException(nameof(targetType));
 
             TargetType = targetType;

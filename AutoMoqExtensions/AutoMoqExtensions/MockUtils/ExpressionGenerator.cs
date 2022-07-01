@@ -77,11 +77,11 @@ namespace AutoMoqExtensions.MockUtils
                 // e.g., the underlying type of "System.String&" is "System.String"
                 var underlyingType = parameter.ParameterType.GetElementType();
 
-                Console.WriteLine("Out underlying: " + underlyingType.ToString());
+                Logger.LogInfo("Out underlying: " + underlyingType.ToString());
                 // resolve the "out" param from the context
                 var request = new AutoMockOutParameterRequest(mockedType, method, parameter, underlyingType, tracker);
                 object variable = context.Resolve(request);
-                Console.WriteLine("Out underlying result: " + variable.ToString());
+                Logger.LogInfo("Out underlying result: " + variable.ToString());
                 if (variable is OmitSpecimen)
                     return null;
 

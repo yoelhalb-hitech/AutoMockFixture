@@ -35,8 +35,6 @@ namespace AutoMoqExtensions
                                         new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture))),
                                         new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder))))));
 
-
-            // Console.WriteLine("Moqfixture.ctor {0}", Environment.StackTrace);
             Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
         
             // Needs to be after the automock customization, otherwise it will first try this

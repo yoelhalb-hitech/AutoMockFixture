@@ -70,8 +70,9 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
                 return result;
             }
-            catch
+            catch(Exception ex)
             {
+                Logger.LogInfo($"Exception in {nameof(AutoMockRequestPostprocessor)} of type `{ex.GetType().Name}` with message `{ex.Message}` and has inner: {ex.InnerException is not null}");
                 var other = context.Resolve(mockRequest.Request);
                 mockRequest.SetResult(other);
                 return other;

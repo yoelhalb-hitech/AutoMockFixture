@@ -21,9 +21,9 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
             var argsRequest = new AutoMockConstructorArgumentRequest(dependencyRequest.Request, pi, dependencyRequest);
 
-            Console.WriteLine("\t\t\t\t\t\tBefore args: " + pi.Name);
+            Logger.LogInfo("\t\t\t\t\t\tBefore args: " + pi.Name);
             var result = context.Resolve(argsRequest);
-            Console.WriteLine("\t\t\t\t\t\tAfter args: " + result.GetType().FullName);
+            Logger.LogInfo("\t\t\t\t\t\tAfter args: " + result.GetType().FullName);
 
             return result;
         }

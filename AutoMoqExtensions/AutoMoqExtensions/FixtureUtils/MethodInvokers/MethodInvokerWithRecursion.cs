@@ -36,8 +36,8 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
                 methods = methods.Where(m => m is AutoMockConstructorMethod);
 
-                Console.WriteLine("In ctor arg - creating new");
-                Console.WriteLine("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
+                Logger.LogInfo("In ctor arg - creating new");
+                Logger.LogInfo("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
 
                 unformattedObject = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(requestedType);
                 recursionContext.BuilderCache[requestedType] = unformattedObject;

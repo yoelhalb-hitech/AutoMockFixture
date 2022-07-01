@@ -30,11 +30,13 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         public virtual void Execute(object specimen, ISpecimenContext context)
         {
+            Logger.LogInfo("In auto properties");
             if (specimen == null) throw new ArgumentNullException(nameof(specimen));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             foreach (var pi in GetPropertiesWithSet(specimen))
             {
+                Logger.LogInfo("Property: " + pi.Name);
                 try
                 {
                     // If it is already set (possibly by the constructor or if it's static) then no need to set again
@@ -47,6 +49,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
             foreach (var fi in GetFields(specimen))
             {
+                Logger.LogInfo("Field: " + fi.Name);
                 try
                 {
                     // If it is already set (possibly by the constructor or if it's static) then no need to set again
@@ -60,6 +63,8 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi)
         {
+            Logger.LogInfo("In base prop");
+
             // TODO... if we want to have `Create on demend` we have to cache here the original tracker
             var tracker = Fixture.ProcessingTrackerDict.ContainsKey(specimen) ? Fixture.ProcessingTrackerDict[specimen] : new TrackerWithFixture(Fixture);
             var propertyValue = context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));

@@ -34,8 +34,8 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
                 if (recursionContext.BuilderCache.ContainsKey(mockRequest.Request))
                     return recursionContext.BuilderCache[mockRequest.Request]; // We are in recursion
 
-                Console.WriteLine("In ctor arg - creating new");
-                Console.WriteLine("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
+                Logger.LogInfo("In ctor arg - creating new");
+                Logger.LogInfo("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
             }
 
             var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);
@@ -44,11 +44,11 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
             if (recursionContext is not null)
             {
                 recursionContext.BuilderCache[mockRequest.Request] = mock;
-            }            
+            }
 
-            Console.WriteLine("In autmock ctor arg - type is " + mockRequest.Request.FullName);
+            Logger.LogInfo("In autmock ctor arg - type is " + mockRequest.Request.FullName);
 
-            Console.WriteLine("In ctor arg - creating new");
+            Logger.LogInfo("In ctor arg - creating new");
 
             try
             {
@@ -78,9 +78,9 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
         {            
             var argsRequest = new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);
 
-            Console.WriteLine("\t\t\t\t\t\tBefore args: " + pi.Name);
+            Logger.LogInfo("\t\t\t\t\t\tBefore args: " + pi.Name);
             var result = context.Resolve(argsRequest);
-            Console.WriteLine("\t\t\t\t\t\tAfter args: " + result.GetType().FullName);
+            Logger.LogInfo("\t\t\t\t\t\tAfter args: " + result.GetType().FullName);
 
             return result;
         }

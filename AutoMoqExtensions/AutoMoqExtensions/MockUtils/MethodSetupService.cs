@@ -46,16 +46,16 @@ namespace AutoMoqExtensions.MockUtils
                 SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);                
             }
             else if (!method.ReturnType.ContainsGenericParameters)
-            {              
-                Console.WriteLine("\t\t\tBefore return: " + method.ReturnType.Name);
+            {
+                Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
                 var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker));
-                
-                Console.WriteLine("\t\t\tResolved return: " + returnValue.GetType().Name);                
+
+                Logger.LogInfo("\t\t\tResolved return: " + returnValue.GetType().Name);                
                 SetupHelpers.SetupMethodWithResult(mockedType, returnType, mock, methodInvocationLambda, returnValue);            
             }
             else
-            { 
-                Console.WriteLine("\t\t\tBefore return: " + method.ReturnType.Name);
+            {
+                Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
                 var invocationFunc = new InvocationFunc(HandleInvocationFunc); // TODO... we have to handle recursion, RecursionGuard won't work for that...           
 
                 var genericArgs = returnType.GetGenericArguments().Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray();
@@ -78,7 +78,7 @@ namespace AutoMoqExtensions.MockUtils
                 var result = GenerateResult(invocation.Method);
                 resultDict[invocation.Method] = result;
 
-                Console.WriteLine("Resolved type: " + (result?.GetType().FullName ?? "null"));
+                Logger.LogInfo("Resolved type: " + (result?.GetType().FullName ?? "null"));
                 return result;
             }
         }
@@ -87,12 +87,16 @@ namespace AutoMoqExtensions.MockUtils
         {
             var trackingPath = method.GetTrackingPath();
 
+            Logger.LogInfo("In generate result - Is generic definition: " + method.IsGenericMethodDefinition);
+
             if (mock.MethodsNotSetup.ContainsKey(trackingPath))
                     throw mock.MethodsNotSetup[trackingPath].Exception 
                     ?? new Exception("Method not setup but without an exception, shouldn't arrive here");
+
+            Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
             
             var request = new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
-            Console.WriteLine("\t\tResolving return for containing path: " + request.Path);
+            Logger.LogInfo("\t\tResolving return for containing path: " + request.Path);
 
             try
             {

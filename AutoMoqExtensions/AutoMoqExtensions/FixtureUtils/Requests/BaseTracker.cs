@@ -69,6 +69,9 @@ namespace AutoMoqExtensions.FixtureUtils
             if (result is null && Children.Count == 1 && Children[0].InstancePath == "") result = Children[0].Result;
 
             //if (result is null) throw new Exception("Expected result but there isn't"); can actually be null...
+            Logger.LogInfo(this.ToString());
+            Logger.LogInfo(Path);
+
             try
             {
                 childrensPaths = childrenWithResult.SelectMany(c => c.GetChildrensPaths())
@@ -79,6 +82,11 @@ namespace AutoMoqExtensions.FixtureUtils
             }
             catch (Exception ex) 
             {
+                Logger.LogInfo("Error of type: " + ex.GetType().FullName + " - Has Inner: " + (ex.InnerException is not null).ToString());
+                Logger.LogInfo(ex.Message);
+                Logger.LogInfo(this.ToString());
+                Logger.LogInfo(Path);
+                System.Diagnostics.Debugger.Break();
             }
 
             Parent?.UpdateResult();

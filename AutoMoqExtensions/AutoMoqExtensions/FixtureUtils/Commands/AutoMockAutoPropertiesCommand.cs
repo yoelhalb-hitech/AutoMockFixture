@@ -34,7 +34,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             {
                 if (context == null) throw new ArgumentNullException(nameof(context));
 
-                Console.WriteLine("In catch");
+                Logger.LogInfo("In catch");
                 base.Execute(Mock.GetMocked(), context);
             }
 
@@ -42,9 +42,11 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             {
                 try
                 {
+                    Logger.LogInfo("Before Resolved ");
                     var request = new AutoMockPropertyRequest(GetSpecimenType(specimen), pi, Mock.Tracker);
                     var propertyValue = context.Resolve(request);
 
+                    Logger.LogInfo("Resolved property: " + propertyValue.GetType().Name);
 
                     if (propertyValue is NoSpecimen || propertyValue is OmitSpecimen) { return; }
                     else if (propertyValue is null || propertyValue is not IAutoMock mock)
@@ -56,6 +58,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 }
                 catch
                 {
+                    Logger.LogInfo("In catch");
                     base.HandleProperty(specimen, context, pi);
                 }
             }
@@ -64,8 +67,10 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             {
                 try
                 {
+                    Logger.LogInfo("Before field Resolved ");
                     var request = new AutoMockFieldRequest(GetSpecimenType(specimen), fi, Mock.Tracker);
                     var fieldValue = context.Resolve(request);
+                    Logger.LogInfo("Resolved field: " + fieldValue.GetType().Name);
 
                     if (fieldValue is NoSpecimen || fieldValue is OmitSpecimen) { return; }
                     else if (fieldValue is null || fieldValue is not IAutoMock mock)
@@ -77,6 +82,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 }
                 catch
                 {
+                    Logger.LogInfo("In field catch");
                     base.HandleField(specimen, context, fi);
                 }
             }

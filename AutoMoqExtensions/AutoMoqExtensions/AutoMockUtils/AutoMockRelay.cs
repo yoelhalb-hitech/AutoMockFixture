@@ -33,11 +33,11 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (!this.MockableSpecification.IsSatisfiedBy(request))
                 return new NoSpecimen();
 
-            Console.WriteLine("In relay");
-
             var t = request as Type ?? (request as SeededRequest)?.Request as Type;
             if (t is null)
                 return new NoSpecimen();
+
+            Logger.LogInfo($"In relay, for {t.FullName}");
 
             try
             {
