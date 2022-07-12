@@ -24,6 +24,18 @@
   </ItemGroup>
 	
   <ItemGroup>
+	  <Using Include="System" />
+	  <Using Include="System.Linq" />
+	  <Using Include="System.Threading.Tasks" />
+	  <Using Include="System.Collections.Generic" />
+	  <Using Include="AutoFixture.Kernel" />
+	  <Using Include="AutoMoqExtensions.Extensions" />
+	  <Using Include="DotNetPowerExtensions.MustInitialize" />
+	  <Using Include="FluentAssertions" />
+	  <Using Include="NUnit.Framework" />
+  </ItemGroup>
+	
+  <ItemGroup>
 	<PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>     
     </PackageReference>

@@ -37,36 +37,34 @@ namespace AutoMoqExtensions.Extensions
 
         public static bool IsNullAllowed(this Type t) => t.GetDefault() is null;  // If type.GetDefault() is null then null is allowed, otherwise it's not...
 
-        internal static IEnumerable<PropertyInfo> GetAllProperties(this Type type)
-        {
-            IEnumerable<PropertyInfo> result = type.GetProperties(AllBindings);
+        internal static IEnumerable<PropertyInfo> GetAllProperties(this Type type, bool includeBasePrivate = false)
+            => GetAll(type, includeBasePrivate, (t, b) => t.GetProperties(b));
+        internal static IEnumerable<MethodInfo> GetAllMethods(this Type type, bool includeBasePrivate = false)
+            => GetAll(type, includeBasePrivate, (t, b) => t.GetMethods(b));
 
+        internal static IEnumerable<FieldInfo> GetAllFields(this Type type, bool includeBasePrivate = false)
+           => GetAll(type, includeBasePrivate, (t, b) => t.GetFields(b));
+        
+        private static IEnumerable<T> GetAll<T>(this Type type, bool includeBasePrivate, Func<Type, BindingFlags, IEnumerable<T>> func)
+        {
+            var bindings = AllBindings;
+            var isInterface = type.GetTypeInfo().IsInterface;
+            if (includeBasePrivate && !isInterface) bindings |= BindingFlags.DeclaredOnly;
+
+            var result = func(type, bindings);
+            
             // If "type" is an interface, "GetProperties" does not return methods declared on other interfaces extended by "type".
-            if (type.GetTypeInfo().IsInterface)
-                result = result.Concat(type.GetInterfaces().SelectMany(x => x.GetProperties(AllBindings)));
-
-            return result;
-        }
-
-        internal static IEnumerable<MethodInfo> GetAllMethods(this Type type)
-        {
-            IEnumerable<MethodInfo> result = type.GetMethods(AllBindings);
-
-            // If "type" is an interface, "GetMethods" does not return methods declared on other interfaces extended by "type".
-            if (type.GetTypeInfo().IsInterface)
-                result = result.Concat(type.GetInterfaces().SelectMany(x => x.GetMethods(AllBindings)));
-
-            return result;
-        }
-
-        internal static IEnumerable<FieldInfo> GetAllFields(this Type type)
-        {
-            IEnumerable<FieldInfo> result = type.GetFields(AllBindings);
-
-            // If "type" is an interface, "GetProperties" does not return methods declared on other interfaces extended by "type".
-            if (type.GetTypeInfo().IsInterface)
-                result = result.Concat(type.GetInterfaces().SelectMany(x => x.GetFields(AllBindings)));
-
+            if (isInterface)
+                result = result.Concat(type.GetInterfaces().SelectMany(i => func(i, bindings)));
+            else if (includeBasePrivate)
+            {
+                var b = type.BaseType;
+                while (b is not null)
+                {
+                    result = result.Concat(func(b, bindings));
+                    b = b.BaseType;
+                }
+            }
             return result;
         }
 

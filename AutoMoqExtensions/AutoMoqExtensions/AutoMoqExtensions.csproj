@@ -20,6 +20,15 @@
     </AssemblyAttribute>
   </ItemGroup>
 	
+  <ItemGroup>
+	  <Using Include="System" />
+	  <Using Include="System.Linq" />
+	  <Using Include="System.Threading.Tasks" />
+	  <Using Include="System.Collections.Generic" />
+	  <Using Include="AutoFixture.Kernel" />
+	  <Using Include="AutoMoqExtensions.Extensions" />
+	  <Using Include="DotNetPowerExtensions.MustInitialize" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
