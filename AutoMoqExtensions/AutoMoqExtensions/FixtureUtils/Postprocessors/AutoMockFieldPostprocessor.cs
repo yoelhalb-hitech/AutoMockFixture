@@ -19,7 +19,7 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
             var type = fieldRequest.FieldInfo.FieldType;
 
-            if ((!fieldRequest.IsInAutoMockChain && !fieldRequest.IsInAutoMockDepnedencyChain) 
+            if ((!fieldRequest.IsInAutoMockChain && !fieldRequest.IsInAutoMockDepnedencyChain)
                         || !autoMockableSpecification.IsSatisfiedBy(type))
             {
                 var result = context.Resolve(fieldRequest.FieldInfo);

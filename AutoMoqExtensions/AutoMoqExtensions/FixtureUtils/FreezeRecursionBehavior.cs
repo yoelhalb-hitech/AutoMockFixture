@@ -7,7 +7,7 @@ namespace AutoMoqExtensions.FixtureUtils
 {    
     public class FreezeRecursionBehavior : ISpecimenBuilderTransformation
     {
-        private const int DefaultRecursionDepth = 1;
+        private const int DefaultRecursionDepth = 2; // This way the recursion handler will handle it already
         private readonly int recursionDepth;
 
         /// <summary>

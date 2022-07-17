@@ -42,11 +42,28 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
         }
 
         [Test]
-        public void Test_Can_CreateAutoMock_AutoMock_When_NotCallBase()
+        public void Test_Can_CreateAutoMock_AutoMock_When_CallBase()
         {
             var fixture = new AutoMockFixture();
             Test2? obj = null;
             Assert.DoesNotThrow(() => obj = fixture.CreateAutoMock<Test2>());
+
+            obj.Should().NotBeNull();
+            obj.Should().BeAssignableTo<Test2>();
+            AutoMockHelpers.GetFromObj(obj!).Should().NotBeNull();
+
+            obj!.Test.Should().NotBeNull();
+            obj!.Test.Should().BeAssignableTo<Test1>();
+
+            AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull();
+        }
+
+        [Test]
+        public void Test_Can_CreateAutoMock_AutoMock_When_NotCallBase()
+        {
+            var fixture = new AutoMockFixture();
+            Test2? obj = null;
+            Assert.DoesNotThrow(() => obj = fixture.CreateAutoMock<Test2>(true));
 
             obj.Should().NotBeNull();
             obj.Should().BeAssignableTo<Test2>();
@@ -72,7 +89,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             obj!.Test.Should().NotBeNull();
             obj!.Test.Should().BeAssignableTo<Test1>();
 
-            AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull();
+            AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull(); // Because it is dependency injection
         }
     }
 }

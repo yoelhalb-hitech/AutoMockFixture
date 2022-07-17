@@ -15,7 +15,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public string InstancePath { get; }
         public string BasePath { get; }
         public object? Result { get; }
-        public void SetResult(object result);
+        public void SetResult(object? result);
         public bool IsCompleted { get; }
         public void SetCompleted();
         public void UpdateResult();

@@ -5,11 +5,11 @@ using System.Text;
 
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 {
-    internal class InternalTestClass
+    internal abstract class InternalAbstractSimpleTestClass
     {
         internal string? InternalTest { get; set; }
     }
-    internal class InternalTestClass1
+    internal class InternalSimpleTestClass
     {
         internal string? InternalTest { get; set; }
     }
@@ -22,7 +22,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
     {
         internal abstract string? InternalTestMethod();
     }
-    internal abstract class InternalTestClass2
+    internal abstract class InternalAbstractMethodTestClass
     {
         internal string? InternalTest { get; set; }
         // TODO... for setting up internal methods we need to have InternalsVisibleTo
@@ -36,19 +36,19 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
     internal class AutoMockTestClass
     {
-        public readonly InternalTestClass TestCtorArg;// This way we will get the one that was passed
-        public AutoMockTestClass(InternalTestClass testArg)
+        public readonly InternalAbstractSimpleTestClass TestCtorArg;// This way we will get the one that was passed
+        public AutoMockTestClass(InternalAbstractSimpleTestClass testArg)
         {
             this.TestCtorArg = testArg;
         }
-        public InternalTestClass1? TestClassProp { get; set; }
-        public virtual InternalTestClass2? TestClassPropGet { get; }
-        public InternalTestClass? TestClassField;
+        public InternalSimpleTestClass? TestClassProp { get; set; }
+        public virtual InternalAbstractMethodTestClass? TestClassPropGet { get; }
+        public InternalAbstractSimpleTestClass? TestClassField;
     }
 
     internal class AutoMockTestClass1 : AutoMockTestClass
     {
-        public AutoMockTestClass1(InternalTestClass testArg) : base(testArg)
+        public AutoMockTestClass1(InternalAbstractSimpleTestClass testArg) : base(testArg)
         {
         }
     }

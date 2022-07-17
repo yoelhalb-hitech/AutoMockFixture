@@ -22,19 +22,20 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
             if (context is null) throw new ArgumentNullException(nameof(context));
 
             var requestedType = GetRequestedType(request);
-            if(requestedType is null) return new NoSpecimen();
+            if(requestedType is null || requestedType.IsInterface 
+                    || requestedType.IsAbstract || requestedType.IsGenericTypeDefinition) return new NoSpecimen();
 
             var methods = Query.SelectMethods(requestedType);
 
             object? unformattedObject = null;
             var recursionContext = context as RecursionContext;
 
-            if (recursionContext is not null && methods.Any(m => m is AutoMockConstructorMethod))
+            if (recursionContext is not null && methods.Any(m => m is CustomConstructorMethod))
             {
                 if (recursionContext.BuilderCache.ContainsKey(requestedType)) 
                     return recursionContext.BuilderCache[requestedType]; // We are in recursion
 
-                methods = methods.Where(m => m is AutoMockConstructorMethod);
+                methods = methods.Where(m => m is CustomConstructorMethod);
 
                 Logger.LogInfo("In ctor arg - creating new");
                 Logger.LogInfo("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
@@ -53,7 +54,7 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
                     {
                         if(unformattedObject is null) return ci.Invoke(paramValues.ToArray());
 
-                        if (ci is not AutoMockConstructorMethod cm) throw new Exception("Should not arrive here");
+                        if (ci is not CustomConstructorMethod cm) throw new Exception("Should not arrive here");
 
                         cm.Invoke(paramValues.ToArray(), unformattedObject);
 
@@ -71,7 +72,7 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
         protected virtual Type? GetRequestedType(object request) => request as Type;
         protected virtual object ResolveParamater(object request, ParameterInfo pi, ISpecimenContext context) 
-            => context.Resolve(pi);
+            => context.Resolve(pi.ParameterType);
 
         protected virtual bool IsValueValid(object value) => !(value is NoSpecimen) && !(value is OmitSpecimen);
     }

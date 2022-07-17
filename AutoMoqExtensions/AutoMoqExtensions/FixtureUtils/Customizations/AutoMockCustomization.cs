@@ -4,6 +4,7 @@ using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Commands;
 using AutoMoqExtensions.FixtureUtils.MethodInvokers;
+using AutoMoqExtensions.FixtureUtils.MethodQueries;
 using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
@@ -22,11 +23,10 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             if (fixture == null || fixture is not AutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                            new Postprocessor(
+                                            new PostprocessorWithRecursion(
                                                 new AutoMockDependenciesPostprocessor(
                                                     new DependencyInjectionMethodinvoker(
-                                                        new CustomConstructorQueryWrapper(
-                                                            new ModestConstructorQuery()))),
+                                                        new CustomModestConstructorQuery())),
                                                 new CompositeSpecimenCommand(
                                                     new CacheCommand(mockFixture.Cache),
                                                     new CustomAutoPropertiesCommand(mockFixture))),
@@ -60,14 +60,13 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
 
             ISpecimenBuilder mockBuilder = new AutoMockPostprocessor(
                                               new AutoMockMethodInvoker(
-                                                 new CustomConstructorQueryWrapper(
-                                                    new AutoMockConstructorQuery())));
+                                                new AutoMockConstructorQuery()));
 
             // If members should be automatically configured, wrap the builder with members setup postprocessor.
             if (ConfigureMembers)
             {
                 mockBuilder = new FilteringSpecimenBuilder(
-                                    new Postprocessor(
+                                    new PostprocessorWithRecursion(
                                         builder: mockBuilder,
                                         command: new CompositeSpecimenCommand(
                                                     new CacheCommand(mockFixture.Cache),
@@ -83,6 +82,11 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             }
 
             fixture.Customizations.Add(mockBuilder);
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new Postprocessor(
+                                                new LastResortBuilder(),
+                                                new CacheCommand(mockFixture.Cache)),                       
+                                            new TypeMatchSpecification(typeof(IRequestWithType))));
 
             fixture.ResidueCollectors.Add(new AutoMockRelay(mockFixture));
 

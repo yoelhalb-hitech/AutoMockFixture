@@ -37,10 +37,16 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
                 Logger.LogInfo("In ctor arg - creating new");
                 Logger.LogInfo("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
             }
-
+            
             var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);
             if (!mockRequest.StartTracker.MockShouldCallbase) return mock;
 
+            var methods = Query.SelectMethods(mockRequest.Request);
+
+            // When `CallBase = false` AutoMock will create us a default ctor
+            // However we don't want to do it if there is a default ctor as in this case Automock will oevrride the default ctor
+            if (methods.Any(m => !m.Parameters.Any())) mock.CallBase = false;
+                        
             if (recursionContext is not null)
             {
                 recursionContext.BuilderCache[mockRequest.Request] = mock;
@@ -52,15 +58,18 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
             try
             {
-                foreach (var ci in Query.SelectMethods(mockRequest.Request))
+                foreach (var ci in methods)
                 {
                     var paramValues = (from pi in ci.Parameters select ResolveParamater(mockRequest, pi, context)).ToList();
 
                     if (paramValues.All(IsValueValid))
                     {
-                        if (ci is not AutoMockConstructorMethod cm) throw new Exception("Should not arrive here");
+                        if (ci is not CustomConstructorMethod cm) throw new Exception("Should not arrive here");
 
                         cm.Invoke(paramValues.ToArray(), mock.GetMocked());
+
+                        ((ISetCallBase)mock).ForceSetCallbase(!mock.GetInnerType().IsDelegate()
+                                            && mockRequest.StartTracker.MockShouldCallbase);
 
                         return mock;
                     }                       

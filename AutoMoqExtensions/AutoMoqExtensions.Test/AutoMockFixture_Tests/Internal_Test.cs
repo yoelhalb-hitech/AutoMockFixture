@@ -14,10 +14,10 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<InternalTestClass>();
+            var obj = fixture.Create<InternalSimpleTestClass>();
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeOfType<InternalTestClass>();
+            obj.Should().BeOfType<InternalSimpleTestClass>();
 
             obj.InternalTest.Should().NotBeNull();
         }
@@ -31,7 +31,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             var obj = fixture.Create<InternalTestFields>();
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeOfType<InternalTestClass>();
+            obj.Should().BeOfType<InternalTestFields>();
 
             obj.InternalTest.Should().NotBeNull();
         }
@@ -45,7 +45,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             var obj = fixture.Create<InternalTestMethods>();
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeOfType<InternalTestClass>();
+            obj.Should().BeAssignableTo<InternalTestMethods>();
 
             obj.InternalTestMethod().Should().NotBeNull();
         }

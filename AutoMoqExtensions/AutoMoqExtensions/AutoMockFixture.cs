@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoMoqExtensions.FixtureUtils.MethodInvokers;
+using System.Collections;
+using System.Reflection;
 
 namespace AutoMoqExtensions
 {
@@ -24,8 +26,46 @@ namespace AutoMoqExtensions
     /// </summary>
     public partial class AutoMockFixture : Fixture
     {
+        private readonly static MethodInfo replaceNodeMethod;
+        private readonly static FieldInfo graphField;
+        private readonly static MethodInfo updateGraphAndSetupAdapterMethod;
+        
+        static AutoMockFixture()
+        {
+            replaceNodeMethod = typeof(SpecimenBuilderNode)
+                .GetMethod("ReplaceNodes", Extensions.TypeExtensions.AllBindings, null, new Type[]
+                {
+                    typeof(ISpecimenBuilderNode),
+                    typeof(ISpecimenBuilderNode),
+                    typeof(Func<ISpecimenBuilderNode, bool>),
+                }, null);
+            
+            graphField = typeof(Fixture).GetField("graph", Extensions.TypeExtensions.AllBindings);
+            
+            updateGraphAndSetupAdapterMethod = typeof(Fixture).GetMethod("UpdateGraphAndSetupAdapters", Extensions.TypeExtensions.AllBindings, null, new Type[]
+            {
+                typeof(ISpecimenBuilderNode),
+            }, null);
+        }
         public AutoMockFixture(bool configureMembers = true, bool generateDelegates = true)
         {
+            var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this));
+            
+            var newAutoProperties = new AutoPropertiesTarget(
+                                        new PostprocessorWithRecursion(
+                                            new CompositeSpecimenBuilder(
+                                                engine,
+                                                new MultipleRelay { Count = this.RepeatCount }),
+                                            new CompositeSpecimenCommand(
+                                                new CacheCommand(this.Cache),
+                                                new CustomAutoPropertiesCommand(this)),
+                                            new AnyTypeSpecification()));
+            
+            var currentGraph = graphField.GetValue(this);
+            Func<ISpecimenBuilderNode, bool> matcher = node => node is AutoPropertiesTarget;
+            var newGraph = replaceNodeMethod.Invoke(null, new[] { currentGraph, newAutoProperties, matcher }) as ISpecimenBuilderNode;
+            updateGraphAndSetupAdapterMethod.Invoke(this, new[] { newGraph });
+            
             Customizations.Add(new CachePostprocessor(Cache));
 
             Customizations.Add(new FilteringSpecimenBuilder(
@@ -37,16 +77,6 @@ namespace AutoMoqExtensions
 
             Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
         
-            // Needs to be after the automock customization, otherwise it will first try this
-            Customizations.Add(new Postprocessor(
-                                    new MethodInvokerWithRecursion(
-                                        new CustomConstructorQueryWrapper(
-                                            new ModestConstructorQuery())),
-                                    new CompositeSpecimenCommand(
-                                        new CacheCommand(this.Cache),
-                                        new CustomAutoPropertiesCommand(this)),
-                                    new AnyTypeSpecification()));
-
             Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)))));
             Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute))))); // Considering it scoped as it is per fixture whcih is normally scoped
 
@@ -74,7 +104,15 @@ namespace AutoMoqExtensions
         {
             if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
 
-            if (AutoMockHelpers.IsAutoMock(t)) return Execute(new AutoMockDirectRequest(t, tracker));
+            if (AutoMockHelpers.IsAutoMock(t))
+            {
+                var inner = AutoMockHelpers.GetMockedType(t)!;
+
+                if (AutoMockHelpers.IsAutoMockAllowed(inner))
+                    return Execute(new AutoMockDirectRequest(t, tracker));
+
+                throw new InvalidOperationException($"{AutoMockHelpers.GetMockedType(t)!.FullName} cannot be AutoMock");
+            }
 
             return Execute(new AutoMockDependenciesRequest(t, tracker));
         }
@@ -95,31 +133,39 @@ namespace AutoMoqExtensions
         internal object Create(Type t)
         {
             if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
+            
+            if (AutoMockHelpers.IsAutoMock(t))
+            {
+                var inner = AutoMockHelpers.GetMockedType(t)!;
+                
+                if(AutoMockHelpers.IsAutoMockAllowed(inner)) 
+                    return Execute(new AutoMockDirectRequest(t, this));
 
-            if (AutoMockHelpers.IsAutoMock(t)) return Execute(new AutoMockDirectRequest(t, this));
-
+                throw new InvalidOperationException($"{AutoMockHelpers.GetMockedType(t)!.FullName} cannot be AutoMock");
+            }
+            
             return Execute(new AutoMockDependenciesRequest(t, this));
         }
-        public object CreateAutoMock(Type t)
+        public object CreateAutoMock(Type t, bool noCallBase = false)
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
-            var result = Execute(new AutoMockRequest(t, this));
+            var result = Execute(new AutoMockRequest(t, this) { MockShouldCallbase = !noCallBase });
 
             return AutoMockHelpers.GetFromObj(result)!.GetMocked(); // It appears that the cast operators only work when statically typed
         }
-        public T CreateAutoMock<T>() where T : class => (T)CreateAutoMock(typeof(T));
+        public T CreateAutoMock<T>(bool noCallBase = false) where T : class => (T)CreateAutoMock(typeof(T), noCallBase);
 
         #endregion
 
         #region Utils
 
-        internal List<ConstructorArgumentValue> ConstructorArgumentValues = new List<ConstructorArgumentValue>();
+        internal List<ConstructorArgumentValue> ConstructorArgumentValues = new();
 
         internal ITracker? GetTracker(object obj) => TrackerDict[AutoMockHelpers.GetFromObj(obj) ?? obj];
 
-        internal Dictionary<object, ITracker> TrackerDict = new Dictionary<object, ITracker>();
-        internal Dictionary<object, ITracker> ProcessingTrackerDict = new Dictionary<object, ITracker>(); // To track while processing
+        internal Dictionary<object, ITracker> TrackerDict = new();
+        internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
         
         private object Execute(ITracker request)
         {

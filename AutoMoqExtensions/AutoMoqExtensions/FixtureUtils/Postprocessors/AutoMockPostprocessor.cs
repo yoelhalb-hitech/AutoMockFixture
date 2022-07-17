@@ -57,7 +57,6 @@ namespace AutoMoqExtensions.AutoMockUtils
 
             autoMock.DefaultValue = DefaultValue.Mock;
             autoMock.Tracker = mockRequest;
-            autoMock.CallBase = !autoMock.GetInnerType().IsDelegate() && mockRequest.StartTracker.MockShouldCallbase;
 
             mockRequest.SetResult(specimen);
 

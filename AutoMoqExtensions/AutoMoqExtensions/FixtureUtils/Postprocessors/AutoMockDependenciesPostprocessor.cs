@@ -25,22 +25,50 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             if (request is not AutoMockDependenciesRequest dependencyRequest)
                 return new NoSpecimen();
 
-            var specimen = Builder.Create(request, context);
-            if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
+            if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)           
+                return TryAutoMock(dependencyRequest, context);            
+
+            try
             {
+                var specimen = Builder.Create(request, context);
+                if (specimen is NoSpecimen || specimen is OmitSpecimen) return TryAutoMock(dependencyRequest, context);
+                
+                if (specimen is null)
+                {
+                    dependencyRequest.SetResult(specimen);
+                    return specimen;
+                }
+
+                if (specimen.GetType() != dependencyRequest.Request)
+                {
+                    var result = new NoSpecimen();
+                    dependencyRequest.SetResult(result);
+                    return result;
+                }
+
                 dependencyRequest.SetResult(specimen);
                 return specimen;
             }
-
-            if (specimen.GetType() != dependencyRequest.Request)
+            catch
             {
-                var result = new NoSpecimen();
-                dependencyRequest.SetResult(result);
-                return result;
+                return TryAutoMock(dependencyRequest, context);
             }
+        }
 
-            dependencyRequest.SetResult(specimen);
-            return specimen;
+        private object? TryAutoMock(AutoMockDependenciesRequest dependencyRequest, ISpecimenContext context)
+        {
+            // Can't leave it for the relay as we want the dependencies mocked
+            try
+            {
+                var autoMockRequest = new AutoMockRequest(dependencyRequest.Request, dependencyRequest);
+                var autoMockResult = context.Resolve(autoMockRequest);
+                dependencyRequest.SetResult(autoMockResult);
+                return autoMockResult;
+            }
+            catch
+            {
+                return new NoSpecimen();
+            }
         }
     }
 }

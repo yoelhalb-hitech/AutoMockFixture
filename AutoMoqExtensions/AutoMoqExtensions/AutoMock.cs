@@ -11,7 +11,11 @@ using System.Text;
 
 namespace AutoMoqExtensions
 {
-    public partial class AutoMock<T> : Mock<T>, IAutoMock where T : class
+    internal interface ISetCallBase
+    {
+        void ForceSetCallbase(bool value);
+    }
+    public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : class
     {
         public override T Object => GetMocked();
         public virtual ITracker? Tracker { get; set; }
@@ -39,6 +43,8 @@ namespace AutoMoqExtensions
                 if (mocked is not null) throw new Exception("Cannot set callbase after object has been created");
                 base.CallBase = value;
             } }
+        void ISetCallBase.ForceSetCallbase(bool value) => base.CallBase = value;
+       
         private void SetupGenerator()
             => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target, this.CallBase));
         private T? target;

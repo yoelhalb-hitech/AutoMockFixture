@@ -29,7 +29,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             return from ci in mockType.GetPublicAndProtectedConstructors()
                    let paramInfos = ci.GetParameters()
                    orderby paramInfos.Length ascending
-                   select new AutoMockConstructorMethod(ci, paramInfos) as IMethod;
+                   select new CustomConstructorMethod(ci) as IMethod;
         }
     }
 }

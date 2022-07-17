@@ -34,17 +34,18 @@ namespace AutoMoqExtensions.AutoMockUtils
 
         internal static bool IsAutoMockAllowed(Type t)
         {
-           
-            if (t is null || t.IsPrimitive || t == typeof(string) || t.IsValueType
-                        || t == typeof(Array) || typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
-                        //|| typeof(IEnumerable).IsAssignableFrom(t) // TODO... we need to handle better this
-                        || t == typeof(IntPtr) || t == typeof(UIntPtr)
-                        //|| (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
-                        //|| t == typeof(Mock)
-                        //|| (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(AutoMock<>))
-                        //|| (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
+            if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType || t.IsSealed
+                        || t == typeof(Array) 
+                        || typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
+                        || t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))
+                        // This way we cover all different Tuple types...
+                        || (t.Assembly == typeof(Tuple).Assembly) && t.FullName.StartsWith(typeof(Tuple).FullName)
+                        || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName.StartsWith(typeof(ValueTuple).FullName)
+                        
+                        || t == typeof(IntPtr) || t == typeof(UIntPtr)        
+                        || typeof(Mock).IsAssignableFrom(t)
                         || typeof(Type).IsAssignableFrom(t)
-                        || (t.Assembly == typeof(Mock).Assembly && !typeof(Mock).IsAssignableFrom(t))
+                        || t.Assembly == typeof(Mock).Assembly
                         || typeof(IFixture).IsAssignableFrom(t) || typeof(IAutoMock).IsAssignableFrom(t) || typeof(ITracker).IsAssignableFrom(t)
                         // TODO...have to figure out why it has a problem to mock it and hwo we can expect it in general
                         //     but maybe with our CustomMockVirtualMethodsCommand it is already fixed
@@ -52,6 +53,15 @@ namespace AutoMoqExtensions.AutoMockUtils
             {
                 return false;
             }
+
+            if (t.IsGenericType && new[]
+{
+                typeof(KeyValuePair<,>),
+                typeof(IAsyncEnumerable<>),
+                typeof(Nullable<>),
+                typeof(AutoMock<>),
+            }.Contains(t.GetGenericTypeDefinition()))
+                return false;
 
             return true;            
         }

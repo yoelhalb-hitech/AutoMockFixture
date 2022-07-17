@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests
 {
-    internal class AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracker
+    internal class AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracker, IRequestWithType
     {
         public AutoMockDependenciesRequest(Type request, ITracker tracker) : base(tracker.StartTracker.Fixture, tracker)
         {
