@@ -37,24 +37,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (t is null)
                 return new NoSpecimen();
 
-            Logger.LogInfo($"In relay, for {t.FullName}");
-
-            try
-            {
-                if(!t.IsInterface && !t.IsAbstract)
-                {
-                    // Do MockShouldCallbase so it should have the expected behaviour
-                    var dependeciesRequest = new AutoMockDependenciesRequest(t, Fixture) { MockShouldCallbase = true };
-                    var dependeciesResult = context.Resolve(dependeciesRequest);
-
-                    if (dependeciesResult is not NoSpecimen)
-                    {
-                        HandleResult(dependeciesResult, dependeciesRequest, context);
-                        return dependeciesResult;
-                    }
-                }
-            }
-            catch { }
+            Logger.LogInfo($"In relay, for {t.FullName}");      
             
             // We do direct to bypass the specification test
             using var directRequest = new AutoMockRequest(t, Fixture) { MockShouldCallbase = true, BypassChecks = true };
