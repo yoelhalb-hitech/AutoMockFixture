@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 using AutoMoqExtensions.FixtureUtils.Commands;
 using AutoMoqExtensions.FixtureUtils.MethodInvokers;
 using AutoMoqExtensions.FixtureUtils.MethodQueries;
@@ -21,6 +22,24 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
         public void Customize(IFixture fixture)
         {
             if (fixture == null || fixture is not AutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                new PostprocessorWithRecursion(
+                                    new EnumerableBuilder(),
+                                    new CacheCommand(mockFixture.Cache)),
+                                new TypeMatchSpecification(typeof(IRequestWithType))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                new PostprocessorWithRecursion(
+                                    new TaskBuilder(),
+                                    new CacheCommand(mockFixture.Cache)),
+                                new TypeMatchSpecification(typeof(IRequestWithType))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                new PostprocessorWithRecursion(
+                                    new TupleBuilder(),
+                                    new CacheCommand(mockFixture.Cache)),
+                                new TypeMatchSpecification(typeof(IRequestWithType))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new PostprocessorWithRecursion(
