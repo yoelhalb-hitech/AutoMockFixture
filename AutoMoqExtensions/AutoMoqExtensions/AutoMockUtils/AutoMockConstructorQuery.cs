@@ -16,15 +16,13 @@ namespace AutoMoqExtensions.AutoMockUtils
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            if (!AutoMockHelpers.IsAutoMock(type)) return Enumerable.Empty<IMethod>();
+            if (!AutoMockHelpers.IsAutoMock(type)) throw new ArgumentOutOfRangeException(nameof(type));
 
             var mockType = AutoMockHelpers.GetMockedType(type);
-            if(mockType is null) return Enumerable.Empty<IMethod>();
+            if(mockType is null) throw new ArgumentOutOfRangeException(nameof(type));
 
             if (mockType.GetTypeInfo().IsInterface || DelegateSpecification.IsSatisfiedBy(mockType))
-            {
-                return new[] { new ConstructorMethod(type.GetDefaultConstructor()) };
-            }
+                return Enumerable.Empty<IMethod>();
 
             return from ci in mockType.GetPublicAndProtectedConstructors()
                    let paramInfos = ci.GetParameters()

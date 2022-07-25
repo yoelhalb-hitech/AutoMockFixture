@@ -6,7 +6,7 @@
 
 	<LangVersion>10.0</LangVersion>
 	<Nullable>enable</Nullable>
-	  
+
     <!-- Avoid ID conflicts with the package project. -->
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
     <Platforms>AnyCPU;x64</Platforms>
@@ -34,6 +34,7 @@
     <PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>     
     </PackageReference>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
 	<PackageReference Include="MustInitializeAnalyzer" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

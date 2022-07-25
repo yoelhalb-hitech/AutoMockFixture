@@ -1,14 +1,35 @@
-﻿using FluentAssertions;
+﻿using AutoMoqExtensions.Test.AutoMockFixture_Tests;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace AutoMoqExtensions.Test
 {
     public class AutoMock_Tests
     {
+        [Test]
+        public void Test_ResetGenerator()
+        {
+            var moqAssembly = typeof(Mock).Assembly;
+
+            var proxyFactoryType = moqAssembly.GetType("Moq.ProxyFactory");
+            var castleProxyFactoryInstance = proxyFactoryType!.GetProperty("Instance")!.GetValue(null);
+
+            var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
+            var generatorFieldInfo = castleProxyFactoryType!.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
+            
+            var originalProxyGenerator = generatorFieldInfo!.GetValue(castleProxyFactoryInstance);
+
+            var mock = new AutoMock<AutoMockTestClass1>();
+            var obj = mock.Object;
+
+            generatorFieldInfo!.GetValue(castleProxyFactoryInstance).Should().Be(originalProxyGenerator);
+        }
+
         [Test]
         public void Test_ImplicitConversion()
         {

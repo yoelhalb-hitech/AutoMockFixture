@@ -5,13 +5,24 @@ using System.Text;
 
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 {
+    internal interface InternalReadOnlyTestInterface
+    {
+        internal virtual string? InternalTest => null;
+    }
+
     internal abstract class InternalAbstractSimpleTestClass
     {
-        internal string? InternalTest { get; set; }
+        internal virtual string? InternalTest { get; set; }
+        internal virtual string? NonAbstractMethod() => null;
+        internal virtual int? NonAbstractWithValueMethod() => 10;
+    }
+    internal abstract class InternalAbstractReadonlyPropertyClass
+    {
+        internal abstract string? InternalTest { get; }
     }
     internal class InternalSimpleTestClass
     {
-        internal string? InternalTest { get; set; }
+        internal virtual string? InternalTest { get; set; }
     }
     internal class InternalTestFields
     {
@@ -34,10 +45,10 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
                                                                //public string TestOutParam1(out string test1) => test1 = "43";
     }
 
-    internal class AutoMockTestClass
+    internal class WithCtorArgsTestClass
     {
         public readonly InternalAbstractSimpleTestClass TestCtorArg;// This way we will get the one that was passed
-        public AutoMockTestClass(InternalAbstractSimpleTestClass testArg)
+        public WithCtorArgsTestClass(InternalAbstractSimpleTestClass testArg)
         {
             this.TestCtorArg = testArg;
         }
@@ -46,7 +57,16 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
         public InternalAbstractSimpleTestClass? TestClassField;
     }
 
-    internal class AutoMockTestClass1 : AutoMockTestClass
+    internal class WithCtorNoArgsTestClass
+    {
+        public readonly int TestCtor;
+        public WithCtorNoArgsTestClass()
+        {
+            this.TestCtor = 25;
+        }
+    }
+
+    internal class AutoMockTestClass1 : WithCtorArgsTestClass
     {
         public AutoMockTestClass1(InternalAbstractSimpleTestClass testArg) : base(testArg)
         {
@@ -58,14 +78,14 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
     public class SingletonUserClass
     {
-        public SingletonClass Class1 { get; }
-        public SingletonClass Class2 { get; }
+        public SingletonClass Class1 { get; } // Non virtual to only work with the ctor
+        public SingletonClass Class2 { get; } // Non virtual to only work with the ctor
         public SingletonUserClass(SingletonClass class1, SingletonClass class2)
         {
             Class1 = class1;
             Class2 = class2;
         }
-        public SingletonClass? SingletonProp { get; set; }
+        public virtual SingletonClass? SingletonProp { get; set; }
         public virtual SingletonClass? SingletonPropGet { get; }
         public SingletonClass? SingletonField;
     }

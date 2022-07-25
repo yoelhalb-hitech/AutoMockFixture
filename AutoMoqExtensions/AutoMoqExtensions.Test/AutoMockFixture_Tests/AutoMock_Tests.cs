@@ -8,20 +8,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 {
     internal class AutoMock_Tests
     {
-        public void Test_AutoMockRelay_NotMessingUp_BugRepro()
-        {
-            var fixture = new AutoMockFixture();
-            // Act
-            var obj = fixture.Create<InternalSimpleTestClass>();
 
-            obj.Should().NotBeNull();
-            obj.InternalTest.Should().NotBeNullOrWhiteSpace();
-
-            obj.InternalTest.Should().StartWith(nameof(InternalSimpleTestClass.InternalTest));
-
-            Assert.DoesNotThrow(() => Guid.Parse(obj.InternalTest!.Replace(nameof(InternalSimpleTestClass.InternalTest), "")));
-
-        }
 
         [Test]
         public void Test_AutoMock_Abstract()
@@ -37,122 +24,20 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
         }
 
         [Test]
-        public void Test_AutoMock_Abstract_WithCallBase()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-            // Act
-            var obj = fixture.Create<AutoMock<InternalAbstractMethodTestClass>>();
-            // Assert
-            obj.Should().NotBeNull();
-            obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
-            obj.GetMocked().InternalTest.Should().NotBeNull();
-        }
-
-        [Test]
-        public void Test_NonAutoMock_Abstract_ViaRelay()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-            // Act
-            var obj = fixture.Create<InternalAbstractMethodTestClass>();
-            // Assert
-            obj.Should().NotBeNull();
-            obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();
-            var mock = AutoMockHelpers.GetAutoMock(obj);
-            mock.Should().NotBeNull();
-            obj.InternalTest.Should().NotBeNull();
-        }
-
-        [Test]
-        public void Test_AutoMock_Array()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-           
-            // Act
-            var obj = fixture.Create<AutoMock<InternalAbstractMethodTestClass>[]>();
-            // Assert
-            obj.Should().NotBeNull();
-            obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>[]>();
-            obj.Length.Should().Be(3);
-            obj.First().Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
-            obj.First().GetMocked().Should().NotBeNull(); 
-            obj.First().GetMocked().InternalTest.Should().NotBeNull();
-        }
-
-        [Test]
-        public void Test_NonAutoMock_Tuple()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-           
-            // Act
-            var obj = fixture.Create<Tuple<AutoMock<InternalAbstractMethodTestClass>, InternalSimpleTestClass, InternalAbstractSimpleTestClass>>();
-            // Assert
-            obj.Should().NotBeNull();
-            obj.Should().BeOfType<Tuple<AutoMock<InternalAbstractMethodTestClass>, InternalSimpleTestClass, InternalAbstractSimpleTestClass>>();
-            obj.Item1.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
-            obj.Item1.GetMocked().Should().NotBeNull();
-            obj.Item1.GetMocked().InternalTest.Should().NotBeNull();
-            obj.Item2.Should().BeOfType<InternalSimpleTestClass>();
-            obj.Item2.Should().NotBeNull();
-            obj.Item2.InternalTest.Should().NotBeNull();
-        }
-
-        [Test]
-        public void Test_AutoMock_Task()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-            // Act
-            Assert.Throws<InvalidOperationException>(() => fixture.Create<AutoMock<Task<InternalAbstractMethodTestClass>>>());
-        }
-
-        [Test]
-        public void Test_NonAutoMock_Array()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-
-            // Act
-            var obj = fixture.Create<InternalSimpleTestClass[]>();
-            // Assert
-            obj.Should().NotBeNull();
-            obj.Should().BeOfType<InternalSimpleTestClass[]>();
-            obj.Length.Should().Be(3);
-            obj.First().Should().BeOfType<InternalSimpleTestClass>();
-        }
-
-        [Test]
-        public async Task Test_NonAutoMock_Task()
-        {
-            // Arrange
-            var fixture = new AutoMockFixture();
-            // Act
-            var obj = fixture.Create<Task<InternalSimpleTestClass>>();
-            // Assert
-            obj.Should().NotBeNull();
-            obj.Should().BeOfType<Task<InternalSimpleTestClass>>();
-            var inner = await obj;
-            inner.InternalTest.Should().NotBeNull();
-        }
-
-        [Test]
         public void Test_AutoMock_CallBase()
         {
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.CreateAutoMock<AutoMockTestClass>();
+            var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeAssignableTo<AutoMockTestClass>();
+            obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
             var mock = AutoMockHelpers.GetAutoMock(obj);
             mock.Should().NotBeNull();
 
-            var inner = (AutoMockTestClass)obj;
+            var inner = (WithCtorArgsTestClass)obj;
 
             inner.TestCtorArg.Should().NotBeNull();
             inner.TestCtorArg.InternalTest.Should().NotBeNull();
@@ -179,12 +64,12 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<AutoMock<AutoMockTestClass>>();
+            var obj = fixture.Create<AutoMock<WithCtorArgsTestClass>>();
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeOfType<AutoMock<AutoMockTestClass>>();
+            obj.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();
 
-            var inner = (AutoMockTestClass)obj;           
+            var inner = (WithCtorArgsTestClass)obj;           
 
             inner.TestClassProp.Should().NotBeNull();
             inner.TestClassProp!.InternalTest.Should().NotBeNull();
@@ -250,12 +135,12 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.CreateAutoMock<AutoMockTestClass>();
+            var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeAssignableTo<AutoMockTestClass>();
+            obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-            var inner = (AutoMockTestClass)obj;
+            var inner = (WithCtorArgsTestClass)obj;
 
             inner.TestCtorArg.Should().NotBeNull();
             inner.TestCtorArg!.InternalTest.Should().NotBeNull();
@@ -280,12 +165,12 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.CreateAutoMock<AutoMockTestClass>(true);
+            var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>();
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeAssignableTo<AutoMockTestClass>();
+            obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-            var inner = (AutoMockTestClass)obj;
+            var inner = (WithCtorArgsTestClass)obj;
 
             inner.TestClassProp.Should().NotBeNull();
             inner.TestClassProp!.InternalTest.Should().NotBeNull();

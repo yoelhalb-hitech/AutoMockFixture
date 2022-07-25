@@ -2,6 +2,7 @@
 using AutoMoqExtensions.FixtureUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.MockUtils;
+using Castle.DynamicProxy;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace AutoMoqExtensions
 
         private static object castleProxyFactoryInstance;
         private static FieldInfo generatorFieldInfo;
+        private static ProxyGenerator originalProxyGenerator;
         static AutoMock()
         {
             var moqAssembly = typeof(Mock).Assembly;
@@ -37,6 +39,7 @@ namespace AutoMoqExtensions
 
             var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
             generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
+            originalProxyGenerator = (ProxyGenerator)generatorFieldInfo.GetValue(castleProxyFactoryInstance);
         }
         public override bool CallBase { get => base.CallBase; set
               {
@@ -47,6 +50,8 @@ namespace AutoMoqExtensions
        
         private void SetupGenerator()
             => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target, this.CallBase));
+        private void ResetGenerator()
+            => generatorFieldInfo.SetValue(castleProxyFactoryInstance, originalProxyGenerator);
         private T? target;
         public bool TrySetTarget(T target)
         {
@@ -73,7 +78,7 @@ namespace AutoMoqExtensions
                 SetupGenerator();
                 mocked = base.Object;
                 this.target = null;
-                SetupGenerator();
+                ResetGenerator(); // We need to reset it in case the user wants to use the Mock directly as this property is static...
             } 
         }
         object IAutoMock.GetMocked() => GetMocked();
@@ -86,14 +91,13 @@ namespace AutoMoqExtensions
 
         public static implicit operator T(AutoMock<T> m) => m.GetMocked();
 
-        public AutoMock(MockBehavior behavior) : base(behavior) { setupUtils = new SetupUtils<T>(this); SetupGenerator(); }
-        public AutoMock(params object?[] args) : base(args) { setupUtils = new SetupUtils<T>(this); SetupGenerator(); }
+        public AutoMock(MockBehavior behavior) : base(behavior) { setupUtils = new SetupUtils<T>(this); }
+        public AutoMock(params object?[] args) : base(args) { setupUtils = new SetupUtils<T>(this); }
         public AutoMock(MockBehavior behavior, params object?[] args) : base(behavior, args)
         {
-            setupUtils = new SetupUtils<T>(this);
-            SetupGenerator();
+            setupUtils = new SetupUtils<T>(this);            
         }
-        public AutoMock() : base() { setupUtils = new SetupUtils<T>(this); SetupGenerator(); }
+        public AutoMock() : base() { setupUtils = new SetupUtils<T>(this); }
 
         public new void VerifyAll()
         {

@@ -36,7 +36,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
         public void Test_ListsSetupMethods()
         {
             var fixture = new AutoMockFixture();
-            var result = fixture.CreateAutoMock<AutoMockTestClass>();
+            var result = fixture.CreateAutoMock<WithCtorArgsTestClass>();
             var mock = AutoMockHelpers.GetAutoMock(result);
 
             mock!.MethodsSetup.Should().ContainKey("TestClassPropGet");

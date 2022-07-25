@@ -16,7 +16,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
             Fixture = fixture;
         }
 
-        public AutoMockFixture Fixture { get; }
+        public virtual AutoMockFixture Fixture { get; }
 
         public override string InstancePath => "";
 

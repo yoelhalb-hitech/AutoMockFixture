@@ -15,10 +15,10 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<AutoMockTestClass>();
+            var obj = fixture.Create<WithCtorArgsTestClass>();
             // Assert
             obj.Should().NotBeNull();
-            obj.Should().BeOfType<AutoMockTestClass>();
+            obj.Should().BeOfType<WithCtorArgsTestClass>();
             AutoMockUtils.AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
 
             obj.TestCtorArg.Should().NotBeNull();

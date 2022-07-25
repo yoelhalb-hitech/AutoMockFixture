@@ -87,38 +87,6 @@ namespace AutoMoqExtensions
 
         internal Cache Cache { get; } = new Cache();
 
-        #region Create from Tracker
-
-        // TODO... make freeze if it has singleton or scoped attributes
-        // We might do it in the depdendecny and request handlers and just inject it directly after creating it
-        // TODO... test to make sure it is safe to do it multiple times
-        internal T Freeze<T>(ITracker tracker)
-        {
-            Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeMatchSpecification(typeof(T)))));
-
-            return Create<T>(tracker);
-        }
-
-        internal T Create<T>(ITracker tracker) => (T)Create(typeof(T), tracker);
-        internal object Create(Type t, ITracker tracker)
-        {
-            if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
-
-            if (AutoMockHelpers.IsAutoMock(t))
-            {
-                var inner = AutoMockHelpers.GetMockedType(t)!;
-
-                if (AutoMockHelpers.IsAutoMockAllowed(inner))
-                    return Execute(new AutoMockDirectRequest(t, tracker));
-
-                throw new InvalidOperationException($"{AutoMockHelpers.GetMockedType(t)!.FullName} cannot be AutoMock");
-            }
-
-            return Execute(new AutoMockDependenciesRequest(t, tracker));
-        }
-
-        #endregion
-
         #region Create
         // Override to use our own
         public T Freeze<T>()
@@ -146,15 +114,16 @@ namespace AutoMoqExtensions
             
             return Execute(new AutoMockDependenciesRequest(t, this));
         }
-        public object CreateAutoMock(Type t, bool noCallBase = false)
+        public object CreateAutoMock(Type t, bool callBase = false)
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
-            var result = Execute(new AutoMockRequest(t, this) { MockShouldCallbase = !noCallBase });
+            var type = AutoMockHelpers.IsAutoMock(t) ? AutoMockHelpers.GetMockedType(t) : t;
+            var result = Execute(new AutoMockRequest(t, this) { MockShouldCallbase = callBase });
 
-            return AutoMockHelpers.GetFromObj(result)!.GetMocked(); // It appears that the cast operators only work when statically typed
+            return type == t ? AutoMockHelpers.GetFromObj(result)!.GetMocked() : result; // It appears that the cast operators only work when statically typed
         }
-        public T CreateAutoMock<T>(bool noCallBase = false) where T : class => (T)CreateAutoMock(typeof(T), noCallBase);
+        public T CreateAutoMock<T>(bool callBase = false) where T : class => (T)CreateAutoMock(typeof(T), callBase);
 
         #endregion
 

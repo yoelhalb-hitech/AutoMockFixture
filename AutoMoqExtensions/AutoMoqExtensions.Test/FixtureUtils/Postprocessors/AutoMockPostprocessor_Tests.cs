@@ -39,8 +39,14 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Postprocessors
         {
             var autoMock = new AutoMock<Test>();
 
-            var requestMock = new Mock<AutoMockDirectRequest>(autoMock.GetType(), new AutoMockFixture());
+            var type = autoMock.GetType();
+            var fixture = new AutoMockFixture();
+
+            var requestMock = new Mock<AutoMockDirectRequest>(type, fixture);
             requestMock.CallBase = true;
+            requestMock.SetupGet(r => r.Request).Returns(type);
+            requestMock.SetupGet(r => r.Fixture).Returns(fixture);
+
             var request = requestMock.Object;
 
             var context = Mock.Of<ISpecimenContext>();

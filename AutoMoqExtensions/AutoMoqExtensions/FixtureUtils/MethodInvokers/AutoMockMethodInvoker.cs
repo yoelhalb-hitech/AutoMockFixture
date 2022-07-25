@@ -45,7 +45,7 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
             // When `CallBase = false` AutoMock will create us a default ctor
             // However we don't want to do it if there is a default ctor as in this case Automock will oevrride the default ctor
-            if (methods.Any(m => !m.Parameters.Any())) mock.CallBase = false;
+            if (methods.All(m => !m.Parameters.Any())) mock.CallBase = false;
                         
             if (recursionContext is not null)
             {
@@ -58,6 +58,13 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
             try
             {
+                if(!methods.Any())
+                {
+                    mock.EnsureMocked();
+
+                    return mock;
+                }
+
                 foreach (var ci in methods)
                 {
                     var paramValues = (from pi in ci.Parameters select ResolveParamater(mockRequest, pi, context)).ToList();
@@ -68,9 +75,6 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
                         cm.Invoke(paramValues.ToArray(), mock.GetMocked());
 
-                        ((ISetCallBase)mock).ForceSetCallbase(!mock.GetInnerType().IsDelegate()
-                                            && mockRequest.StartTracker.MockShouldCallbase);
-
                         return mock;
                     }                       
                 }
@@ -79,7 +83,13 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
             }
             finally
             {
-                if(recursionContext is not null) recursionContext.BuilderCache.Remove(mockRequest.Request);
+                if(mock is not null && mock is ISetCallBase)
+                {
+                    ((ISetCallBase)mock).ForceSetCallbase(!mock.GetInnerType().IsDelegate()
+                                                                && mockRequest.StartTracker.MockShouldCallbase);
+                }
+
+                if (recursionContext is not null) recursionContext.BuilderCache.Remove(mockRequest.Request);
             }
         }
 

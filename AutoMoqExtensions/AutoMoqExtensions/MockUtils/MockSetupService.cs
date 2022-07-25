@@ -60,7 +60,7 @@ namespace AutoMoqExtensions.MockUtils
             var methods = prop?.GetMethods() ?? new[] { method! };
 
             if (mock.CallBase && !mock.GetInnerType().IsInterface && !methods.Any(m => m.IsAbstract))
-            {
+            { // It is callbase and has an implementation so let's ignore it
                 HandleCannotSetup(trackingPath, CannotSetupReason.CallBaseNoAbstract);
                 return;
             }
