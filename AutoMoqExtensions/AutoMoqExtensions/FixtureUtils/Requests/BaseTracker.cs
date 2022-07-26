@@ -103,7 +103,14 @@ namespace AutoMoqExtensions.FixtureUtils
             SetCompleted();
         }
 
-        public abstract bool IsRequestEquals(ITracker other);
+        public virtual bool IsRequestEquals(ITracker other) => IsTrackerEquals(other);
+
+        public virtual bool IsTrackerEquals(ITracker other)
+            => other.IsInAutoMockChain == IsInAutoMockChain
+                && other.IsInAutoMockDepnedencyChain == IsInAutoMockDepnedencyChain
+                && (Object.ReferenceEquals(other.StartTracker, StartTracker)
+                        // If this is startTracker it will be handled in the request override, so avoid a StackOverflow
+                        || this == StartTracker || StartTracker.IsTrackerEquals(other.StartTracker));
 
         public override bool Equals(object obj)
             => obj is BaseTracker other ? this.Equals(other) : base.Equals(obj);

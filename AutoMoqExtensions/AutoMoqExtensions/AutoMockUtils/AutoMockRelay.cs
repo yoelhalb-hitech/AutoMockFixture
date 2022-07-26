@@ -37,7 +37,7 @@ namespace AutoMoqExtensions.AutoMockUtils
             if (t is null)
                 return new NoSpecimen();
 
-            Logger.LogInfo($"In relay, for {t.FullName}");      
+            Logger.LogInfo($"In relay, for {t.FullName}");
             
             // We do direct to bypass the specification test
             using var directRequest = new AutoMockRequest(t, Fixture) { MockShouldCallbase = true, BypassChecks = true };

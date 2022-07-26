@@ -21,7 +21,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, FieldInfo);
 
         public override bool IsRequestEquals(ITracker other)
-         => other is FieldRequest otherRequest 
+         => base.IsRequestEquals(other) && other is FieldRequest otherRequest 
                 && this.DeclaringType == otherRequest.DeclaringType && this.FieldInfo == otherRequest.FieldInfo;
     }
 }

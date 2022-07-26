@@ -14,5 +14,5 @@ internal class NonAutoMockRequest : BaseTracker, IRequestWithType
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
 
     public override bool IsRequestEquals(ITracker other)
-        => other is NonAutoMockRequest otherRequest && otherRequest.Request == Request;
+        => base.IsRequestEquals(other) && other is NonAutoMockRequest otherRequest && otherRequest.Request == Request;
 }

@@ -24,31 +24,23 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             if (fixture == null || fixture is not AutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                new PostprocessorWithRecursion(
-                                    new EnumerableBuilder(),
-                                    new CacheCommand(mockFixture.Cache)),
-                                new TypeMatchSpecification(typeof(IRequestWithType))));
+                                            new EnumerableBuilder(),
+                                            new TypeMatchSpecification(typeof(IRequestWithType))));
 
-            fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                new PostprocessorWithRecursion(
-                                    new TaskBuilder(),
-                                    new CacheCommand(mockFixture.Cache)),
-                                new TypeMatchSpecification(typeof(IRequestWithType))));
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(                                
+                                            new TaskBuilder(),                                    
+                                            new TypeMatchSpecification(typeof(IRequestWithType))));
 
-            fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                new PostprocessorWithRecursion(
-                                    new TupleBuilder(),
-                                    new CacheCommand(mockFixture.Cache)),
-                                new TypeMatchSpecification(typeof(IRequestWithType))));
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(                                
+                                            new TupleBuilder(),
+                                            new TypeMatchSpecification(typeof(IRequestWithType))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new PostprocessorWithRecursion(
                                                 new AutoMockDependenciesPostprocessor(
                                                     new DependencyInjectionMethodinvoker(
                                                         new CustomModestConstructorQuery())),
-                                                new CompositeSpecimenCommand(
-                                                    new CacheCommand(mockFixture.Cache),
-                                                    new CustomAutoPropertiesCommand(mockFixture))),
+                                                new CustomAutoPropertiesCommand(mockFixture)),
                                             new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -72,9 +64,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
                                             new TypeMatchSpecification(typeof(AutoMockOutParameterRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                            new Postprocessor(
-                                                builder: new AutoMockRequestPostprocessor(),
-                                                command: new CacheCommand(mockFixture.Cache)),
+                                            new AutoMockRequestPostprocessor(),
                                             new AutoMockRequestSpecification()));
 
             ISpecimenBuilder mockBuilder = new AutoMockPostprocessor(
@@ -87,8 +77,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
                 mockBuilder = new FilteringSpecimenBuilder(
                                     new PostprocessorWithRecursion(
                                         builder: mockBuilder,
-                                        command: new CompositeSpecimenCommand(
-                                                    new CacheCommand(mockFixture.Cache),
+                                        command: new CompositeSpecimenCommand(                                                   
                                                     // First stub so we should be able to have ready for constructing the object
                                                     new StubPropertiesCommand(),
                                                     new AutoMockVirtualMethodsCommand(),
@@ -104,7 +93,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new Postprocessor(
                                                 new LastResortBuilder(),
-                                                new CacheCommand(mockFixture.Cache)),                       
+                                                new CacheCommand(mockFixture.Cache)),
                                             new TypeMatchSpecification(typeof(IRequestWithType))));
 
             fixture.ResidueCollectors.Add(new AutoMockRelay(mockFixture));

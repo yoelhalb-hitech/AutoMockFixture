@@ -25,7 +25,8 @@ internal class ReturnRequest : BaseTracker
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, MethodInfo, ReturnType);
 
     public override bool IsRequestEquals(ITracker other)
-        => other is ReturnRequest request && this.DeclaringType == request.DeclaringType
+        => base.IsRequestEquals(other) 
+            && other is ReturnRequest request && this.DeclaringType == request.DeclaringType
             && this.MethodInfo == request.MethodInfo && this.ReturnType == request.ReturnType;
 }
 

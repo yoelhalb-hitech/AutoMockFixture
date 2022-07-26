@@ -16,6 +16,6 @@ internal abstract class OneOfMultipleRequest : BaseTracker
     public bool? AutoMock { get; }
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request, Index, AutoMock);
     public override bool IsRequestEquals(ITracker other)
-        => other is OneOfMultipleRequest otherRequest && otherRequest.Request == Request 
-        && otherRequest.Index == Index && otherRequest.AutoMock == AutoMock;
+        => base.IsRequestEquals(other) && other is OneOfMultipleRequest otherRequest && otherRequest.Request == Request 
+            && otherRequest.Index == Index && otherRequest.AutoMock == AutoMock;
 }

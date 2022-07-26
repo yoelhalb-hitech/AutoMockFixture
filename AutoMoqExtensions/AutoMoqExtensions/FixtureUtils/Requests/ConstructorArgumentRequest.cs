@@ -24,6 +24,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public override bool IsRequestEquals(ITracker other)
             =>other is ConstructorArgumentRequest argumentRequest
                 && this.DeclaringType == argumentRequest.DeclaringType 
-                && this.ParameterInfo == argumentRequest.ParameterInfo;       
+                && this.ParameterInfo == argumentRequest.ParameterInfo
+                && base.IsRequestEquals(other);       
     }
 }

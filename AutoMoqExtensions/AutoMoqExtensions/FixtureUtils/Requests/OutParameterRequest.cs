@@ -28,7 +28,8 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
                                                                 MethodInfo, ParameterInfo, ParameterType);
 
         public override bool IsRequestEquals(ITracker other)
-            => other is OutParameterRequest outRequest && this.DeclaringType == outRequest.DeclaringType
+            => base.IsRequestEquals(other) 
+            && other is OutParameterRequest outRequest && this.DeclaringType == outRequest.DeclaringType
             && this.MethodInfo == outRequest.MethodInfo
             && this.ParameterInfo == outRequest.ParameterInfo && this.ParameterType == outRequest.ParameterType;
     }

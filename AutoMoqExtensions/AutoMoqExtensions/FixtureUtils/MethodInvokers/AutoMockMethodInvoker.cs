@@ -39,7 +39,7 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
             }
             
             var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);
-            if (!mockRequest.StartTracker.MockShouldCallbase) return mock;
+            if (mockRequest.MockShouldCallbase != true && mockRequest.StartTracker.MockShouldCallbase != true) return mock;
 
             var methods = Query.SelectMethods(mockRequest.Request);
 
@@ -86,7 +86,8 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
                 if(mock is not null && mock is ISetCallBase)
                 {
                     ((ISetCallBase)mock).ForceSetCallbase(!mock.GetInnerType().IsDelegate()
-                                                                && mockRequest.StartTracker.MockShouldCallbase);
+                                                                && (mockRequest.MockShouldCallbase == true
+                                                                    || mockRequest.StartTracker.MockShouldCallbase == true));
                 }
 
                 if (recursionContext is not null) recursionContext.BuilderCache.Remove(mockRequest.Request);
