@@ -76,6 +76,8 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Assert
             obj.Should().NotBeNull();
             obj.Should().BeOfType<Task<InternalSimpleTestClass>>();
+
+            obj.IsCompleted.Should().BeTrue();
             var inner = await obj;
             inner.InternalTest.Should().NotBeNull();
         }

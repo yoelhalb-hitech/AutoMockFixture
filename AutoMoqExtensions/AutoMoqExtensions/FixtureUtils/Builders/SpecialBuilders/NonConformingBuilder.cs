@@ -1,5 +1,6 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Specifications;
 using System.Collections;
 using System.Collections.ObjectModel;
 
@@ -7,6 +8,8 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
 internal abstract class NonConformingBuilder : ISpecimenBuilder
 {
+    private static InnerTypeSpecification innerSpecification = new InnerTypeSpecification();
+
     public abstract Type[] SupportedTypes { get; }
     public abstract int Repeat { get; }
     public abstract object CreateResult(Type requestType, object[][] innerResults);
@@ -16,55 +19,74 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
     public object? Create(object request, ISpecimenContext context)
     {
         if (request is not IRequestWithType typeRequest 
-                || (!typeRequest.Request.IsGenericType && !typeRequest.Request.IsArray)) return new NoSpecimen();
+                || (!innerSpecification.IsSatisfiedBy(typeRequest.Request))) return new NoSpecimen();
 
-        var genericDefinitions = typeRequest.Request.GetInterfaces()
-                .Where(i => i.IsGenericType)
-                .Select(i => i.GetGenericTypeDefinition())
-                .Distinct().ToList();
+        var genericDefinitions = typeRequest.Request.GetAllGenericDefinitions();
 
-        if (typeRequest.Request.IsClass)
-        {
-            var t = typeRequest.Request;
-            do
-            {
-                if (t.IsGenericType) genericDefinitions.Add(t.GetGenericTypeDefinition());
-                t = t.BaseType;
-            } while (t is not null);
-
-        }
         // generic type defintions are not conisdered assignable
-        if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request) || t.IsGenericTypeDefinition && genericDefinitions.Contains(t))) return new NoSpecimen();
+        if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request) 
+                    || (t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
+                
+        var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
 
-        var args = GetInnerTypes(typeRequest.Request).ToList();
-        var resultArray = new object[Repeat][];
-        for (int i = 0; i < Repeat; i++)
-        {
-            resultArray[i] = new object[args.Count];
-            foreach (var arg in args)
-            {
-                object newRequest = typeRequest switch
-                {
-                    { } when AutoMockHelpers.IsAutoMock(arg) => new AutoMockDirectRequest(arg, typeRequest),
-                    AutoMockDependenciesRequest dependenciesRequest => new AutoMockDependenciesRequest(arg, dependenciesRequest),
-                    AutoMockRequest autoMockRequest => new AutoMockRequest(arg, autoMockRequest),
-                    NonAutoMockRequest nonAutoMockRequest => new NonAutoMockRequest(arg, nonAutoMockRequest),
-                    _ => throw new NotSupportedException(),
-                };
-                var specimen = context.Resolve(newRequest);
+        if (innerResult is NoSpecimen) return innerResult;
 
-                if (specimen is NoSpecimen || specimen is OmitSpecimen)
-                {
-                    typeRequest.SetResult(specimen);
-                    return new NoSpecimen(); // Let the system handle it
-                }
-
-                resultArray[i][args.IndexOf(arg)] = specimen;
-            }
-        }
-        var finalResult = CreateResult(typeRequest.Request, resultArray);
+        var finalResult = CreateResult(typeRequest.Request, (object[][])innerResult);
         typeRequest.SetResult(finalResult);
 
         return finalResult;      
+    }
+
+    protected virtual object GetRepeatedInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
+    { 
+        var resultArray = new object[Repeat][];
+        for (int i = 0; i < Repeat; i++)
+        {
+            var inner = GetInnerSpecimens(originalRequest, context);
+            if (inner is NoSpecimen) return inner;
+
+            resultArray[i] = (object[])inner;
+        }
+
+        return resultArray;
+    }
+
+    protected virtual object GetInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
+    {
+        var args = originalRequest.Request.GetInnerTypes().ToList();
+        var result = new List<object>();
+
+        foreach (var arg in args)
+        {
+            var specimen = GetInnerSpecimen(arg, originalRequest, context);
+
+            if (specimen is NoSpecimen) return specimen;
+
+            result.Add(specimen);
+        }
+
+        return result.ToArray();
+    }
+
+    protected virtual object GetInnerSpecimen(Type arg, IRequestWithType originalRequest, ISpecimenContext context)
+    {
+        object newRequest = originalRequest switch
+        {
+            { } when AutoMockHelpers.IsAutoMock(arg) => new AutoMockDirectRequest(arg, originalRequest),
+            AutoMockDependenciesRequest dependenciesRequest => new AutoMockDependenciesRequest(arg, dependenciesRequest),
+            AutoMockRequest autoMockRequest => new AutoMockRequest(arg, autoMockRequest),
+            NonAutoMockRequest nonAutoMockRequest => new NonAutoMockRequest(arg, nonAutoMockRequest),
+            _ => throw new NotSupportedException(),
+        };
+
+        var specimen = context.Resolve(newRequest);
+
+        if (specimen is NoSpecimen || specimen is OmitSpecimen)
+        {
+            originalRequest.SetResult(specimen);
+            return new NoSpecimen(); // Let the system handle it
+        }
+
+        return specimen;
     }
 }    

@@ -57,16 +57,34 @@ namespace AutoMoqExtensions.Extensions
             if (isInterface)
                 result = result.Concat(type.GetInterfaces().SelectMany(i => func(i, bindings)));
             else if (includeBasePrivate)
-            {
-                var b = type.BaseType;
-                while (b is not null)
-                {
-                    result = result.Concat(func(b, bindings));
-                    b = b.BaseType;
-                }
-            }
+                result = result.Concat(type.GetBaseTypes().SelectMany(b=> func(b, bindings)));
+             
             return result;
         }
+
+        internal static bool HasInnerType(this Type type) => type.IsGenericType || type.IsArray;
+
+        internal static Type[] GetInnerTypes(this Type type)
+            => type.IsGenericType ? type.GenericTypeArguments :
+                        type.IsArray ? new[] { type.GetElementType() } : new Type[] { };
+
+        internal static IEnumerable<Type> GetBaseTypes(this Type type)
+        {
+            var t = type;
+            while(t.BaseType is not null)
+            {
+                yield return t.BaseType;
+                t = t.BaseType;
+            }
+        }
+
+        internal static IEnumerable<Type> GetBasesAndInterfaces(this Type type)
+            => type.GetInterfaces().Union(type.GetBaseTypes());
+
+        internal static IEnumerable<Type> GetAllGenericDefinitions(this Type type)
+            => type.GetBasesAndInterfaces().Union(new Type[] { type })
+                    .Where(t => t.IsGenericType)
+                    .Select(t => t.IsGenericTypeDefinition ? t : t.GetGenericTypeDefinition());
 
         internal static bool IsDelegate(this Type type)
         {
