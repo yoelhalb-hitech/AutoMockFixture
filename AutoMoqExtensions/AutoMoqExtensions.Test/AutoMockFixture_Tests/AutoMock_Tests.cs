@@ -16,7 +16,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<AutoMock<InternalAbstractMethodTestClass>>();
+            var obj = fixture.CreateAutoMock<AutoMock<InternalAbstractMethodTestClass>>();
             // Assert
             obj.Should().NotBeNull();
             obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
@@ -64,7 +64,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<AutoMock<WithCtorArgsTestClass>>();
+            var obj = fixture.CreateAutoMock<AutoMock<WithCtorArgsTestClass>>();
             // Assert
             obj.Should().NotBeNull();
             obj.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();

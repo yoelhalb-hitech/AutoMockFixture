@@ -48,7 +48,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            Assert.Throws<InvalidOperationException>(() => fixture.Create<AutoMock<Task<InternalAbstractMethodTestClass>>>());
+            Assert.Throws<InvalidOperationException>(() => fixture.CreateAutoMock<Task<InternalAbstractMethodTestClass>>());
         }
 
         [Test]

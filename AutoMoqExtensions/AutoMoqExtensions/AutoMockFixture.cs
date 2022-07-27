@@ -130,6 +130,9 @@ namespace AutoMoqExtensions
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
             var type = AutoMockHelpers.IsAutoMock(t) ? AutoMockHelpers.GetMockedType(t)! : t;
+            if(!AutoMockHelpers.IsAutoMockAllowed(type))
+                throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
+
             var result = Execute(new AutoMockRequest(type, this) { MockShouldCallbase = callBase });
 
             return type != t ? AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
