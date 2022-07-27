@@ -22,7 +22,6 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
         public void AddChild(ITracker tracker);
         public bool IsInAutoMockChain { get; }
         public bool IsInAutoMockDepnedencyChain { get; }
-        public bool IsTrackerEquals(ITracker other);
         public bool IsRequestEquals(ITracker other);
     }
 }

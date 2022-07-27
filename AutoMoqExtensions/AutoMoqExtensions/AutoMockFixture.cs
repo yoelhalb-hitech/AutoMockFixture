@@ -114,6 +114,17 @@ namespace AutoMoqExtensions
             
             return Execute(new AutoMockDependenciesRequest(t, this));
         }
+        public object CreateWithAutoMockDependencies(Type t, bool callBase = false)
+        {
+            if (t.IsValueType) throw new Exception("Type must be a reference type");
+
+            var result = Execute(new AutoMockDependenciesRequest(t, this) { MockShouldCallbase = callBase });
+
+            return result;
+        }
+        public T CreateWithAutoMockDependencies<T>(bool callBase = false) where T : class 
+                    => (T)CreateWithAutoMockDependencies(typeof(T), callBase);
+
         public object CreateAutoMock(Type t, bool callBase = false)
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");

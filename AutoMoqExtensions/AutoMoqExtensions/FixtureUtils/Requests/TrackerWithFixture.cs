@@ -22,11 +22,16 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public bool? MockShouldCallbase { get; set; }
 
-        public override bool IsTrackerEquals(ITracker other)
-            => base.IsTrackerEquals(other)
+        public override bool IsRequestEquals(ITracker other)
+            => base.IsRequestEquals(other)
                     && other is TrackerWithFixture tracker
-                    && Object.ReferenceEquals(tracker.Fixture, Fixture)
-                    && tracker.MockShouldCallbase == MockShouldCallbase;
+                    && IsFixtureTrackerEquals(tracker);
+
+        public virtual bool IsStartTrackerEquals(IFixtureTracker other) => IsFixtureTrackerEquals(other);
+
+        protected virtual bool IsFixtureTrackerEquals(IFixtureTracker other)
+                    => Object.ReferenceEquals(other.Fixture, Fixture)
+                        && other.MockShouldCallbase == MockShouldCallbase; 
 
         public override void SetResult(object? result)
         {

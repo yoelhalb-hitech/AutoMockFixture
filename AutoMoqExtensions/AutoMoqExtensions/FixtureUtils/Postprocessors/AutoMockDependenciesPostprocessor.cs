@@ -28,6 +28,14 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)           
                 return TryAutoMock(dependencyRequest, context);            
 
+            if(AutoMockHelpers.IsAutoMock(dependencyRequest.Request))
+            {
+                var inner = AutoMockHelpers.GetMockedType(dependencyRequest.Request)!;
+                var automockRequest = new AutoMockRequest(inner, dependencyRequest) { MockShouldCallbase = true };
+
+                return context.Resolve(automockRequest);
+            }
+
             try
             {
                 var specimen = Builder.Create(request, context);
@@ -57,10 +65,18 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
         private object? TryAutoMock(AutoMockDependenciesRequest dependencyRequest, ISpecimenContext context)
         {
-            // Can't leave it for the relay as we want the dependencies mocked
+            //If it's not the start request then it arrives here only if it isn't a valid AutoMock
+            if (!Object.ReferenceEquals(dependencyRequest, dependencyRequest.StartTracker)  
+                            || !AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request))
+                return new NoSpecimen();
+
+            // Can't leave it for the relay as we want the dependencies mocked correctly
             try
             {
-                var autoMockRequest = new AutoMockRequest(dependencyRequest.Request, dependencyRequest);
+                // We want MockShouldCallbase so to get dependencies
+                // It should automatically revert to the MockShouldCallbase on the StartTracker for the next objects
+                // TODO... add tests                
+                var autoMockRequest = new AutoMockRequest(dependencyRequest.Request, dependencyRequest) { MockShouldCallbase = true };
                 var autoMockResult = context.Resolve(autoMockRequest);
                 dependencyRequest.SetResult(autoMockResult);
                 return autoMockResult;
