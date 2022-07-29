@@ -47,8 +47,8 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
     internal class WithCtorArgsTestClass
     {
-        public readonly InternalAbstractSimpleTestClass TestCtorArg;// This way we will get the one that was passed
-        public WithCtorArgsTestClass(InternalAbstractSimpleTestClass testArg)
+        public readonly InternalSimpleTestClass TestCtorArg;// This way we will get the one that was passed
+        public WithCtorArgsTestClass(InternalSimpleTestClass testArg)
         {
             this.TestCtorArg = testArg;
         }
@@ -68,7 +68,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
     internal class AutoMockTestClass1 : WithCtorArgsTestClass
     {
-        public AutoMockTestClass1(InternalAbstractSimpleTestClass testArg) : base(testArg)
+        public AutoMockTestClass1(InternalSimpleTestClass testArg) : base(testArg)
         {
         }
     }

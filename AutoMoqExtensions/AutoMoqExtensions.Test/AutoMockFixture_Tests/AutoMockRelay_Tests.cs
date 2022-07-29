@@ -11,7 +11,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
         {
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<InternalSimpleTestClass>();
+            var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>();
 
             obj.Should().NotBeNull();
             obj.InternalTest.Should().NotBeNullOrWhiteSpace();
@@ -19,7 +19,6 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             obj.InternalTest.Should().StartWith(nameof(InternalSimpleTestClass.InternalTest));
 
             Assert.DoesNotThrow(() => Guid.Parse(obj.InternalTest!.Replace(nameof(InternalSimpleTestClass.InternalTest), "")));
-
         }
 
         [Test]
@@ -28,7 +27,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             // Arrange
             var fixture = new AutoMockFixture();
             // Act
-            var obj = fixture.Create<InternalAbstractMethodTestClass>();
+            var obj = fixture.CreateNonAutoMock<InternalAbstractMethodTestClass>();
             // Assert
             obj.Should().NotBeNull();
             obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();

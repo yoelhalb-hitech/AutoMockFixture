@@ -31,6 +31,7 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
             if (recursionContext is not null)
             {
+                // Not doing this in a special builder, to ensure that no matter what happens we do it on recursion
                 if (recursionContext.BuilderCache.ContainsKey(mockRequest.Request))
                     return recursionContext.BuilderCache[mockRequest.Request]; // We are in recursion
 

@@ -19,6 +19,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
         public void Execute(object specimen, ISpecimenContext context)
         {
+            // NOTE: We only need the `CacheCommand` when the request isn't a `BaseTracker` as `BaseTracker` handles it already
             if (specimen is null) return; // Have no way of knowing what type is the request, plus for null it doesn't make a difference caching...
 
             Cache.AddIfNeeded(specimen.GetType(), specimen);

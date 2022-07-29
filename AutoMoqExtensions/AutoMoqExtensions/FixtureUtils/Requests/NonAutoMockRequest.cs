@@ -1,8 +1,14 @@
 ﻿namespace AutoMoqExtensions.FixtureUtils.Requests;
 
-internal class NonAutoMockRequest : BaseTracker, IRequestWithType
+internal class NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixtureTracker
 {
-    public NonAutoMockRequest(Type request, ITracker? tracker) : base(tracker)
+    public NonAutoMockRequest(Type request, ITracker tracker) : base(tracker.StartTracker.Fixture, tracker)
+    {
+        Request = request;
+        if (tracker is null) throw new Exception("Either tracker or fixture must be provided");
+    }
+
+    public NonAutoMockRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
     {
         Request = request;
     }

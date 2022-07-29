@@ -7,9 +7,9 @@ using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 {
-    internal class DependencyInjectionMethodinvoker : MethodInvokerWithRecursion
+    internal class DependencyInjectionMethodInvoker : MethodInvokerWithRecursion
     {
-        public DependencyInjectionMethodinvoker(IMethodQuery query) : base(query)
+        public DependencyInjectionMethodInvoker(IMethodQuery query) : base(query)
         {
         }
 

@@ -12,7 +12,7 @@ internal class TraceBehavior_IntegrationTests
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
         
-        _ = fixture.Create<TestClass>();
+        _ = fixture.CreateNonAutoMock<TestClass>();
 
         info.TraceValues.Count.Should().BePositive();        
     }
@@ -24,7 +24,7 @@ internal class TraceBehavior_IntegrationTests
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
 
-        var result = fixture.Create<TestClass>();
+        var result = fixture.CreateNonAutoMock<TestClass>();
 
         info.GetWithValues().Count.Should().BePositive();
         info.GetWithValues().Any(v => v.response == result).Should().BeTrue();
@@ -37,7 +37,7 @@ internal class TraceBehavior_IntegrationTests
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
         
-        _ = fixture.Create<TestClass>();
+        _ = fixture.CreateNonAutoMock<TestClass>();
 
         // TraceValues can branch mutiple times but GetWithValues should be ordered straight
         var values = info.GetWithValues();

@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
 using AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 using AutoMoqExtensions.FixtureUtils.Commands;
 using AutoMoqExtensions.FixtureUtils.MethodInvokers;
@@ -38,10 +39,18 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new PostprocessorWithRecursion(
                                                 new AutoMockDependenciesPostprocessor(
-                                                    new DependencyInjectionMethodinvoker(
+                                                    new DependencyInjectionMethodInvoker(
                                                         new CustomModestConstructorQuery())),
                                                 new CustomAutoPropertiesCommand(mockFixture)),
                                             new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new PostprocessorWithRecursion(
+                                                new NonAutoMockBuilder(
+                                                    new MethodInvokerWithRecursion(
+                                                        new CustomModestConstructorQuery())),
+                                                new CustomAutoPropertiesCommand(mockFixture)),
+                                            new TypeMatchSpecification(typeof(NonAutoMockRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockConstructorArgumentPostprocessor(mockFixture.ConstructorArgumentValues),
