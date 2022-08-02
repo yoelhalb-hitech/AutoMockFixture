@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Requests;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests
+internal interface IAutoMockRequest
 {
-    internal interface IAutoMockRequest
-    {
-    }
 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Requests;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests
+internal interface IRequestWithType : ITracker
 {
-    internal interface IRequestWithType : ITracker
-    {
-        public Type Request { get; }
-    }
+    public Type Request { get; }
 }

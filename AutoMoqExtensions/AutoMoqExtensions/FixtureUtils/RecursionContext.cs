@@ -1,21 +1,16 @@
-﻿using AutoFixture.Kernel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace AutoMoqExtensions.FixtureUtils;
 
-namespace AutoMoqExtensions.FixtureUtils
+internal class RecursionContext : SpecimenContext
 {
-    internal class RecursionContext : SpecimenContext
+    public RecursionContext(ISpecimenBuilder builder, AutoMockFixture fixture) : base(builder)
     {
-        public RecursionContext(ISpecimenBuilder builder, AutoMockFixture fixture) : base(builder)
-        {
-            Fixture = fixture;
-        }
-
-        internal Dictionary<Type, object> BuilderCache { get; } = new Dictionary<Type, object>();
-
-        internal AutoMockTypeControl? AutoMockTypeControl { get; set; }
-
-        internal AutoMockFixture Fixture { get; set; }
+        Fixture = fixture;
     }
+
+    internal Dictionary<Type, object> BuilderCache { get; } = new Dictionary<Type, object>();
+
+    internal AutoMockTypeControl? AutoMockTypeControl { get; set; }
+
+    internal AutoMockFixture Fixture { get; set; }
 }

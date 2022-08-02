@@ -1,36 +1,32 @@
-﻿using AutoFixture;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿
+using AutoFixture;
 
-namespace AutoMoqExtensions.FixtureUtils.Customizations
+namespace AutoMoqExtensions.FixtureUtils.Customizations;
+
+public class ConstructorArgumentValue
 {
-    public class ConstructorArgumentValue
+    public ConstructorArgumentValue(object? value, string? path = null)
     {
-        public ConstructorArgumentValue(object? value, string? path = null)
-        {
-            Value = value;
-            Path = path;
-        }
-
-        public object? Value { get; }
-        public string? Path { get; }
+        Value = value;
+        Path = path;
     }
-    public class ConstructorArgumentCustomization : ICustomization
+
+    public object? Value { get; }
+    public string? Path { get; }
+}
+public class ConstructorArgumentCustomization : ICustomization
+{
+    public ConstructorArgumentValue ConstructorArgumentValue { get; }
+
+    public ConstructorArgumentCustomization(ConstructorArgumentValue constructorArgumentValue)
     {
-        public ConstructorArgumentValue ConstructorArgumentValue { get; }
+        ConstructorArgumentValue = constructorArgumentValue;
+    }
 
-        public ConstructorArgumentCustomization(ConstructorArgumentValue constructorArgumentValue)
-        {
-            ConstructorArgumentValue = constructorArgumentValue;
-        }
+    public void Customize(IFixture fixture)
+    {
+        if (fixture is not AutoMockFixture mockFixture) throw new ArgumentException($"Expected {nameof(fixture)} to be `{nameof(AutoMockFixture)}`");
 
-        public void Customize(IFixture fixture)
-        {
-            if (fixture is not AutoMockFixture mockFixture) throw new ArgumentException($"Expected {nameof(fixture)} to be `{nameof(AutoMockFixture)}`");
-
-            mockFixture.ConstructorArgumentValues.Add(ConstructorArgumentValue);
-        }
+        mockFixture.ConstructorArgumentValues.Add(ConstructorArgumentValue);
     }
 }

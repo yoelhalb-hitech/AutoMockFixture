@@ -1,6 +1,4 @@
-﻿using AutoFixture.Kernel;
-using AutoMoqExtensions.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Reflection;
 
 namespace AutoMoqExtensions.FixtureUtils.Trace;

@@ -1,20 +1,12 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
-namespace AutoMoqExtensions.Test
+namespace AutoMoqExtensions.Test;
+
+internal class IgnoresAccessChecksToAttribute_Tests
 {
-    internal class IgnoresAccessChecksToAttribute_Tests
+    [Test]
+    public void Test_IgnoresAccessChecksToAttribute_HasCorrectNamespace() // I originally had an issue with this...
     {
-        [Test]
-        public void Test_IgnoresAccessChecksToAttribute_HasCorrectNamespace() // I originally had an issue with this...
-        {
-            typeof(IgnoresAccessChecksToAttribute).Namespace.Should().Be("System.Runtime.CompilerServices");
-        }
+        typeof(IgnoresAccessChecksToAttribute).Namespace.Should().Be("System.Runtime.CompilerServices");
     }
 }

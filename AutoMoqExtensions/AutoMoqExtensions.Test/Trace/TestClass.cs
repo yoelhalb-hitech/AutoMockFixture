@@ -1,6 +1,6 @@
-﻿namespace AutoMoqExtensions.Test.Trace
+﻿
+namespace AutoMoqExtensions.Test.Trace;
+
+internal class TestClass
 {
-    internal class TestClass
-    {
-    }
 }

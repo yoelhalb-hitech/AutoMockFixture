@@ -1,5 +1,6 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 

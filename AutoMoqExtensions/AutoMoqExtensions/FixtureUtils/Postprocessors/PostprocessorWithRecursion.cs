@@ -1,8 +1,4 @@
 ﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 
 namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 {

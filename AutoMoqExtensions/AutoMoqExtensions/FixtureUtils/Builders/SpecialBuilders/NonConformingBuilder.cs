@@ -1,5 +1,6 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using System.Collections;
 using System.Collections.ObjectModel;

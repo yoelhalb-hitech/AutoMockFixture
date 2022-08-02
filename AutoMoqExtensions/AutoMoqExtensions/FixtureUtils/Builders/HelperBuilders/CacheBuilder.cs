@@ -1,29 +1,20 @@
-﻿using AutoFixture;
-using AutoFixture.Kernel;
-using AutoMoqExtensions.FixtureUtils.Specifications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
 
-namespace AutoMoqExtensions.FixtureUtils.Postprocessors
+internal class CacheBuilder : ISpecimenBuilder
 {
-    internal class CachePostprocessor : ISpecimenBuilder
+    public CacheBuilder(Cache cache)
     {
-        public CachePostprocessor(Cache cache)
-        {
-            Cache = cache;
-        }
+        Cache = cache;
+    }
 
-        public Cache Cache { get; }
+    public Cache Cache { get; }
 
-        public object? Create(object request, ISpecimenContext context)
-        {
-            var existing = Cache.Get(request);
-            if(existing.HasValue) return existing.Value;
+    public object? Create(object request, ISpecimenContext context)
+    {
+        var existing = Cache.Get(request);
+        if(existing.HasValue) return existing.Value;
 
-            return new NoSpecimen();
-        }
+        return new NoSpecimen();
     }
 }

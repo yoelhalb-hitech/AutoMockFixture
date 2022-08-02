@@ -1,6 +1,7 @@
-﻿using System.Reflection;
+﻿using AutoMoqExtensions.AutoMockUtils;
+using System.Reflection;
 
-namespace AutoMoqExtensions.AutoMockUtils;
+namespace AutoMoqExtensions.FixtureUtils.MethodQueries;
 
 internal class CustomConstructorMethod : IMethod
 {

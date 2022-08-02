@@ -1,10 +1,6 @@
-﻿using AutoMoqExtensions.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests;
+namespace AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
 internal class ReturnRequest : BaseTracker
 {
@@ -25,8 +21,8 @@ internal class ReturnRequest : BaseTracker
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, MethodInfo, ReturnType);
 
     public override bool IsRequestEquals(ITracker other)
-        => base.IsRequestEquals(other) 
-            && other is ReturnRequest request && this.DeclaringType == request.DeclaringType
-            && this.MethodInfo == request.MethodInfo && this.ReturnType == request.ReturnType;
+        => base.IsRequestEquals(other)
+            && other is ReturnRequest request && DeclaringType == request.DeclaringType
+            && MethodInfo == request.MethodInfo && ReturnType == request.ReturnType;
 }
 

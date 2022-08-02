@@ -1,7 +1,4 @@
-﻿using AutoFixture.Kernel;
-using AutoMoqExtensions.Extensions;
-using System.Collections;
-
+﻿
 namespace AutoMoqExtensions.FixtureUtils.Trace;
 
 internal class TraceBehavior : ISpecimenBuilderTransformation

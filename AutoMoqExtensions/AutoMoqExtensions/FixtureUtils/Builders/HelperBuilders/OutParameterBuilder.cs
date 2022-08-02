@@ -1,45 +1,40 @@
-﻿using AutoFixture.Kernel;
-using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.AutoMockUtils.Specifications;
-using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace AutoMoqExtensions.FixtureUtils.Postprocessors
+namespace AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
+
+internal class OutParameterBuilder : ISpecimenBuilder
 {
-    internal class AutoMockOutParameterPostprocessor : ISpecimenBuilder
+    private static readonly AutoMockableSpecification autoMockableSpecification = new();
+
+    public object? Create(object request, ISpecimenContext context)
     {
-        private static readonly AutoMockableSpecification autoMockableSpecification = new();
+        if (request is not OutParameterRequest outRequest) return new NoSpecimen();
 
-        public object? Create(object request, ISpecimenContext context)
+        // Out param types can be different than the ParameterInfo.ParameterType
+        var type = outRequest.ParameterType;
+        if (!autoMockableSpecification.IsSatisfiedBy(type) || !outRequest.ShouldAutoMock)
         {
-            if (request is not OutParameterRequest outRequest) return new NoSpecimen();
+            object newRequest = outRequest.IsInAutoMockChain || outRequest.IsInAutoMockDepnedencyChain
+                                    ? new AutoMockDependenciesRequest(type, outRequest)
+                                    : new NonAutoMockRequest(type, outRequest);
+            var result = context.Resolve(newRequest);
+            outRequest.SetResult(result);
+            return result;
+        }
 
-            // Out param types can be different than the ParameterInfo.ParameterType
-            var type = outRequest.ParameterType;
-            if (!autoMockableSpecification.IsSatisfiedBy(type) || !outRequest.ShouldAutoMock)
-            {
-                object newRequest = outRequest.IsInAutoMockChain || outRequest.IsInAutoMockDepnedencyChain
-                                        ? new AutoMockDependenciesRequest(type, outRequest)
-                                        : new NonAutoMockRequest(type, outRequest);
-                var result = context.Resolve(newRequest);
-                outRequest.SetResult(result);
-                return result;
-            }
+        var specimen = context.Resolve(new AutoMockRequest(type, outRequest));
 
-            var specimen = context.Resolve(new AutoMockRequest(type, outRequest));
-
-            if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
-            {
-                outRequest.SetResult(specimen);
-                return specimen;
-            }
-
-            outRequest.SetCompleted();
-
+        if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
+        {
+            outRequest.SetResult(specimen);
             return specimen;
         }
+
+        outRequest.SetCompleted();
+
+        return specimen;
     }
 }

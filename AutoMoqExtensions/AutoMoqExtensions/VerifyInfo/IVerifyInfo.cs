@@ -1,9 +1,8 @@
 ﻿using Moq;
 
-namespace AutoMoqExtensions
+namespace AutoMoqExtensions.VerifyInfo;
+
+public interface IVerifyInfo<T> where T : class
 {
-    public interface IVerifyInfo<T> where  T : class
-    {
-        void Verify(Mock<T> obj);
-    }
+    void Verify(Mock<T> obj);
 }

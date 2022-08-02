@@ -1,43 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Requests;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests
+/// <summary>
+/// For use with objects that don't have a start tracker, and as a base for IFixtureTracker
+/// </summary>
+internal class TrackerWithFixture : BaseTracker, IFixtureTracker
 {
-    /// <summary>
-    /// For use with objects that don't have a start tracker, and as a base for IFixtureTracker
-    /// </summary>
-    internal class TrackerWithFixture : BaseTracker, IFixtureTracker
+    public TrackerWithFixture(AutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
     {
-        public TrackerWithFixture(AutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
-        {
-            Fixture = fixture;
-        }
+        Fixture = fixture;
+    }
 
-        public virtual AutoMockFixture Fixture { get; }
+    public virtual AutoMockFixture Fixture { get; }
 
-        public override string InstancePath => "";
+    public override string InstancePath => "";
 
-        public bool? MockShouldCallbase { get; set; }
+    public bool? MockShouldCallbase { get; set; }
 
-        public override bool IsRequestEquals(ITracker other)
-            => base.IsRequestEquals(other)
-                    && other is TrackerWithFixture tracker
-                    && IsFixtureTrackerEquals(tracker);
+    public override bool IsRequestEquals(ITracker other)
+        => base.IsRequestEquals(other)
+                && other is TrackerWithFixture tracker
+                && IsFixtureTrackerEquals(tracker);
 
-        public virtual bool IsStartTrackerEquals(IFixtureTracker other) => IsFixtureTrackerEquals(other);
+    public virtual bool IsStartTrackerEquals(IFixtureTracker other) => IsFixtureTrackerEquals(other);
 
-        protected virtual bool IsFixtureTrackerEquals(IFixtureTracker other)
-                    => Object.ReferenceEquals(other.Fixture, Fixture)
-                        && (other.MockShouldCallbase ?? other.StartTracker.MockShouldCallbase) == (MockShouldCallbase ?? StartTracker.MockShouldCallbase);
+    protected virtual bool IsFixtureTrackerEquals(IFixtureTracker other)
+                => Object.ReferenceEquals(other.Fixture, Fixture)
+                    && (other.MockShouldCallbase ?? other.StartTracker.MockShouldCallbase) == (MockShouldCallbase ?? StartTracker.MockShouldCallbase);
 
-        public override void SetResult(object? result)
-        {
-            base.SetResult(result);
+    public override void SetResult(object? result)
+    {
+        base.SetResult(result);
 
-            Fixture.Cache.AddIfNeeded(this, result);
-        }
+        Fixture.Cache.AddIfNeeded(this, result);
     }
 }

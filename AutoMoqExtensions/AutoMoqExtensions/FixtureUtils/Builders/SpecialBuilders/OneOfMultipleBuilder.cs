@@ -1,8 +1,9 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
 
-namespace AutoMoqExtensions.FixtureUtils.Postprocessors;
+namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
-internal class OneOfMultiplePostprocessor : ISpecimenBuilder
+internal class OneOfMultipleBuilder : ISpecimenBuilder
 {
     public object? Create(object request, ISpecimenContext context)
     {

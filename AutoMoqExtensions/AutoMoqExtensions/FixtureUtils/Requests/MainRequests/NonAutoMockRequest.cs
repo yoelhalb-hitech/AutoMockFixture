@@ -1,4 +1,5 @@
-﻿namespace AutoMoqExtensions.FixtureUtils.Requests;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 internal class NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixtureTracker
 {
@@ -12,7 +13,7 @@ internal class NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixtu
     {
         Request = request;
     }
-    
+
     public override string InstancePath => "";
 
     public Type Request { get; }

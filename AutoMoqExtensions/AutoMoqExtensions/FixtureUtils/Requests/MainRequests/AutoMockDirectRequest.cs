@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AutoMoqExtensions.FixtureUtils.Requests;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 internal class AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IFixtureTracker, IDisposable
 {
@@ -14,7 +11,7 @@ internal class AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IFi
 
     public AutoMockDirectRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
     {
-        Request = request;            
+        Request = request;
     }
 
     public virtual Type Request { get; }

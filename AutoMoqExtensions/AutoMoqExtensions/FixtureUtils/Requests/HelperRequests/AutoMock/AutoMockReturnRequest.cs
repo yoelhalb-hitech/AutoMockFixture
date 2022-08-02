@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using System.Reflection;
-using System.Text;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests
+namespace AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
+
+internal class AutoMockReturnRequest : ReturnRequest, IAutoMockRequest
 {
-    internal class AutoMockReturnRequest : ReturnRequest, IAutoMockRequest
+    public AutoMockReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType, ITracker? tracker)
+        : base(declaringType, methodInfo, returnType, tracker)
     {
-        public AutoMockReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType, ITracker? tracker) 
-            : base(declaringType, methodInfo, returnType, tracker)
-        {
-        }
-
-        public override bool IsRequestEquals(ITracker other)
-            => other is AutoMockReturnRequest && base.IsRequestEquals(other);
     }
+
+    public override bool IsRequestEquals(ITracker other)
+        => other is AutoMockReturnRequest && base.IsRequestEquals(other);
 }

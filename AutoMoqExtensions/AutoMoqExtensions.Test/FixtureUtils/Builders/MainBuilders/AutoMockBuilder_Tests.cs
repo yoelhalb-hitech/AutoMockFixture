@@ -1,63 +1,53 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
+﻿using AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
+using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using Moq;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoFixture.Kernel;
-using FluentAssertions.Equivalency;
-using FluentAssertions;
-using AutoMoqExtensions.AutoMockUtils;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Postprocessors
+namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders;
+
+internal class AutoMockBuilder_Tests
 {
-    internal class AutoMockPostprocessor_Tests
+    public class Test { }
+    [Test]
+    public void Test_SetsTracker()
     {
-        public class Test { }
-        [Test]
-        public void Test_SetsTracker()
-        {
-            var autoMock = new AutoMock<Test>();
+        var autoMock = new AutoMock<Test>();
 
-            var request = new AutoMockDirectRequest(autoMock.GetType(), new AutoMockFixture());           
+        var request = new AutoMockDirectRequest(autoMock.GetType(), new AutoMockFixture());
 
-            var context = Mock.Of<ISpecimenContext>();
-            var builder = new Mock<ISpecimenBuilder>();
+        var context = Mock.Of<ISpecimenContext>();
+        var builder = new Mock<ISpecimenBuilder>();
 
-            builder.Setup(b => b.Create(request, context)).Returns(autoMock);
+        builder.Setup(b => b.Create(request, context)).Returns(autoMock);
 
-            var obj = new AutoMockPostprocessor(builder.Object);
-            obj.Create(request, context);
-            
-            autoMock.Tracker.Should().Be(request);
-        }
+        var obj = new AutoMockBuilder(builder.Object);
+        obj.Create(request, context);
 
-        [Test]
-        public void Test_SetsResult()
-        {
-            var autoMock = new AutoMock<Test>();
+        autoMock.Tracker.Should().Be(request);
+    }
 
-            var type = autoMock.GetType();
-            var fixture = new AutoMockFixture();
+    [Test]
+    public void Test_SetsResult()
+    {
+        var autoMock = new AutoMock<Test>();
 
-            var requestMock = new Mock<AutoMockDirectRequest>(type, fixture);
-            requestMock.CallBase = true;
-            requestMock.SetupGet(r => r.Request).Returns(type);
-            requestMock.SetupGet(r => r.Fixture).Returns(fixture);
+        var type = autoMock.GetType();
+        var fixture = new AutoMockFixture();
 
-            var request = requestMock.Object;
+        var requestMock = new Mock<AutoMockDirectRequest>(type, fixture);
+        requestMock.CallBase = true;
+        requestMock.SetupGet(r => r.Request).Returns(type);
+        requestMock.SetupGet(r => r.Fixture).Returns(fixture);
 
-            var context = Mock.Of<ISpecimenContext>();
-            var builder = new Mock<ISpecimenBuilder>();
-            
-            builder.Setup(b => b.Create(request, context)).Returns(autoMock);
+        var request = requestMock.Object;
 
-            var obj = new AutoMockPostprocessor(builder.Object);
-            obj.Create(request, context);
-          
-            requestMock.Verify(m => m.SetResult(autoMock));
-        }
+        var context = Mock.Of<ISpecimenContext>();
+        var builder = new Mock<ISpecimenBuilder>();
+
+        builder.Setup(b => b.Create(request, context)).Returns(autoMock);
+
+        var obj = new AutoMockBuilder(builder.Object);
+        obj.Create(request, context);
+
+        requestMock.Verify(m => m.SetResult(autoMock));
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using AutoMoqExtensions.FixtureUtils.Trace;
+﻿using AutoMoqExtensions.FixtureUtils.Trace;
 
 namespace AutoMoqExtensions.Test.Trace;
 

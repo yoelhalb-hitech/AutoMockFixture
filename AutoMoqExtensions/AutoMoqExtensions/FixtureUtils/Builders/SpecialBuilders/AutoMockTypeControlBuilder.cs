@@ -1,6 +1,6 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
-using NUnit.Framework.Constraints;
+using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
