@@ -40,6 +40,13 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
             protected override void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi)
             {
+                var directTracker = Mock.Tracker as AutoMockDirectRequest;
+                if (directTracker?.NoMockDependencies == true)
+                {
+                    base.HandleProperty(specimen, context, pi);
+                    return;
+                }
+
                 try
                 {
                     Logger.LogInfo("Before Resolved ");
@@ -65,6 +72,13 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
 
             protected override void HandleField(object specimen, ISpecimenContext context, FieldInfo fi)
             {
+                var directTracker = Mock.Tracker as AutoMockDirectRequest;
+                if (directTracker?.NoMockDependencies == true)
+                {
+                    base.HandleField(specimen, context, fi);
+                    return;
+                }
+
                 try
                 {
                     Logger.LogInfo("Before field Resolved ");

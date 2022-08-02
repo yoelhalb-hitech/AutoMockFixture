@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Requests
+namespace AutoMoqExtensions.Test.FixtureUtils.Requests.BaseTracker
 {
     internal class BaseTracker_Tests
     {
@@ -33,7 +33,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Requests
         [Test]
         public void GetHashCode_DoesNotCauseStackOverflow()
         {
-            var request = new AutoMockRequest(typeof(BaseTracker), new AutoMockFixture());
+            var request = new AutoMockRequest(typeof(AutoMoqExtensions.FixtureUtils.BaseTracker), new AutoMockFixture());
             Assert.DoesNotThrow(() => request.GetHashCode());
         }
     }

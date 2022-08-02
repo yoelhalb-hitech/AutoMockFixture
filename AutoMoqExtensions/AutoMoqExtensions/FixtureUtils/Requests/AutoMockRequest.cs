@@ -22,15 +22,17 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         public virtual Type Request { get; }
         public virtual bool BypassChecks { get; set; }
+        public virtual bool? NoMockDependencies { get; set; }
 
         public override string InstancePath => "";
 
 
-        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
+        public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request, BypassChecks, NoMockDependencies);
 
         public override bool IsRequestEquals(ITracker other)
             => other is AutoMockRequest request 
-                && request.Request == Request && request.BypassChecks == BypassChecks
+                && request.Request == Request && request.BypassChecks == BypassChecks 
+                && request.NoMockDependencies == NoMockDependencies
                 && base.IsRequestEquals(other);
 
         public void Dispose() => SetCompleted();

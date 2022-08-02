@@ -79,6 +79,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
             // TODO... maybe we should do one TrackerWithFixture per object, and maybe save it
             var tracker = Fixture.ProcessingTrackerDict.ContainsKey(specimen) ? Fixture.ProcessingTrackerDict[specimen] : new TrackerWithFixture(Fixture);
             var fieldValue = context.Resolve(new FieldRequest(fi.DeclaringType, fi, tracker));
+
             if (tracker is TrackerWithFixture) tracker.SetCompleted();
             if (!(fieldValue is OmitSpecimen))
                 fi.SetValue(specimen, fieldValue);

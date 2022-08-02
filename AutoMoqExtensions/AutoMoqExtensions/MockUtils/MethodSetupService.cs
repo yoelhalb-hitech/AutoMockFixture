@@ -18,6 +18,7 @@ namespace AutoMoqExtensions.MockUtils
         private readonly MethodInfo method;
         private readonly ISpecimenContext context;
         private readonly ITracker? tracker;
+        private readonly bool noMockDependencies;
 
         public MethodSetupService(IAutoMock mock, Type mockedType, MethodInfo method, ISpecimenContext context)
         {
@@ -26,6 +27,8 @@ namespace AutoMoqExtensions.MockUtils
             this.method = method;
             this.context = context;
             this.tracker = mock.Tracker;
+            this.noMockDependencies = mock.Tracker is AutoMockDirectRequest directRequest
+                                                                && directRequest.NoMockDependencies == true;
         }
 
         public void Setup()
@@ -48,7 +51,10 @@ namespace AutoMoqExtensions.MockUtils
             else if (!method.ReturnType.ContainsGenericParameters)
             {
                 Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
-                var returnValue = context.Resolve(new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker));
+                var request = noMockDependencies
+                                        ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
+                                        : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
+                var returnValue = context.Resolve(request);
 
                 Logger.LogInfo("\t\t\tResolved return: " + returnValue.GetType().Name);                
                 SetupHelpers.SetupMethodWithResult(mockedType, returnType, mock, methodInvocationLambda, returnValue);            
@@ -95,7 +101,9 @@ namespace AutoMoqExtensions.MockUtils
 
             Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
             
-            var request = new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
+            var request = noMockDependencies 
+                                 ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
+                                 : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
             Logger.LogInfo("\t\tResolving return for containing path: " + request.Path);
 
             try

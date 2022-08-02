@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,9 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
             {           
                 foreach (var ci in methods)
                 {
-                    var paramValues = (from pi in ci.Parameters select ResolveParamater(request, pi, context)).ToList();
+                    var paramValues = ci.Parameters
+                            .Select(pi => ResolveParamater(request, requestedType, pi, context))
+                             .ToList();
 
                     if (paramValues.All(IsValueValid))
                     {
@@ -71,9 +74,24 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
             }
         }
 
-        protected virtual Type? GetRequestedType(object request) => request as Type;
-        protected virtual object ResolveParamater(object request, ParameterInfo pi, ISpecimenContext context) 
-            => context.Resolve(pi.ParameterType);
+        protected virtual Type? GetRequestedType(object request)
+            => request as Type ?? (request as IRequestWithType)?.Request;
+
+        protected virtual object ResolveParamater(object request, Type declaringType,
+                                                    ParameterInfo pi, ISpecimenContext context)
+        {
+            var tracker = request as ITracker;
+            var recursionContext = context as RecursionContext;
+
+            object argRequest = tracker is not null
+                                ? new ConstructorArgumentRequest(declaringType, pi, tracker)
+                                : recursionContext is not null
+                                    ? new NonAutoMockRequest(pi.ParameterType, recursionContext.Fixture)
+                                    : pi;
+
+            return context.Resolve(argRequest);
+        }
+
 
         protected virtual bool IsValueValid(object value) => !(value is NoSpecimen) && !(value is OmitSpecimen);
     }

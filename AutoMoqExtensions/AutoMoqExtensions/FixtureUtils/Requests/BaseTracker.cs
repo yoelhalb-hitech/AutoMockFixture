@@ -14,7 +14,9 @@ namespace AutoMoqExtensions.FixtureUtils
             // Note: Even if StartTracker.IsInAutoMockChain the parent might not necessarily be as there might an object that couldn't be an automocked
             // Note: At this point our `StartTracker` might still be null so we use the parents
             IsInAutoMockChain = Parent?.StartTracker.IsInAutoMockChain == true 
-                                    || Parent?.IsInAutoMockChain == true || this is IAutoMockRequest;
+                                    || Parent?.IsInAutoMockChain == true 
+                                    || (this is IAutoMockRequest 
+                                        && (this is not AutoMockRequest mockRequest || mockRequest.NoMockDependencies != true));
             IsInAutoMockDepnedencyChain = Parent?.StartTracker.IsInAutoMockDepnedencyChain == true
                                     || Parent?.IsInAutoMockDepnedencyChain == true || this is AutoMockDependenciesRequest;
         }
@@ -31,7 +33,10 @@ namespace AutoMoqExtensions.FixtureUtils
 
         public virtual IFixtureTracker StartTracker => Parent?.StartTracker ?? this as IFixtureTracker ?? throw new Exception("No valid start tracker provided");
         public virtual object? StartObject => Parent?.StartObject ?? result;
-        
+        public virtual bool ShouldAutoMock
+            => this is AutoMockRequest ||
+                (this is not NonAutoMockRequest && this is not AutoMockDirectRequest
+                    && (IsInAutoMockChain || (IsInAutoMockDepnedencyChain && !Object.ReferenceEquals(this, StartTracker))));
         public virtual ITracker? Parent { get; private set; }
         public virtual bool IsInAutoMockChain { get; }
         public virtual bool IsInAutoMockDepnedencyChain { get; }

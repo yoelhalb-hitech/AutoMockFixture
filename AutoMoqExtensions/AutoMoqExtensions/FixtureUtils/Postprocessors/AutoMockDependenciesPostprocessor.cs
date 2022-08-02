@@ -26,14 +26,24 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
                 return new NoSpecimen();
 
             if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)           
-                return TryAutoMock(dependencyRequest, context);            
+                return TryAutoMock(dependencyRequest, context);
+
+            if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request))
+            {
+                // Note that IEnumerable etc. should already be handled in the special builders
+                var result = context.Resolve(dependencyRequest.Request);
+                dependencyRequest.SetResult(result);
+                return result;
+            }
 
             if(AutoMockHelpers.IsAutoMock(dependencyRequest.Request))
             {
                 var inner = AutoMockHelpers.GetMockedType(dependencyRequest.Request)!;
                 var automockRequest = new AutoMockRequest(inner, dependencyRequest) { MockShouldCallbase = true };
 
-                return context.Resolve(automockRequest);
+                var result = context.Resolve(automockRequest);
+                dependencyRequest.SetResult(result);
+                return result;
             }
 
             try

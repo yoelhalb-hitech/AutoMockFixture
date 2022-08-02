@@ -20,7 +20,7 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                 if (mock is null) return;
 
                 var setupService = new MockSetupService(mock, context);
-                setupService.Setup();               
+                setupService.Setup();
             }
             catch { }
         }

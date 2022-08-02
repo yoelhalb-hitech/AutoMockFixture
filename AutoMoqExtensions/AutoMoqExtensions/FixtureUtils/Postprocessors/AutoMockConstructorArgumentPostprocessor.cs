@@ -5,6 +5,7 @@ using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Customizations;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,43 +27,47 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 
         public object? Create(object request, ISpecimenContext context)
         {
-            if (request is not AutoMockConstructorArgumentRequest mockRequest) return new NoSpecimen();
+            if (request is not ConstructorArgumentRequest ctorArgsRequest) return new NoSpecimen();
 
-            var type = mockRequest.ParameterInfo.ParameterType;
+            var type = ctorArgsRequest.ParameterInfo.ParameterType;
 
             // Caution: Cannot just use FirstOrDefault and check for nullability as the custom value itself can be null
-            var hasCustomValue = ConstructorArgumentValues.Any(v => IsValidArgument(type, v, mockRequest.Path));
+            var hasCustomValue = ConstructorArgumentValues.Any(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path));
             if(hasCustomValue)
             {
-                var customValue = ConstructorArgumentValues.Any(v => IsValidArgument(type, v, mockRequest.Path));
-                mockRequest.SetResult(customValue);
+                var customValue = ConstructorArgumentValues.First(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path));
+                ctorArgsRequest.SetResult(customValue);
                 return customValue;
             }
 
-            if (!autoMockableSpecification.IsSatisfiedBy(type))
+            if (!autoMockableSpecification.IsSatisfiedBy(type) || !ctorArgsRequest.ShouldAutoMock)
             {
-                var result = context.Resolve(mockRequest.ParameterInfo);
-                mockRequest.SetResult(result);
+                object newRequest = ctorArgsRequest.IsInAutoMockChain || ctorArgsRequest.IsInAutoMockDepnedencyChain
+                                        ? new AutoMockDependenciesRequest(type, ctorArgsRequest)
+                                        : new NonAutoMockRequest(type, ctorArgsRequest);
+                var result = context.Resolve(newRequest);
+                ctorArgsRequest.SetResult(result);
                 return result;
             }
 
-            var specimen = context.Resolve(new AutoMockRequest(type, mockRequest));
+            var specimen = context.Resolve(new AutoMockRequest(type, ctorArgsRequest));
 
             if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
             {
-                mockRequest.SetResult(specimen);
+                ctorArgsRequest.SetResult(specimen);
                 return specimen;
-            }                
+            }
 
-            mockRequest.SetCompleted();
+            ctorArgsRequest.SetCompleted();
             return specimen;
         }
 
-        private bool IsValidArgument(Type type, ConstructorArgumentValue argumentValue, string path)
+        private bool IsValidArgumentValue(Type type, ConstructorArgumentValue argumentValue, string path)
         {
             if (argumentValue.Path is not null && argumentValue.Path != path) return false;
 
-            if (argumentValue.Value is not null) return type.IsInstanceOfType(argumentValue.Value);
+            if (argumentValue.Value is not null) return type.IsInstanceOfType(argumentValue.Value) 
+                    || (argumentValue.Value is IAutoMock mock && type.IsInstanceOfType(mock.GetMocked()));
 
             return type.IsNullAllowed();
         }

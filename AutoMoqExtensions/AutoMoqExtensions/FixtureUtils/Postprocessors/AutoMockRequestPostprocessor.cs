@@ -23,13 +23,15 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             {
                 try
                 {
-                    var dependencyRequest = new AutoMockDependenciesRequest(mockRequest.Request, mockRequest);
-                    var dependencyResult = context.Resolve(mockRequest.Request);
+                    IRequestWithType altRequest = mockRequest.NoMockDependencies == true
+                            ? new NonAutoMockRequest(mockRequest.Request, mockRequest)
+                            : new AutoMockDependenciesRequest(mockRequest.Request, mockRequest);
+                    var altResult = context.Resolve(altRequest);
 
-                    if(dependencyResult is not NoSpecimen)
+                    if(altResult is not NoSpecimen)
                     {
-                        mockRequest.SetResult(dependencyResult);
-                        return dependencyResult;
+                        mockRequest.SetResult(altResult);
+                        return altResult;
                     }
                 }
                 catch{}
@@ -44,7 +46,11 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             var type = mockRequest.Request;
             if (!AutoMockHelpers.IsAutoMock(type)) type = AutoMockHelpers.GetAutoMockType(type);
 
-            var directRequest = new AutoMockDirectRequest(type, mockRequest);
+            var directRequest = new AutoMockDirectRequest(type, mockRequest) 
+            { 
+                MockShouldCallbase = mockRequest.MockShouldCallbase,
+                NoMockDependencies = mockRequest.NoMockDependencies,
+            };
 
             try
             {

@@ -59,7 +59,7 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
             try
             {
-                if(!methods.Any())
+                if(!methods.Any()) // Just in case...
                 {
                     mock.EnsureMocked();
 
@@ -87,8 +87,9 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
                 if(mock is not null && mock is ISetCallBase)
                 {
                     ((ISetCallBase)mock).ForceSetCallbase(!mock.GetInnerType().IsDelegate()
-                                                                && (mockRequest.MockShouldCallbase == true
-                                                                    || mockRequest.StartTracker.MockShouldCallbase == true));
+                                                && (mockRequest.MockShouldCallbase == true
+                                                    || (mockRequest.MockShouldCallbase is null 
+                                                            && mockRequest.StartTracker.MockShouldCallbase == true)));
                 }
 
                 if (recursionContext is not null) recursionContext.BuilderCache.Remove(mockRequest.Request);
@@ -97,7 +98,9 @@ namespace AutoMoqExtensions.FixtureUtils.MethodInvokers
 
         protected virtual object ResolveParamater(AutoMockDirectRequest mockRequest, ParameterInfo pi, ISpecimenContext context)
         {            
-            var argsRequest = new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);
+            var argsRequest = mockRequest.NoMockDependencies == true
+                    ? new ConstructorArgumentRequest(mockRequest.Request, pi, mockRequest)
+                    : new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);
 
             Logger.LogInfo("\t\t\t\t\t\tBefore args: " + pi.Name);
             var result = context.Resolve(argsRequest);

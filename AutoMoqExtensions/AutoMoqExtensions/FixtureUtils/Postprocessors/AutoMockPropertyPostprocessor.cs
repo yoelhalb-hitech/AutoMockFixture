@@ -18,10 +18,12 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
             if (request is not PropertyRequest propRequest) return new NoSpecimen();
 
             var type = propRequest.PropertyInfo.PropertyType;
-            if ((!propRequest.IsInAutoMockChain && !propRequest.IsInAutoMockDepnedencyChain) 
-                    || !autoMockableSpecification.IsSatisfiedBy(type))
+            if (!autoMockableSpecification.IsSatisfiedBy(type) || !propRequest.ShouldAutoMock)
             {
-                var result = context.Resolve(propRequest.PropertyInfo);
+                object newRequest = propRequest.IsInAutoMockChain || propRequest.IsInAutoMockDepnedencyChain
+                                        ? new AutoMockDependenciesRequest(type, propRequest)
+                                        : new NonAutoMockRequest(type, propRequest);
+                var result = context.Resolve(newRequest);
                 propRequest.SetResult(result);
                 return result;
             }

@@ -40,7 +40,12 @@ namespace AutoMoqExtensions.AutoMockUtils
             Logger.LogInfo($"In relay, for {t.FullName}");
             
             // We do direct to bypass the specification test
-            using var directRequest = new AutoMockRequest(t, Fixture) { MockShouldCallbase = true, BypassChecks = true };
+            using var directRequest = new AutoMockRequest(t, Fixture) 
+            {
+                MockShouldCallbase = true,
+                BypassChecks = true,
+                NoMockDependencies = true,
+            };
             
             var result = context.Resolve(directRequest);
 

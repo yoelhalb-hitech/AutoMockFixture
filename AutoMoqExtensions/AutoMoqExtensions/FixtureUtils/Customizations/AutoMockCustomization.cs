@@ -25,6 +25,10 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
             if (fixture == null || fixture is not AutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                            new AutoMockTypeControlBuilder(),
+                                            new TypeMatchSpecification(typeof(IRequestWithType))));
+
+            fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new EnumerableBuilder(),
                                             new TypeMatchSpecification(typeof(IRequestWithType))));
 
@@ -54,7 +58,7 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockConstructorArgumentPostprocessor(mockFixture.ConstructorArgumentValues),
-                                            new TypeMatchSpecification(typeof(AutoMockConstructorArgumentRequest))));
+                                            new TypeMatchSpecification(typeof(ConstructorArgumentRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockPropertyPostprocessor(),
@@ -66,11 +70,11 @@ namespace AutoMoqExtensions.FixtureUtils.Customizations
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockReturnPostprocessor(),
-                                            new TypeMatchSpecification(typeof(AutoMockReturnRequest))));
+                                            new TypeMatchSpecification(typeof(ReturnRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockOutParameterPostprocessor(),
-                                            new TypeMatchSpecification(typeof(AutoMockOutParameterRequest))));
+                                            new TypeMatchSpecification(typeof(OutParameterRequest))));
 
             fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                             new AutoMockRequestPostprocessor(),

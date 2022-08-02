@@ -85,6 +85,8 @@ namespace AutoMoqExtensions
             Behaviors.Add(new FreezeRecursionBehavior());
         }
 
+        public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();
+
         internal Cache Cache { get; } = new Cache();
 
         #region Create
@@ -114,26 +116,27 @@ namespace AutoMoqExtensions
             
             return Execute(new AutoMockDependenciesRequest(t, this));
         }
-        public object CreateWithAutoMockDependencies(Type t, bool callBase = false)
+        public object CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
-            var result = Execute(new AutoMockDependenciesRequest(t, this) { MockShouldCallbase = callBase });
+            var result = Execute(new AutoMockDependenciesRequest(t, this) { MockShouldCallbase = callBase }, autoMockTypeControl);
 
             return result;
         }
-        public T CreateWithAutoMockDependencies<T>(bool callBase = false) where T : class 
-                    => (T)CreateWithAutoMockDependencies(typeof(T), callBase);
+        public T CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class 
+                    => (T)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
 
-        public object CreateNonAutoMock(Type t)
+        public object CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null)
         {
-            var result = Execute(new NonAutoMockRequest(t, this));
+            var result = Execute(new NonAutoMockRequest(t, this), autoMockTypeControl);
 
             return result;
         }
-        public T CreateNonAutoMock<T>() => (T)CreateNonAutoMock(typeof(T));
+        public T CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null) 
+                    => (T)CreateNonAutoMock(typeof(T), autoMockTypeControl);
 
-        public object CreateAutoMock(Type t, bool callBase = false)
+        public object CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
         {
             if (t.IsValueType) throw new Exception("Type must be a reference type");
 
@@ -141,11 +144,12 @@ namespace AutoMoqExtensions
             if(!AutoMockHelpers.IsAutoMockAllowed(type))
                 throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
-            var result = Execute(new AutoMockRequest(type, this) { MockShouldCallbase = callBase });
+            var result = Execute(new AutoMockRequest(type, this) { MockShouldCallbase = callBase }, autoMockTypeControl);
 
             return type != t ? AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
         }
-        public T CreateAutoMock<T>(bool callBase = false) where T : class => (T)CreateAutoMock(typeof(T), callBase);
+        public T CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+                    => (T)CreateAutoMock(typeof(T), callBase, autoMockTypeControl);
 
         #endregion
 
@@ -158,11 +162,11 @@ namespace AutoMoqExtensions
         internal Dictionary<object, ITracker> TrackerDict = new();
         internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
         
-        private object Execute(ITracker request)
+        private object Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
         {
             try
             {
-                var result = new RecursionContext(this).Resolve(request);
+                var result = new RecursionContext(this, this) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
                 request.SetCompleted();
 
                 // We will rather deal with the underlying mock for consistance

@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Kernel;
+using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
@@ -24,6 +25,14 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.MainBuilders
         {
             if (request is not NonAutoMockRequest nonMockRequest)
                 return new NoSpecimen();
+
+            if (!AutoMockHelpers.IsAutoMockAllowed(nonMockRequest.Request)) // Basically all types that we want to leave for AutoFixture
+            {
+                // Note that IEnumerable etc. should already be handled in the special builders
+                var result = context.Resolve(nonMockRequest.Request);
+                nonMockRequest.SetResult(result);
+                return result;
+            }
 
             var specimen = Builder.Create(request, context);
             if (specimen is NoSpecimen || specimen is OmitSpecimen)

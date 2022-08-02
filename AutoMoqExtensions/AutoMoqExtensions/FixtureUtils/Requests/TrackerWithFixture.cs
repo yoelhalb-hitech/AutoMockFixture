@@ -31,7 +31,7 @@ namespace AutoMoqExtensions.FixtureUtils.Requests
 
         protected virtual bool IsFixtureTrackerEquals(IFixtureTracker other)
                     => Object.ReferenceEquals(other.Fixture, Fixture)
-                        && other.MockShouldCallbase == MockShouldCallbase; 
+                        && (other.MockShouldCallbase ?? other.StartTracker.MockShouldCallbase) == (MockShouldCallbase ?? StartTracker.MockShouldCallbase);
 
         public override void SetResult(object? result)
         {

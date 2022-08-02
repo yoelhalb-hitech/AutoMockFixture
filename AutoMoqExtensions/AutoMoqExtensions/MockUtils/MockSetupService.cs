@@ -19,6 +19,7 @@ namespace AutoMoqExtensions.MockUtils
         private readonly ISpecimenContext context;
         private readonly Type mockedType;
         private readonly ITracker? tracker;
+        private readonly bool noMockDependencies;
 
         public MockSetupService(IAutoMock mock, ISpecimenContext context)
         {
@@ -26,6 +27,8 @@ namespace AutoMoqExtensions.MockUtils
             this.context = context;
             this.mockedType = mock.GetInnerType();
             this.tracker = mock.Tracker;
+            this.noMockDependencies = mock.Tracker is AutoMockDirectRequest directRequest 
+                                                                && directRequest.NoMockDependencies == true;
         }
 
         public void Setup()
@@ -99,7 +102,10 @@ namespace AutoMoqExtensions.MockUtils
         {
             Setup(prop, () =>
             {
-                var propValue = context.Resolve(new AutoMockPropertyRequest(mockedType, prop, tracker));
+                var request = noMockDependencies
+                                        ? new PropertyRequest(mockedType, prop, tracker)
+                                        : new AutoMockPropertyRequest(mockedType, prop, tracker);
+                var propValue = context.Resolve(request);
                 SetupHelpers.SetupAutoProperty(mockedType, prop.PropertyType, mock, prop, propValue);
             });
         }
