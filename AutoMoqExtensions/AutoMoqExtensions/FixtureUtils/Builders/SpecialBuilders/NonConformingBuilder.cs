@@ -19,7 +19,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 
     public object? Create(object request, ISpecimenContext context)
     {
-        if (request is not IRequestWithType typeRequest 
+        if (request is not IRequestWithType typeRequest
                 || (!innerSpecification.IsSatisfiedBy(typeRequest.Request))) return new NoSpecimen();
 
         var genericDefinitions = typeRequest.Request.GetAllGenericDefinitions();
