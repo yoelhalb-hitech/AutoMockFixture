@@ -82,6 +82,8 @@ internal class ExpressionGenerator
             var request = noMockDependencies
                             ? new OutParameterRequest(mockedType, method, parameter, underlyingType, tracker)
                             : new AutoMockOutParameterRequest(mockedType, method, parameter, underlyingType, tracker);
+            
+            // TODO... change this to to delay generate it when called first time
             object variable = context.Resolve(request);
             Logger.LogInfo("Out underlying result: " + variable.ToString());
             if (variable is OmitSpecimen)

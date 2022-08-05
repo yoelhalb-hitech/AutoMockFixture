@@ -31,10 +31,10 @@ internal static class SetupHelpers
                .Invoke(null, new object?[] { mock, methodInvocationLambda, returnValue });
     }
     
-    public static void SetupMethodWithGenericResult(Type mockedType, Type newReturnType, 
+    public static void SetupMethodWithInvocationFunc(Type mockedType, Type returnType, 
                     IAutoMock mock, Expression methodInvocationLambda, InvocationFunc invocationFunc)
     {
-        GetMethod(nameof(SetupMethodWithGenericResult)).MakeGenericMethod(mockedType, newReturnType)
+        GetMethod(nameof(SetupMethodWithInvocationFunc)).MakeGenericMethod(mockedType, returnType)
             .Invoke(null, new object[] { mock, methodInvocationLambda, invocationFunc });
     }
 
@@ -74,7 +74,7 @@ where TMock : class
         mock.Setup(methodCallExpression).CallBase();
     }
     
-    private static void SetupMethodWithGenericResult<TMock, TResult>(
+    private static void SetupMethodWithInvocationFunc<TMock, TResult>(
         AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
                                 InvocationFunc invocationFunc)
         where TMock : class

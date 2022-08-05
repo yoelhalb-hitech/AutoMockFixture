@@ -39,33 +39,29 @@ internal class MethodSetupService
         // TODO... this is all based on the assumption that the method can return the same object everytime
         if (method.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
         {
-            SetupHelpers.SetupCallbaseMethod(mockedType, returnType, mock, methodInvocationLambda);              
+            SetupHelpers.SetupCallbaseMethod(mockedType, returnType, mock, methodInvocationLambda);
+            return;
         }
         else if (method.IsVoid())
         {
-            SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);                
+            SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);
+            return;
         }
-        else if (!method.ReturnType.ContainsGenericParameters)
-        {
-            Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
-            var request = noMockDependencies
-                                    ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
-                                    : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
-            var returnValue = context.Resolve(request);
+       
+        Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
+        // We have to use InvocationFunc for generic
+        //  but even for non generic it's better for perfomance not to generate the object until we need it
+        // TODO... we have to handle recursion when not using our recursion approach, RecursionGuard won't work for that...
+        var invocationFunc = new InvocationFunc(HandleInvocationFunc);
 
-            Logger.LogInfo("\t\t\tResolved return: " + returnValue.GetType().Name);                
-            SetupHelpers.SetupMethodWithResult(mockedType, returnType, mock, methodInvocationLambda, returnValue);            
-        }
-        else
+        var returnTypeToUse = returnType;
+        if (method.ReturnType.ContainsGenericParameters)
         {
-            Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
-            var invocationFunc = new InvocationFunc(HandleInvocationFunc); // TODO... we have to handle recursion, RecursionGuard won't work for that...           
-
             var genericArgs = returnType.GetGenericArguments().Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray();
-            var newReturnType = returnType.IsGenericParameter ? MatcherGenerator.GetGenericMatcher(returnType) : returnType.GetGenericTypeDefinition().MakeGenericType(genericArgs);
-
-            SetupHelpers.SetupMethodWithGenericResult(mockedType, newReturnType, mock, methodInvocationLambda, invocationFunc);
+            returnTypeToUse = returnType.IsGenericParameter ? MatcherGenerator.GetGenericMatcher(returnType) : returnType.GetGenericTypeDefinition().MakeGenericType(genericArgs);
         }
+
+        SetupHelpers.SetupMethodWithInvocationFunc(mockedType, returnTypeToUse, mock, methodInvocationLambda, invocationFunc);        
     }
 
     private Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
@@ -107,13 +103,17 @@ internal class MethodSetupService
         {
             var result = context.Resolve(request);        
 
-            if (mock.MethodsSetup.ContainsKey(trackingPath)) throw new Exception("Method was already setup");
-            mock.MethodsSetup.Add(trackingPath, method);
+            if(method.ReturnType.ContainsGenericParameters)
+            {
+                if (mock.MethodsSetup.ContainsKey(trackingPath)) throw new Exception("Method was already setup");
+                mock.MethodsSetup.Add(trackingPath, method);
+            }
 
             return result;
         }
         catch (Exception ex)
         {
+            if (mock.MethodsSetup.ContainsKey(trackingPath)) mock.MethodsSetup.Remove(trackingPath);
             mock.MethodsNotSetup[trackingPath] = new CannotSetupMethodException(CannotSetupMethodException.CannotSetupReason.Exception, ex);
             throw;
         }            
