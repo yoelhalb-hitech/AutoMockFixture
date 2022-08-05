@@ -21,6 +21,7 @@ internal class MockSetupService
     {
         this.mock = mock;
         this.context = context;
+        // Don't do mock.GetMocked().GetType() as it has additional properties etc.
         this.mockedType = mock.GetInnerType();
         this.tracker = mock.Tracker;
         this.noMockDependencies = mock.Tracker is AutoMockDirectRequest directRequest 
@@ -33,25 +34,27 @@ internal class MockSetupService
 
         // Properties with both get and set will be handled in the command for it
 
-        var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet());
+        // Remeber that `private` setters in the base will have no setter in the proxy
+        var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet() || p.SetMethod.IsPrivate);
         foreach (var prop in singleMethodProperties)
         {
             SetupSingleMethodProperty(prop);
         }
 
-        var methods = GetMethods();
+        // If it's private it won't be in the proxy, CAUTION: I am doing it here and not in the `GetMethod()` in case we want to change the logic it should be in one place
+        var methods = GetMethods().Where(m => !m.IsPrivate);
         foreach (var method in methods)
         {
             SetupMethod(method);
         }
     }
 
-    private void Setup(MemberInfo member, Action action)
+    private void Setup(MemberInfo member, Action action, string? trackingPath = null)
     {
         var method = member as MethodInfo;
         var prop = member as PropertyInfo;
 
-        var trackingPath = method?.GetTrackingPath() ?? prop!.GetTrackingPath();
+        trackingPath ??= method?.GetTrackingPath() ?? prop!.GetTrackingPath();
         var methods = prop?.GetMethods() ?? new[] { method! };
 
         if (mock.CallBase && !mock.GetInnerType().IsInterface && !methods.Any(m => m.IsAbstract))
@@ -87,7 +90,7 @@ internal class MockSetupService
     {
         var method = prop.GetMethods().First();
 
-        Setup(prop, () => new MethodSetupService(mock, mockedType, method, context).Setup());
+        Setup(method, () => new MethodSetupService(mock, mockedType, method, context).Setup(), prop.GetTrackingPath());
     }
 
     private void SetupAutoProperty(PropertyInfo prop)

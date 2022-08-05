@@ -72,7 +72,7 @@ internal class MethodSetupService
     private object lockObject = new object(); // Not static as it is only local to the object
 
     private object? HandleInvocationFunc(IInvocation invocation)
-    {            
+    {
         if (resultDict.ContainsKey(invocation.Method)) return resultDict[invocation.Method];
 
         lock (resultDict)

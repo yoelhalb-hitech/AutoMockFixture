@@ -50,6 +50,8 @@ internal class WithCtorArgsTestClass
         this.TestCtorArg = testArg;
     }
     public InternalSimpleTestClass? TestClassProp { get; set; }
+    public InternalSimpleTestClass? TestClassPrivateNonVirtualProp { get; private set; }
+    public virtual InternalSimpleTestClass? TestClassPropWithPrivateSet { get; private set; }
     public InternalSimpleTestClass? TestClassPropWithProtectedSet { get; protected set; }
     public virtual InternalAbstractMethodTestClass? TestClassPropGet { get; }
     public InternalAbstractSimpleTestClass? TestClassField;

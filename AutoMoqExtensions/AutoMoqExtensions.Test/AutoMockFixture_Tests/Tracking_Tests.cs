@@ -44,8 +44,8 @@ internal class Tracking_Tests
         var mock = AutoMockHelpers.GetAutoMock(result);
 
         mock!.MethodsSetup.Should().ContainKey("TestClassPropGet");
-        mock!.MethodsNotSetup.Should().ContainKey("TestClassProp");
-        mock!.MethodsNotSetup["TestClassProp"].Reason.Should().Be(CannotSetupMethodException.CannotSetupReason.NonVirtual);
+        mock!.MethodsNotSetup.Should().ContainKey("TestClassPrivateNonVirtualProp");
+        mock!.MethodsNotSetup["TestClassPrivateNonVirtualProp"].Reason.Should().Be(CannotSetupMethodException.CannotSetupReason.NonVirtual);
     }
 
 }
