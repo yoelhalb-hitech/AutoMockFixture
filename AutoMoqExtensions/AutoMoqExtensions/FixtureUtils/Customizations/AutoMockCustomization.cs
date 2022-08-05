@@ -31,12 +31,16 @@ public class AutoMockCustomization : ICustomization
                                         new EnumerableBuilder(),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
-        fixture.Customizations.Add(new FilteringSpecimenBuilder(                                
-                                        new TaskBuilder(),                                    
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                        new TaskBuilder(),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
-        fixture.Customizations.Add(new FilteringSpecimenBuilder(                                
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new TupleBuilder(),
+                                        new TypeMatchSpecification(typeof(IRequestWithType))));
+
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                        new DelegateBuilder(),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
