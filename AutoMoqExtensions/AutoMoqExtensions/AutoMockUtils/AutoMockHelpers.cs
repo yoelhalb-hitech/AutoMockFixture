@@ -34,7 +34,11 @@ public static class AutoMockHelpers
         if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType || t.IsSealed
                     || t == typeof(Array) 
                     || typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
+
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER             
                     || t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))
+#endif
+
                     // This way we cover all different Tuple types...
                     || (t.Assembly == typeof(Tuple).Assembly) && t.FullName.StartsWith(typeof(Tuple).FullName)
                     || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName.StartsWith(typeof(ValueTuple).FullName)
@@ -54,7 +58,9 @@ public static class AutoMockHelpers
         if (t.IsGenericType && new[]
 {
             typeof(KeyValuePair<,>),
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
             typeof(IAsyncEnumerable<>),
+#endif
             typeof(Nullable<>),
             typeof(AutoMock<>),
         }.Contains(t.GetGenericTypeDefinition()))

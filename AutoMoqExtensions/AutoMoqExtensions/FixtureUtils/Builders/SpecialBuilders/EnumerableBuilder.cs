@@ -4,7 +4,13 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
 internal class EnumerableBuilder : NonConformingBuilder
 {
-    public override Type[] SupportedTypes => new Type[] { typeof(IEnumerable<>), typeof(IAsyncEnumerable<>) };
+    public override Type[] SupportedTypes => new Type[] 
+    { 
+        typeof(IEnumerable<>),
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+        typeof(IAsyncEnumerable<>)
+#endif
+    };
 
     public override int Repeat => 3;
 
@@ -17,16 +23,23 @@ internal class EnumerableBuilder : NonConformingBuilder
             .MakeGenericMethod(genericType)
             .Invoke(null, new object[] { data }));
         var isNotEnumerable = requestType.GetInterfaces().All(x => x.IsGenericType && x.GetGenericTypeDefinition() != typeof(IEnumerable<>));
-        var typeToMatch = isNotEnumerable ? typeof(IAsyncEnumerable<>).MakeGenericType(genericType) : typedData.GetType();
+        
+        var typeToMatch =
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+            isNotEnumerable ? typeof(IAsyncEnumerable<>).MakeGenericType(genericType) :
+#endif
+            typedData.GetType();
         Func<Type, bool> isMatch = t => t.IsAssignableFrom(typeToMatch);
 
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
         if (isNotEnumerable && typeToMatch == requestType)
         {
             return GetType()
                 .GetMethod(nameof(CreateAsyncEnumerable), BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(genericType)
                 .Invoke(this, new object[] { typedData });
-        }            
+        }
+#endif
 
         if (isNotEnumerable && isMatch(requestType)) return typedData;
 
@@ -95,6 +108,7 @@ internal class EnumerableBuilder : NonConformingBuilder
         return null;
     }
 
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
     private async IAsyncEnumerable<T> CreateAsyncEnumerable<T>(IEnumerable<T> enumerable)
     {
         await Task.CompletedTask.ConfigureAwait(false);
@@ -103,4 +117,5 @@ internal class EnumerableBuilder : NonConformingBuilder
             yield return item;
         }
     }
+#endif
 }

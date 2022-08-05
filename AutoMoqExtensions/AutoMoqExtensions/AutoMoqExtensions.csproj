@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net452;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
 
 	<LangVersion>10.0</LangVersion>
@@ -32,9 +32,11 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>     
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0"
+					  Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net461'" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
 	<PackageReference Include="MustInitializeAnalyzer" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -16,7 +16,7 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders
             typeof(Tuple<,,,,,>), typeof(ValueTuple<,,,,,>),
             typeof(Tuple<,,,,,,>), typeof(ValueTuple<,,,,,,>),
             typeof(Tuple<,,,,,,,>), typeof(ValueTuple<,,,,,,,>),
-            typeof(KeyValuePair<,>)
+            typeof(KeyValuePair<,>),
         };
 
         public override int Repeat => 1;
