@@ -9,8 +9,6 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
 internal abstract class NonConformingBuilder : ISpecimenBuilder
 {
-    private static InnerTypeSpecification innerSpecification = new InnerTypeSpecification();
-
     public abstract Type[] SupportedTypes { get; }
     public abstract int Repeat { get; }
     public abstract object CreateResult(Type requestType, object[][] innerResults);
@@ -19,13 +17,12 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 
     public object? Create(object request, ISpecimenContext context)
     {
-        if (request is not IRequestWithType typeRequest
-                || (!innerSpecification.IsSatisfiedBy(typeRequest.Request))) return new NoSpecimen();
+        if (request is not IRequestWithType typeRequest) return new NoSpecimen();
 
         var genericDefinitions = typeRequest.Request.GetAllGenericDefinitions();
-
+ 
         // generic type defintions are not conisdered assignable
-        if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request) 
+        if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request)
                     || (t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
                 
         var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
