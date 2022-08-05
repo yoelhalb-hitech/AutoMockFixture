@@ -11,7 +11,7 @@ internal class AutoMock_Tests
     public void Test_AutoMock_Abstract()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<AutoMock<InternalAbstractMethodTestClass>>();
         // Assert
@@ -24,7 +24,7 @@ internal class AutoMock_Tests
     public void Test_AutoMock_CallBase()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
         // Assert
@@ -59,7 +59,7 @@ internal class AutoMock_Tests
     public void Test_AutoMock()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<AutoMock<WithCtorArgsTestClass>>();
         // Assert
@@ -103,7 +103,7 @@ internal class AutoMock_Tests
     public void Test_CreateAutoMock_NonGeneric()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         InternalAbstractSimpleTestClass obj = (InternalAbstractSimpleTestClass)fixture.CreateAutoMock(typeof(InternalAbstractSimpleTestClass));
 
@@ -117,7 +117,7 @@ internal class AutoMock_Tests
     public void Test_CreateAutoMock_NoCtorParams()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractSimpleTestClass>();
 
@@ -130,7 +130,7 @@ internal class AutoMock_Tests
     public void Test_CreateAutoMock_WithCtorParams_CallBase()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
         // Assert
@@ -160,7 +160,7 @@ internal class AutoMock_Tests
     public void Test_CreateAutoMock_WithCtorParams_NoCallBase()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>();
         // Assert

@@ -8,21 +8,21 @@ internal class AutoMockRequest_Tests
     [Test]
     public void Test_ReturnsTrue_When_Is_StartObject_When_MockDependencies()
     {
-        var request = new AutoMockRequest(typeof(TrackerWithFixture), new AutoMockFixture()) { NoMockDependencies = false };
+        var request = new AutoMockRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture()) { NoMockDependencies = false };
         request.ShouldAutoMock.Should().BeTrue();
     }
 
     [Test]
     public void Test_ReturnsTrue_When_Is_StartObject_When_NoMockDependencies()
     {
-        var request = new AutoMockRequest(typeof(TrackerWithFixture), new AutoMockFixture()) { NoMockDependencies = true };
+        var request = new AutoMockRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture()) { NoMockDependencies = true };
         request.ShouldAutoMock.Should().BeTrue();
     }
 
     [Test]
     public void Test_ReturnsTrue_When_Is_In_DependencyChain_When_MockDependencies()
     {
-        var dependencyRequest = new AutoMockDependenciesRequest(typeof(TrackerWithFixture), new AutoMockFixture());
+        var dependencyRequest = new AutoMockDependenciesRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture());
         var request = new AutoMockRequest(typeof(TrackerWithFixture), dependencyRequest) { NoMockDependencies = false };
         request.ShouldAutoMock.Should().BeTrue();
     }
@@ -30,7 +30,7 @@ internal class AutoMockRequest_Tests
     [Test]
     public void Test_ReturnsTrue_When_Is_In_DependencyChain_When_NoMockDependencies()
     {
-        var dependencyRequest = new AutoMockDependenciesRequest(typeof(TrackerWithFixture), new AutoMockFixture());
+        var dependencyRequest = new AutoMockDependenciesRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture());
         var request = new AutoMockRequest(typeof(TrackerWithFixture), dependencyRequest) { NoMockDependencies = true };
         request.ShouldAutoMock.Should().BeTrue();
     }
@@ -38,7 +38,7 @@ internal class AutoMockRequest_Tests
     [Test]
     public void Test_ReturnsTrue_When_Is_In_MockChain_When_MockDependencies()
     {
-        var noMockChainRequest = new AutoMockRequest(typeof(TrackerWithFixture), new AutoMockFixture()) { NoMockDependencies = false };
+        var noMockChainRequest = new AutoMockRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture()) { NoMockDependencies = false };
         var request = new AutoMockRequest(typeof(TrackerWithFixture), noMockChainRequest) { NoMockDependencies = false };
         request.ShouldAutoMock.Should().BeTrue();
     }
@@ -46,7 +46,7 @@ internal class AutoMockRequest_Tests
     [Test]
     public void Test_ReturnsTrue_When_Is_In_MockChain_When_NoMockDependencies()
     {
-        var noMockChainRequest = new AutoMockRequest(typeof(TrackerWithFixture), new AutoMockFixture()) { NoMockDependencies = false };
+        var noMockChainRequest = new AutoMockRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture()) { NoMockDependencies = false };
         var request = new AutoMockRequest(typeof(TrackerWithFixture), noMockChainRequest) { NoMockDependencies = true };
         request.ShouldAutoMock.Should().BeTrue();
     }
@@ -54,7 +54,7 @@ internal class AutoMockRequest_Tests
     [Test]
     public void Test_ReturnsTrue_When_Is_NotIn_MockChain_When_MockDependencies()
     {
-        var noMockChainRequest = new NonAutoMockRequest(typeof(TrackerWithFixture), new AutoMockFixture());
+        var noMockChainRequest = new NonAutoMockRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture());
         var request = new AutoMockRequest(typeof(TrackerWithFixture), noMockChainRequest) { NoMockDependencies = false };
         request.ShouldAutoMock.Should().BeTrue();
     }
@@ -62,7 +62,7 @@ internal class AutoMockRequest_Tests
     [Test]
     public void Test_ReturnsTrue_When_Is_NotIn_MockChain_When_NoMockDependencies()
     {
-        var noMockChainRequest = new NonAutoMockRequest(typeof(TrackerWithFixture), new AutoMockFixture());
+        var noMockChainRequest = new NonAutoMockRequest(typeof(TrackerWithFixture), new AbstractAutoMockFixture());
         var request = new AutoMockRequest(typeof(TrackerWithFixture), noMockChainRequest) { NoMockDependencies = true };
         request.ShouldAutoMock.Should().BeTrue();
     }

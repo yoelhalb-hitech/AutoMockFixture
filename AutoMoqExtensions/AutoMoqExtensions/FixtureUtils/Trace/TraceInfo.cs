@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMoqExtensions.FixtureUtils.Trace;
 
-internal class TraceInfo
+public class TraceInfo
 {
     public List<(ISpecimenBuilder builder, ISpecimenContext context,
         object request, object? response, Exception? exception, int depth)> TraceValues

@@ -7,29 +7,29 @@ namespace AutoMoqExtensions;
 // TODO... add injections
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
 [AttributeUsage(AttributeTargets.Method)]
-public class AutoMockAutoDataAttribute : Attribute, ITestBuilder
+public class UnitAutoDataAttribute : Attribute, ITestBuilder
 {
     private readonly bool configureMembers;
     private readonly bool generateDelegates;
 
-    public AutoMockAutoDataAttribute(bool configureMembers = true, bool generateDelegates = true)
-    {            
+    public UnitAutoDataAttribute(bool configureMembers = true, bool generateDelegates = true)
+    {
         this.configureMembers = configureMembers;
         this.generateDelegates = generateDelegates;
     }
 
-    internal class AutoMockData : AutoDataAttribute
+    internal class AutoMockUnitData : AutoDataAttribute
     {
-        public AutoMockData(bool configureMembers = true, bool generateDelegates = true) 
-            : base(() => new AutoMockFixture(configureMembers, generateDelegates))
-        {               
+        public AutoMockUnitData(bool configureMembers = true, bool generateDelegates = true)
+            : base(() => new UnitFixture(configureMembers, generateDelegates))
+        {
         }
     }
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {
         // We need a fixture per method and per exectution, otherwise we can run in problems...
-        var builder = new AutoMockData(configureMembers, generateDelegates);
+        var builder = new AutoMockUnitData(configureMembers, generateDelegates);
         return builder.BuildFrom(method, suite);
     }
 }

@@ -8,7 +8,7 @@ internal class DependencyInjection_Tests
     public void Test_CtorArguments_AutoMocked()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert

@@ -6,11 +6,11 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
 internal class TypeControl_FromCreateMethod_Tests
 {
-    private AutoMockFixture fixture = default!;
+    private AbstractAutoMockFixture fixture = default!;
     [SetUp]
     public void SetupFixture()
     {
-        fixture = new AutoMockFixture();
+        fixture = new AbstractAutoMockFixture();
     }
 
     private AutoMockTypeControl GetMockTypeControl()

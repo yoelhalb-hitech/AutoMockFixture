@@ -8,7 +8,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_Is_CallBase()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         // Act
         var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(true);
@@ -27,7 +27,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_Abstract_WithCallBase_Is_CallBase()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractMethodTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -45,7 +45,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_Interface_WithCallBase_Is_CallBase()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalReadOnlyTestInterface>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -63,7 +63,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_CallsCtor()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -81,7 +81,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_CallsBaseDefaultCtor()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorNoArgsTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -99,7 +99,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_DoesNotSetup_ReadOnlyProps()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -117,7 +117,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_SetsUp_ReadOnlyProps_WhenInterface()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalReadOnlyTestInterface>(true);
 
@@ -129,7 +129,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_SetsUp_ReadOnlyProps_WhenAbstract()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractReadonlyPropertyClass>(true);
 
@@ -141,7 +141,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_SetsUp_ReadWriteProps() // Via the AutoProperties command
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -159,7 +159,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_SetsUp_ReadWriteFields() // Via the AutoProperties command
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalTestFields>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -177,7 +177,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_DoesNotSetup_NonAbstractMethods()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractSimpleTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);
@@ -195,7 +195,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_SetsUp_AbstractMethods()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalTestMethods>(true);
 
@@ -207,7 +207,7 @@ internal class CreateAutoMock_Callbase_Tests
     public void Test_AutoMock_WithCallBase_CallsBase_NonAbstractMethods()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractSimpleTestClass>(true);
         var mock = AutoMockHelpers.GetFromObj(obj);

@@ -8,7 +8,7 @@ internal class NonAutoMock_Tests
     public void Test_CtorArguments_NotAutoMocked()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>();
         // Assert

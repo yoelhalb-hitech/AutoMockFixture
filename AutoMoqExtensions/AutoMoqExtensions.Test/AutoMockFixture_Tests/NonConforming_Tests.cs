@@ -7,7 +7,7 @@ internal class NonConforming_Tests
     public void Test_AutoMock_Array()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         // Act
         // We cannot use CreateAutoMock as it is not valid for arrays
@@ -25,7 +25,7 @@ internal class NonConforming_Tests
     public void Test_NonAutoMock_Tuple()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         // Act
         var obj = fixture.CreateNonAutoMock<Tuple<AutoMock<InternalAbstractMethodTestClass>, InternalSimpleTestClass, InternalAbstractSimpleTestClass>>();
@@ -44,7 +44,7 @@ internal class NonConforming_Tests
     public void Test_NonAutoMock_WithDependencies_Tuple()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<Tuple<AutoMock<InternalAbstractMethodTestClass>, InternalSimpleTestClass, InternalAbstractSimpleTestClass>>();
@@ -63,7 +63,7 @@ internal class NonConforming_Tests
     public void Test_AutoMock_Task()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         Assert.Throws<InvalidOperationException>(() => fixture.CreateAutoMock<Task<InternalAbstractMethodTestClass>>());
     }
@@ -72,7 +72,7 @@ internal class NonConforming_Tests
     public void Test_NonAutoMock_Array()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         // Act
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass[]>();
@@ -87,7 +87,7 @@ internal class NonConforming_Tests
     public void Test_NonAutoMock_WithDependencies_Array()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<InternalSimpleTestClass[]>();
@@ -102,7 +102,7 @@ internal class NonConforming_Tests
     public async Task Test_NonAutoMock_Task()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateNonAutoMock<Task<InternalSimpleTestClass>>();
         // Assert
@@ -118,7 +118,7 @@ internal class NonConforming_Tests
     public async Task Test_NonAutoMock_WithDependencies_Task()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<Task<InternalSimpleTestClass>>();
         // Assert

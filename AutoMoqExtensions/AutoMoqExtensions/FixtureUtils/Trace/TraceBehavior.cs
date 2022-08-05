@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMoqExtensions.FixtureUtils.Trace;
 
-internal class TraceBehavior : ISpecimenBuilderTransformation
+public class TraceBehavior : ISpecimenBuilderTransformation
 {
     public TraceInfo TraceInfo { get; }
 

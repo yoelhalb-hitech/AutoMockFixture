@@ -9,7 +9,7 @@ internal class BaseTracker_Tests
     [Test]
     public void GetChildrensPaths_ReturnsCurrentPath()
     {
-        var fixture = new AutoMockFixture(); // Plain Autofixture doesn't work... because of constructors
+        var fixture = new AbstractAutoMockFixture(); // Plain Autofixture doesn't work... because of constructors
         var trackerMock = new Mock<TrackerWithFixture>(fixture, null);
         trackerMock.SetupGet(t => t.InstancePath).Returns("Test");
         trackerMock.CallBase = true;
@@ -26,7 +26,7 @@ internal class BaseTracker_Tests
     [Test]
     public void GetHashCode_DoesNotCauseStackOverflow()
     {
-        var request = new AutoMockRequest(typeof(AutoMoqExtensions.FixtureUtils.Requests.BaseTracker), new AutoMockFixture());
+        var request = new AutoMockRequest(typeof(AutoMoqExtensions.FixtureUtils.Requests.BaseTracker), new AbstractAutoMockFixture());
         Assert.DoesNotThrow(() => request.GetHashCode());
     }
 }

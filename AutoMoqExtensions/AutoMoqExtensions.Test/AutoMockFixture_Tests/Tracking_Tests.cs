@@ -9,7 +9,7 @@ internal class Tracking_Tests
     [Test]
     public void Test_Create_AddsToTrackerDict_NonAutoMock()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var result = fixture.CreateNonAutoMock<SingletonUserClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
@@ -19,7 +19,7 @@ internal class Tracking_Tests
     [Test]
     public void Test_Create_AddsToTrackerDict_NonAutoMock_WithDependencies()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var result = fixture.CreateWithAutoMockDependencies<SingletonUserClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
@@ -29,7 +29,7 @@ internal class Tracking_Tests
     [Test]
     public void Test_Create_AddsUnderlyingMockToTrackerDict()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var result = fixture.CreateAutoMock<SingletonUserClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
@@ -39,7 +39,7 @@ internal class Tracking_Tests
     [Test]
     public void Test_ListsSetupMethods()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var result = fixture.CreateAutoMock<WithCtorArgsTestClass>();
         var mock = AutoMockHelpers.GetAutoMock(result);
 

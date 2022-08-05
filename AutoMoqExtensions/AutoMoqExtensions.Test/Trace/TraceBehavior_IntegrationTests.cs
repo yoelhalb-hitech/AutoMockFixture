@@ -7,7 +7,7 @@ internal class TraceBehavior_IntegrationTests
     [Test]
     public void TraceBehavior_GeneratesInfo()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
         
@@ -19,7 +19,7 @@ internal class TraceBehavior_IntegrationTests
     [Test]
     public void TraceBehaviour_ContainsTheResult()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
 
@@ -32,7 +32,7 @@ internal class TraceBehavior_IntegrationTests
     [Test]
     public void TraceBehaviour_IsInOrder()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
         

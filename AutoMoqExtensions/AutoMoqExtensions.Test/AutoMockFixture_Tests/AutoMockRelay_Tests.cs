@@ -7,7 +7,7 @@ internal class AutoMockRelay_Tests
     [Test]
     public void Test_AutoMockRelay_NotMessingUp_BugRepro()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>();
 
@@ -23,7 +23,7 @@ internal class AutoMockRelay_Tests
     public void Test_NonAutoMock_Abstract_ViaRelay()
     {
         // Arrange
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateNonAutoMock<InternalAbstractMethodTestClass>();
         // Assert

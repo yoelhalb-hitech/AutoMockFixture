@@ -6,7 +6,7 @@ internal class Freeze_Tests
     [Test]
     public void Test_ClassMarkedSingleton_IsFrozen_WhenAutoMock_AndCallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         var obj1 = fixture.CreateAutoMock<SingletonUserClass>(true);
         var obj2 = fixture.CreateAutoMock<SingletonUserClass>(true);
@@ -51,7 +51,7 @@ internal class Freeze_Tests
     [Test]
     public void Test_ClassMarkedSingleton_IsFrozen_WhenAutoMock_AndNonCallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var obj1 = fixture.CreateAutoMock<SingletonUserClass>(false);
         var obj2 = fixture.CreateAutoMock<SingletonUserClass>(false);
 
@@ -90,7 +90,7 @@ internal class Freeze_Tests
     [Test]
     public void Test_ClassMarkedSingleton_IsDifferent_ByCallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var obj1 = fixture.CreateAutoMock<SingletonClass>(false);
         var obj2 = fixture.CreateAutoMock<SingletonClass>(true);
 

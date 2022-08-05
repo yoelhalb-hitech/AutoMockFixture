@@ -16,9 +16,16 @@ using System.Reflection;
 namespace AutoMoqExtensions;
 
 /// <summary>
-/// Caustion the methods are not thread safe
+/// For Test project purposes
 /// </summary>
-public partial class AutoMockFixture : Fixture
+internal class AbstractAutoMockFixture : AutoMockFixture 
+{
+    public override object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+}
+/// <summary>
+/// Caution the methods are not thread safe
+/// </summary>
+public abstract partial class AutoMockFixture : Fixture
 {
     private readonly static MethodInfo replaceNodeMethod;
     private readonly static FieldInfo graphField;
@@ -66,6 +73,7 @@ public partial class AutoMockFixture : Fixture
                                 new FixedBuilder(this),
                                 new OrRequestSpecification(
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixture))),
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture))),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture))),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder))))));
 
@@ -92,24 +100,10 @@ public partial class AutoMockFixture : Fixture
         return Create<T>();
     }
 
-    public T Create<T>() => (T)Create(typeof(T));
+    public T Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => (T)Create(typeof(T), autoMockTypeControl);
 
-    internal object Create(Type t)
-    {
-        if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
-        
-        if (AutoMockHelpers.IsAutoMock(t))
-        {
-            var inner = AutoMockHelpers.GetMockedType(t)!;
-            
-            if(AutoMockHelpers.IsAutoMockAllowed(inner)) 
-                return Execute(new AutoMockDirectRequest(t, this));
+    public abstract object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
 
-            throw new InvalidOperationException($"{AutoMockHelpers.GetMockedType(t)!.FullName} cannot be AutoMock");
-        }
-        
-        return Execute(new AutoMockDependenciesRequest(t, this));
-    }
     public object CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         if (t.IsValueType) throw new Exception("Type must be a reference type");

@@ -11,7 +11,7 @@ internal class TrackerWithFixture_Tests
     [Test]
     public void Test_IsRequestEquals_ReturnsFalse_WhenNot_TrackerWithFixture()
     {
-        var request = new TrackerWithFixture(new AutoMockFixture());
+        var request = new TrackerWithFixture(new AbstractAutoMockFixture());
         var other = new TupleItemRequest(typeof(string), 0, false, request);
 
         request.IsRequestEquals(other).Should().BeFalse();
@@ -20,8 +20,8 @@ internal class TrackerWithFixture_Tests
     [Test]
     public void Test_IsRequestEquals_ReturnsFalse_WhenDifferentFixture()
     {
-        var request = new TrackerWithFixture(new AutoMockFixture());
-        var request2 = new TrackerWithFixture(new AutoMockFixture());            
+        var request = new TrackerWithFixture(new AbstractAutoMockFixture());
+        var request2 = new TrackerWithFixture(new AbstractAutoMockFixture());            
 
         request.IsRequestEquals(request2).Should().BeFalse();
     }
@@ -29,7 +29,7 @@ internal class TrackerWithFixture_Tests
     [Test]
     public void Test_IsRequestEquals_ReturnsFalse_WhenDifferentCallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         var callBaseTrue = new TrackerWithFixture(fixture) { MockShouldCallbase = true };
         var callBaseFalse = new TrackerWithFixture(fixture) { MockShouldCallbase = false };
@@ -43,7 +43,7 @@ internal class TrackerWithFixture_Tests
     [Test]
     public void Test_IsRequestEquals_ReturnsTrue_WhenSameFixture_AndCallBaseTrue()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         var callBaseTrue1 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = true };
         var callBaseTrue2 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = true };
@@ -57,7 +57,7 @@ internal class TrackerWithFixture_Tests
     [Test]
     public void Test_IsRequestEquals_ReturnsTrue_WhenSameFixture_AndCallBaseFalse()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         var callBaseFalse1 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = false };
         var callBaseFalse2 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = false };

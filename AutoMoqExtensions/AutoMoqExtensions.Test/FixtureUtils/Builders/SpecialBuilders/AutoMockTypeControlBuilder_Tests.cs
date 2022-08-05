@@ -13,7 +13,7 @@ internal class AutoMockTypeControlBuilder_Tests
     {
         private TypeControlHelper GetTypeControlHelper(Type requestType, Type innerType)
         {
-            var fixture = new AutoMockFixture();
+            var fixture = new AbstractAutoMockFixture();
 
             var recursionContext = new RecursionContext(fixture, fixture);
 
@@ -22,7 +22,7 @@ internal class AutoMockTypeControlBuilder_Tests
             return new TypeControlHelper(fixture, request, innerType, recursionContext);
         }
 
-        private IRequestWithType GetRequest(Type requestType, Type innerType, AutoMockFixture fixture)
+        private IRequestWithType GetRequest(Type requestType, Type innerType, AbstractAutoMockFixture fixture)
             => requestType switch
             {
                 Type t when t == typeof(AutoMockRequest) => new AutoMockRequest(innerType, fixture),
@@ -149,7 +149,7 @@ internal class AutoMockTypeControlBuilder_Tests
             var type = typeof(IEnumerable);
             var typeControl = new AutoMockTypeControl { NeverAutoMockTypes = new[] { type }.ToList() };
 
-            var fixture = new AutoMockFixture();
+            var fixture = new AbstractAutoMockFixture();
             var recursionContext = new RecursionContext(fixture, fixture);
 
             var request = new AutoMockRequest(type, fixture) { NoMockDependencies = true };

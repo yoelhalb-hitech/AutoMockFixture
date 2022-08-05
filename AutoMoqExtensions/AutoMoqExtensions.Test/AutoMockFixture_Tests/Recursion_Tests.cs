@@ -20,7 +20,7 @@ internal class Recursion_Tests
     [Test]
     public void Test_Can_Create_AutoMock_When_NotCallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         var mock = fixture.CreateAutoMock<AutoMock<Test1>>();
 
         AutoMockHelpers.GetFromObj(mock).Should().NotBeNull();
@@ -40,7 +40,7 @@ internal class Recursion_Tests
     [Test]
     public void Test_Can_CreateAutoMock_AutoMock_When_CallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         Test2? obj = null;
         Assert.DoesNotThrow(() => obj = fixture.CreateAutoMock<Test2>());
 
@@ -57,7 +57,7 @@ internal class Recursion_Tests
     [Test]
     public void Test_Can_CreateAutoMock_AutoMock_When_NotCallBase()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         Test2? obj = null;
         Assert.DoesNotThrow(() => obj = fixture.CreateAutoMock<Test2>(true));
 
@@ -74,7 +74,7 @@ internal class Recursion_Tests
     [Test]
     public void Test_Can_Create_NonAutoMock()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         Test2? obj = null;
         Assert.DoesNotThrow(() => obj = fixture.CreateNonAutoMock<Test2>());
 
@@ -91,7 +91,7 @@ internal class Recursion_Tests
     [Test]
     public void Test_Can_Create_NonAutoMock_WithDepdnecies()
     {
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
         Test2? obj = null;
         Assert.DoesNotThrow(() => obj = fixture.CreateWithAutoMockDependencies<Test2>());
 

@@ -12,7 +12,7 @@ internal class AutoMockBuilder_Tests
     {
         var autoMock = new AutoMock<Test>();
 
-        var request = new AutoMockDirectRequest(autoMock.GetType(), new AutoMockFixture());
+        var request = new AutoMockDirectRequest(autoMock.GetType(), new AbstractAutoMockFixture());
 
         var context = Mock.Of<ISpecimenContext>();
         var builder = new Mock<ISpecimenBuilder>();
@@ -31,7 +31,7 @@ internal class AutoMockBuilder_Tests
         var autoMock = new AutoMock<Test>();
 
         var type = autoMock.GetType();
-        var fixture = new AutoMockFixture();
+        var fixture = new AbstractAutoMockFixture();
 
         var requestMock = new Mock<AutoMockDirectRequest>(type, fixture);
         requestMock.CallBase = true;
