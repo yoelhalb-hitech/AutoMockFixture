@@ -9,17 +9,23 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
     public Type? ExplicitSpecimenType { get; }
     public IRequestSpecification? Specification { get; }
     public AutoMockFixture Fixture { get; }
+    public bool IncludePrivateSetters { get; }
+    public bool IncludePrivateOrMissingGetter { get; }
 
-    public CustomAutoPropertiesCommand(AutoMockFixture fixture)
-        : this(new TrueRequestSpecification(), fixture)
+    public CustomAutoPropertiesCommand(AutoMockFixture fixture,
+                                        bool includePrivateSetters = false, bool includePrivateOrMissingGetter = false)
+        : this(new TrueRequestSpecification(), fixture, includePrivateSetters, includePrivateOrMissingGetter)
     {
         ExplicitSpecimenType = null;            
     }
 
-    public CustomAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture)
+    public CustomAutoPropertiesCommand(IRequestSpecification specification,
+                    AutoMockFixture fixture, bool includePrivateSetters = false, bool includePrivateOrMissingGetter = false)
     {
         Specification = specification ?? throw new ArgumentNullException(nameof(specification));
         Fixture = fixture;
+        IncludePrivateSetters = includePrivateSetters;
+        IncludePrivateOrMissingGetter = includePrivateOrMissingGetter;
         ExplicitSpecimenType = null;
     }
 
@@ -28,6 +34,8 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
         Logger.LogInfo("In auto properties");
         if (specimen == null) throw new ArgumentNullException(nameof(specimen));
         if (context == null) throw new ArgumentNullException(nameof(context));
+
+        if (specimen is IAutoMock) return;
 
         foreach (var pi in GetPropertiesWithSet(specimen))
         {
@@ -104,7 +112,8 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
     {
         return from pi in GetSpecimenType(specimen).GetTypeInfo().GetAllProperties()
                where pi.SetMethod != null
-               && pi.SetMethod.IsPublicOrInternal()
+               && (IncludePrivateSetters || pi.SetMethod.IsPublicOrInternal())
+               && (IncludePrivateOrMissingGetter || pi.GetMethod?.IsPublicOrInternal() == true)
                && pi.GetIndexParameters().Length == 0
                && Specification?.IsSatisfiedBy(pi) != false
                select pi;

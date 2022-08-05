@@ -20,8 +20,8 @@ internal class AutoMockAutoPropertiesCommand : ISpecimenCommand
     {
         public IAutoMock Mock { get; }
 
-        public AutoMockAutoPropertiesInternalCommand(IAutoMock mock) 
-                : base(new IgnoreProxyMembersSpecification(), mock.Fixture)
+        public AutoMockAutoPropertiesInternalCommand(IAutoMock mock)
+                : base(new IgnoreProxyMembersSpecification(), mock.Fixture, !mock.CallBase) // private setters is normally the job of the called but if not callbase we have to do it
         {
             if (mock == null) throw new ArgumentNullException(nameof(mock));
             Mock = mock;
@@ -30,8 +30,7 @@ internal class AutoMockAutoPropertiesCommand : ISpecimenCommand
         public override void Execute(object _, ISpecimenContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
-
-            Logger.LogInfo("In catch");
+            
             base.Execute(Mock.GetMocked(), context);
         }
 

@@ -31,11 +31,7 @@ internal class MockSetupService
     {
         var allProperties = mockedType.GetAllProperties().Where(p => p.GetMethod?.IsPublicOrInternal() == true);
 
-        var propertiesWithSetAndGet = allProperties.Where(p => p.HasGetAndSet());
-        foreach (var prop in propertiesWithSetAndGet) // We setup here all virtual properties in case the constructor needs them
-        {
-            SetupAutoProperty(prop);
-        }
+        // Properties with both get and set will be handled in the command for it
 
         var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet());
         foreach (var prop in singleMethodProperties)

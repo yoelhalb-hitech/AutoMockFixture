@@ -45,7 +45,9 @@ internal class AutoMock_Tests
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
         AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
 
-        inner.TestClassPropGet.Should().BeNull(); // We do not setup so far for callabase       
+        inner.TestClassPropWithProtectedSet.Should().BeNull(); // We do not setup private setters so far for callabase
+
+        inner.TestClassPropGet.Should().BeNull(); // We do not setup so far for callabase
 
         inner.TestClassField.Should().NotBeNull();
         inner.TestClassField!.InternalTest.Should().NotBeNull();
@@ -72,6 +74,11 @@ internal class AutoMock_Tests
         inner.TestClassProp!.InternalTest.Should().NotBeNull();
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
         AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
+
+        inner.TestClassPropWithProtectedSet.Should().NotBeNull();
+        inner.TestClassPropWithProtectedSet!.InternalTest.Should().NotBeNull();
+        inner.TestClassPropWithProtectedSet!.Should().NotBe(inner.TestCtorArg);
+        AutoMockUtils.AutoMockHelpers.GetAutoMock(inner.TestClassPropWithProtectedSet).Should().NotBeNull();
 
         inner.TestClassPropGet.Should().NotBeNull();
         inner.TestClassPropGet!.InternalTest.Should().NotBeNull();
