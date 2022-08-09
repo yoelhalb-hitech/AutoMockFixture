@@ -1,4 +1,5 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using System.Reflection;
 
@@ -9,25 +10,22 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
     public Type? ExplicitSpecimenType { get; }
     public IRequestSpecification? Specification { get; }
     public AutoMockFixture Fixture { get; }
-    public bool IncludePrivateSetters { get; }
-    public bool IncludePrivateOrMissingGetter { get; }
+    public bool IncludePrivateSetters { get; set; }
+    public bool IncludePrivateOrMissingGetter { get; set; }
 
-    public CustomAutoPropertiesCommand(AutoMockFixture fixture,
-                                        bool includePrivateSetters = false, bool includePrivateOrMissingGetter = false)
-        : this(new TrueRequestSpecification(), fixture, includePrivateSetters, includePrivateOrMissingGetter)
+    public CustomAutoPropertiesCommand(AutoMockFixture fixture) : this(new TrueRequestSpecification(), fixture)
     {
-        ExplicitSpecimenType = null;            
+        ExplicitSpecimenType = null;
     }
 
-    public CustomAutoPropertiesCommand(IRequestSpecification specification,
-                    AutoMockFixture fixture, bool includePrivateSetters = false, bool includePrivateOrMissingGetter = false)
+    public CustomAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture)
     {
         Specification = specification ?? throw new ArgumentNullException(nameof(specification));
         Fixture = fixture;
-        IncludePrivateSetters = includePrivateSetters;
-        IncludePrivateOrMissingGetter = includePrivateOrMissingGetter;
         ExplicitSpecimenType = null;
     }
+
+
 
     public virtual void Execute(object specimen, ISpecimenContext context)
     {
@@ -37,6 +35,14 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
 
         if (specimen is IAutoMock) return;
 
+        // TODO... if we want to have `Create on demend` we have to cache here the original tracker
+        
+        var mock = AutoMockHelpers.GetFromObj(specimen);
+        var existingTracker = mock?.Tracker;
+        if(existingTracker is null) Fixture.ProcessingTrackerDict.TryGetValue(specimen, out existingTracker);
+
+        var tracker = existingTracker ?? new TrackerWithFixture(Fixture);
+
         foreach (var pi in GetPropertiesWithSet(specimen))
         {
             Logger.LogInfo("Property: " + pi.Name);
@@ -45,7 +51,7 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
                 // If it is already set (possibly by the constructor or if it's static) then no need to set again
                 if (pi.GetValue(specimen) != pi.PropertyType.GetDefault()) continue;
 
-                HandleProperty(specimen, context, pi);
+                HandleProperty(specimen, context, pi, tracker);
             }
             catch { }
         }
@@ -58,33 +64,29 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
                 // If it is already set (possibly by the constructor or if it's static) then no need to set again
                 if (fi.GetValue(specimen) != fi.FieldType.GetDefault()) continue;
 
-                HandleField(specimen, context, fi);
+                HandleField(specimen, context, fi, tracker);
             }
             catch { }
         }
+
+        if (existingTracker is null) tracker.SetCompleted();
     }
 
-    protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi)
+    protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)
     {
         Logger.LogInfo("In base prop");
 
-        // TODO... if we want to have `Create on demend` we have to cache here the original tracker
-        var tracker = Fixture.ProcessingTrackerDict.ContainsKey(specimen) ? Fixture.ProcessingTrackerDict[specimen] : new TrackerWithFixture(Fixture);
         var propertyValue = context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));
-
-        if(tracker is TrackerWithFixture) tracker.SetCompleted();
-        if (!(propertyValue is OmitSpecimen))
+   
+        if (propertyValue is not NoSpecimen && propertyValue is not OmitSpecimen)
             pi.SetValue(specimen, propertyValue, null);
     }
 
-    protected virtual void HandleField(object specimen, ISpecimenContext context, FieldInfo fi)
+    protected virtual void HandleField(object specimen, ISpecimenContext context, FieldInfo fi, ITracker tracker)
     {
-        // TODO... maybe we should do one TrackerWithFixture per object, and maybe save it
-        var tracker = Fixture.ProcessingTrackerDict.ContainsKey(specimen) ? Fixture.ProcessingTrackerDict[specimen] : new TrackerWithFixture(Fixture);
         var fieldValue = context.Resolve(new FieldRequest(fi.DeclaringType, fi, tracker));
 
-        if (tracker is TrackerWithFixture) tracker.SetCompleted();
-        if (!(fieldValue is OmitSpecimen))
+        if (fieldValue is not NoSpecimen && fieldValue is not OmitSpecimen)
             fi.SetValue(specimen, fieldValue);
     }
 

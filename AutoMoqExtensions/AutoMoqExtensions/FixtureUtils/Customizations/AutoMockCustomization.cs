@@ -48,7 +48,7 @@ public class AutoMockCustomization : ICustomization
                                             new AutoMockDependenciesBuilder(
                                                 new DependencyInjectionMethodInvoker(
                                                     new CustomModestConstructorQuery())),
-                                            new CustomAutoPropertiesCommand(mockFixture)),
+                                            new AutoMockDependenciesAutoPropertiesHandlerCommand(mockFixture)),
                                         new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -96,7 +96,7 @@ public class AutoMockCustomization : ICustomization
                                     command: new CompositeSpecimenCommand(
                                                 new StubPropertiesCommand(),
                                                 new AutoMockVirtualMethodsCommand(),
-                                                new AutoMockAutoPropertiesCommand())),
+                                                new AutoMockAutoPropertiesHandlerCommand())),
                                 new TypeMatchSpecification(typeof(AutoMockDirectRequest)));
         }
 
