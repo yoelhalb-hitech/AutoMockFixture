@@ -21,6 +21,9 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         if (request is not AutoMockDirectRequest mockRequest) return new NoSpecimen();
 
+
+        Logger.LogInfo("In autmock ctor arg - type is " + mockRequest.Request.FullName);
+
         var recursionContext = context as RecursionContext;
 
         if (recursionContext is not null)
@@ -28,35 +31,44 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
             // Not doing this in a special builder, to ensure that no matter what happens we do it on recursion
             if (recursionContext.BuilderCache.ContainsKey(mockRequest.Request))
                 return recursionContext.BuilderCache[mockRequest.Request]; // We are in recursion
-
-            Logger.LogInfo("In ctor arg - creating new");
-            Logger.LogInfo("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
         }
-        
-        var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);
-        if (mockRequest.MockShouldCallbase != true && mockRequest.StartTracker.MockShouldCallbase != true) return mock;
-
-        var methods = Query.SelectMethods(mockRequest.Request);
-
-        // When `CallBase = false` AutoMock will create us a default ctor
-        // However we don't want to do it if there is a default ctor as in this case Automock will oevrride the default ctor
-        if (methods.All(m => !m.Parameters.Any())) mock.CallBase = false;
-                    
-        if (recursionContext is not null)
-        {
-            recursionContext.BuilderCache[mockRequest.Request] = mock;
-        }
-
-        Logger.LogInfo("In autmock ctor arg - type is " + mockRequest.Request.FullName);
 
         Logger.LogInfo("In ctor arg - creating new");
 
+        var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);        
+
+        if (mock.GetInnerType().IsDelegate() 
+                || (mockRequest.MockShouldCallbase != true && mockRequest.StartTracker.MockShouldCallbase != true))
+        {
+            ((ISetCallBase)mock).ForceSetCallbase(false);
+            
+            mock.EnsureMocked();
+            return mock;
+        }
+
+        if (recursionContext is not null)
+        {
+            recursionContext.BuilderCache[mockRequest.Request] = mock;
+
+            Logger.LogInfo("In ctor arg - context cache now contains: " + string.Join(",", recursionContext.BuilderCache.Keys.Select(k => k.FullName)));
+        }
+
+        var methods = Query.SelectMethods(mockRequest.Request);
+
+        // We need a default ctor for EnsureMocked()
+        // When `CallBase = false` AutoMock will create us a default ctor
+        // However we don't want to do it if there is a default ctor as in this case Automock will oevrride the default ctor
+        if (methods.All(m => !m.Parameters.Any())) mock.CallBase = false;
+
         try
         {
-            if(!methods.Any()) // Just in case...
-            {
-                mock.EnsureMocked();
+            mock.EnsureMocked();
 
+            // We have to do it before calling a constuctur, otherwise if the ctor is setting a virtual property with private setter it will not work
+            ((ISetCallBase)mock).ForceSetCallbase(true);
+
+            if (!methods.Any()) // Just in case...
+            {
                 return mock;
             }
 
@@ -78,14 +90,6 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
         }
         finally
         {
-            if(mock is not null && mock is ISetCallBase)
-            {
-                ((ISetCallBase)mock).ForceSetCallbase(!mock.GetInnerType().IsDelegate()
-                                            && (mockRequest.MockShouldCallbase == true
-                                                || (mockRequest.MockShouldCallbase is null 
-                                                        && mockRequest.StartTracker.MockShouldCallbase == true)));
-            }
-
             if (recursionContext is not null) recursionContext.BuilderCache.Remove(mockRequest.Request);
         }
     }

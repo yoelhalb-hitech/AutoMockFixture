@@ -12,10 +12,10 @@ internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
 {
     public virtual void Execute(object specimen, ISpecimenContext context)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (context is null) throw new ArgumentNullException(nameof(context));
 
         var mock = AutoMockHelpers.GetFromObj(specimen);
-        if (mock == null) return;
+        if (mock is null) return;
 
         var directTracker = mock.Tracker as AutoMockDirectRequest;
 

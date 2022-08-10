@@ -44,10 +44,20 @@ internal abstract class InternalAbstractMethodTestClass
 
 internal class WithCtorArgsTestClass
 {
-    public readonly InternalSimpleTestClass TestCtorArg;// This way we will get the one that was passed
-    public WithCtorArgsTestClass(InternalSimpleTestClass testArg)
+    public readonly InternalSimpleTestClass TestCtorArg;
+    public InternalSimpleTestClass TestCtorArgProp { get; set; }
+    public InternalSimpleTestClass TestCtorArgPrivateProp { get; private set; }
+    public virtual InternalSimpleTestClass TestCtorArgVirtualProp { get; set; }
+    public virtual InternalSimpleTestClass TestCtorArgVirtualPrivateProp { get; private set; }
+    public WithCtorArgsTestClass(InternalSimpleTestClass testArg,
+        InternalSimpleTestClass testCtorArgProp, InternalSimpleTestClass testCtorArgVirtualProp,
+        InternalSimpleTestClass testCtorArgVirtualPrivateProp, InternalSimpleTestClass testCtorArgPrivateProp)
     {
         this.TestCtorArg = testArg;
+        this.TestCtorArgProp = testCtorArgProp;
+        this.TestCtorArgVirtualProp = testCtorArgVirtualProp;
+        this.TestCtorArgVirtualPrivateProp = testCtorArgVirtualPrivateProp;
+        this.TestCtorArgPrivateProp = testCtorArgPrivateProp;
     }
     public InternalSimpleTestClass? TestClassProp { get; set; }
     public InternalSimpleTestClass? TestClassPrivateNonVirtualProp { get; private set; }
@@ -63,13 +73,6 @@ internal class WithCtorNoArgsTestClass
     public WithCtorNoArgsTestClass()
     {
         this.TestCtor = 25;
-    }
-}
-
-internal class AutoMockTestClass1 : WithCtorArgsTestClass
-{
-    public AutoMockTestClass1(InternalSimpleTestClass testArg) : base(testArg)
-    {
     }
 }
 

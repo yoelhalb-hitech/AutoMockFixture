@@ -47,36 +47,27 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
             NoMockDependencies = mockRequest.NoMockDependencies,
         };
 
-        try
+     
+        var specimen = context.Resolve(directRequest);
+        if (specimen is null)
         {
-            var specimen = context.Resolve(directRequest);
-            if (specimen is null)
-            {
-                mockRequest.SetResult(null);
-                return specimen;
-            }
-
-            var t = specimen.GetType();
-            if (specimen is NoSpecimen || specimen is OmitSpecimen || !AutoMockHelpers.IsAutoMock(t) || t != type)
-            {
-                // Try to unwrap it and see if we can get anything
-                var unwrapResult = context.Resolve(AutoMockHelpers.GetMockedType(type));
-
-                mockRequest.SetResult(unwrapResult);
-                return unwrapResult;
-            }
-
-            var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
-            mockRequest.SetCompleted(); // Result was set by the AutoMockPostprocessor
-
-            return result;
+            mockRequest.SetResult(null);
+            return specimen;
         }
-        catch(Exception ex)
+
+        var t = specimen.GetType();
+        if (specimen is NoSpecimen || specimen is OmitSpecimen || !AutoMockHelpers.IsAutoMock(t) || t != type)
         {
-            Logger.LogInfo($"Exception in {nameof(AutoMockRequestBuilder)} of type `{ex.GetType().Name}` with message `{ex.Message}` and has inner: {ex.InnerException is not null}");
-            var other = context.Resolve(mockRequest.Request);
-            mockRequest.SetResult(other);
-            return other;
+            // Try to unwrap it and see if we can get anything
+            var unwrapResult = context.Resolve(AutoMockHelpers.GetMockedType(type));
+
+            mockRequest.SetResult(unwrapResult);
+            return unwrapResult;
         }
+
+        var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
+        mockRequest.SetCompleted(); // Result was set by the AutoMockPostprocessor
+
+        return result;
     }
 }

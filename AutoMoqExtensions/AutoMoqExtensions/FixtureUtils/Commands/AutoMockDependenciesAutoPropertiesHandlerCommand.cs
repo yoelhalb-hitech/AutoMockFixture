@@ -19,7 +19,7 @@ internal class AutoMockDependenciesAutoPropertiesHandlerCommand : ISpecimenComma
 
     public virtual void Execute(object specimen, ISpecimenContext context)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (context is null) throw new ArgumentNullException(nameof(context));
 
         Fixture.ProcessingTrackerDict.TryGetValue(specimen, out var existingTracker);
       

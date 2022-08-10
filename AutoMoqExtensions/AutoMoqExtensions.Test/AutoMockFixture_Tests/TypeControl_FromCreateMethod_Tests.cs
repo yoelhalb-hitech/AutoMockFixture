@@ -56,11 +56,11 @@ internal class TypeControl_FromCreateMethod_Tests
     }
 
     [Test]
-    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonDependency_FromCreateMethod_EvenIfCallbase_ObjectItself()
+    public void Test_AlwaysAutoMockTypes_WillCallBase_WhenCreateDependencies_FromCreateMethod_WhenCallbase_ObjectItself()
     {
         var obj = fixture.CreateWithAutoMockDependencies<InternalSimpleTestClass>(true, GetMockTypeControl());
 
-        IsCallbase(obj).Should().BeFalse();
+        IsCallbase(obj).Should().BeTrue();
     }
 
     [Test]

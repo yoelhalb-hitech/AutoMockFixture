@@ -20,7 +20,7 @@ public class AutoMock_Tests
         
         var originalProxyGenerator = generatorFieldInfo!.GetValue(castleProxyFactoryInstance);
 
-        var mock = new AutoMock<AutoMockTestClass1>();
+        var mock = new AutoMock<WithCtorArgsTestClass>();
         var obj = mock.Object;
 
         generatorFieldInfo!.GetValue(castleProxyFactoryInstance).Should().Be(originalProxyGenerator);

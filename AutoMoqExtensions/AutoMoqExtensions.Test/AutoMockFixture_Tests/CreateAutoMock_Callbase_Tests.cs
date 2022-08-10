@@ -75,6 +75,27 @@ internal class CreateAutoMock_Callbase_Tests
         mock.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();
 
         obj.TestCtorArg.Should().NotBeNull();
+        obj.TestCtorArgProp.Should().NotBeNull();
+        obj.TestCtorArgVirtualProp.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_AutoMock_WithCallBase_SetsUpPropertiesWithPrivateSetter()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true);
+        var mock = AutoMockHelpers.GetFromObj(obj);
+
+        // Assert
+
+        // We need first to verify that it is an AutoMock, otherwise it is no biggy...
+        mock.Should().NotBeNull();
+        mock.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();
+
+        obj.TestCtorArgPrivateProp.Should().NotBeNull();
+        obj.TestCtorArgVirtualPrivateProp.Should().NotBeNull();
     }
 
     [Test]

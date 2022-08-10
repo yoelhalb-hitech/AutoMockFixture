@@ -94,7 +94,7 @@ public class AutoMockCustomization : ICustomization
                                 new PostprocessorWithRecursion(
                                     builder: mockBuilder,
                                     command: new CompositeSpecimenCommand(
-                                                new StubPropertiesCommand(),
+                                                new AutoMockStubAllPropertiesCommand(),
                                                 new AutoMockVirtualMethodsCommand(),
                                                 new AutoMockAutoPropertiesHandlerCommand())),
                                 new TypeMatchSpecification(typeof(AutoMockDirectRequest)));
