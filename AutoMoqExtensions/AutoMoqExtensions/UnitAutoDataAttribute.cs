@@ -9,19 +9,19 @@ namespace AutoMoqExtensions;
 [AttributeUsage(AttributeTargets.Method)]
 public class UnitAutoDataAttribute : Attribute, ITestBuilder
 {
-    private readonly bool configureMembers;
+    private readonly bool noConfigureMembers;
     private readonly bool generateDelegates;
 
-    public UnitAutoDataAttribute(bool configureMembers = true, bool generateDelegates = true)
+    public UnitAutoDataAttribute(bool noConfigureMembers = false, bool generateDelegates = false)
     {
-        this.configureMembers = configureMembers;
+        this.noConfigureMembers = noConfigureMembers;
         this.generateDelegates = generateDelegates;
     }
 
     internal class AutoMockUnitData : AutoDataAttribute
     {
-        public AutoMockUnitData(bool configureMembers = true, bool generateDelegates = true)
-            : base(() => new UnitFixture(configureMembers, generateDelegates))
+        public AutoMockUnitData(bool noConfigureMembers = false, bool generateDelegates = false)
+            : this(() => new UnitFixture(noConfigureMembers, generateDelegates))
         {
         }
     }
@@ -29,7 +29,7 @@ public class UnitAutoDataAttribute : Attribute, ITestBuilder
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {
         // We need a fixture per method and per exectution, otherwise we can run in problems...
-        var builder = new AutoMockUnitData(configureMembers, generateDelegates);
+        var builder = new AutoMockUnitData(noConfigureMembers, generateDelegates);
         return builder.BuildFrom(method, suite);
     }
 }

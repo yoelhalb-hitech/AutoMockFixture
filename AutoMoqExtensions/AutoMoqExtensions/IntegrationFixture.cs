@@ -8,8 +8,8 @@ namespace AutoMoqExtensions
 {
     public class IntegrationFixture : AutoMockFixture
     {
-        public IntegrationFixture(bool configureMembers = true, bool generateDelegates = true) 
-                    : base(configureMembers, generateDelegates)
+        public IntegrationFixture(bool noConfigureMembers = false, bool generateDelegates = false) 
+                    : base(noConfigureMembers, generateDelegates)
         {
             Customizations.Add(new FilteringSpecimenBuilder(
                                 new FixedBuilder(this),

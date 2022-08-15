@@ -48,7 +48,7 @@ public abstract partial class AutoMockFixture : Fixture
             typeof(ISpecimenBuilderNode),
         }, null);
     }
-    public AutoMockFixture(bool configureMembers = true, bool generateDelegates = true)
+    public AutoMockFixture(bool noConfigureMembers = false, bool generateDelegates = false)
     {
         var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this));
         
@@ -77,7 +77,7 @@ public abstract partial class AutoMockFixture : Fixture
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture))),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder))))));
 
-        Customize(new AutoMockCustomization { ConfigureMembers = configureMembers, GenerateDelegates = generateDelegates });
+        Customize(new AutoMockCustomization { ConfigureMembers = !noConfigureMembers, GenerateDelegates = generateDelegates });
     
         Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)))));
         Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute))))); // Considering it scoped as it is per fixture whcih is normally scoped
