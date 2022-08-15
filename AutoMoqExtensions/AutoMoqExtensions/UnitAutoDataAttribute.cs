@@ -1,6 +1,8 @@
-﻿using AutoFixture.NUnit3;
+﻿using AutoFixture;
+using AutoFixture.NUnit3;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using System.Threading;
 
 namespace AutoMoqExtensions;
 
@@ -18,18 +20,10 @@ public class UnitAutoDataAttribute : Attribute, ITestBuilder
         this.generateDelegates = generateDelegates;
     }
 
-    internal class AutoMockUnitData : AutoDataAttribute
-    {
-        public AutoMockUnitData(bool noConfigureMembers = false, bool generateDelegates = false)
-            : this(() => new UnitFixture(noConfigureMembers, generateDelegates))
-        {
-        }
-    }
-
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {
         // We need a fixture per method and per exectution, otherwise we can run in problems...
-        var builder = new AutoMockUnitData(noConfigureMembers, generateDelegates);
+        var builder = new AutoMockData(() => new UnitFixture(noConfigureMembers, generateDelegates));
         return builder.BuildFrom(method, suite);
-    }
+    } 
 }

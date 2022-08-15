@@ -1,0 +1,54 @@
+﻿using AutoMoqExtensions.AutoMockUtils;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
+{
+    internal class AutoDataIntegrationAttribute_Tests
+    {
+        [Test]
+        [IntegrationAutoData]
+        public void Test_IntegrationAutoDataAttribute_Works(InternalSimpleTestClass testClass)
+        {
+            testClass.Should().NotBeNull();
+            testClass.InternalTest.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Test]
+        [IntegrationAutoData]
+        public void Test_IntegrationAutoDataAttribute_WorksWithAutoMock(AutoMock<InternalSimpleTestClass> testClass)
+        {
+            testClass.Should().NotBeNull();
+
+            var inner = testClass.GetMocked();
+
+            inner.Should().NotBeNull();
+            inner.InternalTest.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Test]
+        [IntegrationAutoData]
+        public void Test_IntegrationAutoDataAttribute_DoesNotAutoMockDependencies(WithCtorArgsTestClass testClass)
+        {
+            testClass.Should().NotBeNull();
+
+            testClass.TestCtorArg.Should().NotBeNull();
+            AutoMockHelpers.GetAutoMock(testClass.TestCtorArg).Should().BeNull();
+        }
+
+        [Test]
+        [IntegrationAutoData]
+        public void Test_IntegrationAutoDataAttribute_AutoMocksDependencies_WhenAutoMock(AutoMock<WithCtorArgsTestClass> testClass)
+        {
+            testClass.Should().NotBeNull();
+
+            var inner = testClass.GetMocked();
+
+            inner.Should().NotBeNull();
+
+            inner.TestClassPropGet.Should().NotBeNull();
+            AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
+        }
+    }
+}

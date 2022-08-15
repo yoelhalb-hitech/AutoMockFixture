@@ -18,18 +18,10 @@ public class IntegrationAutoDataAttribute : Attribute, ITestBuilder
         this.generateDelegates = generateDelegates;
     }
 
-    internal class AutoMockIntegrationData : AutoDataAttribute
-    {
-        public AutoMockIntegrationData(bool noConfigureMembers = false, bool generateDelegates = false)
-            : base(() => new IntegrationFixture(noConfigureMembers, generateDelegates))
-        {
-        }
-    }
-
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {
         // We need a fixture per method and per exectution, otherwise we can run in problems...
-        var builder = new AutoMockIntegrationData(noConfigureMembers, generateDelegates);
+        var builder = new AutoMockData(() => new IntegrationFixture(noConfigureMembers, generateDelegates));
         return builder.BuildFrom(method, suite);
     }
 }
