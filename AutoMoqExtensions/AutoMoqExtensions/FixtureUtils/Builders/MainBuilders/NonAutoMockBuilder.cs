@@ -18,7 +18,8 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
         if (request is not NonAutoMockRequest nonMockRequest)
             return new NoSpecimen();
 
-        if (!AutoMockHelpers.IsAutoMockAllowed(nonMockRequest.Request)) // Basically all types that we want to leave for AutoFixture
+        // Send all types that we want to leave for AutoFixture to it
+        if (!AutoMockHelpers.IsAutoMockAllowed(nonMockRequest.Request) || typeof(System.Delegate).IsAssignableFrom(nonMockRequest.Request))
         {
             // Note that IEnumerable etc. should already be handled in the special builders
             var result = context.Resolve(nonMockRequest.Request);

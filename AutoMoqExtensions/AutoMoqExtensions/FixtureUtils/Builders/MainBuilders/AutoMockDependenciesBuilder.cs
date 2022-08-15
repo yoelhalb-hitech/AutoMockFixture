@@ -2,6 +2,7 @@
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
+using Moq;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
 
@@ -22,7 +23,8 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
         if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)           
             return TryAutoMock(dependencyRequest, context);
 
-        if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request))
+        if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request) 
+            || typeof(System.Delegate).IsAssignableFrom(dependencyRequest.Request))
         {
             // Note that IEnumerable etc. should already be handled in the special builders
             var result = context.Resolve(dependencyRequest.Request);
@@ -30,9 +32,13 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             return result;
         }
 
-        if(AutoMockHelpers.IsAutoMock(dependencyRequest.Request))
+        if(AutoMockHelpers.IsAutoMock(dependencyRequest.Request) || typeof(Mock).IsAssignableFrom(dependencyRequest.Request))
         {
-            var inner = AutoMockHelpers.GetMockedType(dependencyRequest.Request)!;
+            var inner = AutoMockHelpers.IsAutoMock(dependencyRequest.Request) 
+                    ? AutoMockHelpers.GetMockedType(dependencyRequest.Request)!
+                    : dependencyRequest.Request.IsGenericType 
+                        ? dependencyRequest.Request.GenericTypeArguments.First()
+                        : typeof(object);
             var automockRequest = new AutoMockRequest(inner, dependencyRequest) { MockShouldCallbase = true };
 
             var result = context.Resolve(automockRequest);

@@ -17,6 +17,8 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders
 
         protected override object GetInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
         {
+            if (originalRequest.Request.IsGenericType) return new NoSpecimen();
+
             return new object[] { new object[] { GetInnerSpecimen(typeof(Action), originalRequest, context) } };
         }
 

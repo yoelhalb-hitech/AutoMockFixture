@@ -24,9 +24,6 @@ internal class AutoMockRelay : ISpecimenBuilder
     {
         if (context == null) throw new ArgumentNullException(nameof(context));
 
-        if (!this.MockableSpecification.IsSatisfiedBy(request))
-            return new NoSpecimen();
-
         var t = request as Type ?? (request as SeededRequest)?.Request as Type;
         if (t is null)
             return new NoSpecimen();

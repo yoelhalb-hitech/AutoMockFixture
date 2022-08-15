@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using AutoMoqExtensions.FixtureUtils.Requests;
+using System.Reflection;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
@@ -13,6 +14,13 @@ internal class EnumerableBuilder : NonConformingBuilder
     };
 
     public override int Repeat => 3;
+
+    protected override object GetRepeatedInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
+    {
+        if (originalRequest.Request == typeof(string)) return new NoSpecimen();
+
+        return base.GetRepeatedInnerSpecimens(originalRequest, context);
+    }
 
     public override object CreateResult(Type requestType, object[][] innerResults)
     {

@@ -15,9 +15,9 @@ internal class TaskBuilder : NonConformingBuilder
     {
         var nonGenericType = requestType.IsGenericType ? requestType.BaseType : requestType;
 
-        var args = innerResults.FirstOrDefault().FirstOrDefault() ?? new object(); // For the non generic we use object
+        var args = innerResults.FirstOrDefault()?.FirstOrDefault() ?? new object(); // For the non generic we use object
         var specimen = nonGenericType.GetMethod(nameof(Task.FromResult))
-                            .MakeGenericMethod(requestType.GetGenericArguments().First())
+                            .MakeGenericMethod(requestType.GetGenericArguments().FirstOrDefault() ?? typeof(object))
                             .Invoke(null, new[] { args });
         return specimen;
     }

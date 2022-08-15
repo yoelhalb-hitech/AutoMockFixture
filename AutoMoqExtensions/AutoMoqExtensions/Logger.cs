@@ -1,12 +1,12 @@
 ﻿
 namespace AutoMoqExtensions;
 
-internal static class Logger
+public static class Logger
 {
+    public static bool ShouldLog { get; set; }
     public static void LogInfo(string message)
     {
-#if DEBUG
-        Console.WriteLine(message);
-#endif
+        if(ShouldLog)
+            Console.WriteLine(message);
     }
 }

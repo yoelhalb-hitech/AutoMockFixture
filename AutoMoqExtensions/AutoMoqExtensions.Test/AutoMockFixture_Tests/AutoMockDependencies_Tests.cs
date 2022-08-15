@@ -1,4 +1,6 @@
 ﻿
+using AutoMoqExtensions.AutoMockUtils;
+
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
 internal class AutoMockDependencies_Tests
@@ -13,7 +15,7 @@ internal class AutoMockDependencies_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<WithCtorArgsTestClass>();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
+        AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
     }
 
     [Test]
@@ -26,7 +28,7 @@ internal class AutoMockDependencies_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<WithCtorArgsTestClass>();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
+        AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
     }
 
     [Test]
@@ -39,7 +41,7 @@ internal class AutoMockDependencies_Tests
         // Assert
         obj.TestClassProp.Should().NotBeNull();
         obj.TestClassProp!.InternalTest.Should().NotBeNull();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj.TestClassProp).Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.TestClassProp).Should().NotBeNull();
     }
 
     [Test]
@@ -52,11 +54,11 @@ internal class AutoMockDependencies_Tests
         // Assert
         obj.TestClassPropWithPrivateSet.Should().NotBeNull();
         obj.TestClassPropWithPrivateSet!.InternalTest.Should().NotBeNull();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj.TestClassPropWithPrivateSet).Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.TestClassPropWithPrivateSet).Should().NotBeNull();
 
         obj.TestClassPrivateNonVirtualProp.Should().NotBeNull();
         obj.TestClassPrivateNonVirtualProp!.InternalTest.Should().NotBeNull();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj.TestClassPrivateNonVirtualProp).Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.TestClassPrivateNonVirtualProp).Should().NotBeNull();
     }
 
     [Test]
@@ -81,6 +83,6 @@ internal class AutoMockDependencies_Tests
         // Assert
         obj.TestClassField.Should().NotBeNull();
         obj.TestClassField!.InternalTest.Should().NotBeNull();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj.TestClassField).Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.TestClassField).Should().NotBeNull();
     }
 }

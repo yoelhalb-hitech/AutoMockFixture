@@ -11,6 +11,7 @@ using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using DotNetPowerExtensions.DependencyManagement;
+using Moq;
 using System.Reflection;
 
 namespace AutoMoqExtensions;
@@ -106,7 +107,10 @@ public abstract partial class AutoMockFixture : Fixture
 
     public object CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
-        if (t.IsValueType) throw new Exception("Type must be a reference type");
+        if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
+
+        if (AutoMockHelpers.IsAutoMock(t) || typeof(Mock).IsAssignableFrom(t)) 
+            return CreateAutoMock(t, callBase, autoMockTypeControl);
 
         var result = Execute(new AutoMockDependenciesRequest(t, this) { MockShouldCallbase = callBase }, autoMockTypeControl);
 
@@ -126,9 +130,13 @@ public abstract partial class AutoMockFixture : Fixture
 
     public object CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
-        if (t.IsValueType) throw new Exception("Type must be a reference type");
+        if (t.IsValueType) throw new InvalidOperationException("Type must be a reference type");
 
-        var type = AutoMockHelpers.IsAutoMock(t) ? AutoMockHelpers.GetMockedType(t)! : t;
+        var type = AutoMockHelpers.IsAutoMock(t) 
+                    ? AutoMockHelpers.GetMockedType(t)!
+                    : !typeof(Mock).IsAssignableFrom(t) 
+                        ? t 
+                        : t.IsGenericType  ? t.GenericTypeArguments.First(): typeof(object);
         if(!AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
@@ -178,6 +186,14 @@ public abstract partial class AutoMockFixture : Fixture
 
     #region Getters
 
+    /// <summary>
+    /// Get the value at the specified path (property/field/ctor argument/out parameter/method result etc.)
+    /// </summary>
+    /// <param name="obj">An object created witht he current <see cref="AutoMockFixture"/></param>
+    /// <param name="path">The path to get the value at</param>
+    /// <returns></returns>
+    /// <exception cref="Exception">Path not provided</exception>
+    /// <exception cref="Exception">Object not found</exception>
     public List<object?> GetAt(object obj, string path)
     {
         if (!TrackerDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");

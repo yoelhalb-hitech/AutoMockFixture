@@ -1,4 +1,6 @@
 ﻿
+using AutoMoqExtensions.AutoMockUtils;
+
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
 internal class NonAutoMock_Tests
@@ -14,10 +16,10 @@ internal class NonAutoMock_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<WithCtorArgsTestClass>();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
+        AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
 
         obj.TestCtorArg.Should().NotBeNull();
         obj.TestCtorArg!.InternalTest.Should().NotBeNull();
-        AutoMockUtils.AutoMockHelpers.GetAutoMock(obj.TestCtorArg).Should().BeNull();
+        AutoMockHelpers.GetAutoMock(obj.TestCtorArg).Should().BeNull();
     }
 }

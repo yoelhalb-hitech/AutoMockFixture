@@ -26,12 +26,13 @@ public static class AutoMockHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static IAutoMock? GetFromObj(object obj) => obj is IAutoMock m ? m : (obj as IMocked)?.Mock as IAutoMock;
+    public static IAutoMock? GetFromObj(object obj) => obj is IAutoMock m ? m : (obj as IMocked ?? (obj as Delegate)?.Target as IMocked)?.Mock as IAutoMock;
     public static Type GetAutoMockType(Type inner) => typeof(AutoMock<>).MakeGenericType(inner);
 
     internal static bool IsAutoMockAllowed(Type t)
     {
-        if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType || t.IsSealed
+        if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType 
+                    || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
                     || t == typeof(Array) 
                     || typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
 

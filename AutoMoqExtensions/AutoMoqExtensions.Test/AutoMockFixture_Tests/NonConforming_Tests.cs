@@ -60,7 +60,16 @@ internal class NonConforming_Tests
     }
 
     [Test]
-    public void Test_AutoMock_Task()
+    public void Test_AutoMock_NonGenericTask()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        Assert.Throws<InvalidOperationException>(() => fixture.CreateAutoMock<Task>());
+    }
+
+    [Test]
+    public void Test_AutoMock_GenericTask()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -99,7 +108,21 @@ internal class NonConforming_Tests
     }
 
     [Test]
-    public async Task Test_NonAutoMock_Task()
+    public void Test_NonAutoMock_NonGenericTask()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateNonAutoMock<Task>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeAssignableTo<Task>();
+
+        obj.IsCompleted.Should().BeTrue();       
+    }
+
+    [Test]
+    public async Task Test_NonAutoMock_GenericTask()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -115,7 +138,21 @@ internal class NonConforming_Tests
     }
 
     [Test]
-    public async Task Test_NonAutoMock_WithDependencies_Task()
+    public void Test_WithDependencies_NonGenericTask()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateWithAutoMockDependencies<Task>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeAssignableTo<Task>();
+
+        obj.IsCompleted.Should().BeTrue();      
+    }
+
+    [Test]
+    public async Task Test_WithDependencies_GenericTask()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
