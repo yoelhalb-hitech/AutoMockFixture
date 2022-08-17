@@ -67,7 +67,8 @@ internal class MethodSetupService
     private Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
     private object lockObject = new object(); // Not static as it is only local to the object
 
-    private object? HandleInvocationFunc(IInvocation invocation)
+    // TODO... add it as an option in the fixture etc.
+    private object? HandleInvocationFuncWithSameResult(IInvocation invocation)
     {
         if (resultDict.ContainsKey(invocation.Method)) return resultDict[invocation.Method];
 
@@ -80,6 +81,14 @@ internal class MethodSetupService
             Logger.LogInfo("Resolved type: " + (result?.GetType().FullName ?? "null"));
             return result;
         }
+    }
+
+    private object? HandleInvocationFunc(IInvocation invocation)
+    {
+        var result = GenerateResult(invocation.Method);
+
+        Logger.LogInfo("Resolved type: " + (result?.GetType().FullName ?? "null"));
+        return result;        
     }
 
     private object? GenerateResult(MethodInfo method)
