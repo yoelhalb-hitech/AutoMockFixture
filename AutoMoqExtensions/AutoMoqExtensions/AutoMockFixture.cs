@@ -167,7 +167,8 @@ public abstract partial class AutoMockFixture : Fixture
             var result = new RecursionContext(this, this) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
             request.SetCompleted();
 
-            // We will rather deal with the underlying mock for consistance
+            // We will rather deal with the underlying mock for consistancy
+            // but also to avoid having to call .Equals on the object which it can then later report as called in the verify process
             var key = AutoMockHelpers.GetFromObj(result) ?? result;
             TrackerDict[key] = request;
             ProcessingTrackerDict.Clear(); // No need to keep it around, to make it thread safe we should keep it around till all requests are done
@@ -235,18 +236,32 @@ public abstract partial class AutoMockFixture : Fixture
 
     #region Verify
 
-    public void VerifyAll(object obj)
+    public void Verify(object obj)
     {
         if (!TrackerDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
 
         var tracker = TrackerDict[obj];
         var mocks = tracker.GetAllMocks();
-        mocks?.ForEach(m => m.VerifyAll());
+        mocks?.ForEach(m => m.Verify());
     }
 
-    public void VerifyAll()
+    public void Verify()
     {
-        TrackerDict.Keys.ToList().ForEach(k => VerifyAll(k));
+        TrackerDict.Keys.ToList().ForEach(k => Verify(k));
+    }
+    
+    public void VerifyNoOtherCalls(object obj)
+    {
+        if (!TrackerDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
+
+        var tracker = TrackerDict[obj];
+        var mocks = tracker.GetAllMocks();
+        mocks?.ForEach(m => m.VerifyNoOtherCalls());
+    }
+
+    public void VerifyNoOtherCalls()
+    {
+        TrackerDict.Keys.ToList().ForEach(k => VerifyNoOtherCalls(k));
     }
 
     #endregion
