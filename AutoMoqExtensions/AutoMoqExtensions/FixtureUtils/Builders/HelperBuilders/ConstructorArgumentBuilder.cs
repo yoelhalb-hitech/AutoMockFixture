@@ -20,7 +20,9 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
         var hasCustomValue = ConstructorArgumentValues.Any(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path));
         if (hasCustomValue)
         {
-            var customValue = ConstructorArgumentValues.First(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path));
+            var customValue = ConstructorArgumentValues
+                                .First(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path))
+                                .Value;
             ctorArgsRequest.SetResult(customValue);
             return customValue;
         }
@@ -30,7 +32,7 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
 
     private bool IsValidArgumentValue(Type type, ConstructorArgumentValue argumentValue, string path)
     {
-        if (argumentValue.Path is not null && argumentValue.Path != path) return false;
+        if (!string.IsNullOrWhiteSpace(argumentValue.Path) && argumentValue.Path != path) return false;
 
         if (argumentValue.Value is not null) return type.IsInstanceOfType(argumentValue.Value) 
                 || (argumentValue.Value is IAutoMock mock && type.IsInstanceOfType(mock.GetMocked()));
