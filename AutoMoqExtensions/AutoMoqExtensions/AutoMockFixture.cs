@@ -21,6 +21,8 @@ namespace AutoMoqExtensions;
 /// </summary>
 internal class AbstractAutoMockFixture : AutoMockFixture 
 {
+    public AbstractAutoMockFixture(bool noConfigureMembers = false) : base(noConfigureMembers) { }
+
     public override object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
 }
 /// <summary>

@@ -88,19 +88,20 @@ public class AutoMockCustomization : ICustomization
                                             new AutoMockConstructorQuery()));
 
         // If members should be automatically configured, wrap the builder with members setup postprocessor.
+        // This might be useful when wanting to have control over the setup        
         if (ConfigureMembers)
         {
-            mockBuilder = new FilteringSpecimenBuilder(
-                                new PostprocessorWithRecursion(
+            mockBuilder = new PostprocessorWithRecursion(
                                     builder: mockBuilder,
                                     command: new CompositeSpecimenCommand(
                                                 new AutoMockStubAllPropertiesCommand(),
                                                 new AutoMockVirtualMethodsCommand(),
-                                                new AutoMockAutoPropertiesHandlerCommand())),
-                                new TypeMatchSpecification(typeof(AutoMockDirectRequest)));
+                                                new AutoMockAutoPropertiesHandlerCommand()));
         }
 
-        fixture.Customizations.Add(mockBuilder);
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(mockBuilder,
+                                        new TypeMatchSpecification(typeof(AutoMockDirectRequest))));
+
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new Postprocessor(
                                             new LastResortBuilder(),

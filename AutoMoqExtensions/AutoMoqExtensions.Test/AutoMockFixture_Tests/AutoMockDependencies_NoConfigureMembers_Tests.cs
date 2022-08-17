@@ -3,13 +3,13 @@ using AutoMoqExtensions.AutoMockUtils;
 
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
-internal class AutoMockDependencies_Tests
+internal class AutoMockDependencies_NoConfigureMembers_Tests
 {
     [Test]
-    public void Test_MainObject_NotAutoMocked()
+    public void Test_NoConfigureMembers_MainObject_NotAutoMocked()
     {
         // Arrange
-        var fixture = new AbstractAutoMockFixture();
+        var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
@@ -19,10 +19,10 @@ internal class AutoMockDependencies_Tests
     }
 
     [Test]
-    public void Test_CtorArguments_AutoMocked()
+    public void Test_NoConfigureMembers_CtorArguments_AutoMocked()
     {
         // Arrange
-        var fixture = new AbstractAutoMockFixture();
+        var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
@@ -47,7 +47,7 @@ internal class AutoMockDependencies_Tests
     }
 
     [Test]
-    public void Test_Properties_AutoMocked()
+    public void Test_NoConfigureMembers_Properties_AutoMocked()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -55,12 +55,12 @@ internal class AutoMockDependencies_Tests
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
         obj.TestClassProp.Should().NotBeNull();
-        obj.TestClassProp!.InternalTest.Should().NotBeNull();
+        obj.TestClassProp!.InternalTest.Should().BeNull();
         AutoMockHelpers.GetAutoMock(obj.TestClassProp).Should().NotBeNull();
     }
 
     [Test]
-    public void Test_PropertiesPrivateSetter_AutoMocked_WhenNotCallBase()
+    public void Test_NoConfigureMembers_PropertiesPrivateSetter_AutoMocked_WhenNotCallBase()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -68,16 +68,16 @@ internal class AutoMockDependencies_Tests
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: false);
         // Assert
         obj.TestClassPropWithPrivateSet.Should().NotBeNull();
-        obj.TestClassPropWithPrivateSet!.InternalTest.Should().NotBeNull();
+        obj.TestClassPropWithPrivateSet!.InternalTest.Should().BeNull();
         AutoMockHelpers.GetAutoMock(obj.TestClassPropWithPrivateSet).Should().NotBeNull();
 
         obj.TestClassPrivateNonVirtualProp.Should().NotBeNull();
-        obj.TestClassPrivateNonVirtualProp!.InternalTest.Should().NotBeNull();
+        obj.TestClassPrivateNonVirtualProp!.InternalTest.Should().BeNull();
         AutoMockHelpers.GetAutoMock(obj.TestClassPrivateNonVirtualProp).Should().NotBeNull();
     }
 
     [Test]
-    public void Test_PropertiesPrivateSetter_NotAutoMocked_WhenCallBase()
+    public void Test_NoConfigureMembers_PropertiesPrivateSetter_NotAutoMocked_WhenCallBase()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -89,7 +89,7 @@ internal class AutoMockDependencies_Tests
     }
 
     [Test]
-    public void Test_Fields_AutoMocked()
+    public void Test_NoConfigureMembers_Fields_AutoMocked()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -97,7 +97,7 @@ internal class AutoMockDependencies_Tests
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
         obj.TestClassField.Should().NotBeNull();
-        obj.TestClassField!.InternalTest.Should().NotBeNull();
+        obj.TestClassField!.InternalTest.Should().BeNull();
         AutoMockHelpers.GetAutoMock(obj.TestClassField).Should().NotBeNull();
     }
 }
