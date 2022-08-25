@@ -39,7 +39,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
         [Test]
         [IntegrationAutoData]
-        public void Test_IntegrationAutoDataAttribute_AutoMocksDependencies_WhenAutoMock(AutoMock<WithCtorArgsTestClass> testClass)
+        public void Test_IntegrationAutoDataAttribute_DoesNotAutoMocksDependencies_WhenAutoMock(AutoMock<WithCtorArgsTestClass> testClass)
         {
             testClass.Should().NotBeNull();
 
@@ -47,8 +47,8 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
             inner.Should().NotBeNull();
 
-            inner.TestClassPropGet.Should().NotBeNull();
-            AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
+            inner.TestClassProp.Should().NotBeNull();
+            AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().BeNull();
         }
     }
 }

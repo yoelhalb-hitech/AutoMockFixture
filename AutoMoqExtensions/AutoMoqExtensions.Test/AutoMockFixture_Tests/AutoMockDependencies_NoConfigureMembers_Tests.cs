@@ -50,7 +50,7 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
     public void Test_NoConfigureMembers_Properties_AutoMocked()
     {
         // Arrange
-        var fixture = new AbstractAutoMockFixture();
+        var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
@@ -63,7 +63,7 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
     public void Test_NoConfigureMembers_PropertiesPrivateSetter_AutoMocked_WhenNotCallBase()
     {
         // Arrange
-        var fixture = new AbstractAutoMockFixture();
+        var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: false);
         // Assert
@@ -80,7 +80,7 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
     public void Test_NoConfigureMembers_PropertiesPrivateSetter_NotAutoMocked_WhenCallBase()
     {
         // Arrange
-        var fixture = new AbstractAutoMockFixture();
+        var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: true);
         // Assert
@@ -92,7 +92,7 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
     public void Test_NoConfigureMembers_Fields_AutoMocked()
     {
         // Arrange
-        var fixture = new AbstractAutoMockFixture();
+        var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
