@@ -58,41 +58,42 @@
 The main components in Autofixture are as follows:
 
 ##### Vocabulary
-- Specimen: Refers to the object being built (either the object requested, or a dependency, a property/field or method return object, or out/ref parameter)
-- Request: Is the request to build a given specimen type, it might be a `Type` object, as well as a `PropertyInfo`/`FieldInfo`/`ParameterInfo` object, or more specific requests such as a `SeededRequest`
-- Relay: Is a special `ISpecimenBuilder` that is used in case all other builders could not create a specimen, by adding it to the `fixture.ResidueCollectors` list
-- Behavior: Refers to an implementation of ISpecimenBuilderTransformation
-- Builder: Refers to an instance of `ISpecimenBuilder` see below
-- Specification: Refers to an instance of `IRequestSpecification` see below
-- Command: Refers to an instance of `ISpecimenCommand` see below
-- Customization: Either 1) refers to an instance of `ICustomization`, or 2) to a Builder passed in to the `fixture.Customizations` list
-- MethodInvoker: Is a special `ISpecimenBuilder` that is used to invoke the constructor of the specimen
+- *Specimen*: Refers to the object being built (either the object requested, or a dependency, a property/field or method return object, or out/ref parameter)
+- *Builder*: An object that is building a specimen or returns `NoSpeicmen` if it is unable to do so, should implement `ISpecimenBuilder`
+- *Request*: Is the request to build a given specimen type, it might be a `Type` object, as well as a `PropertyInfo`/`FieldInfo`/`ParameterInfo` object, or more specific requests such as a `SeededRequest`
+- *Relay*: Is a special *Builder* that is used in case all other builders could not create a specimen, by adding it to the `fixture.ResidueCollectors` list
+- *Behavior*: An object that specifies custom behavior for the AutoFixture engine, such as what to do if there is a circular graph, should be an implementation of `ISpecimenBuilderTransformation`
+- *Specification*: An instance of `IRequestSpecification`, provides an easy unified way of checking if a request is matching a specific criteria
+- *Command*: An object that does some actions on a specimen, for example setting up properties, should implemement `ISpecimenCommand`
+- *Customization*: An object that custmizaes the creation of specimens, it is either 1) an instance of `ICustomization`, or 2) a Builder passed in to the `fixture.Customizations` list
+- *MethodInvoker*: A special *Builder* that is used to invoke the constructor of the *specimen* if there is one
+- *Context*: Is the one that handles creating a specimen (via calling `context.Resolve(request)`) by going through all builders registered and checking for the first one that does not return `NoSpecimen` (unless `OmitSpecimen` has been returned)
 
 ##### Interfaces
-- ISpecimenBuilder: This is is the one that actually builds a given specimen
-- ISpecimenContext: Is the one that handles creating a specimen (by calling `context.Resolve(request)`) by going through all builders registered and checking for the first one that does not return `NoSpecimen` (unless `OmitSpecimen` has been returned)
-- IRequestSpecification: Is an interface to specify creteria that can be used by many components in the system
-- ISpecimenCommand: Executes a command on a specimen, typically in via a `Postprocessor`
-- ICustomization: Is the registration of code that will be used to create or customize building a specimen, typically by adding a custom `ISpecimenBuilder` to the `fixture.Customizations` list
-- IRecursionHandler: Is the one that actually handles a recursive situation
-- ISpecimenBuilderTransformation: Is the one that supplies the ResucrsionGuard for a builder
-- IMethod: Allows invoking a method
-- IMethodQuery: Used to search for methods (for example searching all constructors on a type)
+- *ISpecimenBuilder*: The interface for any class that builds a given specimen
+- *ISpecimenContext*: The base interface for any `Context`
+- *IRequestSpecification*: Is an interface to specify creteria that can be used by many components in the system
+- *ISpecimenCommand*: Executes a command on a specimen, typically in via a `Postprocessor`
+- *ICustomization*: Is the registration of code that will be used to create or customize building a specimen, typically by adding a custom `ISpecimenBuilder` to the `fixture.Customizations` list
+- *ISpecimenBuilderTransformation*: Interface for a *Behavior*, for example the RecusrionBehavior cretaes the `ResucrsionGuard` that controls the recursion level depth
+- *IRecursionHandler*: Is the one that actually handles a recursive situation
+- *IMethod*: An interface that encapsulates invoking a method
+- *IMethodQuery*: Used to search for methods (for example searching all constructors on a type)
 
 ##### Specific Classes/Objects
-- NoSpecimen: Is a special indicator that a given builder cannot handle/create a specific request for a specimen, do not use `null` as it might be a legitimate result
-- OmitSpecification: Is a special indicator that the request for a scpeific object should be omitted (typically if there is recursion involved)
-- RecursionGuard: Is controlling the build process to monitor if there is any recursion (by seeing if there is the same request while processing the dependencies of the request) and invoking the supplied `IRecursionHandler`
-- Postprocessor: Is a special builder that executes `Command` after building, optionally only if the constructed specimen matches a specification
+- *NoSpecimen: Is a special indicator that a given builder cannot handle/create a specific request for a specimen, do not use `null` as it might be a legitimate result
+- *OmitSpecification*: Is a special indicator that the request for a scpeific object should be omitted (typically if there is recursion involved)
+- *RecursionGuard*: Is controlling the build process to monitor if there is any recursion (by seeing if there is the same request while processing the dependencies of the request) and invoking the supplied `IRecursionHandler`
+- *Postprocessor*: Is a special builder that executes `Command` after building, optionally only if the constructed specimen matches a specification
         - CAUTION: The specification option on the Processor only determines whether to execute the commands on the specimen and works on the speicmen not the requet, but the specimen is returned regardless of the specification.
                  In order to prevent the builder from building or the specimen from returing you should use `FilteringSpecimenBuilder` around the Postprocessor
 
 ##### Utility Classes/Objects
-- FilteringSpecimenBuilder: Executes a bulder only if the request matches the given `IRequestSpecification`
-- CompositeSpecimenBuilder: Makes a new `ISpecimenBuilder` that takes a list of `ISpecimenBuilder` objects and goes through all the passed in checking for the first one that does not return `NoSpecimen` (unless `OmitSpecimen` has been returned)
-- CompositeSpecimenCommand: Makes a new `ISpecimenCommand` that takes a list of `ISpecimenCommand` object and executes each of them
-- FixedBuilder: Is a `ISpecimenBuilder` that always returns the suppleid object
-- OrRequestSpecification: Is a `IRequestSpecification` that takes a list of `IRequestSpecification` objects and passes if one of them is satisfied
+- *FilteringSpecimenBuilder*: Executes a bulder only if the request matches the given `IRequestSpecification`
+- *CompositeSpecimenBuilder*: Makes a new `ISpecimenBuilder` that takes a list of `ISpecimenBuilder` objects and goes through all the passed in checking for the first one that does not return `NoSpecimen` (unless `OmitSpecimen` has been returned)
+- *CompositeSpecimenCommand*: Makes a new `ISpecimenCommand` that takes a list of `ISpecimenCommand` object and executes each of them
+- *FixedBuilder*: Is a `ISpecimenBuilder` that always returns the suppleid object
+- *OrRequestSpecification*: Is a `IRequestSpecification` that takes a list of `IRequestSpecification` objects and passes if one of them is satisfied
 
 #### AutoMoqExtensions
 
@@ -105,12 +106,12 @@ The main components in Autofixture are as follows:
 - Each `ITracker` tracks the children that it creates, as well as returning a path constructed of it's place in the object graph, as well as references to it's parent and to the start tracker
 
 ##### AutoMock Requests
-- AutoMockDirectRequest: Is for a request of type `AutoMock`
-- AutoMockRequest: Is for a request of Type `T` that we want to create an `AutoMock<T>` for it
-- AutoMockDependenciesRequest: Is for a request that we want to create an actual (non `AutoMock`) object (typicaly the SUT object), but have all depedencies and property/field valeus mocked, suitable for unit testing
-- NonAutoMockRequest: Is for a request to create an object and not mock any dpendecies unless specifically specified, suitable for integration tests 
+- *AutoMockDirectRequest*: Is for a request of type `AutoMock`
+- *AutoMockRequest*: Is for a request of Type `T` that we want to create an `AutoMock<T>` for it
+- *AutoMockDependenciesRequest*: Is for a request that we want to create an actual (non `AutoMock`) object (typicaly the SUT object), but have all depedencies and property/field valeus mocked, suitable for unit testing
+- *NonAutoMockRequest*: Is for a request to create an object and not mock any dpendecies unless specifically specified, suitable for integration tests 
 
 ##### Recursion
-- RecursionContext: Is an implementation of `ISpecimenContext` that keeps track of objects in process of bulding so to be abel to handle recursion
-- MethodInvokerWithRecursion: First creates the object without calling the constructor and only then creates the depdenecies and calls the constructor, this way we can reference the same object on recursion
-- FreezeRecursionBehavior: Is a behavior that specifies that in case of recursion it should reuse the original object that is currently being constructed
+- *RecursionContext*: Is an implementation of `ISpecimenContext` that keeps track of objects in process of bulding so to be abel to handle recursion
+- *MethodInvokerWithRecursion*: First creates the object without calling the constructor and only then creates the depdenecies and calls the constructor, this way we can reference the same object on recursion
+- *FreezeRecursionBehavior*: Is a behavior that specifies that in case of recursion it should reuse the original object that is currently being constructed
