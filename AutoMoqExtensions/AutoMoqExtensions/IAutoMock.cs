@@ -22,6 +22,7 @@ public interface IAutoMock
     Type GetInnerType();
     object GetMocked();
     ITracker? Tracker { get; set; }
+    object? Target { get; }
 
     // We need it on the interface, since in Mock it is only on the generic version which we don't always have access to
     void Verify();

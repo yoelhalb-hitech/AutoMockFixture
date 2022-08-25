@@ -1,4 +1,5 @@
 ﻿
+using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.Test.AutoMockFixture_Tests;
 using Moq;
 using System.Reflection;
@@ -17,13 +18,17 @@ public class AutoMock_Tests
 
         var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
         var generatorFieldInfo = castleProxyFactoryType!.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
-        
-        var originalProxyGenerator = generatorFieldInfo!.GetValue(castleProxyFactoryInstance);
+              
 
         var mock = new AutoMock<WithCtorArgsTestClass>();
         var obj = mock.Object;
 
-        generatorFieldInfo!.GetValue(castleProxyFactoryInstance).Should().Be(originalProxyGenerator);
+        var currentValue = generatorFieldInfo!.GetValue(castleProxyFactoryInstance);
+
+        currentValue.Should().BeOfType<AutoMockProxyGenerator>();
+
+        (currentValue as AutoMockProxyGenerator)!.Target.Should().BeNull();
+        (currentValue as AutoMockProxyGenerator)!.Callbase.Should().BeNull();
     }
 
     [Test]

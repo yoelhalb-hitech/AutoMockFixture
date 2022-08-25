@@ -36,18 +36,23 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
         var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
         generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
         originalProxyGenerator = (ProxyGenerator)generatorFieldInfo.GetValue(castleProxyFactoryInstance);
+
+        ResetGenerator();
     }
     public override bool CallBase { get => base.CallBase; set
           {
             if (mocked is not null) throw new Exception("Cannot set callbase after object has been created");
             base.CallBase = value;
         } }
+
+    public object? Target => target;
+
     void ISetCallBase.ForceSetCallbase(bool value) => base.CallBase = value;
    
     private void SetupGenerator()
         => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target, this.CallBase));
-    private void ResetGenerator()
-        => generatorFieldInfo.SetValue(castleProxyFactoryInstance, originalProxyGenerator);
+    private static void ResetGenerator()
+        => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator());
     private T? target;
     public bool TrySetTarget(T target)
     {
@@ -66,14 +71,20 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 
     private T? mocked;
     public Type GetInnerType() => typeof(T);
+    private static PropertyInfo additionalInterfaceProp = typeof(Mock)
+                            .GetProperty("AdditionalInterfaces", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static Type iautoMockedType = typeof(IAutoMocked);
     public void EnsureMocked()
     {
         if (mocked is null)
         {
+            var additionalInterfaces = (List<Type>)additionalInterfaceProp.GetValue(this);
             // The generator is static so we have to reduce it to the minimum
             SetupGenerator();
+            additionalInterfaces.Add(iautoMockedType);
             mocked = base.Object;
             this.target = null;
+            additionalInterfaces.Remove(iautoMockedType);
             ResetGenerator(); // We need to reset it in case the user wants to use the Mock directly as this property is static...
         } 
     }

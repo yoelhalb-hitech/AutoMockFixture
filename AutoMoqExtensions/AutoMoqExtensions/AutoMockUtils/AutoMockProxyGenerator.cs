@@ -10,35 +10,49 @@ namespace AutoMoqExtensions.AutoMockUtils;
 
 internal class AutoMockProxyGenerator : ProxyGenerator
 {
-    // This contains the cache so we will have it static
-    private static DefaultProxyBuilder callbaseProxyBuilder = new DefaultProxyBuilder(); 
-    private static DefaultProxyBuilder nonCallbaseProxyBuilder = new DefaultProxyBuilder(); 
-    object? target;
-    private readonly bool callbase;
+    private static ProxyGenerator originalProxyGenerator = new ProxyGenerator();
+    // This contains the caches so we will have it static
+    private static DefaultProxyBuilder nonCallbaseProxyBuilder = new DefaultProxyBuilder();
 
-    public AutoMockProxyGenerator(object? target, bool callbase) : base(callbase ? callbaseProxyBuilder : nonCallbaseProxyBuilder)
+    internal object? Target { get; }
+    internal bool? Callbase { get; }
+
+    public AutoMockProxyGenerator(object? target, bool callbase) : base(nonCallbaseProxyBuilder)
     {
-        this.target = target;
-        this.callbase = callbase;
+        this.Target = target;
+        this.Callbase = callbase;
     }
+    public AutoMockProxyGenerator() : base(nonCallbaseProxyBuilder){}
 
-    public override object CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, 
-        ProxyGenerationOptions options, object[] constructorArguments, params IInterceptor[] interceptors)
+    private void Validate(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options)
     {
-        // Rememeber that Moq uses the generator as static, so we have to ensure that the target is valid
-        if (target is not null && classToProxy.IsAssignableFrom(target.GetType()))
-            return CreateClassProxyWithTarget(classToProxy, additionalInterfacesToProxy, 
-                        target, options, constructorArguments, interceptors);
-
-        if (typeof(Type) == classToProxy || this.callbase) return base.CreateClassProxy(classToProxy, additionalInterfacesToProxy, 
-                        options, constructorArguments, interceptors);
-
         if (classToProxy is null) throw new ArgumentNullException(nameof(classToProxy));
         if (options is null) throw new ArgumentNullException(nameof(options));
         if (!classToProxy.IsClass) throw new ArgumentException("'classToProxy' must be a class", nameof(classToProxy));
 
         CheckNotGenericTypeDefinition(classToProxy, nameof(classToProxy));
         CheckNotGenericTypeDefinitions(additionalInterfacesToProxy, nameof(additionalInterfacesToProxy));
+    }
+
+    public override object CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, 
+        ProxyGenerationOptions options, object[] constructorArguments, params IInterceptor[] interceptors)
+    {
+        Validate(classToProxy, additionalInterfacesToProxy, options);
+
+        // Rememeber that Moq uses the generator as static, so we have to ensure that the target is valid
+        if (Target is not null && classToProxy.IsAssignableFrom(Target.GetType()))
+            return originalProxyGenerator.CreateClassProxyWithTarget(classToProxy, additionalInterfacesToProxy, 
+                        Target, options, constructorArguments, interceptors);
+
+        // In Moq they use two types of proxies
+        //      1) for mock (which always has IMocked)
+        //      2) for recording which doesn't need to callbase (and might have issues if we don't supply the ctor args and there is no defualt ctor)
+        var imockedType = classToProxy.IsClass ? typeof(IMocked<>).MakeGenericType(classToProxy) : null;
+
+        if (typeof(Type) == classToProxy || 
+            (this.Callbase != false && imockedType is not null && additionalInterfacesToProxy.Contains(imockedType))) 
+                return originalProxyGenerator.CreateClassProxy(classToProxy, additionalInterfacesToProxy, 
+                        options, constructorArguments, interceptors);
 
         var typeToUse = GetTypeToUse(classToProxy);
 
