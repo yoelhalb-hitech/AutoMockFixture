@@ -8,7 +8,9 @@ internal class BasicExpressionBuilder<T>
 {
     public MethodInfo GetMethod(LambdaExpression expression) =>
 (((expression.Body as UnaryExpression)?.Operand as MethodCallExpression)?.Object as ConstantExpression)?
-        .Value as MethodInfo ?? throw new Exception("Method not found on object");
+        .Value as MethodInfo 
+        ?? (expression.Body as MethodCallExpression)?.Method
+        ?? throw new Exception("Method not found on object");
 
 
     public LambdaExpression GetExpression<TAnon>(

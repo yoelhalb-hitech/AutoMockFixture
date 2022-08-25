@@ -79,6 +79,16 @@ public partial class AutoMock<T>
 
     #endregion
 
+    public AutoMock<T> Setup(Expression<Action<T>> expression, Times times)
+    {        
+        return SetupInternal(expression, expression, times);
+    }
+
+    public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, Times times)
+    {
+        return SetupInternal(expression, expression, times);
+    }
+
 
     #region SetupAction
 
