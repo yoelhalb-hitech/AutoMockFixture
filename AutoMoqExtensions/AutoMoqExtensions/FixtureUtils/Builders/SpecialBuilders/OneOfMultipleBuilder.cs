@@ -11,18 +11,11 @@ internal class OneOfMultipleBuilder : ISpecimenBuilder
 
         var type = itemRequest.Request;
 
-        object newRequest;      
-        if (itemRequest.StartTracker.IsInAutoMockChain
-                || itemRequest.StartTracker.IsInAutoMockDepnedencyChain)
-        {
-            if (itemRequest.AutoMock == false) newRequest = new AutoMockDependenciesRequest(type, itemRequest);
-            else newRequest = new AutoMockRequest(type, itemRequest);
-        }
-        else
-        {            
-            if (itemRequest.AutoMock == true) newRequest = new AutoMockRequest(type, itemRequest);
-            else newRequest = new NonAutoMockRequest(type, itemRequest);
-        }
+        object newRequest = itemRequest.AutoMock == true
+                                ? new AutoMockRequest(type, itemRequest)
+                                : itemRequest.StartTracker.MockDependencies
+                                    ? new AutoMockDependenciesRequest(type, itemRequest)
+                                    : new NonAutoMockRequest(type, itemRequest);
 
         var specimen = context.Resolve(newRequest);
 

@@ -25,8 +25,7 @@ internal class ExpressionGenerator
         this.method = method;
         this.context = context;
         this.tracker = tracker;
-        this.noMockDependencies = tracker is AutoMockDirectRequest directRequest
-                                                    && directRequest.NoMockDependencies == true;
+        this.noMockDependencies = !tracker.StartTracker.MockDependencies;
     }
 
     public Expression? MakeMethodInvocationLambda()

@@ -24,8 +24,7 @@ internal class MethodSetupService
         this.method = method;
         this.context = context;
         this.tracker = mock.Tracker;
-        this.noMockDependencies = mock.Tracker is AutoMockDirectRequest directRequest
-                                                            && directRequest.NoMockDependencies == true;
+        this.noMockDependencies = !mock.Tracker?.StartTracker.MockDependencies ?? false;
     }
 
     public void Setup()

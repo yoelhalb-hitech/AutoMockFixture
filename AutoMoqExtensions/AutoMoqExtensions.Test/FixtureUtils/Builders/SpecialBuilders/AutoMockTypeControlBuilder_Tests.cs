@@ -102,8 +102,8 @@ internal class AutoMockTypeControlBuilder_Tests
         }
 
         [Test]
-        [TestCase(typeof(AutoMockDependenciesRequest), false)]
-        [TestCase(typeof(NonAutoMockRequest), true)]
+        [TestCase(typeof(AutoMockDependenciesRequest), true)]
+        [TestCase(typeof(NonAutoMockRequest), false)]
         public void Test_SetsCorrectly_NoMockDependencies_When_Not_AutoMockRequest_And_AlwaysAutoMockTypes_IsMatch(
             Type requestType, bool noMockDependencies)
         {
@@ -114,7 +114,7 @@ internal class AutoMockTypeControlBuilder_Tests
             var request = helper.GetRequest(typeControl);
             
             request!.Should().BeOfType<AutoMockRequest>();
-            ((AutoMockRequest)request!).NoMockDependencies.Should().Be(noMockDependencies);
+            ((AutoMockRequest)request!).StartTracker.MockDependencies.Should().Be(noMockDependencies);
         }
 
         [Test]
@@ -152,7 +152,8 @@ internal class AutoMockTypeControlBuilder_Tests
             var fixture = new AbstractAutoMockFixture();
             var recursionContext = new RecursionContext(fixture, fixture);
 
-            var request = new AutoMockRequest(type, fixture) { NoMockDependencies = true };
+            var startRequest = new NonAutoMockRequest(typeof(string), fixture);
+            var request = new AutoMockRequest(type, startRequest);
 
             var helper = new TypeControlHelper(fixture, request, type, recursionContext);
 

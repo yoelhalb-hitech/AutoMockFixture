@@ -17,9 +17,6 @@ public interface ITracker
     public bool IsCompleted { get; }
     public void SetCompleted();
     public void UpdateResult();
-    public void AddChild(ITracker tracker);
-    public bool IsInAutoMockChain { get; }
-    public bool IsInAutoMockDepnedencyChain { get; }
-    public bool ShouldAutoMock { get; }
+    public void AddChild(ITracker tracker);    
     public bool IsRequestEquals(ITracker other);
 }

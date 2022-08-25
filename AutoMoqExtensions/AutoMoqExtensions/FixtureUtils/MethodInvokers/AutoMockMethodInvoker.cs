@@ -21,7 +21,6 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         if (request is not AutoMockDirectRequest mockRequest) return new NoSpecimen();
 
-
         Logger.LogInfo("In autmock ctor arg - type is " + mockRequest.Request.FullName);
 
         var recursionContext = context as RecursionContext;
@@ -96,7 +95,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
     protected virtual object ResolveParamater(AutoMockDirectRequest mockRequest, ParameterInfo pi, ISpecimenContext context)
     {            
-        var argsRequest = mockRequest.NoMockDependencies == true
+        var argsRequest = !mockRequest.MockDependencies
                 ? new ConstructorArgumentRequest(mockRequest.Request, pi, mockRequest)
                 : new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);
 

@@ -24,8 +24,7 @@ internal class MockSetupService
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
         this.mockedType = mock.GetInnerType();
         this.tracker = mock.Tracker;
-        this.noMockDependencies = mock.Tracker is AutoMockDirectRequest directRequest 
-                                                            && directRequest.NoMockDependencies == true;
+        this.noMockDependencies = mock.Tracker?.StartTracker.MockDependencies ?? false;
     }
 
     public void Setup()

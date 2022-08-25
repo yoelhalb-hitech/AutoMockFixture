@@ -8,14 +8,6 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     public BaseTracker(ITracker? tracker)
     {
         SetParent(tracker);
-        // Note: Even if StartTracker.IsInAutoMockChain the parent might not necessarily be as there might an object that couldn't be an automocked
-        // Note: At this point our `StartTracker` might still be null so we use the parents
-        IsInAutoMockChain = Parent?.StartTracker.IsInAutoMockChain == true
-                                || Parent?.IsInAutoMockChain == true
-                                || this is IAutoMockRequest
-                                    && (this is not AutoMockRequest mockRequest || mockRequest.NoMockDependencies != true);
-        IsInAutoMockDepnedencyChain = Parent?.StartTracker.IsInAutoMockDepnedencyChain == true
-                                || Parent?.IsInAutoMockDepnedencyChain == true || this is AutoMockDependenciesRequest;
     }
 
     internal void SetParent(ITracker? tracker)
@@ -30,13 +22,8 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
 
     public virtual IFixtureTracker StartTracker => Parent?.StartTracker ?? this as IFixtureTracker ?? throw new Exception("No valid start tracker provided");
     public virtual object? StartObject => Parent?.StartObject ?? result;
-    public virtual bool ShouldAutoMock
-        => this is AutoMockRequest ||
-            this is not NonAutoMockRequest && this is not AutoMockDirectRequest
-                && (IsInAutoMockChain || IsInAutoMockDepnedencyChain && !ReferenceEquals(this, StartTracker));
+
     public virtual ITracker? Parent { get; private set; }
-    public virtual bool IsInAutoMockChain { get; }
-    public virtual bool IsInAutoMockDepnedencyChain { get; }
 
     public virtual List<ITracker> Children => children;
     public virtual void AddChild(ITracker tracker) => Children.Add(tracker);
@@ -93,7 +80,6 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
             Logger.LogInfo(ex.Message);
             Logger.LogInfo(ToString());
             Logger.LogInfo(Path);
-            System.Diagnostics.Debugger.Break();
         }
 
         Parent?.UpdateResult();
@@ -106,15 +92,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     }
 
     public virtual bool IsRequestEquals(ITracker other)
-        => IsChainEquals(other) && StartTracker.IsStartTrackerEquals(other.StartTracker);
-
-    public virtual bool IsChainEquals(ITracker other)
-        // `IsInAutoMockDepnedencyChain` when not start tracker is actually the same as `IsInAutoMockChain`
-        => other.IsInAutoMockChain == IsInAutoMockChain
-            || other.IsInAutoMockDepnedencyChain == IsInAutoMockDepnedencyChain
-                            && this == StartTracker == (other.StartTracker == other)
-            || other.IsInAutoMockChain && IsInAutoMockDepnedencyChain && StartTracker != this
-            || IsInAutoMockChain && other.IsInAutoMockDepnedencyChain && other.StartTracker != other;
+        => StartTracker.IsStartTrackerEquals(other.StartTracker);
 
     public override bool Equals(object obj)
         => obj is BaseTracker other ? Equals(other) : base.Equals(obj);

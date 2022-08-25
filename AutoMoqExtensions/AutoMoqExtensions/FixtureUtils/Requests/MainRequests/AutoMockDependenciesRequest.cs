@@ -17,7 +17,7 @@ internal class AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracker
     public virtual Type Request { get; }
 
     public override string InstancePath => "";
-
+    public override bool MockDependencies => true;
 
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
 

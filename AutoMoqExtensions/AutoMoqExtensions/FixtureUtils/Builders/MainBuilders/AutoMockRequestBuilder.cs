@@ -18,7 +18,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
         {
             try
             {
-                IRequestWithType altRequest = mockRequest.NoMockDependencies == true
+                IRequestWithType altRequest = !mockRequest.StartTracker.MockDependencies
                         ? new NonAutoMockRequest(mockRequest.Request, mockRequest)
                         : new AutoMockDependenciesRequest(mockRequest.Request, mockRequest);
                 var altResult = context.Resolve(altRequest);
@@ -44,7 +44,6 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
         var directRequest = new AutoMockDirectRequest(type, mockRequest) 
         { 
             MockShouldCallbase = mockRequest.MockShouldCallbase,
-            NoMockDependencies = mockRequest.NoMockDependencies,
         };
 
      

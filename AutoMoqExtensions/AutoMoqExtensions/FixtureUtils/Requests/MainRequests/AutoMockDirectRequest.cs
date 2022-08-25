@@ -15,16 +15,15 @@ internal class AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IFi
     }
 
     public virtual Type Request { get; }
-    public virtual bool? NoMockDependencies { get; set; }
 
     public override string InstancePath => "";
 
-
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request, NoMockDependencies);
+    public override bool MockDependencies => true;
+    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);
 
     public override bool IsRequestEquals(ITracker other)
         => other is AutoMockDirectRequest request
-            && request.Request == Request && request.NoMockDependencies == NoMockDependencies
+            && request.Request == Request
             && base.IsRequestEquals(other);
 
     public void Dispose() => SetCompleted();

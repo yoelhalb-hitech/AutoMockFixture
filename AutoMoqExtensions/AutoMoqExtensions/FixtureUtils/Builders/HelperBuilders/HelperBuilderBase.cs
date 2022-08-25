@@ -19,7 +19,7 @@ internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRe
     protected virtual object? HandleInternal(TRequest trackedRequest, ISpecimenContext context)
     {
         var type = GetRequest(trackedRequest);
-        if (!autoMockableSpecification.IsSatisfiedBy(type) || !trackedRequest.ShouldAutoMock)
+        if (!autoMockableSpecification.IsSatisfiedBy(type) || !trackedRequest.StartTracker.MockDependencies)
         {
             return HandleNonAutoMock(trackedRequest, context, type);
         }
@@ -47,7 +47,7 @@ internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRe
         }
         else
         {
-            newRequest = trackedRequest.ShouldAutoMock
+            newRequest = trackedRequest.StartTracker.MockDependencies
                     ? new AutoMockDependenciesRequest(type, trackedRequest)
                     : new NonAutoMockRequest(type, trackedRequest);
         }

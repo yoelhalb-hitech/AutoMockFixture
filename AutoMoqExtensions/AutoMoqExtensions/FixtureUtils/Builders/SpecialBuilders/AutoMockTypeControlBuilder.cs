@@ -76,7 +76,6 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
                                             ? new AutoMockRequest(type, typedRequest)
                                             : new AutoMockRequest(type, fixture);
                 autoMockRequest.MockShouldCallbase = false;
-                autoMockRequest.NoMockDependencies = typedRequest is not AutoMockDependenciesRequest;
 
                 return autoMockRequest;
             }
@@ -85,12 +84,11 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
             {
                 if (typedRequest is not AutoMockRequest) return null;
 
-                if (typedRequest is AutoMockRequest mockRequest && mockRequest.NoMockDependencies == true)
-                    return new NonAutoMockRequest(type, mockRequest);
-
                 return typedRequest is not null
-                            ? new AutoMockDependenciesRequest(type, typedRequest)
-                            : new AutoMockDependenciesRequest(type, fixture);
+                            ? typedRequest.StartTracker.MockDependencies 
+                                ? new AutoMockDependenciesRequest(type, typedRequest)
+                                : new NonAutoMockRequest(type, typedRequest)
+                            : new NonAutoMockRequest(type, fixture);
             }
 
             return null;

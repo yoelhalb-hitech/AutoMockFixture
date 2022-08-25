@@ -1,4 +1,5 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 
@@ -29,13 +30,12 @@ internal class AutoMockRelay : ISpecimenBuilder
             return new NoSpecimen();
 
         Logger.LogInfo($"In relay, for {t.FullName}");
-        
+
         // We do direct to bypass the specification test
-        using var directRequest = new AutoMockRequest(t, Fixture) 
+        var autoMockType = AutoMockHelpers.GetAutoMockType(t); // We make it for an AutoMock type so it will be automocked
+        var directRequest = new NonAutoMockRequest(t, Fixture) // Use NonAutoMockRequest so not to mock dependencies
         {
             MockShouldCallbase = true,
-            BypassChecks = true,
-            NoMockDependencies = true,
         };
         
         var result = context.Resolve(directRequest);

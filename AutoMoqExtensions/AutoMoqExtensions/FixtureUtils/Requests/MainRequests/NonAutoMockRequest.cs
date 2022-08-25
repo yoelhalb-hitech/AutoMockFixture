@@ -15,7 +15,7 @@ internal class NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixtu
     }
 
     public override string InstancePath => "";
-
+    public override bool MockDependencies => false;
     public Type Request { get; }
 
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Request);

@@ -1,6 +1,7 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using System.Reflection;
 
 namespace AutoMoqExtensions.FixtureUtils.Commands;
@@ -41,7 +42,7 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
         var existingTracker = mock?.Tracker;
         if(existingTracker is null) Fixture.ProcessingTrackerDict.TryGetValue(specimen, out existingTracker);
 
-        var tracker = existingTracker ?? new TrackerWithFixture(Fixture);
+        var tracker = existingTracker ?? new NonAutoMockRequest(specimen.GetType(), Fixture);
 
         foreach (var pi in GetPropertiesWithSet(specimen))
         {
