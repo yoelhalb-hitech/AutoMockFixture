@@ -30,6 +30,12 @@ internal abstract class InternalTestMethods
 {
     internal abstract string? InternalTestMethod();
 }
+
+internal interface ITestInterface
+{
+    string? TestProp { get; }
+    string? TestMethod();
+}
 internal abstract class InternalAbstractMethodTestClass
 {
     internal string? InternalTest { get; set; }

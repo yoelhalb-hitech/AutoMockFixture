@@ -18,7 +18,6 @@ public class AutoMock_Tests
 
         var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
         var generatorFieldInfo = castleProxyFactoryType!.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
-              
 
         var mock = new AutoMock<WithCtorArgsTestClass>();
         var obj = mock.Object;

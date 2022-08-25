@@ -22,4 +22,44 @@ internal class NonAutoMock_Tests
         obj.TestCtorArg!.InternalTest.Should().NotBeNull();
         AutoMockHelpers.GetAutoMock(obj.TestCtorArg).Should().BeNull();
     }
+
+    [Test]
+    public void Test_MainObject_AutoMocked_WhenAutoMock()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateNonAutoMock<AutoMock<WithCtorArgsTestClass>>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeAssignableTo<AutoMock<WithCtorArgsTestClass>>();
+        obj.GetMocked().Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_MainObject_AutoMocked_WhenAbstract()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateNonAutoMock<InternalAbstractMethodTestClass>();
+        // Assert
+        obj.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_MainObject_AutoMocked_WhenInterface()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateNonAutoMock<ITestInterface>();
+        // Assert
+        obj.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+
+        obj.TestProp.Should().NotBeNull();
+        obj.TestMethod().Should().NotBeNull();
+    }
 }
