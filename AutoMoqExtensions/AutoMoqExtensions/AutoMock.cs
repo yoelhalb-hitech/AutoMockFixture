@@ -106,6 +106,14 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     }
     public AutoMock() : base() { setupUtils = new SetupUtils<T>(this); }
 
+    void IAutoMock.Verify() => this.Verify();
+    public new void Verify()
+    {
+        VerifyList.ForEach(v => v.Verify(this));// TODO... maybe we should catch everything and rethrow as aggregate exception
+        base.Verify();
+    }
+
+    [Obsolete("Use Verify, as AutoFixture sets up everything")]
     public new void VerifyAll()
     {
         VerifyList.ForEach(v => v.Verify(this));// TODO... maybe we should catch everything and rethrow as aggregate exception

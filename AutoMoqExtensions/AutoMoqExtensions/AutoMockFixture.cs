@@ -81,7 +81,7 @@ public abstract partial class AutoMockFixture : Fixture
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder))))));
 
         Customize(new AutoMockCustomization { ConfigureMembers = !noConfigureMembers, GenerateDelegates = generateDelegates });
-    
+
         Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)))));
         Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute))))); // Considering it scoped as it is per fixture whcih is normally scoped
 
@@ -138,7 +138,7 @@ public abstract partial class AutoMockFixture : Fixture
                     ? AutoMockHelpers.GetMockedType(t)!
                     : !typeof(Mock).IsAssignableFrom(t) 
                         ? t 
-                        : t.IsGenericType  ? t.GenericTypeArguments.First(): typeof(object);
+                        : t.IsGenericType ? t.GenericTypeArguments.First(): typeof(object);
         if(!AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
@@ -236,6 +236,7 @@ public abstract partial class AutoMockFixture : Fixture
 
     #region Verify
 
+    // NOTE: We don't do VerifyAll() as it will try to verify all setups that the AutoMockFixture has done
     public void Verify(object obj)
     {
         if (!TrackerDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");

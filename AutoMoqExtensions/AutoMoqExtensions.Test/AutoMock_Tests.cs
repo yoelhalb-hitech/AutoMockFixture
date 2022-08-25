@@ -86,7 +86,7 @@ public class AutoMock_Tests
         mock.Setup(m => m.TestMethod1, Times.Once());
         mock.Object.TestMethod1();
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod1), Times.Once());
         mock.Object.TestMethod1();
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -108,7 +108,7 @@ public class AutoMock_Tests
         mock.Setup(m => m.TestMethod1, Times.Exactly(2));
         mock.Object.TestMethod1();
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -119,7 +119,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod1), Times.Exactly(2));
         mock.Object.TestMethod1();
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -130,7 +130,7 @@ public class AutoMock_Tests
         mock.Setup<string, int, decimal>(m => m.TestMethod2, Times.Once());
         mock.Object.TestMethod2("str", 10, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
 
@@ -142,7 +142,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod2), Times.Once());
         mock.Object.TestMethod2("str", 10, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
 
@@ -154,7 +154,7 @@ public class AutoMock_Tests
         mock.Setup<string, int, decimal>(m => m.TestMethod2, Times.Exactly(2));
         mock.Object.TestMethod2("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -165,7 +165,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod2), Times.Exactly(2));
         mock.Object.TestMethod2("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -176,7 +176,7 @@ public class AutoMock_Tests
         mock.Setup(m => (Action<string, int, decimal>)m.TestMethod2, new { i = 15 }, Times.Once());
         mock.Object.TestMethod2("str", 15, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -187,7 +187,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod2), new { i = 15 }, Times.Once());
         mock.Object.TestMethod2("str", 15, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -198,7 +198,7 @@ public class AutoMock_Tests
         mock.Setup(m => (Action<string, int, decimal>)m.TestMethod2, new { i = 15 }, Times.Once());
         mock.Object.TestMethod2("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -209,7 +209,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod2), new { i = 15 }, Times.Once());
         mock.Object.TestMethod2("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     #endregion
@@ -223,7 +223,7 @@ public class AutoMock_Tests
         mock.Setup<int>(m => m.TestMethod3, Times.Once());
         mock.Object.TestMethod3();
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -234,7 +234,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod3), Times.Once());
         mock.Object.TestMethod3();
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -245,7 +245,7 @@ public class AutoMock_Tests
         mock.Setup<int>(m => m.TestMethod3, Times.Exactly(2));
         mock.Object.TestMethod3();
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -256,7 +256,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod3), Times.Exactly(2));
         mock.Object.TestMethod3();
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -267,7 +267,7 @@ public class AutoMock_Tests
         mock.Setup<string, int, decimal, int>(m => m.TestMethod4, Times.Once());
         mock.Object.TestMethod4("str", 10, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
 
@@ -279,7 +279,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod4), Times.Once());
         mock.Object.TestMethod4("str", 10, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
 
@@ -291,7 +291,7 @@ public class AutoMock_Tests
         mock.Setup<string, int, decimal, int>(m => m.TestMethod4, Times.Exactly(2));
         mock.Object.TestMethod4("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -302,7 +302,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod4), Times.Exactly(2));
         mock.Object.TestMethod4("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -313,7 +313,7 @@ public class AutoMock_Tests
         mock.Setup(m => (Func<string, int, decimal, int>)m.TestMethod4, new { i = 15 }, Times.Once());
         mock.Object.TestMethod4("str", 15, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -324,7 +324,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod4), new { i = 15 }, Times.Once());
         mock.Object.TestMethod4("str", 15, 6.95m);
 
-        Assert.DoesNotThrow(() => mock.VerifyAll());
+        Assert.DoesNotThrow(() => mock.Verify());
     }
 
     [Test]
@@ -335,7 +335,7 @@ public class AutoMock_Tests
         mock.Setup(m => (Func<string, int, decimal, int>)m.TestMethod4, new { i = 15 }, Times.Once());
         mock.Object.TestMethod4("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     [Test]
@@ -346,7 +346,7 @@ public class AutoMock_Tests
         mock.Setup(nameof(Test.TestMethod4), new { i = 15 }, Times.Once());
         mock.Object.TestMethod4("str", 10, 6.95m);
 
-        Assert.Throws<MockException>(() => mock.VerifyAll());
+        Assert.Throws<MockException>(() => mock.Verify());
     }
 
     #endregion
