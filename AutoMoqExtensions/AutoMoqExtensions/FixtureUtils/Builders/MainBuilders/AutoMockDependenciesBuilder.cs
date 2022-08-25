@@ -21,27 +21,34 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             return new NoSpecimen();
 
         if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)           
-            return TryAutoMock(dependencyRequest, context);
+            return TryAutoMock(dependencyRequest, context);        
+       
+        if (AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
+            || (typeof(Mock).IsAssignableFrom(dependencyRequest.Request) && dependencyRequest.Request.IsGenericType))
+        {
+            var inner = AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
+                                ? AutoMockHelpers.GetMockedType(dependencyRequest.Request)!
+                                : dependencyRequest.Request.GenericTypeArguments.First();
+
+            var automockRequest = new AutoMockRequest(inner, dependencyRequest) 
+            {
+                MockShouldCallbase = dependencyRequest.MockShouldCallbase
+            };
+
+            var result = context.Resolve(automockRequest);
+
+            object? autoMock = AutoMockHelpers.GetFromObj(result);
+            if (autoMock is null) autoMock = new NoSpecimen();
+
+            dependencyRequest.SetResult(autoMock);
+            return autoMock;
+        }
 
         if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request) 
             || typeof(System.Delegate).IsAssignableFrom(dependencyRequest.Request))
         {
             // Note that IEnumerable etc. should already be handled in the special builders
             var result = context.Resolve(dependencyRequest.Request);
-            dependencyRequest.SetResult(result);
-            return result;
-        }
-
-        if(AutoMockHelpers.IsAutoMock(dependencyRequest.Request) || typeof(Mock).IsAssignableFrom(dependencyRequest.Request))
-        {
-            var inner = AutoMockHelpers.IsAutoMock(dependencyRequest.Request) 
-                    ? AutoMockHelpers.GetMockedType(dependencyRequest.Request)!
-                    : dependencyRequest.Request.IsGenericType 
-                        ? dependencyRequest.Request.GenericTypeArguments.First()
-                        : typeof(object);
-            var automockRequest = new AutoMockRequest(inner, dependencyRequest) { MockShouldCallbase = true };
-
-            var result = context.Resolve(automockRequest);
             dependencyRequest.SetResult(result);
             return result;
         }

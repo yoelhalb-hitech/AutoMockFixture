@@ -30,7 +30,7 @@ internal class AutoMockBuilder : ISpecimenBuilder
             return new NoSpecimen();
         }
 
-        autoMock.DefaultValue = DefaultValue.Mock;
+        autoMock.DefaultValue = DefaultValue.Empty; // When we want a value we will set it up ourselves with AutoMock
         autoMock.Tracker = mockRequest;
 
         mockRequest.SetResult(specimen);

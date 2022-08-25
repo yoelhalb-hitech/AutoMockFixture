@@ -4,6 +4,10 @@ namespace AutoMoqExtensions.FixtureUtils;
 
 internal class Cache
 {
+    // NOTE:
+    // We are doing it this way instead of the AutoFixture way of using a FixedBuilder,
+    //      because we want to be able to it lazy, as we do it also:
+    //      1) based on the attributes and also for 2) different types of AutoMock etc. etc.
     public List<IRequestSpecification> CacheSpecifications { get; } = new List<IRequestSpecification>();
     public Dictionary<object, object?> CacheDictionary { get; } = new Dictionary<object, object?>();
 

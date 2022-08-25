@@ -1,6 +1,7 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
+using Moq;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
 
@@ -17,6 +18,33 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
     {
         if (request is not NonAutoMockRequest nonMockRequest)
             return new NoSpecimen();
+
+        var isCreatable = !nonMockRequest.Request.IsAbstract && !nonMockRequest.Request.IsInterface;
+        var isMock = AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
+            || (typeof(Mock).IsAssignableFrom(nonMockRequest.Request) && nonMockRequest.Request.IsGenericType);
+        if (isMock || !isCreatable)
+        {
+            // Remember that the request might be IMock<> 
+            var inner = !isMock
+                            ? nonMockRequest.Request
+                            : AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
+                                ? AutoMockHelpers.GetMockedType(nonMockRequest.Request)!
+                                : nonMockRequest.Request.GenericTypeArguments.First();
+                       
+            var automockRequest = new AutoMockRequest(inner, nonMockRequest) 
+            {
+                MockShouldCallbase = !isMock || nonMockRequest.MockShouldCallbase == true
+            };
+
+            var result = context.Resolve(automockRequest);
+
+            object? autoMock = AutoMockHelpers.GetFromObj(result);
+            if (autoMock is null && isMock) autoMock = new NoSpecimen();
+
+            var retValue = isMock ? autoMock : result;
+            nonMockRequest.SetResult(retValue);
+            return retValue;
+        }
 
         // Send all types that we want to leave for AutoFixture to it
         if (!AutoMockHelpers.IsAutoMockAllowed(nonMockRequest.Request) || typeof(System.Delegate).IsAssignableFrom(nonMockRequest.Request))

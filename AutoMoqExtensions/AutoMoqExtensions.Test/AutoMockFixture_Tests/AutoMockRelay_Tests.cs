@@ -19,18 +19,27 @@ internal class AutoMockRelay_Tests
         Assert.DoesNotThrow(() => Guid.Parse(obj.InternalTest!.Replace(nameof(InternalSimpleTestClass.InternalTest), "")));
     }
 
+    internal class TestRelayByAbstractProperty
+    {
+        public InternalAbstractMethodTestClass? TestProp { get; set; }
+    }
+
+    // The main object has a direct test for abstract and interfaces, so we have to test the relay by a property
     [Test]
     public void Test_NonAutoMock_Abstract_ViaRelay()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateNonAutoMock<InternalAbstractMethodTestClass>();
+        var obj = fixture.CreateNonAutoMock<TestRelayByAbstractProperty>();
         // Assert
         obj.Should().NotBeNull();
-        obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();
-        var mock = AutoMockHelpers.GetAutoMock(obj);
+        obj.Should().BeAssignableTo<TestRelayByAbstractProperty>();
+
+        obj.TestProp.Should().NotBeNull();
+        var mock = AutoMockHelpers.GetAutoMock(obj.TestProp);
         mock.Should().NotBeNull();
-        obj.InternalTest.Should().NotBeNull();
+
+        obj.TestProp!.InternalTest.Should().NotBeNull();
     }
 }
