@@ -1,5 +1,8 @@
 ﻿using AutoFixture;
 using AutoFixture.NUnit3;
+using AutoMoqExtensions.Attributes;
+using AutoMoqExtensions.FixtureUtils.Customizations;
+using AutoMoqExtensions.FixtureUtils.Specifications;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using System.Threading;
@@ -37,12 +40,26 @@ internal class AutoMockData : AutoDataAttribute
                 foreach (var ca in customizeAttributes)
                 {
                     var customization = ca.GetCustomization(parameter.ParameterInfo);
-                    this.Fixture.Customize(customization);
+                    if(customization is FreezeOnMatchCustomization freezeCustomization)                    
+                        this.Fixture
+                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(freezeCustomization.Matcher)));                    
+                    else 
+                        this.Fixture.Customize(customization);
                 }
 
-                return Fixture.Create(parameter.ParameterType);
-            });
+                var autoMockType = parameter.GetCustomAttributes<Attribute>(false)
+                                    .OfType<AutoMockTypeAttribute>()
+                                    .FirstOrDefault();
 
+                return autoMockType?.AutoMockType switch
+                {
+                    AutoMockTypes.AutoMock => Fixture.CreateAutoMock(parameter.ParameterType),
+                    AutoMockTypes.NonAutoMock => Fixture.CreateNonAutoMock(parameter.ParameterType),
+                    AutoMockTypes.AutoMockDependencies => Fixture.CreateWithAutoMockDependencies(parameter.ParameterType),
+                    _ => Fixture.Create(parameter.ParameterType),
+                };
+            });
+        
         var test = this.TestMethodBuilder.Build(method, suite, parameters, 0);
 
         yield return test;

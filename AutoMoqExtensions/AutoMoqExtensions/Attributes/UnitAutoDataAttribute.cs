@@ -4,7 +4,7 @@ using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using System.Threading;
 
-namespace AutoMoqExtensions;
+namespace AutoMoqExtensions.Attributes;
 
 // TODO... add injections
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
@@ -25,5 +25,5 @@ public class UnitAutoDataAttribute : Attribute, ITestBuilder
         // We need a fixture per method and per exectution, otherwise we can run in problems...
         var builder = new AutoMockData(() => new UnitFixture(noConfigureMembers, generateDelegates));
         return builder.BuildFrom(method, suite);
-    } 
+    }
 }

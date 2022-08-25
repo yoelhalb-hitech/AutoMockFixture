@@ -30,6 +30,7 @@
 	  <Using Include="System.Collections.Generic" />
 	  <Using Include="AutoFixture.Kernel" />
 	  <Using Include="AutoMoqExtensions.Extensions" />
+	  <Using Include="AutoMoqExtensions.Attributes" />
 	  <Using Include="DotNetPowerExtensions.MustInitialize" />
 	  <Using Include="FluentAssertions" />
 	  <Using Include="NUnit.Framework" />
