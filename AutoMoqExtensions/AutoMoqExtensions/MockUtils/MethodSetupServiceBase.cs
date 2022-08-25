@@ -8,16 +8,16 @@ using System.Reflection;
 
 namespace AutoMoqExtensions.MockUtils;
 
-internal class MethodSetupService
+internal abstract class MethodSetupServiceBase
 {
-    private readonly IAutoMock mock;
-    private readonly Type mockedType;
-    private readonly MethodInfo method;
-    private readonly ISpecimenContext context;
-    private readonly ITracker? tracker;
-    private readonly bool noMockDependencies;
+    protected readonly IAutoMock mock;
+    protected readonly Type mockedType;
+    protected readonly MethodInfo method;
+    protected readonly ISpecimenContext context;
+    protected readonly ITracker? tracker;
+    protected readonly bool noMockDependencies;
 
-    public MethodSetupService(IAutoMock mock, Type mockedType, MethodInfo method, ISpecimenContext context)
+    public MethodSetupServiceBase(IAutoMock mock, Type mockedType, MethodInfo method, ISpecimenContext context)
     {
         this.mock = mock;
         this.mockedType = mockedType;
@@ -82,15 +82,9 @@ internal class MethodSetupService
         }
     }
 
-    private object? HandleInvocationFunc(IInvocation invocation)
-    {
-        var result = GenerateResult(invocation.Method);
+    protected abstract object? HandleInvocationFunc(IInvocation invocation);
 
-        Logger.LogInfo("Resolved type: " + (result?.GetType().FullName ?? "null"));
-        return result;        
-    }
-
-    private object? GenerateResult(MethodInfo method)
+    protected object? GenerateResult(MethodInfo method)
     {
         var trackingPath = method.GetTrackingPath();
 
@@ -102,7 +96,7 @@ internal class MethodSetupService
 
         Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
         
-        var request = noMockDependencies 
+        var request = noMockDependencies
                              ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
                              : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
         Logger.LogInfo("\t\tResolving return for containing path: " + request.Path);

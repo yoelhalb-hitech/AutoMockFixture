@@ -19,6 +19,40 @@ internal class AutoMock_Tests
     }
 
     [Test]
+    public void Test_PropertyGet_ReturnsSame()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>();
+
+        var first = obj.TestClassPropGet;
+        var second = obj.TestClassPropGet;
+
+        // Assert
+        first.Should().NotBeNull();
+        second.Should().NotBeNull();
+        first.Should().BeSameAs(second);        
+    }
+
+    [Test]
+    public void Test_Method_NotReturningSame()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateAutoMock<InternalTestMethods>();
+
+        var first = obj.InternalTestMethod();
+        var second = obj.InternalTestMethod();
+
+        // Assert
+        first.Should().NotBeNull();
+        second.Should().NotBeNull();
+        first.Should().NotBeSameAs(second);
+    }
+
+    [Test]
     public void Test_AutoMock_CallBase()
     {
         // Arrange
@@ -135,6 +169,7 @@ internal class AutoMock_Tests
         obj.Should().NotBeNull();
         AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
     }
+
     [Test]
     public void Test_CreateAutoMock_WithCtorParams_CallBase()
     {
