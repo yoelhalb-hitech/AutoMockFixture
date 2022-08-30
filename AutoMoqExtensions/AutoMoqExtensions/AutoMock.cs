@@ -1,4 +1,5 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.MockUtils;
 using AutoMoqExtensions.VerifyInfo;
@@ -83,11 +84,31 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
             SetupGenerator();
             additionalInterfaces.Add(iautoMockedType);
             mocked = base.Object;
-            this.target = null;
+            if (this.target is not null && this.CallBase) SetupTargetMethods();            
             additionalInterfaces.Remove(iautoMockedType);
             ResetGenerator(); // We need to reset it in case the user wants to use the Mock directly as this property is static...
-        } 
+        }
     }
+   
+    private void SetupTargetMethods()
+    {
+        var t = typeof(T);
+
+        var existingSetups = Setups
+                            .Select(s => s.GetType().GetProperty("Method")?.GetValue(s) as MethodInfo)
+                            .Where(m => m is not null)
+                            .ToList();
+  
+        //TODO... the whole idea is because we want to override the setup for HttpClient and we want to also Mock the `When` method by using the original as target 
+
+        //It appears that it doesn't setup abstract methods automatically for whatever reason
+        var setupUtils = new SetupUtils<T>(this);
+        var list = typeof(T).GetAllMethods()
+            .Where(m => !m.IsPrivate && m.IsAbstract && !existingSetups.Any(s => m.IsEqual(s!)))
+            .ToList();
+        list.ForEach(m => setupUtils.SetupInternal(m, new { }, null, true));
+    }
+
     object IAutoMock.GetMocked() => GetMocked();
     public T GetMocked()
     {

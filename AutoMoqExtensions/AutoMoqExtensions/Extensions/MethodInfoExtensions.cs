@@ -7,6 +7,21 @@ internal static class MethodInfoExtensions
     public static bool IsInternal(this MethodInfo methodInfo) => methodInfo.IsAssembly || methodInfo.IsFamilyOrAssembly;
     public static bool IsPublicOrInternal(this MethodInfo methodInfo) => methodInfo.IsPublic || methodInfo.IsInternal();
 
+    public static bool IsEqual(this MethodInfo methodInfo, MethodInfo other)
+    {
+        // https://stackoverflow.com/a/4250003/640195 but modified for non public
+        // Just comparing the two won't always work
+
+        var first = methodInfo.ReflectedType == methodInfo.DeclaringType ? methodInfo : methodInfo
+                        .DeclaringType
+                        .GetMethod(methodInfo.Name, TypeExtensions.AllBindings, null,
+                            methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(), null);
+        var second = other.ReflectedType == other.DeclaringType ? other : other
+                        .DeclaringType
+                        .GetMethod(other.Name, TypeExtensions.AllBindings, null,
+                            other.GetParameters().Select(p => p.ParameterType).ToArray(), null);
+        return first == second;
+    }
 
     internal static bool IsOverridable(this MethodInfo method)
     {

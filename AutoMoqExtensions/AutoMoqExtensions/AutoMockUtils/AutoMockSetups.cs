@@ -40,6 +40,7 @@ public partial class AutoMock<T>
     #endregion
 
     #region MethodInfo
+    public AutoMock<T> Setup(MethodInfo method) => Setup(method, new { });
     public AutoMock<T> Setup(MethodInfo method, Times times) => Setup(method, new { }, times);
     public AutoMock<T> Setup<TAnon>(MethodInfo method, TAnon paramData) where TAnon : class
         => SetupInternal(method, paramData, null);

@@ -60,20 +60,144 @@ public class AutoMock_Tests
         Assert.Catch(() => mock.GetMocked());
     }
 
+    #region Target
+
+    #region Target Basic
+
     public class TestingTarget
     {
         public virtual string? Testing { get; set; }
     }
 
     [Test]
-    public void Test_AutoMock_SetTarget()
+    public void Test_AutoMock_SetTarget_HasTargetValue()
     {
         var target = new TestingTarget { Testing = "FromTarget" };
         var mock = new AutoMock<TestingTarget>();
         mock.CallBase = true;
         mock.SetTarget(target);
         mock.Object.Testing.Should().Be(target.Testing);
+
+        target.Testing = "Testing2";
+        mock.Object.Testing.Should().Be(target.Testing);
+
+        mock.Target.Should().Be(target);
     }
+
+    [Test]
+    public void Test_AutoMock_SetTarget_HasTargetValueAfterUpdate()
+    {
+        var target = new TestingTarget { Testing = "FromTarget" };
+        var mock = new AutoMock<TestingTarget>();
+        mock.CallBase = true;
+        mock.SetTarget(target);
+        mock.Object.Testing.Should().Be(target.Testing);
+
+        target.Testing = "TestingUpdate";
+        mock.Object.Testing.Should().Be("TestingUpdate");
+
+        mock.Target.Should().Be(target);
+    }
+
+    [Test]
+    public void Test_AutoMock_SetTarget_UpdatesTarget()
+    {
+        var target = new TestingTarget { Testing = "FromTarget" };
+        var mock = new AutoMock<TestingTarget>();
+        mock.CallBase = true;
+        mock.SetTarget(target);
+        mock.Object.Testing.Should().Be(target.Testing);
+
+        mock.Object.Testing = "TestingUpdatesTarget";
+        target.Testing.Should().Be("TestingUpdatesTarget");
+
+        mock.Target.Should().Be(target);
+    }
+
+    #endregion
+
+    #region Target Complex
+
+
+    public interface ITestingTargetComplex
+    {
+        string? TestProp { get; set; }
+        string TestPropGet { get; }
+        string Test();
+    }
+    public abstract class AbstractTestingTargetComplex : ITestingTargetComplex
+    {
+        public abstract string TestPropGet { get; }
+        public abstract string? TestProp { get; set; }
+        public abstract string Test();
+    }
+    class TestingTargetComplex : AbstractTestingTargetComplex
+    {
+        private bool firstTime = true;
+        public override string TestPropGet
+        {
+            get
+            {
+                if (!firstTime) return "TestPropGet_SecondTime";
+                firstTime = false;
+                return "TestPropGet_FirstTime";
+            }
+        }
+        public override string? TestProp { get; set; }
+        public override string Test() => "In Test";
+    }
+
+    [Test]
+    public void Test_AutoMock_SetTarget_ByInterface()
+    {
+        var target = new TestingTargetComplex { TestProp = "234" };
+        var mock = new AutoMock<ITestingTargetComplex>();
+        mock.CallBase = true;
+        mock.SetTarget(target);
+
+
+        mock.Object.TestProp.Should().Be("234");
+        target.TestProp = "8888";
+        mock.Object.TestProp.Should().Be("8888");
+
+        mock.Object.TestProp = "5555";
+        target.TestProp.Should().Be("5555");
+
+        mock.Object.TestPropGet.Should().Be("TestPropGet_FirstTime");
+        mock.Object.TestPropGet.Should().Be("TestPropGet_SecondTime");
+
+        mock.Object.Test().Should().Be("In Test");
+
+        mock.Target.Should().Be(target);        
+    }
+
+    [Test]
+    public void Test_AutoMock_SetTarget_ByAbstract()
+    {
+        var target = new TestingTargetComplex { TestProp = "234" };
+        var mock = new AutoMock<AbstractTestingTargetComplex>();
+        mock.CallBase = true;
+        mock.SetTarget(target);
+
+
+        mock.Object.TestProp.Should().Be("234");
+        target.TestProp = "8888";
+        mock.Object.TestProp.Should().Be("8888");
+
+        mock.Object.TestProp = "5555";
+        target.TestProp.Should().Be("5555");
+
+        mock.Object.TestPropGet.Should().Be("TestPropGet_FirstTime");
+        mock.Object.TestPropGet.Should().Be("TestPropGet_SecondTime");
+
+        mock.Object.Test().Should().Be("In Test");
+
+        mock.Target.Should().Be(target);
+    }
+
+    #endregion  
+  
+    #endregion
 
     #region Action
 
