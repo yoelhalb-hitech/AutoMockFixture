@@ -1,6 +1,7 @@
 ﻿using AutoMoqExtensions.Expressions;
 using AutoMoqExtensions.VerifyInfo;
 using Moq;
+using Moq.Language.Flow;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -14,7 +15,7 @@ internal class SetupUtils<T> where T : class
     }
     private readonly BasicExpressionBuilder<T> basicExpression = new();
     public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, AutoMoqExtensions.Extensions.TypeExtensions.AllBindings);
-    public Moq.Language.Flow.ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
+    public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
     {
         var method = basicExpression.GetMethod(originalExpression);
         return SetupActionInternal(method, expression, times);
@@ -28,18 +29,18 @@ internal class SetupUtils<T> where T : class
         return setup;
     }
 
-    public Moq.Language.Flow.ISetup<T, TResult> SetupInternal<TResult>(LambdaExpression originalExpression, Expression<Func<T, TResult>> expression, Times? times = null)
+    public ISetup<T, TResult> SetupInternal<TResult>(LambdaExpression originalExpression, Expression<Func<T, TResult>> expression, Times? times = null)
     {
         var method = basicExpression.GetMethod(originalExpression);
         return SetupFuncInternal(method, expression, times);
     }
-    public Moq.Language.Flow.ISetup<T, TResult> SetupFuncFromLambda<TResult>(MethodInfo method, LambdaExpression expression, Times? times = null)
+    public ISetup<T, TResult> SetupFuncFromLambda<TResult>(MethodInfo method, LambdaExpression expression, Times? times = null)
     {
         return SetupFuncInternal(method, (Expression<Func<T, TResult>>)expression, times);
     }
 
     // Cannot use default parameters as null can be sometinmes a valid result
-    public Moq.Language.Flow.ISetup<T, TResult> SetupFuncInternal<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, Times? times = null)
+    public ISetup<T, TResult> SetupFuncInternal<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, Times? times = null)
     {
         if (method.IsSpecialName) // Assumming property get
         {
@@ -53,7 +54,7 @@ internal class SetupUtils<T> where T : class
         return setup;
     }
 
-    public Moq.Language.Flow.IReturnsResult<T> SetupFuncWithResult<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, TResult result, Times? times = null)
+    public IReturnsResult<T> SetupFuncWithResult<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, TResult result, Times? times = null)
     {
         if (method.IsSpecialName) // Assumming property get
         {
@@ -75,7 +76,7 @@ internal class SetupUtils<T> where T : class
         .MakeGenericMethod(type);
 
     // Doing this way it because of issues with overload resolution
-    public Moq.Language.Flow.IReturnsResult<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times? times) where TAnon : class
+    public IReturnsResult<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times? times) where TAnon : class
     {
         var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
         var expr = basicExpression.GetExpression(method, paramData, paramTypes);

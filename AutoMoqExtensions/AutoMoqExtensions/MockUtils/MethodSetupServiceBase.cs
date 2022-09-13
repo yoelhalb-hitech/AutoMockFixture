@@ -103,7 +103,7 @@ internal abstract class MethodSetupServiceBase
 
         try
         {
-            var result = context.Resolve(request);        
+            var result = context.Resolve(request);
 
             if(method.ReturnType.ContainsGenericParameters)
             {
