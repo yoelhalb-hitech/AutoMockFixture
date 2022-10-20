@@ -72,7 +72,7 @@ internal class MockSetupService
         try
         {
             action();                
-            mock.MethodsSetup.Add(trackingPath, member);                               
+            mock.MethodsSetup.Add(trackingPath, member);
         }
         catch (Exception ex)
         {
@@ -82,14 +82,15 @@ internal class MockSetupService
 
     private void SetupMethod(MethodInfo method)
     {
-        Setup(method, () => new MethodSetupServiceWithDifferentResult(mock, mockedType, method, context).Setup());          
+        Setup(method, () => new MethodSetupServiceWithDifferentResult(mock, method, context).Setup());          
     }
 
     private void SetupSingleMethodProperty(PropertyInfo prop)
     {
         var method = prop.GetMethods().First();
 
-        Setup(method, () => new MethodSetupServiceWithSameResult(mock, mockedType, method, context).Setup(), prop.GetTrackingPath());
+        var trackingPath = prop.GetTrackingPath();
+        Setup(method, () => new MethodSetupServiceWithSameResult(mock, method, context, trackingPath).Setup(), trackingPath);
     }
 
     private void SetupAutoProperty(PropertyInfo prop)

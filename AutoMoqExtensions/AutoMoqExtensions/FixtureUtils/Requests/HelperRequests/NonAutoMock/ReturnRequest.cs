@@ -16,7 +16,7 @@ internal class ReturnRequest : BaseTracker
     public virtual MethodInfo MethodInfo { get; }
     public Type ReturnType { get; }
 
-    public override string InstancePath => "." + MethodInfo.GetTrackingPath() + ".";
+    public override string InstancePath => "." + MethodInfo.GetTrackingPath();
 
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, MethodInfo, ReturnType);
 

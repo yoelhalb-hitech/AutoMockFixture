@@ -6,7 +6,9 @@ namespace AutoMoqExtensions.MockUtils;
 
 internal class MethodSetupServiceWithDifferentResult : MethodSetupServiceBase
 {
-    public MethodSetupServiceWithDifferentResult(IAutoMock mock, Type mockedType, MethodInfo method, ISpecimenContext context) : base(mock, mockedType, method, context)
+    public MethodSetupServiceWithDifferentResult(IAutoMock mock, MethodInfo method, ISpecimenContext context,
+        string? customTrackingPath = null) 
+            : base(mock, method, context, customTrackingPath)
     {
     }
 

@@ -15,15 +15,21 @@ internal abstract class MethodSetupServiceBase
     protected readonly MethodInfo method;
     protected readonly ISpecimenContext context;
     protected readonly ITracker? tracker;
+    protected readonly string? customTrackingPath;
     protected readonly bool noMockDependencies;
 
-    public MethodSetupServiceBase(IAutoMock mock, Type mockedType, MethodInfo method, ISpecimenContext context)
+    public MethodSetupServiceBase(IAutoMock mock, MethodInfo method, ISpecimenContext context,
+                                                                        string? customTrackingPath = null)
     {
         this.mock = mock;
-        this.mockedType = mockedType;
         this.method = method;
         this.context = context;
+        this.customTrackingPath = customTrackingPath;
+
+        // Don't do mock.GetMocked().GetType() as it has additional properties etc.
+        this.mockedType = mock.GetInnerType();
         this.tracker = mock.Tracker;
+
         this.noMockDependencies = !mock.Tracker?.StartTracker.MockDependencies ?? false;
     }
 
@@ -98,7 +104,7 @@ internal abstract class MethodSetupServiceBase
         
         var request = noMockDependencies
                              ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
-                             : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker);
+                             : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker, customTrackingPath);
         Logger.LogInfo("\t\tResolving return for containing path: " + request.Path);
 
         try
