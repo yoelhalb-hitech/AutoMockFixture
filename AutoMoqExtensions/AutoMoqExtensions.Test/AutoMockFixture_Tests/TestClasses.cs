@@ -17,6 +17,11 @@ internal abstract class InternalAbstractReadonlyPropertyClass
 {
     internal abstract string? InternalTest { get; }
 }
+
+internal class InternalReadonlyPropertyClass
+{
+    internal virtual string? InternalTest { get; }
+}
 internal class InternalSimpleTestClass
 {
     internal virtual string? InternalTest { get; set; }

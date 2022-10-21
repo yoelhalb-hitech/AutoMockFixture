@@ -47,7 +47,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         completed = true;
         UpdateResult();
     }
-    public void UpdateResult()
+    public virtual void UpdateResult()
     {
         // TODO... maybe we should rather take it out from the ProcessingTrackerDict
         // TODO... what about setting up something that hasn't been created yet?
