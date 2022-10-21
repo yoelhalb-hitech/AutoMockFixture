@@ -1,4 +1,6 @@
-﻿using AutoMoqExtensions.Expressions;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using AutoMoqExtensions.Expressions;
 using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -90,6 +92,21 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expression, times);
     }
 
+    public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, TResult result, Times? times = null)
+    {
+        var setup = setupUtils.SetupInternal(expression, expression, times);
+        setup.Returns(result);
+
+        return this;
+    }
+
+    public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, IFixture fixture, Times? times = null)
+    {
+        var setup = setupUtils.SetupInternal(expression, expression, times);
+        setup.ReturnsUsingFixture(fixture);
+
+        return this;
+    }
 
     #region SetupAction
 
