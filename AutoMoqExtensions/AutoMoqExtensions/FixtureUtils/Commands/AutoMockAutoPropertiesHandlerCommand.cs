@@ -10,12 +10,16 @@ namespace AutoMoqExtensions.FixtureUtils.Commands;
 
 internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
 {
+    private static readonly DelegateSpecification delegateSpecification = new DelegateSpecification();
+
     public virtual void Execute(object specimen, ISpecimenContext context)
     {
         if (context is null) throw new ArgumentNullException(nameof(context));
 
         var mock = AutoMockHelpers.GetFromObj(specimen);
         if (mock is null) return;
+
+        if (delegateSpecification.IsSatisfiedBy(mock.GetInnerType())) return;
 
         var directTracker = mock.Tracker as AutoMockDirectRequest;
 

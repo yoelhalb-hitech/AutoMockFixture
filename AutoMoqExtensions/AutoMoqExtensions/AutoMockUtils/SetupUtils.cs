@@ -16,12 +16,11 @@ internal class SetupUtils<T> where T : class
     private readonly BasicExpressionBuilder<T> basicExpression = new();
     public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, AutoMoqExtensions.Extensions.TypeExtensions.AllBindings);
     public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
-    {
-        var method = basicExpression.GetMethod(originalExpression);
-        return SetupActionInternal(method, expression, times);
+    {        
+        return SetupActionInternal(expression, times);
     }
 
-    public Moq.Language.Flow.ISetup<T> SetupActionInternal(MethodInfo method, Expression<Action<T>> expression, Times? times = null)
+    public ISetup<T> SetupActionInternal(Expression<Action<T>> expression, Times? times = null)
     {
         var setup = AutoMock.Setup(expression);
         if (times.HasValue) AutoMock.VerifyList.Add(new VerifyActionInfo<T>(expression, times.Value));
@@ -31,7 +30,7 @@ internal class SetupUtils<T> where T : class
 
     public ISetup<T, TResult> SetupInternal<TResult>(LambdaExpression originalExpression, Expression<Func<T, TResult>> expression, Times? times = null)
     {
-        var method = basicExpression.GetMethod(originalExpression);
+        var method = typeof(System.Delegate).IsAssignableFrom(typeof(T)) ? null : basicExpression.GetMethod(originalExpression);
         return SetupFuncInternal(method, expression, times);
     }
     public ISetup<T, TResult> SetupFuncFromLambda<TResult>(MethodInfo method, LambdaExpression expression, Times? times = null)
@@ -40,9 +39,9 @@ internal class SetupUtils<T> where T : class
     }
 
     // Cannot use default parameters as null can be sometinmes a valid result
-    public ISetup<T, TResult> SetupFuncInternal<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, Times? times = null)
+    public ISetup<T, TResult> SetupFuncInternal<TResult>(MethodInfo? method, Expression<Func<T, TResult>> expression, Times? times = null)
     {
-        if (method.IsSpecialName) // Assumming property get
+        if (method?.IsSpecialName == true) // Assumming property get
         {
             AutoMock.SetupGet(expression);
             if (times.HasValue) AutoMock.VerifyList.Add(new VerifyGetInfo<T, TResult>(expression, times.Value));               
@@ -92,7 +91,7 @@ internal class SetupUtils<T> where T : class
 
         if (method.ReturnType == typeof(void))
         {
-            var setup = SetupActionInternal(method, (Expression<Action<T>>)expr, times);
+            var setup = SetupActionInternal((Expression<Action<T>>)expr, times);
             if (callbase) setup.CallBase();
         }
         else

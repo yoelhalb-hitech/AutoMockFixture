@@ -16,6 +16,9 @@ internal class BasicExpressionBuilder<T>
     public LambdaExpression GetExpression<TAnon>(
             LambdaExpression expression, TAnon paramData, Type[] types)
     {
+        if (expression.Body is InvocationExpression && paramData is not null) throw new Exception("Cannot use paramData with a delegate");
+        if (expression.Body is InvocationExpression) return expression;
+
         var method = GetMethod(expression);
         return GetExpression(method, paramData, types);
     }

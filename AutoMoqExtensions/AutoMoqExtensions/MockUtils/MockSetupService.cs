@@ -31,6 +31,15 @@ internal class MockSetupService
 
     public void Setup()
     {
+        // If it's private it won't be in the proxy, CAUTION: I am doing it here and not in the `GetMethod()` in case we want to change the logic it should be in one place
+        var methods = GetMethods().Where(m => !m.IsPrivate);
+        foreach (var method in methods)
+        {
+            SetupMethod(method);
+        }
+
+        if (delegateSpecification.IsSatisfiedBy(mockedType)) return;
+
         var allProperties = mockedType.GetAllProperties().Where(p => p.GetMethod?.IsPublicOrInternal() == true);
 
         // Properties with both get and prublic/internal set will be handled in the command for it
@@ -40,13 +49,6 @@ internal class MockSetupService
         foreach (var prop in singleMethodProperties)
         {
             SetupSingleMethodProperty(prop);
-        }
-
-        // If it's private it won't be in the proxy, CAUTION: I am doing it here and not in the `GetMethod()` in case we want to change the logic it should be in one place
-        var methods = GetMethods().Where(m => !m.IsPrivate);
-        foreach (var method in methods)
-        {
-            SetupMethod(method);
         }
     }
 
