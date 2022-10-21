@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace AutoMoqExtensions.MockUtils;
 
-internal class MethodSetupServiceWithDifferentResult : MethodSetupServiceBase
+internal class MethodSetupServiceWithDifferentResult : MethodLazySetupServiceBase
 {
     public MethodSetupServiceWithDifferentResult(IAutoMock mock, MethodInfo method, ISpecimenContext context,
         string? customTrackingPath = null) 

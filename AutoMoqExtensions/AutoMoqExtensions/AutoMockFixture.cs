@@ -30,6 +30,7 @@ internal class AbstractAutoMockFixture : AutoMockFixture
 /// </summary>
 public abstract partial class AutoMockFixture : Fixture
 {
+    internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
     private readonly static MethodInfo replaceNodeMethod;
     private readonly static FieldInfo graphField;
     private readonly static MethodInfo updateGraphAndSetupAdapterMethod;
@@ -51,7 +52,7 @@ public abstract partial class AutoMockFixture : Fixture
             typeof(ISpecimenBuilderNode),
         }, null);
     }
-    public AutoMockFixture(bool noConfigureMembers = false, bool generateDelegates = false)
+    public AutoMockFixture(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
     {
         var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this));
         
@@ -88,6 +89,8 @@ public abstract partial class AutoMockFixture : Fixture
         Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
                         .ForEach(b => Behaviors.Remove(b));
         Behaviors.Add(new FreezeRecursionBehavior());
+
+        if (methodSetupType is not null) MethodSetupType = methodSetupType.Value;
     }
 
     public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();

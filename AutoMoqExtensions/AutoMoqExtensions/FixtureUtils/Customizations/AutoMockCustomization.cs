@@ -91,11 +91,14 @@ public class AutoMockCustomization : ICustomization
         // This might be useful when wanting to have control over the setup        
         if (ConfigureMembers)
         {
+            var setupFactory = new MockUtils.MethodSetupServiceFactory(() => mockFixture.MethodSetupType);
+
             mockBuilder = new PostprocessorWithRecursion(
                                     builder: mockBuilder,
                                     command: new CompositeSpecimenCommand(
                                                 new AutoMockStubAllPropertiesCommand(),
-                                                new AutoMockVirtualMethodsCommand(),
+                                                new AutoMockVirtualMethodsCommand(setupFactory),
+                                                // This one has to be after `AutoMockStubAllPropertiesCommand`
                                                 new AutoMockAutoPropertiesHandlerCommand()));
         }
 

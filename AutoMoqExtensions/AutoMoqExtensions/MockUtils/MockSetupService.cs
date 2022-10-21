@@ -13,14 +13,16 @@ internal class MockSetupService
 
     private readonly IAutoMock mock;
     private readonly ISpecimenContext context;
+    private readonly MethodSetupServiceFactory setupServiceFactory;
     private readonly Type mockedType;
     private readonly ITracker? tracker;
     private readonly bool noMockDependencies;
 
-    public MockSetupService(IAutoMock mock, ISpecimenContext context)
+    public MockSetupService(IAutoMock mock, ISpecimenContext context, MethodSetupServiceFactory setupServiceFactory)
     {
         this.mock = mock;
         this.context = context;
+        this.setupServiceFactory = setupServiceFactory;
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
         this.mockedType = mock.GetInnerType();
         this.tracker = mock.Tracker;
@@ -82,7 +84,7 @@ internal class MockSetupService
 
     private void SetupMethod(MethodInfo method)
     {
-        Setup(method, () => new MethodSetupServiceWithDifferentResult(mock, method, context).Setup());          
+        Setup(method, () => setupServiceFactory.GetMethodSetup(mock, method, context).Setup());          
     }
 
     private void SetupSingleMethodProperty(PropertyInfo prop)
@@ -90,7 +92,7 @@ internal class MockSetupService
         var method = prop.GetMethods().First();
 
         var trackingPath = prop.GetTrackingPath();
-        Setup(method, () => new MethodSetupServiceWithSameResult(mock, method, context, trackingPath).Setup(), trackingPath);
+        Setup(method, () => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath).Setup(), trackingPath);
     }
 
     private void SetupAutoProperty(PropertyInfo prop)

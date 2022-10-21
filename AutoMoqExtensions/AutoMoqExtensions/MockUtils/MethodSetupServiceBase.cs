@@ -2,8 +2,8 @@
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using Moq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace AutoMoqExtensions.MockUtils;
@@ -55,25 +55,32 @@ internal abstract class MethodSetupServiceBase
        
         Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
         // We have to use InvocationFunc for generic
-        //  but even for non generic it's better for perfomance not to generate the object until we need it
-        // TODO... we have to handle recursion when not using our recursion approach, RecursionGuard won't work for that...
-        var invocationFunc = new InvocationFunc(HandleInvocationFunc);
-
-        var returnTypeToUse = returnType;
+        //  but even for non generic it's better for perfomance not to generate the object until we need it        
+        
         if (method.ReturnType.ContainsGenericParameters)
         {
             var genericArgs = returnType.GetGenericArguments().Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray();
-            returnTypeToUse = returnType.IsGenericParameter ? MatcherGenerator.GetGenericMatcher(returnType) : returnType.GetGenericTypeDefinition().MakeGenericType(genericArgs);
-        }
+            var returnTypeToUse = returnType.IsGenericParameter ? MatcherGenerator.GetGenericMatcher(returnType) : returnType.GetGenericTypeDefinition().MakeGenericType(genericArgs);
 
-        SetupHelpers.SetupMethodWithInvocationFunc(mockedType, returnTypeToUse, mock, methodInvocationLambda, invocationFunc);        
+            SetupWithInvocationFunc(methodInvocationLambda, returnTypeToUse);
+        }
+        else
+        {
+            HandleNonGenericFunction(methodInvocationLambda, returnType);
+        }
     }
 
-    private Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
-    private object lockObject = new object(); // Not static as it is only local to the object
+    protected abstract void HandleNonGenericFunction(Expression methodInvocationLambda, Type returnType);
 
-    // TODO... add it as an option in the fixture etc.
-    private object? HandleInvocationFuncWithSameResult(IInvocation invocation)
+    protected void SetupWithInvocationFunc(Expression methodInvocationLambda, Type returnTypeToUse)
+    {
+        // TODO... we have to handle recursion when not using our recursion approach, RecursionGuard won't work for that...
+        var invocationFunc = new InvocationFunc(HandleInvocationFunc);
+
+        SetupHelpers.SetupMethodWithInvocationFunc(mockedType, returnTypeToUse, mock, methodInvocationLambda, invocationFunc);
+    }
+
+    protected object? HandleInvocationFuncWithSameResult(IInvocation invocation)
     {
         if (resultDict.ContainsKey(invocation.Method)) return resultDict[invocation.Method];
 
@@ -87,6 +94,9 @@ internal abstract class MethodSetupServiceBase
             return result;
         }
     }
+
+    protected Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
+    protected object lockObject = new object(); // Not static as it is only local to the object
 
     protected abstract object? HandleInvocationFunc(IInvocation invocation);
 

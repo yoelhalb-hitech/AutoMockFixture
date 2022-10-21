@@ -36,10 +36,50 @@ internal class AutoMock_Tests
     }
 
     [Test]
-    public void Test_Method_NotReturningSame()
+    public void Test_Method_ReturningSame_WhenType_MethodSetupTypes_Eager()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.Eager;
+
+        // Act
+        var obj = fixture.CreateAutoMock<InternalTestMethods>();
+
+        var first = obj.InternalTestMethod();
+        var second = obj.InternalTestMethod();
+
+        // Assert
+        first.Should().NotBeNull();
+        second.Should().NotBeNull();
+        first.Should().BeSameAs(second);
+    }
+
+    [Test]
+    public void Test_Method_ReturningSame_WhenType_MethodSetupTypes_LazySame()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.LazySame;
+
+        // Act
+        var obj = fixture.CreateAutoMock<InternalTestMethods>();
+
+        var first = obj.InternalTestMethod();
+        var second = obj.InternalTestMethod();
+
+        // Assert
+        first.Should().NotBeNull();
+        second.Should().NotBeNull();
+        first.Should().BeSameAs(second);
+    }
+
+    [Test]
+    public void Test_Method_NotReturningSame_WhenType_MethodSetupTypes_LazyDifferent()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.LazyDifferent;
+
         // Act
         var obj = fixture.CreateAutoMock<InternalTestMethods>();
 
@@ -50,6 +90,25 @@ internal class AutoMock_Tests
         first.Should().NotBeNull();
         second.Should().NotBeNull();
         first.Should().NotBeSameAs(second);
+    }
+
+    [Test]
+    public void Test_Method_ReturningSame_WhenProperty_EvenWhenType_MethodSetupTypes_LazyDifferent()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.LazyDifferent;
+
+        // Act
+        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>();
+
+        var first = obj.InternalTest;
+        var second = obj.InternalTest;
+
+        // Assert
+        first.Should().NotBeNull();
+        second.Should().NotBeNull();
+        first.Should().BeSameAs(second);
     }
 
     [Test]
