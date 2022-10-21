@@ -10,7 +10,7 @@ internal class Tracking_Tests
     public void Test_Create_AddsToTrackerDict_NonAutoMock()
     {
         var fixture = new AbstractAutoMockFixture();
-        var result = fixture.CreateNonAutoMock<SingletonUserClass>();
+        var result = fixture.CreateNonAutoMock<InternalSimpleTestClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
         fixture.TrackerDict.First().Key.Should().Be(result);
@@ -20,7 +20,7 @@ internal class Tracking_Tests
     public void Test_Create_AddsToTrackerDict_NonAutoMock_WithDependencies()
     {
         var fixture = new AbstractAutoMockFixture();
-        var result = fixture.CreateWithAutoMockDependencies<SingletonUserClass>();
+        var result = fixture.CreateWithAutoMockDependencies<InternalSimpleTestClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
         fixture.TrackerDict.First().Key.Should().Be(result);
@@ -30,7 +30,7 @@ internal class Tracking_Tests
     public void Test_Create_AddsUnderlyingMockToTrackerDict()
     {
         var fixture = new AbstractAutoMockFixture();
-        var result = fixture.CreateAutoMock<SingletonUserClass>();
+        var result = fixture.CreateAutoMock<InternalSimpleTestClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
         fixture.TrackerDict.First().Key.Should().Be(Mock.Get(result));

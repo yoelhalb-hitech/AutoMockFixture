@@ -81,20 +81,3 @@ internal class WithCtorNoArgsTestClass
         this.TestCtor = 25;
     }
 }
-
-[Singleton]
-public class SingletonClass { }
-
-public class SingletonUserClass
-{
-    public SingletonClass Class1 { get; } // Non virtual to only work with the ctor
-    public SingletonClass Class2 { get; } // Non virtual to only work with the ctor
-    public SingletonUserClass(SingletonClass class1, SingletonClass class2)
-    {
-        Class1 = class1;
-        Class2 = class2;
-    }
-    public virtual SingletonClass? SingletonProp { get; set; }
-    public virtual SingletonClass? SingletonPropGet { get; }
-    public SingletonClass? SingletonField;
-}

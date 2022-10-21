@@ -112,7 +112,7 @@ public abstract partial class AutoMockFixture : Fixture
     // Override to use our own
     public virtual T? Freeze<T>()
     {
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeMatchSpecification(typeof(T)))));
+        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(typeof(T)))));
         
         return Create<T>();
     }
