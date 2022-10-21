@@ -61,10 +61,10 @@ public abstract partial class AutoMockFixture : Fixture
                                         new CompositeSpecimenBuilder(
                                             engine,
                                             new MultipleRelay { Count = this.RepeatCount }),
-                                        new CompositeSpecimenCommand(
-                                            new CacheCommand(this.Cache),
-                                            new CustomAutoPropertiesCommand(this)),
-                                        new AnyTypeSpecification()));
+                                        // AutoFixture expects `AutoPropertiesCommand` to be a single command, so we have to stuff anoything extra in an extra
+                                        new CustomAutoPropertiesCommand(this),
+                                        new AnyTypeSpecification(),
+                                        new CacheCommand(this.Cache)));
         
         var currentGraph = graphField.GetValue(this);
         Func<ISpecimenBuilderNode, bool> matcher = node => node is AutoPropertiesTarget;

@@ -6,41 +6,42 @@ using System.Reflection;
 
 namespace AutoMoqExtensions.FixtureUtils.Commands;
 
-internal class CustomAutoPropertiesCommand : ISpecimenCommand
+// AutoFixture has special handling for `AutoPropertiesCommand`, but still calls it as `ISpecimenCommand`
+internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCommand
 {
-    public Type? ExplicitSpecimenType { get; }
-    public IRequestSpecification? Specification { get; }
+    private static readonly DelegateSpecification delegateSpecification = new DelegateSpecification();
+
     public AutoMockFixture Fixture { get; }
     public bool IncludePrivateSetters { get; set; }
     public bool IncludePrivateOrMissingGetter { get; set; }
 
     public CustomAutoPropertiesCommand(AutoMockFixture fixture) : this(new TrueRequestSpecification(), fixture)
     {
-        ExplicitSpecimenType = null;
     }
 
-    public CustomAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture)
+    public CustomAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture) : base(specification)
     {
-        Specification = specification ?? throw new ArgumentNullException(nameof(specification));
         Fixture = fixture;
-        ExplicitSpecimenType = null;
     }
 
 
+    // For when the system is coming via ISpecimenCommand
+    void ISpecimenCommand.Execute(object specimen, ISpecimenContext context) => Execute(specimen, context);
 
-    public virtual void Execute(object specimen, ISpecimenContext context)
+    // For when the system is coming via the current class
+    public virtual new void Execute(object specimen, ISpecimenContext context)
     {
         Logger.LogInfo("In auto properties");
         if (specimen == null) throw new ArgumentNullException(nameof(specimen));
         if (context == null) throw new ArgumentNullException(nameof(context));
 
-        if (specimen is IAutoMock) return;
+        if (specimen is IAutoMock || delegateSpecification.IsSatisfiedBy(specimen)) return;
 
         // TODO... if we want to have `Create on demend` we have to cache here the original tracker
-        
+
         var mock = AutoMockHelpers.GetFromObj(specimen);
         var existingTracker = mock?.Tracker;
-        if(existingTracker is null) Fixture.ProcessingTrackerDict.TryGetValue(specimen, out existingTracker);
+        if (existingTracker is null) Fixture.ProcessingTrackerDict.TryGetValue(specimen, out existingTracker);
 
         var tracker = existingTracker ?? new NonAutoMockRequest(specimen.GetType(), Fixture);
 
@@ -78,7 +79,7 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
         Logger.LogInfo("In base prop");
 
         var propertyValue = context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));
-   
+
         if (propertyValue is not NoSpecimen && propertyValue is not OmitSpecimen)
             pi.SetValue(specimen, propertyValue, null);
     }
@@ -91,7 +92,7 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
             fi.SetValue(specimen, fieldValue);
     }
 
-    protected virtual Type GetSpecimenType(object specimen)
+    protected override Type GetSpecimenType(object specimen)
     {
         if (specimen == null) throw new ArgumentNullException(nameof(specimen));
 
@@ -99,7 +100,7 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
 
         return specimen.GetType();
     }
-   
+
     // We need to handle internal properties as the outside code might depend on it
     // However no need for private protected properties as it is only used if callbase and if so the base should set it...
     protected IEnumerable<FieldInfo> GetFields(object specimen)
@@ -121,6 +122,4 @@ internal class CustomAutoPropertiesCommand : ISpecimenCommand
                && Specification?.IsSatisfiedBy(pi) != false
                select pi;
     }
-
-
 }
