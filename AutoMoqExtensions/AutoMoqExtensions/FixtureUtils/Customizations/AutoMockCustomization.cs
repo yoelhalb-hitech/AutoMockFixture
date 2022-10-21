@@ -99,7 +99,9 @@ public class AutoMockCustomization : ICustomization
                                                 new AutoMockStubAllPropertiesCommand(),
                                                 new AutoMockVirtualMethodsCommand(setupFactory),
                                                 // This one has to be after `AutoMockStubAllPropertiesCommand`
-                                                new AutoMockAutoPropertiesHandlerCommand()));
+                                                new AutoMockAutoPropertiesHandlerCommand(),
+                                                // This one has to be after `AutoMockAutoPropertiesHandlerCommand`
+                                                new AutoMockClearInvocationsCommand()));
         }
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(mockBuilder,
