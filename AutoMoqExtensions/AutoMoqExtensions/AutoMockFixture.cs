@@ -24,6 +24,17 @@ internal class AbstractAutoMockFixture : AutoMockFixture
     public AbstractAutoMockFixture(bool noConfigureMembers = false) : base(noConfigureMembers) { }
 
     public override object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+    public override T Freeze<T>()
+    {
+        try
+        {
+            base.Freeze<T>();
+        }
+        catch { }
+#pragma warning disable CS8603 // Possible null reference return.
+        return default;
+#pragma warning restore CS8603 // Possible null reference return.
+    }
 }
 /// <summary>
 /// Caution the methods are not thread safe
@@ -99,18 +110,18 @@ public abstract partial class AutoMockFixture : Fixture
 
     #region Create
     // Override to use our own
-    public T Freeze<T>()
+    public virtual T? Freeze<T>()
     {
         Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeMatchSpecification(typeof(T)))));
         
         return Create<T>();
     }
 
-    public T Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => (T)Create(typeof(T), autoMockTypeControl);
+    public T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => (T?)Create(typeof(T), autoMockTypeControl);
 
-    public abstract object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
 
-    public object CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
 
@@ -121,19 +132,19 @@ public abstract partial class AutoMockFixture : Fixture
 
         return result;
     }
-    public T CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class 
-                => (T)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
+    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class 
+                => (T?)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
 
-    public object CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null)
+    public object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null)
     {
         var result = Execute(new NonAutoMockRequest(t, this), autoMockTypeControl);
 
         return result;
     }
-    public T CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null) 
-                => (T)CreateNonAutoMock(typeof(T), autoMockTypeControl);
+    public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null) 
+                => (T?)CreateNonAutoMock(typeof(T), autoMockTypeControl);
 
-    public object CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         if (t.IsValueType) throw new InvalidOperationException("Type must be a reference type");
 
@@ -149,8 +160,8 @@ public abstract partial class AutoMockFixture : Fixture
 
         return type != t ? AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
     }
-    public T CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-                => (T)CreateAutoMock(typeof(T), callBase, autoMockTypeControl);
+    public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+                => (T?)CreateAutoMock(typeof(T), callBase, autoMockTypeControl);
 
     #endregion
 
@@ -163,7 +174,7 @@ public abstract partial class AutoMockFixture : Fixture
     internal Dictionary<object, ITracker> TrackerDict = new();
     internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
     
-    private object Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
+    private object? Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
     {
         try
         {

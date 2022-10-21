@@ -26,7 +26,7 @@ public static class AutoMockHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static IAutoMock? GetFromObj(object obj) => obj is IAutoMock m ? m : (obj as IMocked ?? (obj as Delegate)?.Target as IMocked)?.Mock as IAutoMock;
+    public static IAutoMock? GetFromObj(object? obj) => obj is IAutoMock m ? m : (obj as IMocked ?? (obj as Delegate)?.Target as IMocked)?.Mock as IAutoMock;
     public static Type GetAutoMockType(Type inner) => typeof(AutoMock<>).MakeGenericType(inner);
 
     internal static bool IsAutoMockAllowed(Type t)
