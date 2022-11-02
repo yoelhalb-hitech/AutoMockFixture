@@ -45,6 +45,7 @@ public class AutoMockCustomization : ICustomization
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new PostprocessorWithRecursion(
+                                            mockFixture,
                                             new AutoMockDependenciesBuilder(
                                                 new DependencyInjectionMethodInvoker(
                                                     new CustomModestConstructorQuery())),
@@ -53,6 +54,7 @@ public class AutoMockCustomization : ICustomization
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new PostprocessorWithRecursion(
+                                            mockFixture,
                                             new NonAutoMockBuilder(
                                                 new MethodInvokerWithRecursion(
                                                     new CustomModestConstructorQuery())),
@@ -94,6 +96,7 @@ public class AutoMockCustomization : ICustomization
             var setupFactory = new MockUtils.MethodSetupServiceFactory(() => mockFixture.MethodSetupType);
 
             mockBuilder = new PostprocessorWithRecursion(
+                                    fixture: mockFixture,
                                     builder: mockBuilder,
                                     command: new CompositeSpecimenCommand(
                                                 new AutoMockStubAllPropertiesCommand(),

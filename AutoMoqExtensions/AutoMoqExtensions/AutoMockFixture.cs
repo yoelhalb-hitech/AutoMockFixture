@@ -70,6 +70,7 @@ public abstract partial class AutoMockFixture : Fixture
         
         var newAutoProperties = new AutoPropertiesTarget(
                                     new PostprocessorWithRecursion(
+                                        this,
                                         new CompositeSpecimenBuilder(
                                             engine,
                                             new MultipleRelay { Count = this.RepeatCount }),
@@ -193,7 +194,6 @@ public abstract partial class AutoMockFixture : Fixture
             // WeakReference won't block Garbage Collection, and also avoids the issue of duplicates
             var key = AutoMockHelpers.GetFromObj(result) ?? result;
             TrackerDict[key] = request;
-            ProcessingTrackerDict.Clear(); // No need to keep it around, to make it thread safe we should keep it around till all requests are done
 
             PathsDict[key] = Task.Run(() => request.GetChildrensPaths()
                         .ToDictionary(c => c.Key, c => c.Value)

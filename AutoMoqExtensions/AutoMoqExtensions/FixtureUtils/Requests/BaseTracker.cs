@@ -87,7 +87,6 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     public virtual void SetResult(object? result)
     {
         this.result = result;
-        if (result is not null) StartTracker.Fixture.ProcessingTrackerDict[result] = this;
         SetCompleted();
     }
 
