@@ -4,7 +4,7 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
 {
     // AutoFixture has special handling for `Postprocessor` but still uses it as `ISpecimenBuilder`
     // AutoFixture expects `AutoPropertiesCommand` to be a single command, so we have to stuff anoything extra in an extra
-    internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder
+    internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder, ISpecimenBuilderNode
     {
         public PostprocessorWithRecursion(ISpecimenBuilder builder, ISpecimenCommand command,
                 IRequestSpecification? specification = null, ISpecimenCommand? extraCommand = null)
@@ -16,6 +16,20 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
         }
 
         public ISpecimenCommand? ExtraCommand { get; }
+
+        public new object? Create(object request, ISpecimenContext context)
+        {
+            return ((ISpecimenBuilder)this).Create(request, context);
+        }
+
+        public override ISpecimenBuilderNode Compose(IEnumerable<ISpecimenBuilder> builders)
+        {
+            var result = base.Compose(builders);
+
+            if (result is not Postprocessor pp) return result;
+
+            return new PostprocessorWithRecursion(pp.Builder, pp.Command, pp.Specification);
+        }
 
         object? ISpecimenBuilder.Create(object request, ISpecimenContext context)
         {
