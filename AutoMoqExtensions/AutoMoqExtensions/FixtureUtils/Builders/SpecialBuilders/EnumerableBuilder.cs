@@ -1,4 +1,5 @@
 ﻿using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
 using System.Reflection;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
@@ -14,6 +15,9 @@ internal class EnumerableBuilder : NonConformingBuilder
     };
 
     public override int Repeat => 3;
+
+    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
+        => new ListItemRequest(type, originalRequest, index);
 
     protected override object GetRepeatedInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
     {
@@ -51,7 +55,10 @@ internal class EnumerableBuilder : NonConformingBuilder
 
         if (isNotEnumerable && isMatch(requestType)) return typedData;
 
-        if(requestType.IsArray) return typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))
+        if (requestType.IsGenericType && requestType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            return typedData;
+
+        if (requestType.IsArray) return typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))
             .MakeGenericMethod(genericType)
             .Invoke(null, new object[] { typedData });
 

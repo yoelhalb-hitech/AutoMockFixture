@@ -1,4 +1,5 @@
 ﻿using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,12 +16,15 @@ namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders
 
         public override int Repeat => 1;
 
-        protected override object GetInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
+        protected override object GetInnerSpecimens(IRequestWithType originalRequest, int index, ISpecimenContext context)
         {
             if (originalRequest.Request.IsGenericType) return new NoSpecimen();
 
-            return new object[] { new object[] { GetInnerSpecimen(typeof(Action), originalRequest, context) } };
+            return BuildInnerSpecimens(originalRequest, new[] { typeof(Action) }, index, context);
         }
+
+        protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
+            => new InnerRequest(type, originalRequest);
 
         public override object CreateResult(Type requestType, object[][] innerResults)
         {

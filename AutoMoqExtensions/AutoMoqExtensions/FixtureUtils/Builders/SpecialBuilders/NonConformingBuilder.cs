@@ -1,6 +1,7 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -24,7 +25,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         // generic type defintions are not conisdered assignable
         if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request)
                     || (t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
-                
+ 
         var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
 
         if (innerResult is NoSpecimen) return innerResult;
@@ -40,7 +41,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         var resultArray = new object[Repeat][];
         for (int i = 0; i < Repeat; i++)
         {
-            var inner = GetInnerSpecimens(originalRequest, context);
+            var inner = GetInnerSpecimens(originalRequest, i, context);
             if (inner is NoSpecimen) return inner;
 
             resultArray[i] = (object[])inner;
@@ -49,42 +50,38 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         return resultArray;
     }
 
-    protected virtual object GetInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
+    protected virtual object GetInnerSpecimens(IRequestWithType originalRequest, int index, ISpecimenContext context)
     {
-        var args = originalRequest.Request.GetInnerTypes().ToList();
+        var innerTypes = originalRequest.Request.GetInnerTypes();
+
+        return BuildInnerSpecimens(originalRequest, innerTypes, index, context);
+    }
+
+    protected virtual object BuildInnerSpecimens(IRequestWithType originalRequest, Type[] innerTypes,
+                        int index, ISpecimenContext context)
+    {
         var result = new List<object>();
 
-        foreach (var arg in args)
+        var typeIndex = 0; // To keep track of tuple index
+        foreach (var type in innerTypes)
         {
-            var specimen = GetInnerSpecimen(arg, originalRequest, context);
+            var newRequest = GetInnerRequest(type, originalRequest, index, typeIndex);
 
-            if (specimen is NoSpecimen) return specimen;
+            var specimen = context.Resolve(newRequest);
+
+            if (specimen is NoSpecimen || specimen is OmitSpecimen)
+            {
+                originalRequest.SetResult(specimen);
+                return new NoSpecimen(); // Let the system handle it
+            }
 
             result.Add(specimen);
+
+            typeIndex++;
         }
 
         return result.ToArray();
     }
 
-    protected virtual object GetInnerSpecimen(Type arg, IRequestWithType originalRequest, ISpecimenContext context)
-    {
-        object newRequest = originalRequest switch
-        {
-            { } when AutoMockHelpers.IsAutoMock(arg) => new AutoMockDirectRequest(arg, originalRequest),
-            AutoMockDependenciesRequest dependenciesRequest => new AutoMockDependenciesRequest(arg, dependenciesRequest),
-            AutoMockRequest autoMockRequest => new AutoMockRequest(arg, autoMockRequest),
-            NonAutoMockRequest nonAutoMockRequest => new NonAutoMockRequest(arg, nonAutoMockRequest),
-            _ => throw new NotSupportedException(),
-        };
-
-        var specimen = context.Resolve(newRequest);
-
-        if (specimen is NoSpecimen || specimen is OmitSpecimen)
-        {
-            originalRequest.SetResult(specimen);
-            return new NoSpecimen(); // Let the system handle it
-        }
-
-        return specimen;
-    }
+    protected abstract InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex);
 }    

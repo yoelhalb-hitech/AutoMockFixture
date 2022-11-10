@@ -21,7 +21,7 @@ internal class TrackerWithFixture_Tests
     public void Test_IsRequestEquals_ReturnsFalse_WhenNot_TrackerWithFixture()
     {
         var request = new TrackerWithFixtureNonAbstract(new AbstractAutoMockFixture());
-        var other = new TupleItemRequest(typeof(string), 0, false, request);
+        var other = new InnerRequest(typeof(string), new NonAutoMockRequest(typeof(string), request));
 
         request.IsRequestEquals(other).Should().BeFalse();
     }

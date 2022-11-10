@@ -1,4 +1,7 @@
-﻿namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
+﻿using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+
+namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
 internal class TaskBuilder : NonConformingBuilder
 {
@@ -10,6 +13,9 @@ internal class TaskBuilder : NonConformingBuilder
         typeof(ValueTask<>)
     };
     public override int Repeat => 1;
+
+    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
+        => new InnerRequest(type, originalRequest);
 
     public override object CreateResult(Type requestType, object[][] innerResults)
     {

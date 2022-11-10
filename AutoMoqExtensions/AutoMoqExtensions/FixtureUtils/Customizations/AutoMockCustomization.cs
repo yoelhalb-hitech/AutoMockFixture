@@ -11,6 +11,7 @@ using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
 
 namespace AutoMoqExtensions.FixtureUtils.Customizations;
@@ -42,6 +43,10 @@ public class AutoMockCustomization : ICustomization
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new DelegateBuilder(),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
+
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                        new InnerBuilder(),
+                                        new TypeMatchSpecification(typeof(InnerRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new PostprocessorWithRecursion(

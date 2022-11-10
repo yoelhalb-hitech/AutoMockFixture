@@ -2,7 +2,7 @@
 
 internal class ListItemRequest : OneOfMultipleRequest
 {
-    public ListItemRequest(Type request, int index, bool? autoMock, ITracker? tracker) : base(request, index, autoMock, tracker)
+    public ListItemRequest(Type request, IRequestWithType outerRequest, int index) : base(request, outerRequest, index)
     {
     }
 
