@@ -44,7 +44,7 @@ public static class AutoMockHelpers
                     || (t.Assembly == typeof(Tuple).Assembly) && t.FullName.StartsWith(typeof(Tuple).FullName)
                     || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName.StartsWith(typeof(ValueTuple).FullName)
                     
-                    || t == typeof(IntPtr) || t == typeof(UIntPtr)        
+                    || t == typeof(IntPtr) || t == typeof(UIntPtr)      
                     || typeof(Mock).IsAssignableFrom(t)
                     || typeof(Type).IsAssignableFrom(t)
                     || t.Assembly == typeof(Mock).Assembly

@@ -20,22 +20,24 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
         if (request is not AutoMockDependenciesRequest dependencyRequest)
             return new NoSpecimen();
 
-        if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)           
-            return TryAutoMock(dependencyRequest, context);        
-       
+        if (dependencyRequest.Request.IsAbstract || dependencyRequest.Request.IsInterface)
+        {
+            // Can't leave it for the relay as we want the dependencies mocked correctly
+            var result = TryAutoMock(dependencyRequest, context);
+
+            dependencyRequest.SetResult(result);
+
+            return result;
+        }
+
         if (AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
             || (typeof(Mock).IsAssignableFrom(dependencyRequest.Request) && dependencyRequest.Request.IsGenericType))
         {
             var inner = AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
                                 ? AutoMockHelpers.GetMockedType(dependencyRequest.Request)!
                                 : dependencyRequest.Request.GenericTypeArguments.First();
-
-            var automockRequest = new AutoMockRequest(inner, dependencyRequest) 
-            {
-                MockShouldCallbase = dependencyRequest.MockShouldCallbase
-            };
-
-            var result = context.Resolve(automockRequest);
+            
+            var result = TryAutoMock(dependencyRequest, context, inner);
 
             object? autoMock = AutoMockHelpers.GetFromObj(result);
             if (autoMock is null) autoMock = new NoSpecimen();
@@ -80,22 +82,27 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
         }
     }
 
-    private object? TryAutoMock(AutoMockDependenciesRequest dependencyRequest, ISpecimenContext context)
+    private object? TryAutoMock(AutoMockDependenciesRequest dependencyRequest, ISpecimenContext context, Type? type = null)
     {
-        //If it's not the start request then it arrives here only if it isn't a valid AutoMock
-        if (!Object.ReferenceEquals(dependencyRequest, dependencyRequest.StartTracker)  
-                        || !AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request))
-            return new NoSpecimen();
+        var requestedType = type ?? dependencyRequest.Request;
 
-        // Can't leave it for the relay as we want the dependencies mocked correctly
+        // We don't want to end up in recursion...
+        if (dependencyRequest.GetParentsOnCurrentLevel().Any(t => t.GetType() == typeof(AutoMockRequest))
+                        || !AutoMockHelpers.IsAutoMockAllowed(requestedType))
+            return new NoSpecimen();
+        
         try
-        {
-            // We want MockShouldCallbase so to get dependencies
-            // It should automatically revert to the MockShouldCallbase on the StartTracker for the next objects
-            // TODO... add tests                
-            var autoMockRequest = new AutoMockRequest(dependencyRequest.Request, dependencyRequest) { MockShouldCallbase = true };
+        {            
+            var autoMockRequest = new AutoMockRequest(requestedType, dependencyRequest)
+            {
+                // We want MockShouldCallbase so to get ctor dependencies and also because AutoMockDependencies is a SUT
+                // It should automatically revert to the MockShouldCallbase on the StartTracker for the dependecies
+
+                MockShouldCallbase = true
+            };
+
             var autoMockResult = context.Resolve(autoMockRequest);
-            dependencyRequest.SetResult(autoMockResult);
+            
             return autoMockResult;
         }
         catch

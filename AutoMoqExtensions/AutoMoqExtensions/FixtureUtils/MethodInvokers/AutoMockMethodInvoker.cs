@@ -61,7 +61,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         try
         {
-            mock.EnsureMocked();
+            mock.EnsureMocked(); // Automatically calls the default ctor
 
             // We have to do it before calling a constuctur, otherwise if the ctor is setting a virtual property with private setter it will not work
             ((ISetCallBase)mock).ForceSetCallbase(true);

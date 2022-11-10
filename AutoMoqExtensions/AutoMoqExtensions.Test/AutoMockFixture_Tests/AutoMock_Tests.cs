@@ -1,5 +1,6 @@
 ﻿
 using AutoMoqExtensions.AutoMockUtils;
+using System.Reflection;
 
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
@@ -16,6 +17,30 @@ internal class AutoMock_Tests
         obj.Should().NotBeNull();
         obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
         obj.GetMocked().InternalTest.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_AutoMock_AutoMockInterface()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateAutoMock<AutoMock<ITestInterface>>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeAssignableTo<AutoMock<ITestInterface>>();        
+    }
+
+    [Test]
+    public void Test_AutoMock_Interface()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateAutoMock<ITestInterface>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeAssignableTo<ITestInterface>();
     }
 
     [Test]

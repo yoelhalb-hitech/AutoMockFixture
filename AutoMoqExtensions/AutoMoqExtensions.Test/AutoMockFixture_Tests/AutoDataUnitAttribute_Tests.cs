@@ -47,8 +47,8 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
             inner.Should().NotBeNull();
 
-            inner.TestClassPropGet.Should().NotBeNull();
-            AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
+            inner.TestCtorArgProp.Should().NotBeNull();
+            AutoMockHelpers.GetAutoMock(inner.TestCtorArgProp).Should().NotBeNull();
         }
     }
 }

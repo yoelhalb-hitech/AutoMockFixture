@@ -31,9 +31,12 @@
 - Can specify specific types that shold always be mocked within the object graph (and without having the object frozen)
 - For `AutoMock` we automatically setup all properties and fields that are mockable to be `AutoMock` as well as having all methods and out params return `AutoMock`,_Once an `AutoMock` always an `AutoMock`_
 - For `AutoMock` we setup the methods to return unique results per invocation, unlike `AutoFixture.AutoMoq` which returns the same object
-- Freeze if the type has the `Singleton` or `Scoped` attribute
+- Freeze if the type has the `Singleton` or `Scoped` attribute, note that any frozen object will not be garabage collected while the fixture is in scope
 - Provide the option of injecting a particular constructor argument by type or by name, and also to remove the customization, (this way multiple calls to `Create` can have different constructor arguments)
-- Provide the ability to access any objects and mocks down the object graph
+- Provide the ability to access any objects and mocks down the object graph by type (for mocks) or by path
+    *CAUTION*: Since return values of method calls and some property access might be created lazily then if the path/mock doesn't exist it won't show up
+    *WORKAROUND*: For mocks we can freeze the type and then create it directly from the fixture and use it, also `GetAutoMocks` and `GetAutoMock` have an overload that does it automatically, as well as `For` and `Object`
+        *CAUTION*: `Freeze` won't freeze existing objects, so if writing this workaround directly it should NOT be used if it is already in the mock
 - Verify all mocks in the fixture at once
 - Sets up `GetHashCode` and `.Equals` to work correctly even when `Callbase` is false
 - Defaults to `Callbase = false` however for Relay obejcts it sets `Callbase = true`
@@ -48,8 +51,17 @@
 - Add support for constructors marked with `ForMock` (also it should better remove all readonly warning for it, and disallow newing it up with this constructor, [we might even control it with reflection by restricting getting the type of it... by using our special Stub type])
 - Take a list of paths to verify
 - Add the ability to request that the `AutoMock` methods should be setup to return the same object for each invocation of the method
-
+- Add the option of eager create the return values of emthods and properties (and update the docs for the `GetPaths` and `GetAutoMocks` methods and the `readme`)
+- Add the option of returning different objects for different method invocations
 ## Comparison Demo
+
+## Common Issues
+#### Main object not found
+- Ensure that the obejct is not garbage collected
+- Ensure that the .Equals is not overriden in a way that can cuase it to happen
+
+#### Object not garbage collected
+- Ensure that the object is not Frozen (either explictly or implectly by the `Singleton` or `Scoped` attribute)
 
 ## Architechture
 
@@ -109,7 +121,7 @@ The main components in Autofixture are as follows:
 - *AutoMockDirectRequest*: Is for a request of type `AutoMock`
 - *AutoMockRequest*: Is for a request of Type `T` that we want to create an `AutoMock<T>` for it
 - *AutoMockDependenciesRequest*: Is for a request that we want to create an actual (non `AutoMock`) object (typicaly the SUT object), but have all depedencies and property/field valeus mocked, suitable for unit testing
-- *NonAutoMockRequest*: Is for a request to create an object and not mock any dpendecies unless specifically specified, suitable for integration tests 
+- *NonAutoMockRequest*: Is for a request to create an object and not mock any dpendecies unless specifically specified, suitable for integration tests
 
 ##### Recursion
 - *RecursionContext*: Is an implementation of `ISpecimenContext` that keeps track of objects in process of bulding so to be abel to handle recursion

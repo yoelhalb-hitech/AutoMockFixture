@@ -40,6 +40,7 @@ internal interface ITestInterface
 {
     string? TestProp { get; }
     string? TestMethod();
+    InternalTestMethods? InternalTestMethodsObj { get; set; }
 }
 internal abstract class InternalAbstractMethodTestClass
 {
@@ -51,6 +52,7 @@ internal abstract class InternalAbstractMethodTestClass
     // TODO... It has an issue setting up out when the method has implementation
     internal abstract string TestOutParam(out string test);// => test = "43";
                                                            //public string TestOutParam1(out string test1) => test1 = "43";
+    internal virtual InternalTestMethods? InternalTestMethodsObj { get; set; }
 }
 
 internal class WithCtorArgsTestClass

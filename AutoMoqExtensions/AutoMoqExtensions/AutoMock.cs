@@ -13,6 +13,10 @@ internal interface ISetCallBase
 {
     void ForceSetCallbase(bool value);
 }
+public static class AutoMock
+{
+    public static T Of<T>() where T : class => new AutoMock<T>();
+}
 public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : class
 {
     public override T Object => GetMocked();
@@ -40,6 +44,7 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 
         ResetGenerator();
     }
+
     public override bool CallBase { get => base.CallBase; set
           {
             if (mocked is not null) throw new Exception("Cannot set callbase after object has been created");

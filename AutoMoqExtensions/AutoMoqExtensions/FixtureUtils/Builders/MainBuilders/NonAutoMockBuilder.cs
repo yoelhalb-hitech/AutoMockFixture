@@ -36,6 +36,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
                 MockShouldCallbase = !isMock || nonMockRequest.MockShouldCallbase == true
             };
 
+            // TODO... we have to not mock the depedencies
             var result = context.Resolve(automockRequest);
 
             object? autoMock = AutoMockHelpers.GetFromObj(result);

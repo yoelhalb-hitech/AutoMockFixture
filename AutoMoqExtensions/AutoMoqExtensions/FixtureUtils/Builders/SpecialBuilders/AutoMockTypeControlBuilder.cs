@@ -4,6 +4,9 @@ using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
 
+/// <summary>
+/// Builder to build types that have been specified as always automock or never automock
+/// </summary>
 internal class AutoMockTypeControlBuilder : ISpecimenBuilder
 {
     public object? Create(object request, ISpecimenContext context)
