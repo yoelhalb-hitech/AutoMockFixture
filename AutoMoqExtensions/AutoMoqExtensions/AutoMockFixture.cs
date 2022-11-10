@@ -127,9 +127,6 @@ public abstract partial class AutoMockFixture : Fixture
     {
         if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
 
-        if (AutoMockHelpers.IsAutoMock(t) || typeof(Mock).IsAssignableFrom(t)) 
-            return CreateAutoMock(t, callBase, autoMockTypeControl);
-
         var result = Execute(new AutoMockDependenciesRequest(t, this) { MockShouldCallbase = callBase }, autoMockTypeControl);
 
         return result;
@@ -152,7 +149,7 @@ public abstract partial class AutoMockFixture : Fixture
 
         var type = AutoMockHelpers.IsAutoMock(t) 
                     ? AutoMockHelpers.GetMockedType(t)!
-                    : !typeof(Mock).IsAssignableFrom(t) 
+                    : !typeof(Mock).IsAssignableFrom(t)
                         ? t 
                         : t.IsGenericType ? t.GenericTypeArguments.First(): typeof(object);
         if(!AutoMockHelpers.IsAutoMockAllowed(type))
@@ -171,13 +168,15 @@ public abstract partial class AutoMockFixture : Fixture
 
     internal List<ConstructorArgumentValue> ConstructorArgumentValues = new();
 
-    internal ITracker? GetTracker(object obj) => TrackerDict[(AutoMockHelpers.GetFromObj(obj) ?? obj)];
+    internal ITracker? GetTracker(object obj) => TrackerDict
+                    .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
+                    .Value;
 
-    internal Dictionary<object, Task<Dictionary<string, List<object?>>>> PathsDict = new();
-    internal Dictionary<object, Task<List<IAutoMock>>> MocksDict = new();
-    internal Dictionary<object, Task<Dictionary<Type, List<IAutoMock>>>> MocksByTypeDict = new();
+    internal Dictionary<WeakReference, Task<Dictionary<string, List<object?>>>> PathsDict = new();
+    internal Dictionary<WeakReference, Task<List<IAutoMock>>> MocksDict = new();
+    internal Dictionary<WeakReference, Task<Dictionary<Type, List<IAutoMock>>>> MocksByTypeDict = new();
 
-    internal Dictionary<object, ITracker> TrackerDict = new();
+    internal Dictionary<WeakReference, ITracker> TrackerDict = new();
     internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
     
     private object? Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
@@ -192,7 +191,7 @@ public abstract partial class AutoMockFixture : Fixture
             // We will rather deal with the underlying mock for consistancy
             // but also to avoid having to call .Equals on the object which it can then later report as called in the verify process
             // WeakReference won't block Garbage Collection, and also avoids the issue of duplicates
-            var key = AutoMockHelpers.GetFromObj(result) ?? result;
+            var key = (AutoMockHelpers.GetFromObj(result) ?? result).ToWeakReference();
             TrackerDict[key] = request;
 
             PathsDict[key] = Task.Run(() => request.GetChildrensPaths()
@@ -202,7 +201,7 @@ public abstract partial class AutoMockFixture : Fixture
             PathsDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) =>
             {
                 d.Paths.ToList().ForEach(i =>
-                {                    
+                {
                     if (PathsDict[key].Result?.ContainsKey(i.Key) == true) PathsDict[key]!.Result[i.Key].AddRange(i.Value);
                     else PathsDict[key]!.Result[i.Key] = i.Value;
                 });
@@ -260,12 +259,12 @@ public abstract partial class AutoMockFixture : Fixture
     {
         obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
 
-        if (!PathsDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!PathsDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
         if (string.IsNullOrWhiteSpace(path)) throw new Exception(nameof(path) + " doesn't have a value");
 
         path = path.Trim();
        
-        var paths = PathsDict[obj].Result;
+        var paths = PathsDict.First(d => d.Key.Target == obj).Value.Result;
         if (paths is null || !paths.ContainsKey(path)) throw new Exception($"`{path}` not found, please ensure that it is the correct path on the correct object");
         
         return paths[path];
@@ -274,9 +273,9 @@ public abstract partial class AutoMockFixture : Fixture
     {
         currentObject = AutoMockHelpers.GetFromObj(currentObject) ?? currentObject;
 
-        if (!PathsDict.ContainsKey(mainObj)) throw new Exception("Main object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!PathsDict.Any(d => d.Key.Target == mainObj)) throw new Exception("Main object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
         
-        var path = PathsDict[mainObj].Result
+        var path = PathsDict.First(d => d.Key.Target == mainObj).Value.Result
                             .FirstOrDefault(kvp => kvp.Value.Contains(currentObject)).Key;
 
         if (path is null) throw new Exception("Object not found or is Garbage Collected, or .Equals() has been overriden incorrectly");
@@ -309,9 +308,9 @@ public abstract partial class AutoMockFixture : Fixture
     {
         obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
 
-        if (!MocksByTypeDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!MocksByTypeDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
 
-        var typeDict = MocksByTypeDict[obj].Result;
+        var typeDict = MocksByTypeDict.First(d => d.Key.Target == obj).Value.Result;
 
         return typeDict.Where(td => td.Key.IsAssignableFrom(type))
                             .SelectMany(td => td.Value);
@@ -329,11 +328,11 @@ public abstract partial class AutoMockFixture : Fixture
     public IEnumerable<AutoMock<T>> GetAutoMocks<T>(bool freezeAndCreate = false) where T : class
     {
         var existing = TrackerDict.Keys.SelectMany(k => GetAutoMocks(k, typeof(T)).OfType<AutoMock<T>>());
-        if(!existing.Any() && freezeAndCreate)
+        if (!existing.Any() && freezeAndCreate)
         {
             Freeze<T>();
             var newMock = Create<AutoMock<T>>();
-            if(newMock is not null) return new AutoMock<T>[] { newMock };
+            if (newMock is not null) return new AutoMock<T>[] { newMock };
         }
 
         return existing;
@@ -360,9 +359,9 @@ public abstract partial class AutoMockFixture : Fixture
     {
         obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
 
-        if (!PathsDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!PathsDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
 
-        return PathsDict[obj].Result.Keys.ToList();
+        return PathsDict.First(d => d.Key.Target == obj).Value.Result.Keys.ToList();
     }
 
     #endregion
@@ -372,10 +371,10 @@ public abstract partial class AutoMockFixture : Fixture
     // NOTE: We don't do VerifyAll() as it will try to verify all setups that the AutoMockFixture has done
     public void Verify(object obj)
     {
-        if (!MocksDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
-     
-        MocksDict[obj]?.Result.ForEach(m => 
-            (m ?? throw new Exception("AutoMock not found or is garbage collected")).Verify());
+        if (!MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
+
+        if (AutoMockHelpers.GetFromObj(obj) is IAutoMock mock) mock.Verify();
+        MocksDict.First(d => d.Key.Target == obj).Value?.Result.ForEach(m => m.Verify());
     }
 
     public void Verify()
@@ -385,10 +384,10 @@ public abstract partial class AutoMockFixture : Fixture
     
     public void VerifyNoOtherCalls(object obj)
     {
-        if (!MocksDict.ContainsKey(obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
+        if (!MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
 
-        MocksDict[obj]?.Result?.ForEach(m => 
-            (m ?? throw new Exception("AutoMock not found or is garbage collected")).VerifyNoOtherCalls());
+        if (AutoMockHelpers.GetFromObj(obj) is IAutoMock mock) mock.VerifyNoOtherCalls();
+        MocksDict.First(d => d.Key.Target == obj).Value?.Result?.ForEach(m => m.VerifyNoOtherCalls());
     }
 
     public void VerifyNoOtherCalls()

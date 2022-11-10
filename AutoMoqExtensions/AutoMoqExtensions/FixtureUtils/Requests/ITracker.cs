@@ -4,7 +4,6 @@ namespace AutoMoqExtensions.FixtureUtils.Requests;
 public interface ITracker
 {
     public IFixtureTracker StartTracker { get; }
-    public object? StartObject { get; }
     public ITracker? Parent { get; }
     public List<ITracker>? Children { get; }
     public List<IAutoMock>? GetAllMocks();

@@ -21,8 +21,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     protected List<IAutoMock>? allMocks;
 
     public virtual IFixtureTracker StartTracker => Parent?.StartTracker ?? this as IFixtureTracker ?? throw new Exception("No valid start tracker provided");
-    public virtual object? StartObject => Parent?.StartObject ?? result;
-
+    
     public virtual ITracker? Parent { get; private set; }
 
     public virtual List<ITracker> Children => children;
@@ -60,7 +59,9 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         // Probably not worth to do Distinct here (as the caller will do it), unless it is the last one
         if (Parent is null) allMocks = allMocks.Distinct().ToList();
 
-        if (result is null && Children.Count == 1 && Children[0].InstancePath == "") result = Children[0].Result;
+        // Many trackers are just wrappers
+        if (result is null && InstancePath != "" // Remember that we don't keep a reference to the main object for GC purposes
+                && Children.Count == 1 && Children[0].InstancePath == "") result = Children[0].Result;
 
         //if (result is null) throw new Exception("Expected result but there isn't"); can actually be null...
         Logger.LogInfo(ToString());
@@ -84,9 +85,14 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
 
         Parent?.UpdateResult();
     }
+
     public virtual void SetResult(object? result)
     {
-        this.result = result;
+        // We don't want a reference to the main result to avoid memory leaks
+        if (Path != String.Empty) this.result = result;
+        
+        StartTracker.Fixture.Cache.AddIfNeeded(this, result);
+
         SetCompleted();
     }
 

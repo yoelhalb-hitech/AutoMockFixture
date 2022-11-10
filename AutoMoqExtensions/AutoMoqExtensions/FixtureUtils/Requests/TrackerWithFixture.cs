@@ -60,11 +60,4 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
 
         DataUpdated?.Invoke(this, new UpdateData { AutoMocks = newMocks, Paths = modifiedPaths });
     }
-
-    public override void SetResult(object? result)
-    {
-        base.SetResult(result);
-
-        Fixture.Cache.AddIfNeeded(this, result);
-    }
 }

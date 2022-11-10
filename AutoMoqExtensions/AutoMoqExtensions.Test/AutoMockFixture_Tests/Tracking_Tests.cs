@@ -13,7 +13,7 @@ internal class Tracking_Tests
         var result = fixture.CreateNonAutoMock<InternalSimpleTestClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
-        fixture.TrackerDict.First().Key.Should().Be(result);
+        fixture.TrackerDict.First().Key.Target.Should().Be(result);
     }
 
     [Test]
@@ -23,7 +23,7 @@ internal class Tracking_Tests
         var result = fixture.CreateWithAutoMockDependencies<InternalSimpleTestClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
-        fixture.TrackerDict.First().Key.Should().Be(result);
+        fixture.TrackerDict.First().Key.Target.Should().Be(result);
     }
 
     [Test]
@@ -33,7 +33,7 @@ internal class Tracking_Tests
         var result = fixture.CreateAutoMock<InternalSimpleTestClass>();
 
         fixture.TrackerDict.Should().HaveCount(1);
-        fixture.TrackerDict.First().Key.Should().Be(Mock.Get(result));
+        fixture.TrackerDict.First().Key.Target.Should().Be(Mock.Get(result));
     }
 
     [Test]
