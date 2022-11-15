@@ -22,6 +22,14 @@ internal class InternalReadonlyPropertyClass
 {
     internal virtual string? InternalTest { get; }
 }
+internal class InternalPrivateSetterPropertyClass
+{
+    internal virtual string? InternalTest { get; private set; }
+}
+internal class ProtectedSetterPropertyClass
+{
+    public virtual string? InternalTest { get; protected set; }
+}
 internal class InternalSimpleTestClass
 {
     internal virtual string? InternalTest { get; set; }
