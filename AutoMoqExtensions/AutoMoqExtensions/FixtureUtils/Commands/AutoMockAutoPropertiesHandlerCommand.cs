@@ -26,11 +26,13 @@ internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
         var specification = new IgnoreProxyMembersSpecification();
         var fixture = mock.Fixture;
 
-        // Private setters is normally the job of the called but if not callbase we have to do it
         var command = !directTracker?.StartTracker.MockDependencies ?? true
             ? new CustomAutoPropertiesCommand(specification, fixture)
-            : new AutoMockAutoPropertiesCommand(specification, fixture) { IncludePrivateSetters = !mock.CallBase };
-        
+            : new AutoMockAutoPropertiesCommand(specification, fixture);
+
+        // Private setters is normally the job of the called but if not callbase we have to do it
+        command.IncludePrivateSetters = !mock.CallBase;
+
         command.Execute(mock.GetMocked(), context);
     }
 }

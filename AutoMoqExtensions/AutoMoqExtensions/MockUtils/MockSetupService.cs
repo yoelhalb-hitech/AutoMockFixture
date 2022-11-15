@@ -42,10 +42,13 @@ internal class MockSetupService
 
         var allProperties = mockedType.GetAllProperties().Where(p => p.GetMethod?.IsPublicOrInternal() == true);
 
-        // Properties with both get and prublic/internal set will be handled in the command for it
+        // Properties with both get and public/internal set will be handled in the command for it
         // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects
         // Remeber that `private` setters in the base will have no setter in the proxy
-        var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet() || p.SetMethod.IsPrivate);
+        // TODO... we changed that properties where one of the bases has a private setter it should be done in the auto command
+        //      So maybe we have to check it here as well so it shouldn't be killing it to setup the get
+        //      But maybe it isn't an issue because we shouldn't setup for Callbase and for non callbase it shouldn't really matter
+        var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet(true));
         foreach (var prop in singleMethodProperties)
         {
             SetupSingleMethodProperty(prop);
@@ -75,7 +78,7 @@ internal class MockSetupService
 
         try
         {
-            action();                
+            action();
             mock.MethodsSetup.Add(trackingPath, member);
         }
         catch (Exception ex)

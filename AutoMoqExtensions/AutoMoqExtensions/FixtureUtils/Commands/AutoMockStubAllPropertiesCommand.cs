@@ -47,9 +47,10 @@ namespace AutoMoqExtensions.FixtureUtils.Commands
                             .First(m => m.Name == nameof(Mock<object>.SetupProperty) && m.GetParameters().Length == 1);
 
                     // Note we do it also on protected props since the base code might be dependent on it
-                    foreach (var prop in baseType.GetAllProperties().Where(p => p.IsOverridable() && p.HasGetAndSet()))
+                    foreach (var prop in baseType.GetAllProperties().Where(p => p.IsOverridable() && p.HasGetAndSet(true)))
                     {
                         // Only if any if the methods isn't implemented
+                        // (note that if it's private it can't be abstract, so we don't have to go to the declaring prop)
                         if (prop.GetMethod.IsAbstract && prop.SetMethod.IsAbstract)
                         {
                             var paramExpression = Expression.Parameter(baseType);

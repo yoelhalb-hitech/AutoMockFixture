@@ -88,6 +88,11 @@ internal class WithCtorArgsTestClass
     public InternalAbstractSimpleTestClass? TestClassField;
 }
 
+internal class WithComplexTestClass
+{
+    public WithCtorArgsTestClass? WithCtorArgs { get; set; }
+}
+
 internal class WithCtorNoArgsTestClass
 {
     public readonly int TestCtor;

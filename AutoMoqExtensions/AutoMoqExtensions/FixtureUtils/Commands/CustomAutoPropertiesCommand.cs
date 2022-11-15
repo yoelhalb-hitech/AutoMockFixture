@@ -114,12 +114,24 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
 
     protected IEnumerable<PropertyInfo> GetPropertiesWithSet(object specimen)
     {
-        return from pi in GetSpecimenType(specimen).GetTypeInfo().GetAllProperties()
-               where pi.SetMethod != null
+        var t = GetSpecimenType(specimen).GetTypeInfo();
+        var result = from pi in t.GetAllProperties()
+               where pi.SetMethod is not null
                && (IncludePrivateSetters || pi.SetMethod.IsPublicOrInternal())
                && (IncludePrivateOrMissingGetter || pi.GetMethod?.IsPublicOrInternal() == true)
                && pi.GetIndexParameters().Length == 0
                && Specification?.IsSatisfiedBy(pi) != false
                select pi;
+
+        // TODO. what about default implemented interfaces?
+        if (!IncludePrivateSetters || t.BaseType is null || t.BaseType == typeof(Moq.Internals.InterfaceProxy)) return result;
+
+        // For AutoMock callbase properties with private setters in the base that are not virtual, we need to set it up by the base
+        var readOnlyProps = t.GetAllProperties()
+                            .Where(pi => pi.SetMethod is null && pi.DeclaringType != t); // Only properties not added by Moq
+
+        if(!readOnlyProps.Any()) return result;
+
+        return result.Union(readOnlyProps.Select(p => p.GetWritablePropertyInfo()).Where(p => p is not null))!;
     }
 }

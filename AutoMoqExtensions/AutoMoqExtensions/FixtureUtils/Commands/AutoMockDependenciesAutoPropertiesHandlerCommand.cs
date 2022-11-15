@@ -22,11 +22,11 @@ internal class AutoMockDependenciesAutoPropertiesHandlerCommand : ISpecimenComma
         if (context is null) throw new ArgumentNullException(nameof(context));
 
         Fixture.ProcessingTrackerDict.TryGetValue(specimen, out var existingTracker);
-      
-        // Private setters is normally the job of the called but if not callbase we have to do it
+        
         var command = new AutoMockAutoPropertiesCommand(Fixture) 
-        { 
-            IncludePrivateSetters = existingTracker?.StartTracker.MockShouldCallbase != true
+        {
+            // Private setters is always the job of the object code, and mocked non callbase doesn't need it
+            IncludePrivateSetters = false,
         };
         
         command.Execute(specimen, context);

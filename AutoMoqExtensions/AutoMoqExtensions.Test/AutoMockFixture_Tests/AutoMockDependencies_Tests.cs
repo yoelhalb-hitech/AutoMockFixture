@@ -227,61 +227,104 @@ internal class AutoMockDependencies_Tests
     }
 
     [Test]
-    public void Test_PropertiesPrivateSetter_AutoMocked_WhenNotCallBase()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void Test_MainObject_PropertiesPrivateOrNoSetter_AlwaysNotSet(bool callbase)
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callbase);
         // Assert
-        obj.TestClassPropWithPrivateSet.Should().NotBeNull();
-        obj.TestClassPropWithPrivateSet!.InternalTest.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestClassPropWithPrivateSet).Should().NotBeNull();
-
-        obj.TestClassPrivateNonVirtualProp.Should().NotBeNull();
-        obj.TestClassPrivateNonVirtualProp!.InternalTest.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestClassPrivateNonVirtualProp).Should().NotBeNull();
-    }
-
-    [Test]
-    public void Test_PropertiesNoSetter_AutoMocked_WhenNotCallBaseAndAutoMock()
-    {
-        // Arrange
-        var fixture = new AbstractAutoMockFixture();
-        // Act
-        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callBase: false);
-        var inner = obj.GetMocked();
-
-        // Assert
-        inner.Should().NotBeNull();
-        inner.TestClassPropGet.Should().NotBeNull();
-        inner.TestClassPropGet!.InternalTest.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
-    }
-
-    [Test]
-    public void Test_PropertiesPrivateSetter_NotAutoMocked_WhenCallBase()
-    {
-        // Arrange
-        var fixture = new AbstractAutoMockFixture();
-        // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: true);
-        // Assert
-        obj.TestClassPropWithPrivateSet.Should().BeNull();
+        obj!.TestClassPropWithPrivateSet.Should().BeNull();
         obj.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj.TestClassPropGet.Should().BeNull();
     }
 
     [Test]
-    public void Test_PropertiesNoSetter_NotAutoMocked_WhenCallBaseAndAutoMock()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void Test_MainObject_AutoMock_PropertiesPrivateOrNoSetter_AlwaysNotSet(bool callbase)
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callBase: true);
-        var inner = obj.GetMocked();
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callbase);
         // Assert
-        inner.Should().NotBeNull();
-        inner.TestClassPropGet.Should().BeNull();        
+        obj!.Object.TestClassPropWithPrivateSet.Should().BeNull();
+        obj!.Object.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj!.Object.TestClassPropGet.Should().BeNull();
+    }
+
+    [Test]
+    public void Test_Dependencies_PropertiesPrivateOrNoSetter_AutoMocked_WhenNotCallBase()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.Eager;
+        // Act
+        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callBase: false);
+        // Assert
+        obj!.WithCtorArgs.Should().NotBeNull();
+
+        obj.WithCtorArgs!.TestClassPropWithPrivateSet.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.WithCtorArgs.TestClassPropWithPrivateSet).Should().NotBeNull();
+
+        obj.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.WithCtorArgs.TestClassPrivateNonVirtualProp).Should().NotBeNull();
+        
+        obj.WithCtorArgs.TestClassPropGet.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.WithCtorArgs.TestClassPropGet).Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_Dependencies_PropertiesPrivateOrNoSetter_AutoMocked_WhenNotCallBaseAndAutoMock()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithComplexTestClass>>(callBase: false);
+        // Assert
+        obj!.Object.WithCtorArgs.Should().NotBeNull();
+
+        obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.Object.WithCtorArgs.TestClassPropWithPrivateSet).Should().NotBeNull();
+
+        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp).Should().NotBeNull();
+        
+        obj.Object.WithCtorArgs.TestClassPropGet.Should().NotBeNull();
+        AutoMockHelpers.GetAutoMock(obj.Object.WithCtorArgs.TestClassPropGet).Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_Dependencies_PropertiesPrivateOrNoSetter_NotSet_WhenCallBase()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callBase: true);
+        // Assert
+        obj!.WithCtorArgs.Should().NotBeNull();
+
+        obj.WithCtorArgs!.TestClassPropWithPrivateSet.Should().BeNull();
+        obj.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj.WithCtorArgs.TestClassPropGet.Should().BeNull();
+    }
+
+    [Test]
+    public void Test_Dependencies_PropertiesPrivateOrNoSetter_NotSet_WhenCallBaseAndAutoMock()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithComplexTestClass>>(callBase: true);
+        // Assert
+        obj!.Object.WithCtorArgs.Should().NotBeNull();
+
+        obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet.Should().BeNull();
+        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().BeNull();        
+        obj.Object.WithCtorArgs.TestClassPropGet.Should().BeNull();
     }
 
     [Test]
