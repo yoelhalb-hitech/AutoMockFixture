@@ -1,4 +1,6 @@
 ﻿
+using AutoFixture.Kernel;
+
 namespace AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 internal class AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IFixtureTracker, IDisposable
@@ -26,5 +28,5 @@ internal class AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IFi
             && request.Request == Request
             && base.IsRequestEquals(other);
 
-    public void Dispose() => SetCompleted();
+    public void Dispose() => SetCompleted((ISpecimenBuilder?)null);
 }

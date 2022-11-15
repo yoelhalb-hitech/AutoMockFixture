@@ -11,11 +11,11 @@ internal class AutoMockConstructorArgumentRequest : ConstructorArgumentRequest, 
     {
     }
 
-    public override void SetResult(object? result)
+    public override void SetResult(object? result, ISpecimenBuilder? builder)
     {
         if (result is not null && AutoMockHelpers.GetFromObj(result) is not null)
         {
-            base.SetResult(result);
+            base.SetResult(result, builder);
             return;
         }
         var type = result?.GetType();
@@ -25,11 +25,11 @@ internal class AutoMockConstructorArgumentRequest : ConstructorArgumentRequest, 
             // We want to avoid setting the same path many times which will cause problems
             // This can happen if the code is calling a factory method multiple times from the same method, but passing different arguments to the method
             // So at least not saving things that we know will probably not arrive at an AutoMock anyway...
-            SetCompleted();
+            SetCompleted(builder);
             return;
         }
 
-        base.SetResult(result);
+        base.SetResult(result, builder);
     }
 
     public override bool IsRequestEquals(ITracker other)

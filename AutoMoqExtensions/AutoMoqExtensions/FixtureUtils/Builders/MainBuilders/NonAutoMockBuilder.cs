@@ -43,7 +43,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
             if (autoMock is null && isMock) autoMock = new NoSpecimen();
 
             var retValue = isMock ? autoMock : result;
-            nonMockRequest.SetResult(retValue);
+            nonMockRequest.SetResult(retValue, this);
             return retValue;
         }
 
@@ -52,7 +52,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
         {
             // Note that IEnumerable etc. should already be handled in the special builders
             var result = context.Resolve(nonMockRequest.Request);
-            nonMockRequest.SetResult(result);
+            nonMockRequest.SetResult(result, this);
             return result;
         }
 
@@ -60,7 +60,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
         if (specimen is NoSpecimen || specimen is OmitSpecimen)
             return specimen;
 
-        nonMockRequest.SetResult(specimen);
+        nonMockRequest.SetResult(specimen, this);
 
         return specimen;
     }

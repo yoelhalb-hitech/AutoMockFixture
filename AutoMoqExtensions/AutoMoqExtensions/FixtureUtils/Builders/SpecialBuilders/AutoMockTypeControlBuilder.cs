@@ -28,6 +28,8 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
 
         if (result is NoSpecimen && fixture is not null) result = requestHelper.GetResult(fixture.AutoMockTypeControl);
 
+        if (result is not NoSpecimen) typedRequest ?.SetResult(result, this);
+
         return result;
     }
 
@@ -62,7 +64,6 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
                 var tracker = autoMock.Tracker as BaseTracker;
                 if (tracker is not null && typedRequest is not null) tracker.SetParent(typedRequest);
             }
-            if (typedRequest is not null) typedRequest.SetResult(specimen);
 
             return specimen;
         }

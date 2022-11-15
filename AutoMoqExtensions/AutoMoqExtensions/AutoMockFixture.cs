@@ -184,8 +184,7 @@ public abstract partial class AutoMockFixture : Fixture
         try
         {
             var result = new RecursionContext(this, this) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
-            request.SetCompleted();
-
+            
             // TODO... we might have a problem if there is duplicates (for example for primitive typs or strings)
 
             // We will rather deal with the underlying mock for consistancy

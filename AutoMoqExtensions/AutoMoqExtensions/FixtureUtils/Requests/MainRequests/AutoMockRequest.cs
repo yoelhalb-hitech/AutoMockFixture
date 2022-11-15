@@ -28,5 +28,5 @@ internal class AutoMockRequest : TrackerWithFixture, IAutoMockRequest, IDisposab
             && request.Request == Request && request.BypassChecks == BypassChecks
             && base.IsRequestEquals(other);
 
-    public void Dispose() => SetCompleted();
+    public void Dispose() => SetCompleted((ISpecimenBuilder?)null);
 }

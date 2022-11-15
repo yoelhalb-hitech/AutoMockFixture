@@ -25,7 +25,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             // Can't leave it for the relay as we want the dependencies mocked correctly
             var result = TryAutoMock(dependencyRequest, context);
 
-            dependencyRequest.SetResult(result);
+            dependencyRequest.SetResult(result, this);
 
             return result;
         }
@@ -42,7 +42,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             object? autoMock = AutoMockHelpers.GetFromObj(result);
             if (autoMock is null) autoMock = new NoSpecimen();
 
-            dependencyRequest.SetResult(autoMock);
+            dependencyRequest.SetResult(autoMock, this);
             return autoMock;
         }
 
@@ -51,7 +51,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
         {
             // Note that IEnumerable etc. should already be handled in the special builders
             var result = context.Resolve(dependencyRequest.Request);
-            dependencyRequest.SetResult(result);
+            dependencyRequest.SetResult(result, this);
             return result;
         }
 
@@ -62,18 +62,18 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             
             if (specimen is null)
             {
-                dependencyRequest.SetResult(specimen);
+                dependencyRequest.SetResult(specimen, this);
                 return specimen;
             }
 
             if (specimen.GetType() != dependencyRequest.Request)
             {
                 var result = new NoSpecimen();
-                dependencyRequest.SetResult(result);
+                dependencyRequest.SetResult(result, this);
                 return result;
             }
 
-            dependencyRequest.SetResult(specimen);
+            dependencyRequest.SetResult(specimen, this);
             return specimen;
         }
         catch

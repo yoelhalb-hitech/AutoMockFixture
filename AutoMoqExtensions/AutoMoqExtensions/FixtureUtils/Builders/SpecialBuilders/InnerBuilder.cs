@@ -24,13 +24,13 @@ internal class InnerBuilder : ISpecimenBuilder
 
         var specimen = context.Resolve(newRequest);
 
-        newRequest.SetResult(specimen);
+        newRequest.SetResult(specimen, this);
 
         if (specimen is NoSpecimen || specimen is OmitSpecimen)
         {            
             return new NoSpecimen(); // Let the system handle it
         }
 
-        return specimen;       
+        return specimen;
     }
 }

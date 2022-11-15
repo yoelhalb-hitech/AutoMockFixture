@@ -25,7 +25,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
 
                 if(altResult is not NoSpecimen)
                 {
-                    mockRequest.SetResult(altResult);
+                    mockRequest.SetResult(altResult, this);
                     return altResult;
                 }
             }
@@ -34,7 +34,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
             // Handle it here so we should be able to set the result
             var otherResult = context.Resolve(mockRequest.Request);
                
-            mockRequest.SetResult(otherResult);
+            mockRequest.SetResult(otherResult, this);
             return otherResult;
         }
 
@@ -50,7 +50,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
         var specimen = context.Resolve(directRequest);
         if (specimen is null)
         {
-            mockRequest.SetResult(null);
+            mockRequest.SetResult(null, this);
             return specimen;
         }
 
@@ -60,12 +60,12 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
             // Try to unwrap it and see if we can get anything
             var unwrapResult = context.Resolve(AutoMockHelpers.GetMockedType(type));
 
-            mockRequest.SetResult(unwrapResult);
+            mockRequest.SetResult(unwrapResult, this);
             return unwrapResult;
         }
 
         var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
-        mockRequest.SetCompleted(); // Result was set by the AutoMockPostprocessor
+        mockRequest.SetCompleted(this); // Result was set by AutoMockBuilder
 
         return result;
     }

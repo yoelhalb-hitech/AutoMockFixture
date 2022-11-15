@@ -28,11 +28,11 @@ internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRe
 
         if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
         {
-            trackedRequest.SetResult(specimen);
+            trackedRequest.SetResult(specimen, this);
             return specimen;
         }
 
-        trackedRequest.SetCompleted();
+        trackedRequest.SetCompleted(this);
 
         return specimen;
     }
@@ -53,7 +53,7 @@ internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRe
         }
 
         var result = context.Resolve(newRequest);
-        trackedRequest.SetResult(result);
+        trackedRequest.SetResult(result, this);
 
         return result;
     }

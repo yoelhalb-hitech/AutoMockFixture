@@ -26,14 +26,14 @@ internal class AutoMockBuilder : ISpecimenBuilder
 
         if (specimen is not IAutoMock autoMock || specimen.GetType() != mockRequest.Request)
         {
-            mockRequest.SetCompleted();
+            mockRequest.SetCompleted(this);
             return new NoSpecimen();
         }
 
         autoMock.DefaultValue = DefaultValue.Empty; // When we want a value we will set it up ourselves with AutoMock
         autoMock.Tracker = mockRequest;
 
-        mockRequest.SetResult(specimen);
+        mockRequest.SetResult(specimen, this);
 
         return specimen;
     }

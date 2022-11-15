@@ -34,7 +34,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders
                                                                 && r.Parent == requestMock.Object)));
             contextMock.VerifyNoOtherCalls();
 
-            requestMock.Verify(r => r.SetResult(expectedResult));
+            requestMock.Verify(r => r.SetResult(expectedResult, builder));
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders
                                                                 && r.Parent == requestMock.Object)));
             contextMock.VerifyNoOtherCalls();
 
-            requestMock.Verify(r => r.SetResult(expectedResult));
+            requestMock.Verify(r => r.SetResult(expectedResult, builder));
         }
 
         public interface TestInterface { }
@@ -142,7 +142,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders
                                                                 && r.Parent == requestMock.Object)));
             contextMock.VerifyNoOtherCalls();
 
-            requestMock.Verify(r => r.SetResult(expectedResult.Object));
+            requestMock.Verify(r => r.SetResult(expectedResult.Object, builder));
         }
 
         [Test]
@@ -184,7 +184,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders
             contextMock.Verify(c => c.Resolve(It.IsAny<AutoMockRequest>()));
             contextMock.VerifyNoOtherCalls();
 
-            requestMock.Verify(r => r.SetResult(expectedResult));
+            requestMock.Verify(r => r.SetResult(expectedResult, builder));
         }
 
         [Test]
@@ -227,7 +227,7 @@ namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders
                                                                 && r.Parent == requestMock.Object)));
             contextMock.VerifyNoOtherCalls();
 
-            requestMock.Verify(r => r.SetResult(expectedResult.Object));
+            requestMock.Verify(r => r.SetResult(expectedResult.Object, builder));
         }
     }
 }

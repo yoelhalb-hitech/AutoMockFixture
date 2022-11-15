@@ -48,7 +48,7 @@ internal class LastResortBuilder : ISpecimenBuilder
             var newTracker = autoMock.Tracker as BaseTracker;
             if (newTracker is not null && requestTracker is not null) newTracker.SetParent(requestTracker);
         }
-        if (requestTracker is not null) requestTracker.SetResult(specimen);
+        if (requestTracker is not null) requestTracker.SetResult(specimen, this);
 
         return specimen;
     }

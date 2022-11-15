@@ -71,7 +71,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
             catch { }
         }
 
-        if (existingTracker is null) tracker.SetCompleted();
+        if (existingTracker is null) tracker.SetCompleted(this);
     }
 
     protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)

@@ -39,13 +39,29 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     protected bool completed;
     public bool IsCompleted => completed;
 
-    public void SetCompleted()
-    {
+    public ISpecimenBuilder? Builder { get; protected set; }
+    public ISpecimenCommand? Command { get; protected set; }
+
+    public void SetCompleted(ISpecimenBuilder? builder)
+    {        
         if (completed) return;
+
+        this.Builder = builder;
 
         completed = true;
         UpdateResult();
     }
+
+    public void SetCompleted(ISpecimenCommand command)
+    {
+        if (completed) return;
+
+        this.Command = command;
+
+        completed = true;
+        UpdateResult();
+    }
+
     public virtual void UpdateResult()
     {
         // TODO... maybe we should rather take it out from the ProcessingTrackerDict
@@ -86,14 +102,16 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         Parent?.UpdateResult();
     }
 
-    public virtual void SetResult(object? result)
+    public virtual void SetResult(object? result, ISpecimenBuilder? builder)
     {
+        if (completed) return;
+
         // We don't want a reference to the main result to avoid memory leaks
         if (Path != String.Empty) this.result = result;
         
         StartTracker.Fixture.Cache.AddIfNeeded(this, result);
 
-        SetCompleted();
+        SetCompleted(builder);
     }
 
     public virtual bool IsRequestEquals(ITracker other)

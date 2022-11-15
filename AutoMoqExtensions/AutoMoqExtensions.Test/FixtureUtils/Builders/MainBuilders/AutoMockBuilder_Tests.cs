@@ -48,6 +48,6 @@ internal class AutoMockBuilder_Tests
         var obj = new AutoMockBuilder(builder.Object);
         obj.Create(request, context);
 
-        requestMock.Verify(m => m.SetResult(autoMock));
+        requestMock.Verify(m => m.SetResult(autoMock, obj));
     }
 }

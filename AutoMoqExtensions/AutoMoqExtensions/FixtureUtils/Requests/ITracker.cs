@@ -12,9 +12,12 @@ public interface ITracker
     public string InstancePath { get; }
     public string BasePath { get; }
     public object? Result { get; }
-    public void SetResult(object? result);
+    public ISpecimenBuilder? Builder { get; }
+    public ISpecimenCommand? Command { get; }
+    public void SetResult(object? result, ISpecimenBuilder? builder);
     public bool IsCompleted { get; }
-    public void SetCompleted();
+    public void SetCompleted(ISpecimenBuilder? builder);
+    public void SetCompleted(ISpecimenCommand command);
     public void UpdateResult();
     public void AddChild(ITracker tracker);    
     public bool IsRequestEquals(ITracker other);

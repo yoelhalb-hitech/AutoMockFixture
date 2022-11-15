@@ -55,7 +55,7 @@ internal class AutoMockRelay : ISpecimenBuilder
 
     private void HandleResult(object result, ITracker tracker, ISpecimenContext context)
     {
-        tracker.SetCompleted(); // We don't do SetResult so not to make a hard reference that might orevent it from GC
+        tracker.SetCompleted(this); // We don't do SetResult so not to make a hard reference that might orevent it from GC
 
         Fixture.TrackerDict[result.ToWeakReference()] = tracker;
     }

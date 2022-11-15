@@ -23,7 +23,7 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
             var customValue = ConstructorArgumentValues
                                 .First(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path))
                                 .Value;
-            ctorArgsRequest.SetResult(customValue);
+            ctorArgsRequest.SetResult(customValue, this);
             return customValue;
         }
 

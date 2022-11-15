@@ -31,7 +31,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         if (innerResult is NoSpecimen) return innerResult;
 
         var finalResult = CreateResult(typeRequest.Request, (object[][])innerResult);
-        typeRequest.SetResult(finalResult);
+        typeRequest.SetResult(finalResult, this);
 
         return finalResult;      
     }
@@ -71,7 +71,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 
             if (specimen is NoSpecimen || specimen is OmitSpecimen)
             {
-                originalRequest.SetResult(specimen);
+                originalRequest.SetResult(specimen, this);
                 return new NoSpecimen(); // Let the system handle it
             }
 

@@ -17,7 +17,7 @@ internal class BaseTracker_Tests
         var tracker = trackerMock.Object;
         var setResult = new object();
 
-        tracker.SetResult(setResult);
+        tracker.SetResult(setResult, (ISpecimenBuilder?)null);
         var result = tracker.GetChildrensPaths();
         result.Should().BeEquivalentTo(new Dictionary<string, object> { [tracker.Path] = setResult });
         result.First().Key.Should().EndWith("Test");
