@@ -47,57 +47,38 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
     }
 
     [Test]
-    public void Test_NoConfigureMembers_Properties_AutoMocked()
+    public void Test_NoConfigureMembers_Properties_NotSet()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
-        obj.TestClassProp.Should().NotBeNull();
-        obj.TestClassProp!.InternalTest.Should().BeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestClassProp).Should().NotBeNull();
+        obj.TestClassProp.Should().BeNull();
     }
 
     [Test]
-    public void Test_NoConfigureMembers_PropertiesPrivateSetter_AutoMocked_WhenNotCallBase()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void Test_NoConfigureMembers_PropertiesPrivateSetter_NotSet(bool callbase)
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture(true);
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: false);
-        // Assert
-        obj.TestClassPropWithPrivateSet.Should().NotBeNull();
-        obj.TestClassPropWithPrivateSet!.InternalTest.Should().BeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestClassPropWithPrivateSet).Should().NotBeNull();
-
-        obj.TestClassPrivateNonVirtualProp.Should().NotBeNull();
-        obj.TestClassPrivateNonVirtualProp!.InternalTest.Should().BeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestClassPrivateNonVirtualProp).Should().NotBeNull();
-    }
-
-    [Test]
-    public void Test_NoConfigureMembers_PropertiesPrivateSetter_NotAutoMocked_WhenCallBase()
-    {
-        // Arrange
-        var fixture = new AbstractAutoMockFixture(true);
-        // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase: true);
+        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callbase);
         // Assert
         obj.TestClassPropWithPrivateSet.Should().BeNull();
         obj.TestClassPrivateNonVirtualProp.Should().BeNull();
     }
 
     [Test]
-    public void Test_NoConfigureMembers_Fields_AutoMocked()
+    public void Test_NoConfigureMembers_Fields_NotSet()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture(true);
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
-        obj.TestClassField.Should().NotBeNull();
-        obj.TestClassField!.InternalTest.Should().BeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestClassField).Should().NotBeNull();
+        obj.TestClassField.Should().BeNull();
     }
 }

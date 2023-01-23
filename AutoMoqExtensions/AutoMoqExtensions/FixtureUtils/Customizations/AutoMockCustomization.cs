@@ -54,7 +54,7 @@ public class AutoMockCustomization : ICustomization
                                             new AutoMockDependenciesBuilder(
                                                 new DependencyInjectionMethodInvoker(
                                                     new CustomModestConstructorQuery())),
-                                            new AutoMockDependenciesAutoPropertiesHandlerCommand(mockFixture)),
+                                            ConfigureMembers ? new AutoMockDependenciesAutoPropertiesHandlerCommand(mockFixture) : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -63,7 +63,7 @@ public class AutoMockCustomization : ICustomization
                                             new NonAutoMockBuilder(
                                                 new MethodInvokerWithRecursion(
                                                     new CustomModestConstructorQuery())),
-                                            new CustomAutoPropertiesCommand(mockFixture)),
+                                            ConfigureMembers ? new CustomAutoPropertiesCommand(mockFixture) : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(NonAutoMockRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(

@@ -36,8 +36,7 @@ namespace AutoMoqExtensions.FixtureUtils.Postprocessors
         object? ISpecimenBuilder.Create(object request, ISpecimenContext context)
         {
             var specimen = this.Builder.Create(request, context);
-            if (specimen == null)
-                return specimen;
+            if (specimen is null) return specimen;
 
             try
             {
