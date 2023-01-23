@@ -1,203 +1,199 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
-namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
+public class GenericClassWithGenericMethod<T>
 {
-    public class GenericClassWithGenericMethod<T>
+    public virtual T Get(T t) => t;
+}
+public class NonGenericClassWithGenericMethod
+{
+    public virtual T Get<T>(T t) => t;
+}
+public class SelfReferencing
+{
+    private readonly SelfReferencing selfReferencing;
+
+    public SelfReferencing(SelfReferencing selfReferencing)
     {
-        public virtual T Get(T t) => t;
+        this.selfReferencing = selfReferencing;
     }
-    public class NonGenericClassWithGenericMethod
+}
+
+public class IndirectSelfReferencingOuter
+{
+    private readonly IndirectSelfReferencingInner selfReferencingInner;
+
+    public IndirectSelfReferencingOuter(IndirectSelfReferencingInner selfReferencingInner)
     {
-        public virtual T Get<T>(T t) => t;
+        this.selfReferencingInner = selfReferencingInner;
     }
-    public class SelfReferencing
-    {
-        private readonly SelfReferencing selfReferencing;
+}
 
-        public SelfReferencing(SelfReferencing selfReferencing)
-        {
-            this.selfReferencing = selfReferencing;
-        }
+public class IndirectSelfReferencingInner
+{
+    private readonly IndirectSelfReferencingOuter selfReferencingOuter;
+
+    public IndirectSelfReferencingInner(IndirectSelfReferencingOuter selfReferencingOuter)
+    {
+        this.selfReferencingOuter = selfReferencingOuter;
+    }
+}
+public class GarbageCollection_Tests
+{
+    public static Type[] AutoMockTypes =
+    {
+        typeof(InternalReadOnlyTestInterface),
+        typeof(AutoMock<InternalReadOnlyTestInterface>),
+        typeof(InternalSimpleTestClass),
+        typeof(AutoMock<InternalSimpleTestClass>),
+        typeof(InternalReadonlyPropertyClass),
+        typeof(AutoMock<InternalReadonlyPropertyClass>),
+        typeof(InternalAbstractSimpleTestClass),
+        typeof(AutoMock<InternalAbstractSimpleTestClass>),
+        typeof(InternalAbstractReadonlyPropertyClass),
+        typeof(AutoMock<InternalAbstractReadonlyPropertyClass>),
+        typeof(InternalReadonlyPropertyClass),
+        typeof(AutoMock<InternalReadonlyPropertyClass>),
+        typeof(InternalPrivateSetterPropertyClass),
+        typeof(AutoMock<InternalPrivateSetterPropertyClass>),
+        typeof(ProtectedSetterPropertyClass),
+        typeof(AutoMock<ProtectedSetterPropertyClass>),
+        typeof(InternalSimpleTestClass),
+        typeof(AutoMock<InternalSimpleTestClass>),
+        typeof(InternalTestFields),
+        typeof(AutoMock<InternalTestFields>),
+        typeof(InternalTestMethods),
+        typeof(AutoMock<InternalTestMethods>),
+        typeof(ITestInterface),
+        typeof(AutoMock<ITestInterface>),
+        typeof(InternalAbstractMethodTestClass),
+        typeof(AutoMock<InternalAbstractMethodTestClass>),
+        typeof(WithCtorArgsTestClass),
+        typeof(AutoMock<WithCtorArgsTestClass>),
+        typeof(WithComplexTestClass),
+        typeof(AutoMock<WithComplexTestClass>),
+        typeof(WithCtorNoArgsTestClass),
+        typeof(AutoMock<WithCtorNoArgsTestClass>),
+
+        typeof(GenericClassWithGenericMethod<string>),
+        typeof(AutoMock<GenericClassWithGenericMethod<string>>),
+
+        typeof(NonGenericClassWithGenericMethod),
+        typeof(AutoMock<NonGenericClassWithGenericMethod>),
+        typeof(SelfReferencing),
+        typeof(AutoMock<SelfReferencing>),
+        typeof(IndirectSelfReferencingOuter),
+        typeof(AutoMock<IndirectSelfReferencingOuter>),
+        typeof(IndirectSelfReferencingInner),
+        typeof(AutoMock<IndirectSelfReferencingInner>),
+    };
+
+    public static Type[] NonAutoMockTypes =
+    {
+        typeof(string),
+        typeof(Task),
+        typeof(IEnumerable<string>),
+    };
+
+    public static IEnumerable<Type> GetAllTypes() => AutoMockTypes.Union(NonAutoMockTypes);
+    public static MethodSetupTypes[] SetupTypeLists =
+    {
+        MethodSetupTypes.Eager,
+        MethodSetupTypes.LazySame,
+        MethodSetupTypes.LazyDifferent,
+    };
+
+    [Test, Pairwise]
+    public void Test_IsGarabaseCollectible_WhenAutoMock(
+                    [ValueSource(nameof(AutoMockTypes))] Type type,
+                    [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
+                    [Values(true, false)] bool callbase)
+    {
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = setupType;
+
+        IsGarbageCollectible(() => fixture.CreateAutoMock(type, callbase)!).Should().BeTrue();
     }
 
-    public class IndirectSelfReferencingOuter
+    [Test, Pairwise]
+    public void Test_IsGarabaseCollectible_WhenNonAutoMock(
+        [ValueSource(nameof(GetAllTypes))] Type type, [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType)
     {
-        private readonly IndirectSelfReferencingInner selfReferencingInner;
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = setupType;
 
-        public IndirectSelfReferencingOuter(IndirectSelfReferencingInner selfReferencingInner)
-        {
-            this.selfReferencingInner = selfReferencingInner;
-        }
+        IsGarbageCollectible(() => fixture.CreateNonAutoMock(type)!).Should().BeTrue();
     }
 
-    public class IndirectSelfReferencingInner
+    [Test, Pairwise]
+    public void Test_IsGarabaseCollectible_WhenAutoMockDependencies(
+                    [ValueSource(nameof(AutoMockTypes))] Type type,
+                    [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
+                    [Values(true, false)] bool callbase)
     {
-        private readonly IndirectSelfReferencingOuter selfReferencingOuter;
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = setupType;
 
-        public IndirectSelfReferencingInner(IndirectSelfReferencingOuter selfReferencingOuter)
-        {
-            this.selfReferencingOuter = selfReferencingOuter;
-        }
+        IsGarbageCollectible(() => fixture.CreateWithAutoMockDependencies(type, callbase)!).Should().BeTrue();
     }
-    public class GarbageCollection_Tests
+
+
+    [Test, Pairwise]
+    public void Test_IsGarabaseCollectible_GenericMethod_AndAutoMock(
+                [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType)
     {
-        public static Type[] AutoMockTypes =
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = setupType;
+
+        IsGarbageCollectible(() =>
         {
-            typeof(InternalReadOnlyTestInterface),
-            typeof(AutoMock<InternalReadOnlyTestInterface>),
-            typeof(InternalSimpleTestClass),
-            typeof(AutoMock<InternalSimpleTestClass>),
-            typeof(InternalReadonlyPropertyClass),
-            typeof(AutoMock<InternalReadonlyPropertyClass>),
-            typeof(InternalAbstractSimpleTestClass),
-            typeof(AutoMock<InternalAbstractSimpleTestClass>),
-            typeof(InternalAbstractReadonlyPropertyClass),
-            typeof(AutoMock<InternalAbstractReadonlyPropertyClass>),
-            typeof(InternalReadonlyPropertyClass),
-            typeof(AutoMock<InternalReadonlyPropertyClass>),
-            typeof(InternalPrivateSetterPropertyClass),
-            typeof(AutoMock<InternalPrivateSetterPropertyClass>),
-            typeof(ProtectedSetterPropertyClass),
-            typeof(AutoMock<ProtectedSetterPropertyClass>),
-            typeof(InternalSimpleTestClass),
-            typeof(AutoMock<InternalSimpleTestClass>),
-            typeof(InternalTestFields),
-            typeof(AutoMock<InternalTestFields>),
-            typeof(InternalTestMethods),
-            typeof(AutoMock<InternalTestMethods>),
-            typeof(ITestInterface),
-            typeof(AutoMock<ITestInterface>),
-            typeof(InternalAbstractMethodTestClass),
-            typeof(AutoMock<InternalAbstractMethodTestClass>),
-            typeof(WithCtorArgsTestClass),
-            typeof(AutoMock<WithCtorArgsTestClass>),
-            typeof(WithComplexTestClass),
-            typeof(AutoMock<WithComplexTestClass>),
-            typeof(WithCtorNoArgsTestClass),
-            typeof(AutoMock<WithCtorNoArgsTestClass>),
+            var specimen = fixture.CreateAutoMock<GenericClassWithGenericMethod<string>>()!;
+            _ = specimen.Get(fixture.CreateNonAutoMock<string>()!);
 
-            typeof(GenericClassWithGenericMethod<string>),
-            typeof(AutoMock<GenericClassWithGenericMethod<string>>),
+            return specimen;
+        }).Should().BeTrue();
 
-            typeof(NonGenericClassWithGenericMethod),
-            typeof(AutoMock<NonGenericClassWithGenericMethod>),
-            typeof(SelfReferencing),
-            typeof(AutoMock<SelfReferencing>),
-            typeof(IndirectSelfReferencingOuter),
-            typeof(AutoMock<IndirectSelfReferencingOuter>),
-            typeof(IndirectSelfReferencingInner),
-            typeof(AutoMock<IndirectSelfReferencingInner>),
-        };
-
-        public static Type[] NonAutoMockTypes =
+        IsGarbageCollectible(() =>
         {
-            typeof(string),
-            typeof(Task),
-            typeof(IEnumerable<string>),
-        };
+            var specimen = fixture.CreateAutoMock<NonGenericClassWithGenericMethod>()!;
+            _ = specimen.Get(fixture.CreateNonAutoMock<string>()!);
 
-        public static IEnumerable<Type> GetAllTypes() => AutoMockTypes.Union(NonAutoMockTypes);
-        public static MethodSetupTypes[] SetupTypeLists =
+            return specimen;
+        }).Should().BeTrue();
+
+        IsGarbageCollectible(() =>
         {
-            MethodSetupTypes.Eager,
-            MethodSetupTypes.LazySame,
-            MethodSetupTypes.LazyDifferent,
-        };
+            var specimen = fixture.CreateAutoMock<AutoMock<GenericClassWithGenericMethod<string>>>()!;
+            _ = specimen.Object.Get(fixture.CreateNonAutoMock<string>()!);
 
-        [Test, Pairwise]
-        public void Test_IsGarabaseCollectible_WhenAutoMock(
-                        [ValueSource(nameof(AutoMockTypes))] Type type,
-                        [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
-                        [Values(true, false)] bool callbase)
+            return specimen;
+        }).Should().BeTrue();
+
+        IsGarbageCollectible(() =>
         {
-            var fixture = new AbstractAutoMockFixture();
-            fixture.MethodSetupType = setupType;
+            var specimen = fixture.CreateAutoMock<AutoMock<NonGenericClassWithGenericMethod>>()!;
+            _ = specimen.Object.Get(fixture.CreateNonAutoMock<string>()!);
 
-            IsGarbageCollectible(() => fixture.CreateAutoMock(type, callbase)!).Should().BeTrue();
-        }
+            return specimen;
+        }).Should().BeTrue();
+    }
 
-        [Test, Pairwise]
-        public void Test_IsGarabaseCollectible_WhenNonAutoMock(
-            [ValueSource(nameof(GetAllTypes))] Type type, [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType)
-        {
-            var fixture = new AbstractAutoMockFixture();
-            fixture.MethodSetupType = setupType;
+    private static WeakReference GetWeakReference<T>(Func<T> func) where T : class
+    {
+        var obj = func();
 
-            IsGarbageCollectible(() => fixture.CreateNonAutoMock(type)!).Should().BeTrue();
-        }
+        var reference = new WeakReference(obj, true);
+        obj = null;
 
-        [Test, Pairwise]
-        public void Test_IsGarabaseCollectible_WhenAutoMockDependencies(
-                        [ValueSource(nameof(AutoMockTypes))] Type type,
-                        [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
-                        [Values(true, false)] bool callbase)
-        {
-            var fixture = new AbstractAutoMockFixture();
-            fixture.MethodSetupType = setupType;
+        return reference;
+    }
+    static bool IsGarbageCollectible<T>(Func<T> func) where T : class
+    {
+        var reference = GetWeakReference(func); // The object needs to be in a separate function otherwise it doesn't collect it
 
-            IsGarbageCollectible(() => fixture.CreateWithAutoMockDependencies(type, callbase)!).Should().BeTrue();
-        }
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
 
-
-        [Test, Pairwise]
-        public void Test_IsGarabaseCollectible_GenericMethod_AndAutoMock(
-                    [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType)
-        {
-            var fixture = new AbstractAutoMockFixture();
-            fixture.MethodSetupType = setupType;
-
-            IsGarbageCollectible(() =>
-            {
-                var specimen = fixture.CreateAutoMock<GenericClassWithGenericMethod<string>>()!;
-                _ = specimen.Get(fixture.CreateNonAutoMock<string>()!);
-
-                return specimen;
-            }).Should().BeTrue();
-
-            IsGarbageCollectible(() =>
-            {
-                var specimen = fixture.CreateAutoMock<NonGenericClassWithGenericMethod>()!;
-                _ = specimen.Get(fixture.CreateNonAutoMock<string>()!);
-
-                return specimen;
-            }).Should().BeTrue();
-
-            IsGarbageCollectible(() =>
-            {
-                var specimen = fixture.CreateAutoMock<AutoMock<GenericClassWithGenericMethod<string>>>()!;
-                _ = specimen.Object.Get(fixture.CreateNonAutoMock<string>()!);
-
-                return specimen;
-            }).Should().BeTrue();
-
-            IsGarbageCollectible(() =>
-            {
-                var specimen = fixture.CreateAutoMock<AutoMock<NonGenericClassWithGenericMethod>>()!;
-                _ = specimen.Object.Get(fixture.CreateNonAutoMock<string>()!);
-
-                return specimen;
-            }).Should().BeTrue();
-        }
-
-        private static WeakReference GetWeakReference<T>(Func<T> func) where T : class
-        {
-            var obj = func();
-
-            var reference = new WeakReference(obj, true);
-            obj = null;
-
-            return reference;
-        }
-        static bool IsGarbageCollectible<T>(Func<T> func) where T : class
-        {
-            var reference = GetWeakReference(func); // The object needs to be in a separate function otherwise it doesn't collect it
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            return !reference.IsAlive;
-        }
+        return !reference.IsAlive;
     }
 }

@@ -1,8 +1,6 @@
 ﻿using AutoFixture;
-using AutoFixture.NUnit3;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using System.Threading;
 
 namespace AutoMoqExtensions.Attributes;
 

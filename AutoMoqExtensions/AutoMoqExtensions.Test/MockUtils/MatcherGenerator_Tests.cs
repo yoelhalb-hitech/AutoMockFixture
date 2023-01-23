@@ -1,5 +1,4 @@
-﻿
-using AutoMoqExtensions.MockUtils;
+﻿using AutoMoqExtensions.MockUtils;
 
 namespace AutoMoqExtensions.Test.MockUtils;
 

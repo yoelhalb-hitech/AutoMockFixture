@@ -1,7 +1,5 @@
 ﻿using AutoFixture;
-using AutoFixture.Kernel;
 using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils;
 using AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
 using AutoMoqExtensions.FixtureUtils.Commands;
@@ -10,7 +8,6 @@ using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
-using AutoMoqExtensions.MockUtils;
 using DotNetPowerExtensions.DependencyManagement;
 using Moq;
 using System.Reflection;

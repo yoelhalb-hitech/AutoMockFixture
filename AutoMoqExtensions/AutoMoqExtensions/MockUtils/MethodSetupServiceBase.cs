@@ -1,5 +1,4 @@
-﻿
-using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using Moq;

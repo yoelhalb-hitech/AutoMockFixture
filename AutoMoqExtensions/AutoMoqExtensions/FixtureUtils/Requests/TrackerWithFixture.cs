@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Linq;
-using static AutoMoqExtensions.FixtureUtils.Requests.IFixtureTracker;
+﻿using static AutoMoqExtensions.FixtureUtils.Requests.IFixtureTracker;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests;
 

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace AutoMoqExtensions;
 
-namespace AutoMoqExtensions
+public enum MethodSetupTypes
 {
-    public enum MethodSetupTypes
-    {
-        Eager,
-        LazySame,
-        LazyDifferent,
-    }
+    Eager,
+    LazySame,
+    LazyDifferent,
 }

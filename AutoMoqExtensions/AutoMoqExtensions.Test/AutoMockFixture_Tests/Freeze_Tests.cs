@@ -1,5 +1,4 @@
-﻿
-using DotNetPowerExtensions.DependencyManagement;
+﻿using DotNetPowerExtensions.DependencyManagement;
 
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 

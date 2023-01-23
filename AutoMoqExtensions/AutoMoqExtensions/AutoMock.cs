@@ -1,5 +1,4 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.MockUtils;
 using AutoMoqExtensions.VerifyInfo;

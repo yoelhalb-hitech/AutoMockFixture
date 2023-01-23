@@ -1,4 +1,5 @@
-﻿namespace AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+﻿
+namespace AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
 internal class InnerRequest : BaseTracker
 {
     public InnerRequest(Type request, IRequestWithType outerRequest) : base(outerRequest)

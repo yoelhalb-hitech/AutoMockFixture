@@ -1,34 +1,30 @@
 ﻿using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders
+namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
+
+internal class DelegateBuilder : NonConformingBuilder
 {
-    internal class DelegateBuilder : NonConformingBuilder
+    public override Type[] SupportedTypes => new[] 
     {
-        public override Type[] SupportedTypes => new[] 
-        {
-            typeof(System.Delegate),
-            typeof(System.MulticastDelegate),
-        };
+        typeof(System.Delegate),
+        typeof(System.MulticastDelegate),
+    };
 
-        public override int Repeat => 1;
+    public override int Repeat => 1;
 
-        protected override object GetInnerSpecimens(IRequestWithType originalRequest, int index, ISpecimenContext context)
-        {
-            if (originalRequest.Request.IsGenericType) return new NoSpecimen();
+    protected override object GetInnerSpecimens(IRequestWithType originalRequest, int index, ISpecimenContext context)
+    {
+        if (originalRequest.Request.IsGenericType) return new NoSpecimen();
 
-            return BuildInnerSpecimens(originalRequest, new[] { typeof(Action) }, index, context);
-        }
+        return BuildInnerSpecimens(originalRequest, new[] { typeof(Action) }, index, context);
+    }
 
-        protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
-            => new InnerRequest(type, originalRequest);
+    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
+        => new InnerRequest(type, originalRequest);
 
-        public override object CreateResult(Type requestType, object[][] innerResults)
-        {
-            return innerResults.First().First();
-        }
+    public override object CreateResult(Type requestType, object[][] innerResults)
+    {
+        return innerResults.First().First();
     }
 }

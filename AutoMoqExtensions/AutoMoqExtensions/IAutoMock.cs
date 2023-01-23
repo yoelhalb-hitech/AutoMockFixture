@@ -1,5 +1,4 @@
-﻿
-using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.MockUtils;
 using Moq;
 using System.Reflection;

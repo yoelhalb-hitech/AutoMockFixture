@@ -43,9 +43,10 @@ internal class Tracking_Tests
         var result = fixture.CreateAutoMock<WithCtorArgsTestClass>();
         var mock = AutoMockHelpers.GetAutoMock(result);
 
-        mock!.MethodsSetup.Should().ContainKey("TestClassPropGet");
-        mock!.MethodsNotSetup.Should().ContainKey("TestClassPrivateNonVirtualProp");
-        mock!.MethodsNotSetup["TestClassPrivateNonVirtualProp"].Reason.Should().Be(CannotSetupMethodException.CannotSetupReason.NonVirtual);
+        mock!.MethodsSetup.Should().ContainKey(nameof(WithCtorArgsTestClass.TestClassPropGet));
+        mock!.MethodsNotSetup.Should().ContainKey(nameof(WithCtorArgsTestClass.TestClassPrivateNonVirtualProp));
+        mock!.MethodsNotSetup[nameof(WithCtorArgsTestClass.TestClassPrivateNonVirtualProp)].Reason
+                                                        .Should().Be(CannotSetupMethodException.CannotSetupReason.NonVirtual);
     }
 
 }

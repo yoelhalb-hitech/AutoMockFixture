@@ -1,9 +1,5 @@
 ﻿using AutoMoqExtensions.FixtureUtils.Commands;
-using Moq;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace AutoMoqExtensions.Test.FixtureUtils.Commands;
 

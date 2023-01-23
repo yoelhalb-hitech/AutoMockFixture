@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using AutoFixture.AutoMoq;
 using AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
 using AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
 using AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;

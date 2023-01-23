@@ -101,5 +101,4 @@ internal static class MethodInfoExtensions
             _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
         };
     }
-         
 }

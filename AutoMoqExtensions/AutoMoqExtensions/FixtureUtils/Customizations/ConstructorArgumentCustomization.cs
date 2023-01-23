@@ -1,5 +1,4 @@
-﻿
-using AutoFixture;
+﻿using AutoFixture;
 
 namespace AutoMoqExtensions.FixtureUtils.Customizations;
 

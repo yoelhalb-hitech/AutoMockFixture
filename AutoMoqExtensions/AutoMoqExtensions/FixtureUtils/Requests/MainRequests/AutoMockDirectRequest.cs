@@ -1,6 +1,4 @@
 ﻿
-using AutoFixture.Kernel;
-
 namespace AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 internal class AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IFixtureTracker, IDisposable

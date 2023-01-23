@@ -1,5 +1,4 @@
-﻿
-using Moq;
+﻿using Moq;
 using System.Reflection;
 
 namespace AutoMoqExtensions.MockUtils;

@@ -3,7 +3,6 @@ using System.Reflection;
 using Moq;
 using Moq.Protected;
 using System.Linq.Expressions;
-using System.Globalization;
 using System.Reflection.Emit;
 
 namespace AutoMoqExtensions.AutoMockUtils;
