@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.Test.Trace;
+namespace AutoMockFixture.Tests.Trace;
 
 internal class TestClass
 {

@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 /// <summary>
 /// Marker that we deal with AutoMocked object

@@ -1,9 +1,9 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 internal class InnerBuilder : ISpecimenBuilder
 {

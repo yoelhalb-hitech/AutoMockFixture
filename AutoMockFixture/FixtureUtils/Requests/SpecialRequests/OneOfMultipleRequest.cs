@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+namespace AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 internal abstract class OneOfMultipleRequest : InnerRequest
 {
     public OneOfMultipleRequest(Type request, IRequestWithType outerRequest, int index) : base(request, outerRequest)

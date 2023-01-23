@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 
-namespace AutoMoqExtensions.FixtureUtils;
+namespace AutoMockFixture.FixtureUtils;
 
 internal class Cache
 {

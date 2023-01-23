@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
-using AutoMoqExtensions.FixtureUtils.MethodInvokers;
-using AutoMoqExtensions.FixtureUtils.MethodQueries;
+using AutoMockFixture.FixtureUtils.MethodInvokers;
+using AutoMockFixture.FixtureUtils.MethodQueries;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 internal class CustomEngineParts : DefaultEngineParts
 {

@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
+namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 public class GenericClassWithGenericMethod<T>
 {

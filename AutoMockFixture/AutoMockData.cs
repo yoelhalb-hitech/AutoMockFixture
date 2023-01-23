@@ -1,13 +1,13 @@
 ﻿using AutoFixture;
 using AutoFixture.NUnit3;
-using AutoMoqExtensions.Attributes;
-using AutoMoqExtensions.FixtureUtils.Customizations;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+using AutoMockFixture.Attributes;
+using AutoMockFixture.FixtureUtils.Customizations;
+using AutoMockFixture.FixtureUtils.Specifications;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using System.Threading;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 /// <summary>
 /// This ineherits the <see cref="AutoDataAttribute"/> class from <see cref="AutoFixture"/>

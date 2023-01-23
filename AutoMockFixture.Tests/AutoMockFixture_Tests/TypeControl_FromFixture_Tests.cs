@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils;
 
-namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
+namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class TypeControl_FromFixture_Tests
 {

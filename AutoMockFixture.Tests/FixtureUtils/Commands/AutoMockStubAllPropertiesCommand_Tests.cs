@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.FixtureUtils.Commands;
+﻿using AutoMockFixture.FixtureUtils.Commands;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Commands;
+namespace AutoMockFixture.Tests.FixtureUtils.Commands;
 
 internal class AutoMockStubAllPropertiesCommand_Tests
 {

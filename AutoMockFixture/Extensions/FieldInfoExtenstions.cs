@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace AutoMoqExtensions.Extensions;
+namespace AutoMockFixture.Extensions;
 
 internal static class FieldInfoExtenstions
 {

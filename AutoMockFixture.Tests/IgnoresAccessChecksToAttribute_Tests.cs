@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace AutoMoqExtensions.Test;
+namespace AutoMockFixture.Tests;
 
 internal class IgnoresAccessChecksToAttribute_Tests
 {

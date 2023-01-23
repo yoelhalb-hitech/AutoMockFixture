@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
-namespace AutoMoqExtensions.FixtureUtils.Specifications;
+namespace AutoMockFixture.FixtureUtils.Specifications;
 
 /// <summary>
 /// For use to match a type or <see cref="AutoMockRequest"/> for the type or <see cref="AutoMockDirectRequest"/> for the type or <see cref="AutoMockDependenciesRequest"/> for the type

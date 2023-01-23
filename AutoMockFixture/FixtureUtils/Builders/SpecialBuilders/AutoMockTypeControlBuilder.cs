@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 /// <summary>
 /// Builder to build types that have been specified as always automock or never automock

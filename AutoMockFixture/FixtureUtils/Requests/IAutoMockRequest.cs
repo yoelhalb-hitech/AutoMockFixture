@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Requests;
+namespace AutoMockFixture.FixtureUtils.Requests;
 
 internal interface IAutoMockRequest
 {

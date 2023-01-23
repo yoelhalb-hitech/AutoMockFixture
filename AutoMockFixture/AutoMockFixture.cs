@@ -1,18 +1,18 @@
 ﻿using AutoFixture;
-using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils;
-using AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
-using AutoMoqExtensions.FixtureUtils.Commands;
-using AutoMoqExtensions.FixtureUtils.Customizations;
-using AutoMoqExtensions.FixtureUtils.Postprocessors;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
+using AutoMockFixture.FixtureUtils.Commands;
+using AutoMockFixture.FixtureUtils.Customizations;
+using AutoMockFixture.FixtureUtils.Postprocessors;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 using SequelPay.DotNetPowerExtensions;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 /// <summary>
 /// For Test project purposes

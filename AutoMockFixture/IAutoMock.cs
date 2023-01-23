@@ -1,9 +1,9 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.MockUtils;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.MockUtils;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 // TODO... add analyzer for:
 // 1) TAnon to ensure the properties are actually parameters of the method and the correct type

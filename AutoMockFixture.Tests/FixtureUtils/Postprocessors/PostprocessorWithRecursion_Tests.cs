@@ -1,10 +1,10 @@
-﻿using AutoMoqExtensions.FixtureUtils;
-using AutoMoqExtensions.FixtureUtils.Postprocessors;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.FixtureUtils.Postprocessors;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Postprocessors;
+namespace AutoMockFixture.Tests.FixtureUtils.Postprocessors;
 
 internal class PostprocessorWithRecursion_Tests
 {

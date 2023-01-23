@@ -1,12 +1,12 @@
-﻿using AutoMoqExtensions.FixtureUtils.MethodQueries;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.MethodQueries;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Castle.DynamicProxy;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.MethodInvokers;
+namespace AutoMockFixture.FixtureUtils.MethodInvokers;
 
 internal class AutoMockMethodInvoker : ISpecimenBuilder
 {    

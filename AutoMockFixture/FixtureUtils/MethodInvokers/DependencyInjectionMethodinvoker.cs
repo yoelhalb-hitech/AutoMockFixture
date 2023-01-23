@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.MethodInvokers;
+namespace AutoMockFixture.FixtureUtils.MethodInvokers;
 
 internal class DependencyInjectionMethodInvoker : MethodInvokerWithRecursion
 {

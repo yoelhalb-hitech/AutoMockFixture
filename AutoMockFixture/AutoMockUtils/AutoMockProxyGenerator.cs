@@ -5,7 +5,7 @@ using Moq.Protected;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
 
-namespace AutoMoqExtensions.AutoMockUtils;
+namespace AutoMockFixture.AutoMockUtils;
 
 internal class AutoMockProxyGenerator : ProxyGenerator
 {

@@ -1,7 +1,7 @@
 ﻿using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions; // Partial class here
+namespace AutoMockFixture; // Partial class here
 
 public partial class AutoMock<T>
 {

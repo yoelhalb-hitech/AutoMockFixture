@@ -1,7 +1,7 @@
 ﻿using Moq;
 using System.Linq.Expressions;
 
-namespace AutoMoqExtensions.VerifyInfo;
+namespace AutoMockFixture.VerifyInfo;
 
 public class VerifyFuncInfo<T, TResult> : IVerifyInfo<T> where T : class
 {

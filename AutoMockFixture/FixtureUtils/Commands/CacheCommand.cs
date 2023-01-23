@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Commands;
+namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class CacheCommand : ISpecimenCommand
 {

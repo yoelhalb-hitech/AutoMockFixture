@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Trace;
+namespace AutoMockFixture.FixtureUtils.Trace;
 
 public class TraceInfo
 {

@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Requests.BaseTracker;
+namespace AutoMockFixture.Tests.FixtureUtils.Requests.BaseTracker;
 
 internal class BaseTracker_Tests
 {
@@ -26,7 +26,7 @@ internal class BaseTracker_Tests
     [Test]
     public void GetHashCode_DoesNotCauseStackOverflow()
     {
-        var request = new AutoMockRequest(typeof(AutoMoqExtensions.FixtureUtils.Requests.BaseTracker), new AbstractAutoMockFixture());
+        var request = new AutoMockRequest(typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker), new AbstractAutoMockFixture());
         Assert.DoesNotThrow(() => request.GetHashCode());
     }
 }

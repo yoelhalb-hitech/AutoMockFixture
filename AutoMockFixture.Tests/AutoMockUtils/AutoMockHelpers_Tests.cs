@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
+﻿using AutoMockFixture.AutoMockUtils;
 
-namespace AutoMoqExtensions.Test.AutoMockUtils;
+namespace AutoMockFixture.Tests.AutoMockUtils;
 
 internal class AutoMockHelpers_Tests
 {

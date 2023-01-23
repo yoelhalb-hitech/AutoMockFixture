@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Commands;
+namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
 {

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace AutoMoqExtensions.Test.Extensions;
+namespace AutoMockFixture.Tests.Extensions;
 
 internal class MethodInfoExtensions_Tests
 {

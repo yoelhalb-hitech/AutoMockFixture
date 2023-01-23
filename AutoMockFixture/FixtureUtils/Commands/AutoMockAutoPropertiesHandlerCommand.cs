@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 
-namespace AutoMoqExtensions.FixtureUtils.Commands;
+namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
 {

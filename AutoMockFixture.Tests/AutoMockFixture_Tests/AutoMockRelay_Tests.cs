@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
+﻿using AutoMockFixture.AutoMockUtils;
 
-namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
+namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class AutoMockRelay_Tests
 {

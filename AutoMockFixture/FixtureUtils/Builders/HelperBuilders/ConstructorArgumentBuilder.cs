@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.FixtureUtils.Customizations;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+﻿using AutoMockFixture.FixtureUtils.Customizations;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumentRequest>
 {

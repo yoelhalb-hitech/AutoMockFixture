@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+﻿using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
+namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 
 internal class AutoMockPropertyRequest : PropertyRequest, IAutoMockRequest
 {

@@ -1,19 +1,19 @@
 ﻿using AutoFixture;
-using AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
-using AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
-using AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
-using AutoMoqExtensions.FixtureUtils.Commands;
-using AutoMoqExtensions.FixtureUtils.FixtureUtils.Builders.MainBuilders;
-using AutoMoqExtensions.FixtureUtils.MethodInvokers;
-using AutoMoqExtensions.FixtureUtils.MethodQueries;
-using AutoMoqExtensions.FixtureUtils.Postprocessors;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+using AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
+using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
+using AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
+using AutoMockFixture.FixtureUtils.Commands;
+using AutoMockFixture.FixtureUtils.FixtureUtils.Builders.MainBuilders;
+using AutoMockFixture.FixtureUtils.MethodInvokers;
+using AutoMockFixture.FixtureUtils.MethodQueries;
+using AutoMockFixture.FixtureUtils.Postprocessors;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 
-namespace AutoMoqExtensions.FixtureUtils.Customizations;
+namespace AutoMockFixture.FixtureUtils.Customizations;
 
 public class AutoMockCustomization : ICustomization
 {

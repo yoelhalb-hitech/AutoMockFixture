@@ -2,7 +2,7 @@
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 
-namespace AutoMoqExtensions.Attributes;
+namespace AutoMockFixture.Attributes;
 
 // TODO... add injections
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq

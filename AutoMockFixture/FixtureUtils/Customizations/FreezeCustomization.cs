@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 
-namespace AutoMoqExtensions.FixtureUtils.Customizations;
+namespace AutoMockFixture.FixtureUtils.Customizations;
 
 internal class FreezeCustomization : ICustomization
 {

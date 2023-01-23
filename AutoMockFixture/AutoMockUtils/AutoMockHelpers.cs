@@ -1,11 +1,11 @@
 ﻿using AutoFixture;
-using AutoMoqExtensions.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests;
 using Moq;
 using System.Collections;
 using System.Reflection;
 using System.Threading;
 
-namespace AutoMoqExtensions.AutoMockUtils;
+namespace AutoMockFixture.AutoMockUtils;
 
 public static class AutoMockHelpers
 {

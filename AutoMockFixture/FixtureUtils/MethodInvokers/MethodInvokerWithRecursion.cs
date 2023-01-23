@@ -1,10 +1,10 @@
-﻿using AutoMoqExtensions.FixtureUtils.MethodQueries;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.MethodQueries;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.MethodInvokers;
+namespace AutoMockFixture.FixtureUtils.MethodInvokers;
 
 public class MethodInvokerWithRecursion : ISpecimenBuilder
 {

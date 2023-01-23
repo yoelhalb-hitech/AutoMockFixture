@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal class CacheBuilder : ISpecimenBuilder
 {

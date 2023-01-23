@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+﻿using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal class ReturnBuilder : HelperBuilderBase<ReturnRequest>
 {

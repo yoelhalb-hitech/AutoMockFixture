@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils;
+namespace AutoMockFixture.FixtureUtils;
 
 public class FreezeOnRecursionHandler : IRecursionHandler
 {      

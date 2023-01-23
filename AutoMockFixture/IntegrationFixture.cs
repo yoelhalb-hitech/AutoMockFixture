@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.FixtureUtils;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+﻿using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.FixtureUtils.Specifications;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 public class IntegrationFixture : AutoMockFixture
 {

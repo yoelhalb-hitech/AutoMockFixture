@@ -1,9 +1,9 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AutoMoqExtensions.Extensions
+namespace AutoMockFixture.Extensions
 {
     internal static class TrackerExtensions
     {

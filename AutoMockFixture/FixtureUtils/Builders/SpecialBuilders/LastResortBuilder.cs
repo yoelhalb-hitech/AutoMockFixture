@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 /// <summary>
 /// For last case when all other builders didn't work

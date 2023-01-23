@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.FixtureUtils.Commands;
+﻿using AutoMockFixture.FixtureUtils.Commands;
 using System.Reflection;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Commands;
+namespace AutoMockFixture.Tests.FixtureUtils.Commands;
 
 file class TestBase
 {

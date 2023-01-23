@@ -1,11 +1,11 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
-using AutoMoqExtensions.Expressions;
+using AutoMockFixture.Expressions;
 using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 public partial class AutoMock<T>
 {

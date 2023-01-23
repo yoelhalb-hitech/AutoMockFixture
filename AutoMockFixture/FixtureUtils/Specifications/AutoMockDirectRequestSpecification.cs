@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
-namespace AutoMoqExtensions.FixtureUtils.Specifications;
+namespace AutoMockFixture.FixtureUtils.Specifications;
 
 internal class AutoMockDirectRequestSpecification : IRequestSpecification
 {

@@ -26,8 +26,8 @@
 	  <Using Include="System.Threading.Tasks" />
 	  <Using Include="System.Collections.Generic" />
 	  <Using Include="AutoFixture.Kernel" />
-	  <Using Include="AutoMoqExtensions.Extensions" />
-	  <Using Include="AutoMoqExtensions.Attributes" />
+	  <Using Include="AutoMockFixture.Extensions" />
+	  <Using Include="AutoMockFixture.Attributes" />
 	  <Using Include="FluentAssertions" />
 	  <Using Include="NUnit.Framework" />
   </ItemGroup>
@@ -58,6 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AutoMoqExtensions\AutoMoqExtensions.csproj" />
+    <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" />
   </ItemGroup>
 </Project>

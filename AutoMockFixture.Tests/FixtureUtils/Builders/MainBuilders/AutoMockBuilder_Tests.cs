@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders;
+namespace AutoMockFixture.Tests.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockBuilder_Tests
 {

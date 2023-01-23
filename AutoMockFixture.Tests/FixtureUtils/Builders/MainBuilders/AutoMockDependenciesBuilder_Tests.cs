@@ -1,11 +1,11 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Builders.MainBuilders;
+namespace AutoMockFixture.Tests.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockDependenciesBuilder_Tests
 {

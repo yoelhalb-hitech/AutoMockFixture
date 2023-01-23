@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+namespace AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 internal class InnerRequest : BaseTracker
 {
     public InnerRequest(Type request, IRequestWithType outerRequest) : base(outerRequest)

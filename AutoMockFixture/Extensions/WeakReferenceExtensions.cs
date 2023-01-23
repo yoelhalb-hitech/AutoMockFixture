@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace AutoMoqExtensions.Extensions
+namespace AutoMockFixture.Extensions
 {
     internal static class WeakReferenceExtensions
     {

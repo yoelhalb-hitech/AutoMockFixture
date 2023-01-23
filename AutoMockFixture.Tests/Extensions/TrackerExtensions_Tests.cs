@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 using Moq;
 
-namespace AutoMoqExtensions.Test.Extensions;
+namespace AutoMockFixture.Tests.Extensions;
 
 internal class TrackerExtensions_Tests
 {

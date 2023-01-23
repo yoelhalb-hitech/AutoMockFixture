@@ -1,9 +1,9 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.Test.AutoMockFixture_Tests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.Tests.AutoMockFixture_Tests;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions.Test;
+namespace AutoMockFixture.Tests;
 
 public class AutoMock_Tests
 {

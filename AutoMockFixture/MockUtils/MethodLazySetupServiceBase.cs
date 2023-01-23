@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMoqExtensions.MockUtils;
+namespace AutoMockFixture.MockUtils;
 
 internal abstract class MethodLazySetupServiceBase : MethodSetupServiceBase
 {

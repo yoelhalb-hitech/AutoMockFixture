@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
+namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 
 internal class AutoMockConstructorArgumentRequest : ConstructorArgumentRequest, IAutoMockRequest
 {

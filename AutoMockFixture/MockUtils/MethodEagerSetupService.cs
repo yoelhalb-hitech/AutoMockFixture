@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMoqExtensions.MockUtils;
+namespace AutoMockFixture.MockUtils;
 
 internal class MethodEagerSetupService : MethodSetupServiceBase
 {

@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+namespace AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
 internal class AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracker, IRequestWithType
 {

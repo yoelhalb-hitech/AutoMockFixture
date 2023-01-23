@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Specifications;
+namespace AutoMockFixture.FixtureUtils.Specifications;
 
 internal class TypeMatchSpecification : IRequestSpecification
 {

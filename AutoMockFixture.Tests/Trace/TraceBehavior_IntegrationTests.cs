@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.FixtureUtils.Trace;
+﻿using AutoMockFixture.FixtureUtils.Trace;
 
-namespace AutoMoqExtensions.Test.Trace;
+namespace AutoMockFixture.Tests.Trace;
 
 internal class TraceBehavior_IntegrationTests
 {

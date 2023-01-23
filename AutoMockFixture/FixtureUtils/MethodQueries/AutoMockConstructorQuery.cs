@@ -1,7 +1,7 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
+﻿using AutoMockFixture.AutoMockUtils;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.MethodQueries;
+namespace AutoMockFixture.FixtureUtils.MethodQueries;
 
 internal partial class AutoMockConstructorQuery : IMethodQuery
 {

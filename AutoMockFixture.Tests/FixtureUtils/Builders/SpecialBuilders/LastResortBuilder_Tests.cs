@@ -1,10 +1,10 @@
-﻿using AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Builders.SpecialBuilders;
+namespace AutoMockFixture.Tests.FixtureUtils.Builders.SpecialBuilders;
 
 internal class LastResortBuilder_Tests
 {

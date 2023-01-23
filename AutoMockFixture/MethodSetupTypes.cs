@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 public enum MethodSetupTypes
 {

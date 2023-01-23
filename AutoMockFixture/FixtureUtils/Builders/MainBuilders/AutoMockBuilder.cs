@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+﻿using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 using Moq;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.MainBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockBuilder : ISpecimenBuilder
 {

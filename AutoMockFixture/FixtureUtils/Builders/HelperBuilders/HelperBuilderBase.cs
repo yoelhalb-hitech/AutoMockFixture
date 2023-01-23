@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Specifications;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.HelperBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRequest : ITracker
 {

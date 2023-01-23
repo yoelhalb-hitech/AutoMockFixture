@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 
-namespace AutoMoqExtensions.FixtureUtils.Postprocessors;
+namespace AutoMockFixture.FixtureUtils.Postprocessors;
 
 // AutoFixture has special handling for `Postprocessor` but still uses it as `ISpecimenBuilder`
 // AutoFixture expects `AutoPropertiesCommand` to be a single command, so we have to stuff anoything extra in an extra

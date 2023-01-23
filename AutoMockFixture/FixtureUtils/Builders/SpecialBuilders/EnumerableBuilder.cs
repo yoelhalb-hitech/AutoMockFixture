@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Builders.SpecialBuilders;
+namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 internal class EnumerableBuilder : NonConformingBuilder
 {

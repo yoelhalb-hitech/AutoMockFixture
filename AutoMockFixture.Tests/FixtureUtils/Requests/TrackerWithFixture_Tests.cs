@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
-using AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 
-namespace AutoMoqExtensions.Test.FixtureUtils.Requests;
+namespace AutoMockFixture.Tests.FixtureUtils.Requests;
 
 internal class TrackerWithFixture_Tests
 {

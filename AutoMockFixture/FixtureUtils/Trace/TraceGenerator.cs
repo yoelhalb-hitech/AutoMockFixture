@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Trace;
+namespace AutoMockFixture.FixtureUtils.Trace;
 
 internal class TraceGenerator
 {

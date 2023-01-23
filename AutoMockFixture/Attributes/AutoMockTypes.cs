@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.Attributes;
+namespace AutoMockFixture.Attributes;
 
 public enum AutoMockTypes
 {

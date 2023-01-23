@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AutoMoqExtensions {
+namespace AutoMockFixture {
     using System;
     
     

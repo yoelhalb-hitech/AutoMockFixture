@@ -1,8 +1,8 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.MockUtils;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.MockUtils;
 using Moq;
 
-namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
+namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class Tracking_Tests
 {

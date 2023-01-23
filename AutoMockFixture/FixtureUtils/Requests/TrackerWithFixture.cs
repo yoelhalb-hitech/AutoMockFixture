@@ -1,6 +1,6 @@
-﻿using static AutoMoqExtensions.FixtureUtils.Requests.IFixtureTracker;
+﻿using static AutoMockFixture.FixtureUtils.Requests.IFixtureTracker;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests;
+namespace AutoMockFixture.FixtureUtils.Requests;
 
 /// <summary>
 /// For use with objects that don't have a start tracker, and as a base for IFixtureTracker

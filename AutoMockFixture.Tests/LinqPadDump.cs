@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 
-namespace AutoMoqExtensions.Test;
+namespace AutoMockFixture.Tests;
 
 public static class LinqPadDump
 {

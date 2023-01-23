@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMoqExtensions.FixtureUtils.Requests.SpecialRequests;
+namespace AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 
 // TODO... now assumming that we won't overload by tuple (not tuple lentgh and not tuple item types)
 internal class TupleItemRequest : OneOfMultipleRequest

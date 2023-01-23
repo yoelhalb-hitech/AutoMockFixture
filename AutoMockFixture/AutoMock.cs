@@ -1,12 +1,12 @@
-﻿using AutoMoqExtensions.AutoMockUtils;
-using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.MockUtils;
-using AutoMoqExtensions.VerifyInfo;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.MockUtils;
+using AutoMockFixture.VerifyInfo;
 using Castle.DynamicProxy;
 using Moq;
 using System.Reflection;
 
-namespace AutoMoqExtensions;
+namespace AutoMockFixture;
 
 internal interface ISetCallBase
 {

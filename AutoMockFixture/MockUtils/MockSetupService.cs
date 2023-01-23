@@ -1,11 +1,11 @@
-﻿using AutoMoqExtensions.FixtureUtils.Requests;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using Castle.DynamicProxy;
 using System.Reflection;
-using static AutoMoqExtensions.MockUtils.CannotSetupMethodException;
+using static AutoMockFixture.MockUtils.CannotSetupMethodException;
 
-namespace AutoMoqExtensions.MockUtils;
+namespace AutoMockFixture.MockUtils;
 
 internal class MockSetupService
 {

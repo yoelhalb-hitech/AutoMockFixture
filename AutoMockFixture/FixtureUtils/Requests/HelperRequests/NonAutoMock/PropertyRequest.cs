@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
 internal class PropertyRequest : BaseTracker
 {

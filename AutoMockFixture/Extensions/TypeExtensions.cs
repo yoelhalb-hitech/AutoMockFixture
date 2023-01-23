@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace AutoMoqExtensions.Extensions;
+namespace AutoMockFixture.Extensions;
 
 internal static class TypeExtensions
 {

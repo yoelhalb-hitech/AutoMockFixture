@@ -1,6 +1,6 @@
-﻿using AutoMoqExtensions.MockUtils;
+﻿using AutoMockFixture.MockUtils;
 
-namespace AutoMoqExtensions.Test.MockUtils;
+namespace AutoMockFixture.Tests.MockUtils;
 
 public class MatcherGenerator_Tests
 {
