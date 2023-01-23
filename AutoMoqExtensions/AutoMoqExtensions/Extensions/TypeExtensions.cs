@@ -35,8 +35,14 @@ internal static class TypeExtensions
 
     internal static IEnumerable<PropertyInfo> GetAllProperties(this Type type, bool includeBasePrivate = false)
         => GetAll(type, includeBasePrivate, (t, b) => t.GetProperties(b));
+    internal static IEnumerable<PropertyInfo> GetExplicitInterfaceProperties(this Type type)
+        => GetAll(type, true, (t, b) => t.GetProperties(b)).Where(p => p.IsExplicitImplementation());
+
     internal static IEnumerable<MethodInfo> GetAllMethods(this Type type, bool includeBasePrivate = false)
         => GetAll(type, includeBasePrivate, (t, b) => t.GetMethods(b));
+
+    internal static IEnumerable<MethodInfo> GetExplicitInterfaceMethods(this Type type)
+        => GetAll(type, true, (t, b) => t.GetMethods(b)).Where(p => p.IsExplicitImplementation());
 
     internal static IEnumerable<FieldInfo> GetAllFields(this Type type, bool includeBasePrivate = false)
        => GetAll(type, includeBasePrivate, (t, b) => t.GetFields(b));
@@ -53,7 +59,7 @@ internal static class TypeExtensions
         if (isInterface)
             result = result.Concat(type.GetInterfaces().SelectMany(i => func(i, bindings)));
         else if (includeBasePrivate)
-            result = result.Concat(type.GetBaseTypes().SelectMany(b=> func(b, bindings)));
+            result = result.Concat(type.GetBaseTypes().SelectMany(b => func(b, bindings)));
          
         return result;
     }

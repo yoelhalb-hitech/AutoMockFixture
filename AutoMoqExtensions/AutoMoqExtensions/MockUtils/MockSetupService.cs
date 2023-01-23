@@ -1,7 +1,7 @@
 ﻿using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+using Castle.DynamicProxy;
 using System.Reflection;
 using static AutoMoqExtensions.MockUtils.CannotSetupMethodException;
 
@@ -32,7 +32,7 @@ internal class MockSetupService
     public void Setup()
     {
         // If it's private it won't be in the proxy, CAUTION: I am doing it here and not in the `GetMethod()` in case we want to change the logic it should be in one place
-        var methods = GetMethods().Where(m => !m.IsPrivate);
+        var methods = GetMethods().Where(m => !m.IsPrivate); // Remember that explicit interface implementations are private so they will be filtered out...
         foreach (var method in methods)
         {
             SetupMethod(method);
@@ -40,7 +40,7 @@ internal class MockSetupService
 
         if (delegateSpecification.IsSatisfiedBy(mockedType)) return;
 
-        var allProperties = mockedType.GetAllProperties().Where(p => p.GetMethod?.IsPublicOrInternal() == true);
+        var allProperties = mockedType.GetAllProperties().Where(p => p.GetMethod?.IsPublicOrInternal() == true); // This will also filter out all explicit implementation as they are always private
 
         // Properties with both get and public/internal set will be handled in the command for it
         // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects
@@ -48,10 +48,73 @@ internal class MockSetupService
         // TODO... we changed that properties where one of the bases has a private setter it should be done in the auto command
         //      So maybe we have to check it here as well so it shouldn't be killing it to setup the get
         //      But maybe it isn't an issue because we shouldn't setup for Callbase and for non callbase it shouldn't really matter
-        var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet(true));
+        var singleMethodProperties = allProperties.Where(p => !p.HasGetAndSet(false) || p.SetMethod?.IsPrivate == true);
         foreach (var prop in singleMethodProperties)
         {
             SetupSingleMethodProperty(prop);
+        }
+
+        if (mock.CallBase || delegateSpecification.IsSatisfiedBy(mockedType)) return; // Explicit interface implementation must have an implementation so only if !callbase
+        
+        var explicitProperties = mockedType.GetExplicitInterfaceProperties().ToArray();
+        foreach (var prop in explicitProperties.Where(p => !p.HasGetAndSet(false)))
+        {
+            SetupExplicitProperty(prop, mockedType, mock);
+        }
+
+        var explicitMethods = mockedType.GetExplicitInterfaceMethods().Except(explicitProperties.SelectMany(p => p.GetMethods()));
+        foreach (var method in explicitMethods)
+        {
+            SetupExplicitMethod(method, mockedType, mock);
+        }
+
+    }
+
+    private void SetupExplicitProperty(PropertyInfo prop, Type mockedType, IAutoMock mock)
+    {
+        var trackingPath = prop.GetTrackingPath();
+
+        Func<MethodInfo, MethodSetupServiceBase> setupFunc = ifaceMethod
+                                => setupServiceFactory.GetPropertySetup(mock, ifaceMethod, context, trackingPath, ifaceMethod.DeclaringType);
+
+        SetupExplicitMember(prop.GetMethods().First(), mockedType, mock, prop, trackingPath, setupFunc);
+    }
+
+    private void SetupExplicitMethod(MethodInfo method, Type mockedType, IAutoMock mock)
+    {
+        var trackingPath = method.GetTrackingPath();
+
+        Func<MethodInfo, MethodSetupServiceBase> setupFunc = ifaceMethod
+                                => setupServiceFactory.GetMethodSetup(mock, ifaceMethod, context, trackingPath, ifaceMethod.DeclaringType);
+
+        SetupExplicitMember(method, mockedType, mock, method, trackingPath, setupFunc);
+    }
+
+    private void SetupExplicitMember(MethodInfo method, Type mockedType, IAutoMock mock, MemberInfo member,
+        string trackingPath, Func<MethodInfo, MethodSetupServiceBase> setupService)
+    {        
+        try
+        {
+            var ifaceMethod = method.GetExplicitInterfaceMethod();
+            if(ifaceMethod is null) // Should not happen...
+            {
+                HandleCannotSetup(trackingPath, CannotSetupReason.InterfaceMethodNotFound);
+                return;
+            }
+
+            if (!ProxyUtil.IsAccessible(ifaceMethod.DeclaringType))
+            {
+                HandleCannotSetup(trackingPath, CannotSetupReason.TypeNotPublic);
+                return;
+            }
+
+            setupServiceFactory.GetPropertySetup(mock, ifaceMethod, context, trackingPath, ifaceMethod.DeclaringType).Setup();
+
+            mock.MethodsSetup.Add(trackingPath, member);
+        }
+        catch (Exception ex)
+        {
+            mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(CannotSetupReason.Exception, ex));
         }
     }
 

@@ -32,6 +32,9 @@ internal static class PropertyInfoExtensions
     internal static MethodInfo[] GetMethods(this PropertyInfo property)
         => property.GetAccessors(true);
 
+    internal static bool IsExplicitImplementation(this PropertyInfo property)
+        => property.Name.Contains(".") && property.GetMethods().All(m => m.IsExplicitImplementation());
+
     internal static string GetTrackingPath(this PropertyInfo property)
             => property.Name;
 }

@@ -12,6 +12,8 @@ public class CannotSetupMethodException
         Private,
         Protected,
         CallBaseNoAbstract,
+        TypeNotPublic,
+        InterfaceMethodNotFound,
         Exception
     }
 

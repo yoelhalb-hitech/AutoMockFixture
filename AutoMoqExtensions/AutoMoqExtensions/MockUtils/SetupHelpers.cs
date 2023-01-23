@@ -8,19 +8,21 @@ internal static class SetupHelpers
 {
     // TODO... maybe we can merge this with the AutoMock setup utils
 
+    private static Mock GetMock(IAutoMock mock, Type mockedType)
+        => mock.GetInnerType() == mockedType ? (Mock)mock : (Mock)typeof(Mock).GetMethod(nameof(Mock.As)).MakeGenericMethod(mockedType).Invoke(mock, new Type[]{});
 
     public static void SetupCallbaseMethod(Type mockedType, Type returnType, IAutoMock mock, Expression methodInvocationLambda)
     {
         GetMethod(nameof(SetupCallbaseMethod))
             .MakeGenericMethod(mockedType, returnType)
-            .Invoke(null, new object[] { mock, methodInvocationLambda }); 
+            .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda }); 
     }
 
     public static void SetupVoidMethod(Type mockedType, IAutoMock mock, Expression methodInvocationLambda)
     {
         GetMethod(nameof(SetupVoidMethod))
             .MakeGenericMethod(mockedType)
-            .Invoke(null, new object[] { mock, methodInvocationLambda });
+            .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda });
     }
 
     public static void SetupMethodWithResult(Type mockedType, Type returnType, 
@@ -28,14 +30,14 @@ internal static class SetupHelpers
     {
         GetMethod(nameof(SetupMethodWithResult))
                .MakeGenericMethod(mockedType, returnType)
-               .Invoke(null, new object?[] { mock, methodInvocationLambda, returnValue });
+               .Invoke(null, new object?[] { GetMock(mock, mockedType), methodInvocationLambda, returnValue });
     }
     
     public static void SetupMethodWithInvocationFunc(Type mockedType, Type returnType, 
                     IAutoMock mock, Expression methodInvocationLambda, InvocationFunc invocationFunc)
     {
         GetMethod(nameof(SetupMethodWithInvocationFunc)).MakeGenericMethod(mockedType, returnType)
-            .Invoke(null, new object[] { mock, methodInvocationLambda, invocationFunc });
+            .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda, invocationFunc });
     }
 
     public static void SetupAutoProperty(Type mockedType, Type propertyType,
@@ -46,7 +48,7 @@ internal static class SetupHelpers
 
         GetMethod(nameof(SetupMethodWithResult))
                .MakeGenericMethod(mockedType, propertyType)
-               .Invoke(null, new object?[] { mock, expr, initialValue });
+               .Invoke(null, new object?[] { GetMock(mock, mockedType), expr, initialValue });
     }
 
     public static void SetupAutoProperty(Type mockedType, Type propertyType,
@@ -54,7 +56,7 @@ internal static class SetupHelpers
     {
         GetMethod(nameof(SetupMethodWithResult))
                .MakeGenericMethod(mockedType, propertyType)
-               .Invoke(null, new object?[] { mock, methodInvocationLambda, initialValue });
+               .Invoke(null, new object?[] { GetMock(mock, mockedType), methodInvocationLambda, initialValue });
     }
 
     private static MethodInfo GetMethod(string name) => typeof(SetupHelpers)
@@ -62,20 +64,20 @@ internal static class SetupHelpers
 
 
 #pragma warning disable CA1811 // AvoidUncalledPrivateCode
-    private static void SetupVoidMethod<TMock>(AutoMock<TMock> mock, Expression<Action<TMock>> methodCallExpression)
+    private static void SetupVoidMethod<TMock>(Mock<TMock> mock, Expression<Action<TMock>> methodCallExpression)
 where TMock : class
     {
         mock.Setup(methodCallExpression);
     }
     
-    private static void SetupCallbaseMethod<TMock, TResult>(AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
+    private static void SetupCallbaseMethod<TMock, TResult>(Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
 where TMock : class
     {
         mock.Setup(methodCallExpression).CallBase();
     }
     
     private static void SetupMethodWithInvocationFunc<TMock, TResult>(
-        AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
+        Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
                                 InvocationFunc invocationFunc)
         where TMock : class
     {
@@ -83,7 +85,7 @@ where TMock : class
     }
     
     private static void SetupMethodWithResult<TMock, TResult>(
-        AutoMock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression, TResult result)
+        Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression, TResult result)
     where TMock : class
     {
         mock.Setup(methodCallExpression)
@@ -93,7 +95,7 @@ where TMock : class
     }
 
     // https://stackoverflow.com/a/72440782/640195
-    public static void SetupAutoProperty<TMock, TProperty>(this AutoMock<TMock> mock,
+    public static void SetupAutoProperty<TMock, TProperty>(this Mock<TMock> mock,
            Expression<Func<TMock, TProperty>> memberAccessExpr,
            TProperty initialValue) where TMock : class
     {

@@ -56,6 +56,27 @@ internal static class MethodInfoExtensions
                                                     && m.GetParameters().Length == method.GetParameters().Length
                                                     && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m)
                                                     && m != method);
+
+    internal static bool IsExplicitImplementation(this MethodInfo method)
+        => method.Name.Contains(".") && !method.IsStatic && method.IsVirtual && method.IsPrivate;
+
+    internal static MethodInfo? GetExplicitInterfaceMethod(this MethodInfo method) // TODO... Can `FindInterfaces` help us?
+    {
+        if (!method.IsExplicitImplementation()) return null;
+
+        var ifaces = method.DeclaringType.GetInterfaces();
+        foreach (var iface in ifaces) 
+        {
+            var map = method.DeclaringType.GetInterfaceMap(iface);
+            for (int i = 0; i < map.TargetMethods.Length; i++)
+            {
+                if (map.TargetMethods[i] == method) return map.InterfaceMethods[i];
+            }
+        }
+
+        return null;
+    }
+       
     internal static string GetTrackingPath(this MethodInfo method)
     {
         var str = method.Name;

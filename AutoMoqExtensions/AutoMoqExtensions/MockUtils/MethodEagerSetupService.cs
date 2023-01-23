@@ -10,8 +10,8 @@ namespace AutoMoqExtensions.MockUtils
     internal class MethodEagerSetupService : MethodSetupServiceBase
     {
         public MethodEagerSetupService(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-            string? customTrackingPath = null)
-                : base(mock, method, context, customTrackingPath)
+            string? customTrackingPath = null, Type? mockType = null)
+                : base(mock, method, context, customTrackingPath, mockType)
         {
         }
 

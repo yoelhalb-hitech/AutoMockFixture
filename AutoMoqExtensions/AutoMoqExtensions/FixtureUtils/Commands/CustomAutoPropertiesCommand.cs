@@ -118,20 +118,25 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
         var result = from pi in t.GetAllProperties()
                where pi.SetMethod is not null
                && (IncludePrivateSetters || pi.SetMethod.IsPublicOrInternal())
-               && (IncludePrivateOrMissingGetter || pi.GetMethod?.IsPublicOrInternal() == true)
-               && pi.GetIndexParameters().Length == 0
-               && Specification?.IsSatisfiedBy(pi) != false
                select pi;
 
         // TODO. what about default implemented interfaces?
         if (!IncludePrivateSetters || t.BaseType is null || t.BaseType == typeof(Moq.Internals.InterfaceProxy)) return result;
 
+        var explicitInterfaceProps = t.GetExplicitInterfaceProperties().Where(pi => pi.SetMethod is not null);
+
         // For AutoMock callbase properties with private setters in the base that are not virtual, we need to set it up by the base
         var readOnlyProps = t.GetAllProperties()
-                            .Where(pi => pi.SetMethod is null && pi.DeclaringType != t); // Only properties not added by Moq
+                            .Where(pi => pi.SetMethod is null && pi.DeclaringType != t) // Only properties not added by Moq
+                            .Select(p => p.GetWritablePropertyInfo())
+                            .Where(p => p is not null)
+                            .Select(p => p!);
 
-        if(!readOnlyProps.Any()) return result;
-
-        return result.Union(readOnlyProps.Select(p => p.GetWritablePropertyInfo()).Where(p => p is not null))!;
+        return result
+            .Union(readOnlyProps)
+            .Union(explicitInterfaceProps)
+            .Where(pi => (IncludePrivateOrMissingGetter || pi.GetMethod?.IsPublicOrInternal() == true)
+                                           && pi.GetIndexParameters().Length == 0
+                                           && Specification?.IsSatisfiedBy(pi) != false);
     }
 }

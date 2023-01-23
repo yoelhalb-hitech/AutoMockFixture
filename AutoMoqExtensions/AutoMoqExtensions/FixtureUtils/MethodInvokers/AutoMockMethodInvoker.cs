@@ -2,6 +2,8 @@
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMoqExtensions.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
+using Castle.DynamicProxy;
+using Moq;
 using System.Reflection;
 
 namespace AutoMoqExtensions.FixtureUtils.MethodInvokers;
@@ -34,7 +36,19 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         Logger.LogInfo("In ctor arg - creating new");
 
-        var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);        
+        var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);
+
+        var asMethod = typeof(Mock).GetMethod(nameof(Mock.As));
+        foreach (var iface in mock.GetInnerType().GetInterfaces())
+        {            
+            try
+            {
+                if (!ProxyUtil.IsAccessible(iface)) continue; // Otherwise it will prevent it from creating the mocked object later
+
+                asMethod.MakeGenericMethod(iface).Invoke(mock, new Type[] { }); // We need to do it before creating the mocked object, otherwise it won't work
+            }
+            catch { } // TODO...
+        }
 
         if (mock.GetInnerType().IsDelegate() 
                 || (mockRequest.MockShouldCallbase != true && mockRequest.StartTracker.MockShouldCallbase != true))

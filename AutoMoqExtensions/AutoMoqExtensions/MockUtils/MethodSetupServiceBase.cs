@@ -19,7 +19,7 @@ internal abstract class MethodSetupServiceBase
     protected readonly bool noMockDependencies;
 
     public MethodSetupServiceBase(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-                                                                        string? customTrackingPath = null)
+                                                                        string? customTrackingPath = null, Type? mockedType = null)
     {
         this.mock = mock;
         this.method = method;
@@ -27,7 +27,7 @@ internal abstract class MethodSetupServiceBase
         this.customTrackingPath = customTrackingPath;
 
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
-        this.mockedType = mock.GetInnerType();
+        this.mockedType = mockedType ?? mock.GetInnerType();
         this.tracker = mock.Tracker;
 
         this.noMockDependencies = !mock.Tracker?.StartTracker.MockDependencies ?? false;
@@ -107,7 +107,7 @@ internal abstract class MethodSetupServiceBase
         Logger.LogInfo("In generate result - Is generic definition: " + method.IsGenericMethodDefinition);
 
         if (mock.MethodsNotSetup.ContainsKey(trackingPath))
-                throw mock.MethodsNotSetup[trackingPath].Exception 
+                throw mock.MethodsNotSetup[trackingPath].Exception
                 ?? new Exception("Method not setup but without an exception, shouldn't arrive here");
 
         Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
