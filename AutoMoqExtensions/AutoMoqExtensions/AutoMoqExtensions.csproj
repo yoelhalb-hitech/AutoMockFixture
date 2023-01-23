@@ -27,19 +27,16 @@
 	  <Using Include="System.Collections.Generic" />
 	  <Using Include="AutoFixture.Kernel" />
 	  <Using Include="AutoMoqExtensions.Extensions" />
-	  <Using Include="DotNetPowerExtensions.MustInitialize" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-	<PackageReference Include="MustInitializeAnalyzer" Version="1.0.2">
+    <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="1.0.1" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
 	  
 	<PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
 	<PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
@@ -51,9 +48,6 @@
 	</PackageReference>
 	<PackageReference Include="NUnit" Version="3.13.2" />
 	<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
-	  
-    <!--<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.8" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />-->
   </ItemGroup>
 
   <ItemGroup>

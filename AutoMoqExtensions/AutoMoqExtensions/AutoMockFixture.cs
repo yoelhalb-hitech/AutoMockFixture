@@ -8,7 +8,7 @@ using AutoMoqExtensions.FixtureUtils.Postprocessors;
 using AutoMoqExtensions.FixtureUtils.Requests;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 using AutoMoqExtensions.FixtureUtils.Specifications;
-using DotNetPowerExtensions.DependencyManagement;
+using SequelPay.DotNetPowerExtensions;
 using Moq;
 using System.Reflection;
 

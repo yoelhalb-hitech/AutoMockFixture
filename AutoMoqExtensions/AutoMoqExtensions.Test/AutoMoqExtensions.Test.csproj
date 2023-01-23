@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+	
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework><!--Needs to 472 for Singleton attribute to work as it is netstandard 2-->
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
 	<LangVersion>11.0</LangVersion>
 	<Nullable>enable</Nullable>
@@ -15,7 +15,10 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>LINQPadQuery</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup> 
 	
   <ItemGroup>
 	  <Using Include="System" />
@@ -25,20 +28,11 @@
 	  <Using Include="AutoFixture.Kernel" />
 	  <Using Include="AutoMoqExtensions.Extensions" />
 	  <Using Include="AutoMoqExtensions.Attributes" />
-	  <Using Include="DotNetPowerExtensions.MustInitialize" />
 	  <Using Include="FluentAssertions" />
 	  <Using Include="NUnit.Framework" />
   </ItemGroup>
 	
   <ItemGroup>
-	<PackageReference Include="DotNetPowerExtensions" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>     
-    </PackageReference>
-	<PackageReference Include="MustInitializeAnalyzer" Version="1.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-	  
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
 	  <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
 	  <PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
@@ -56,17 +50,14 @@
 	  <PackageReference Include="NUnit" Version="3.13.2" />
 	  <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
 	  <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
-    <!--<PackageReference Include="Microsoft.CodeAnalysis" Version="3.3.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeRefactoring.Testing.MSTest" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Analyzer.Testing.MSTest" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.CodeFix.Testing.MSTest" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.CodeRefactoring.Testing.MSTest" Version="1.1.0" />-->
+	  <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="1.0.1" />
+	  <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="1.0.1">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <!--<ProjectReference Include="..\AutoMoqExtensions.CodeFixes\AutoMoqExtensions.CodeFixes.csproj" />-->
     <ProjectReference Include="..\AutoMoqExtensions\AutoMoqExtensions.csproj" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿using DotNetPowerExtensions.DependencyManagement;
+﻿using SequelPay.DotNetPowerExtensions;
 
 namespace AutoMoqExtensions.Test.AutoMockFixture_Tests;
 
