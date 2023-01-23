@@ -41,19 +41,20 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
 
     public override void UpdateResult()
     {
-        var currentMocks = this.allMocks ?? new List<IAutoMock>();
-        var currentPaths = this.childrensPaths ?? new Dictionary<string, List<object?>>();
+        var currentMocks = this.allMocks ?? new List<WeakReference<IAutoMock>>();
+        var currentPaths = this.childrensPaths ?? new Dictionary<string, List<WeakReference?>>();
 
         base.UpdateResult();
 
-        var childrensPaths = this.childrensPaths.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) ?? new Dictionary<string, List<object?>>();
+        var childrensPaths = this.childrensPaths.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) 
+                                ?? new Dictionary<string, List<WeakReference?>>();
 
         // Assuming that all paths and mocks are add only
-        var newMocks = this.allMocks?.Except(currentMocks).ToList() ?? new List<IAutoMock>();
+        var newMocks = this.allMocks?.Except(currentMocks).ToList() ?? new List<WeakReference<IAutoMock>>();
         var newPaths = childrensPaths.Keys.Except(currentPaths.Keys).ToList();
 
         var modifiedPaths = currentPaths
-            .Select(c => new KeyValuePair<string, List<object?>>(c.Key, childrensPaths[c.Key].Except(c.Value).ToList()))
+            .Select(c => new KeyValuePair<string, List<WeakReference?>>(c.Key, childrensPaths[c.Key].Except(c.Value).ToList()))
             .Where(kvp => kvp.Value.Any())            
             .Union(childrensPaths.Where(c => newPaths.Contains(c.Key)))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

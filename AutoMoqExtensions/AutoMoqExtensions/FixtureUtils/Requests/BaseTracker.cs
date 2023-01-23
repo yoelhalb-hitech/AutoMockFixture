@@ -1,4 +1,5 @@
 ﻿using AutoMoqExtensions.AutoMockUtils;
+using AutoMoqExtensions.Extensions;
 using AutoMoqExtensions.FixtureUtils.Requests.MainRequests;
 
 namespace AutoMoqExtensions.FixtureUtils.Requests;
@@ -16,9 +17,9 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         tracker?.AddChild(this);
     }
 
-    protected object? result;
+    protected WeakReference? result;
     protected List<ITracker> children = new List<ITracker>();
-    protected List<IAutoMock>? allMocks;
+    protected List<WeakReference<IAutoMock>>? allMocks;
 
     public virtual IFixtureTracker StartTracker => Parent?.StartTracker ?? this as IFixtureTracker ?? throw new Exception("No valid start tracker provided");
     
@@ -32,10 +33,10 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
 
     public string BasePath => Parent?.Path ?? "";
 
-    public virtual List<IAutoMock>? GetAllMocks() => allMocks;
-    public object? Result => result;
-    protected Dictionary<string, List<object?>>? childrensPaths;
-    public Dictionary<string, List<object?>>? GetChildrensPaths() => childrensPaths;
+    public virtual List<WeakReference<IAutoMock>>? GetAllMocks() => allMocks;
+    public WeakReference? Result => result;
+    protected Dictionary<string, List<WeakReference?>>? childrensPaths;
+    public Dictionary<string, List<WeakReference?>>? GetChildrensPaths() => childrensPaths;
     protected bool completed;
     public bool IsCompleted => completed;
 
@@ -70,7 +71,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         var childrenWithResult = Children.Where(c => c.IsCompleted).ToList();
 
         allMocks = childrenWithResult.SelectMany(c => c.GetAllMocks()).ToList();
-        if (result is not null && AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock);
+        if (result is not null && AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock.ToWeakReference());
 
         // Probably not worth to do Distinct here (as the caller will do it), unless it is the last one
         if (Parent is null) allMocks = allMocks.Distinct().ToList();
@@ -88,7 +89,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
             childrensPaths = childrenWithResult.SelectMany(c => c.GetChildrensPaths())
                         .GroupBy(c => c.Key) // We don't need null and it can cause duplicates (for example in factory method calling multiple times a constructor with different values)
                         .ToDictionary(c => c.Key, c => c.SelectMany(x => x.Value).Distinct().ToList());
-            if (InstancePath != "" && !childrensPaths.ContainsKey(Path)) childrensPaths.Add(Path, new List<object?> { result });
+            if (InstancePath != "" && !childrensPaths.ContainsKey(Path)) childrensPaths.Add(Path, new List<WeakReference?> { result });
             else if (InstancePath != "" && !childrensPaths[Path].Contains(result)) childrensPaths[Path].Add(result);
         }
         catch (Exception ex)
@@ -107,7 +108,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         if (completed) return;
 
         // We don't want a reference to the main result to avoid memory leaks
-        if (Path != String.Empty) this.result = result;
+        if (Path != String.Empty) this.result = result.ToWeakReference();
         
         StartTracker.Fixture.Cache.AddIfNeeded(this, result);
 

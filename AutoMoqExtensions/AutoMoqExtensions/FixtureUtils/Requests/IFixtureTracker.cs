@@ -16,7 +16,7 @@ public interface IFixtureTracker : ITracker
 
     public class UpdateData : EventArgs
     {
-        public List<IAutoMock> AutoMocks { get; set; } = new();
-        public Dictionary<string, List<object?>> Paths { get; set; } = new();
+        public List<WeakReference<IAutoMock>> AutoMocks { get; set; } = new();
+        public Dictionary<string, List<WeakReference?>> Paths { get; set; } = new();
     }
 }

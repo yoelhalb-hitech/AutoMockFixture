@@ -6,12 +6,12 @@ public interface ITracker
     public IFixtureTracker StartTracker { get; }
     public ITracker? Parent { get; }
     public List<ITracker>? Children { get; }
-    public List<IAutoMock>? GetAllMocks();
-    public Dictionary<string, List<object?>>? GetChildrensPaths();
+    public List<WeakReference<IAutoMock>>? GetAllMocks();
+    public Dictionary<string, List<WeakReference?>>? GetChildrensPaths();
     public string Path { get; }
     public string InstancePath { get; }
     public string BasePath { get; }
-    public object? Result { get; }
+    public WeakReference? Result { get; }
     public ISpecimenBuilder? Builder { get; }
     public ISpecimenCommand? Command { get; }
     public void SetResult(object? result, ISpecimenBuilder? builder);

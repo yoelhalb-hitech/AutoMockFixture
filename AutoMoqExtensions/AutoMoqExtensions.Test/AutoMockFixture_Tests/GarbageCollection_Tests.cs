@@ -12,42 +12,110 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
     {
         public virtual T Get<T>(T t) => t;
     }
-    internal class GarbageCollection_Tests
+    public class SelfReferencing
+    {
+        private readonly SelfReferencing selfReferencing;
+
+        public SelfReferencing(SelfReferencing selfReferencing)
+        {
+            this.selfReferencing = selfReferencing;
+        }
+    }
+
+    public class IndirectSelfReferencingOuter
+    {
+        private readonly IndirectSelfReferencingInner selfReferencingInner;
+
+        public IndirectSelfReferencingOuter(IndirectSelfReferencingInner selfReferencingInner)
+        {
+            this.selfReferencingInner = selfReferencingInner;
+        }
+    }
+
+    public class IndirectSelfReferencingInner
+    {
+        private readonly IndirectSelfReferencingOuter selfReferencingOuter;
+
+        public IndirectSelfReferencingInner(IndirectSelfReferencingOuter selfReferencingOuter)
+        {
+            this.selfReferencingOuter = selfReferencingOuter;
+        }
+    }
+    public class GarbageCollection_Tests
     {
         public static Type[] AutoMockTypes =
         {
             typeof(InternalReadOnlyTestInterface),
-            typeof(InternalSimpleTestClass),
-            typeof(InternalReadonlyPropertyClass),
-            typeof(InternalAbstractSimpleTestClass),
             typeof(AutoMock<InternalReadOnlyTestInterface>),
+            typeof(InternalSimpleTestClass),
             typeof(AutoMock<InternalSimpleTestClass>),
+            typeof(InternalReadonlyPropertyClass),
             typeof(AutoMock<InternalReadonlyPropertyClass>),
+            typeof(InternalAbstractSimpleTestClass),
             typeof(AutoMock<InternalAbstractSimpleTestClass>),
+            typeof(InternalAbstractReadonlyPropertyClass),
+            typeof(AutoMock<InternalAbstractReadonlyPropertyClass>),
+            typeof(InternalReadonlyPropertyClass),
+            typeof(AutoMock<InternalReadonlyPropertyClass>),
+            typeof(InternalPrivateSetterPropertyClass),
+            typeof(AutoMock<InternalPrivateSetterPropertyClass>),
+            typeof(ProtectedSetterPropertyClass),
+            typeof(AutoMock<ProtectedSetterPropertyClass>),
+            typeof(InternalSimpleTestClass),
+            typeof(AutoMock<InternalSimpleTestClass>),
+            typeof(InternalTestFields),
+            typeof(AutoMock<InternalTestFields>),
+            typeof(InternalTestMethods),
+            typeof(AutoMock<InternalTestMethods>),
+            typeof(ITestInterface),
+            typeof(AutoMock<ITestInterface>),
+            typeof(InternalAbstractMethodTestClass),
+            typeof(AutoMock<InternalAbstractMethodTestClass>),
+            typeof(WithCtorArgsTestClass),
+            typeof(AutoMock<WithCtorArgsTestClass>),
+            typeof(WithComplexTestClass),
+            typeof(AutoMock<WithComplexTestClass>),
+            typeof(WithCtorNoArgsTestClass),
+            typeof(AutoMock<WithCtorNoArgsTestClass>),
+
             typeof(GenericClassWithGenericMethod<string>),
             typeof(AutoMock<GenericClassWithGenericMethod<string>>),
+
+            typeof(NonGenericClassWithGenericMethod),
+            typeof(AutoMock<NonGenericClassWithGenericMethod>),
+            typeof(SelfReferencing),
+            typeof(AutoMock<SelfReferencing>),
+            typeof(IndirectSelfReferencingOuter),
+            typeof(AutoMock<IndirectSelfReferencingOuter>),
+            typeof(IndirectSelfReferencingInner),
+            typeof(AutoMock<IndirectSelfReferencingInner>),
         };
+
         public static Type[] NonAutoMockTypes =
         {
             typeof(string),
             typeof(Task),
             typeof(IEnumerable<string>),
         };
+
         public static IEnumerable<Type> GetAllTypes() => AutoMockTypes.Union(NonAutoMockTypes);
         public static MethodSetupTypes[] SetupTypeLists =
-{
+        {
             MethodSetupTypes.Eager,
             MethodSetupTypes.LazySame,
             MethodSetupTypes.LazyDifferent,
         };
+
         [Test, Pairwise]
         public void Test_IsGarabaseCollectible_WhenAutoMock(
-            [ValueSource(nameof(AutoMockTypes))] Type type, [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType)
+                        [ValueSource(nameof(AutoMockTypes))] Type type,
+                        [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
+                        [Values(true, false)] bool callbase)
         {
             var fixture = new AbstractAutoMockFixture();
             fixture.MethodSetupType = setupType;
 
-            IsGarbageCollectible(() => fixture.CreateAutoMock(type)!).Should().BeTrue();
+            IsGarbageCollectible(() => fixture.CreateAutoMock(type, callbase)!).Should().BeTrue();
         }
 
         [Test, Pairwise]
@@ -62,12 +130,14 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
 
         [Test, Pairwise]
         public void Test_IsGarabaseCollectible_WhenAutoMockDependencies(
-            [ValueSource(nameof(GetAllTypes))] Type type, [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType)
+                        [ValueSource(nameof(AutoMockTypes))] Type type,
+                        [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
+                        [Values(true, false)] bool callbase)
         {
             var fixture = new AbstractAutoMockFixture();
             fixture.MethodSetupType = setupType;
 
-            IsGarbageCollectible(() => fixture.CreateWithAutoMockDependencies(type)!).Should().BeTrue();
+            IsGarbageCollectible(() => fixture.CreateWithAutoMockDependencies(type, callbase)!).Should().BeTrue();
         }
 
 
@@ -125,7 +195,7 @@ namespace AutoMoqExtensions.Test.AutoMockFixture_Tests
             var reference = GetWeakReference(func); // The object needs to be in a separate function otherwise it doesn't collect it
 
             GC.Collect();
-            GC.WaitForPendingFinalizers();            
+            GC.WaitForPendingFinalizers();
 
             return !reference.IsAlive;
         }

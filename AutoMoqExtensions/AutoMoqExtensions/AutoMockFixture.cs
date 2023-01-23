@@ -172,9 +172,9 @@ public abstract partial class AutoMockFixture : Fixture
                     .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
                     .Value;
 
-    internal Dictionary<WeakReference, Task<Dictionary<string, List<object?>>>> PathsDict = new();
-    internal Dictionary<WeakReference, Task<List<IAutoMock>>> MocksDict = new();
-    internal Dictionary<WeakReference, Task<Dictionary<Type, List<IAutoMock>>>> MocksByTypeDict = new();
+    internal Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> PathsDict = new();
+    internal Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> MocksDict = new();
+    internal Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> MocksByTypeDict = new();
 
     internal Dictionary<WeakReference, ITracker> TrackerDict = new();
     internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
@@ -195,7 +195,7 @@ public abstract partial class AutoMockFixture : Fixture
 
             PathsDict[key] = Task.Run(() => request.GetChildrensPaths()
                         .ToDictionary(c => c.Key, c => c.Value)
-                    ?? new Dictionary<string, List<object?>>());
+                    ?? new Dictionary<string, List<WeakReference?>>());
 
             PathsDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) =>
             {
@@ -206,14 +206,14 @@ public abstract partial class AutoMockFixture : Fixture
                 });
             });
 
-            MocksDict[key] = Task.Run(() => request.GetAllMocks() ?? new List<IAutoMock>());
+            MocksDict[key] = Task.Run(() => request.GetAllMocks() ?? new List<WeakReference<IAutoMock>>());
             MocksDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) =>
             {
                 MocksDict[key].Result.AddRange(d.AutoMocks);
             });
 
             MocksByTypeDict[key] = Task.Run(() => MocksDict[key].Result
-                                            .GroupBy(m => m.GetInnerType())
+                                            .GroupBy(m => m.GetTarget()?.GetInnerType())
                                             .Where(g => g.Key is not null)
                                             .ToDictionary(d => d.Key!, d => d.ToList()));
 
@@ -221,9 +221,11 @@ public abstract partial class AutoMockFixture : Fixture
             {
                 d.AutoMocks.ForEach(m =>
                 {
-                    var t = m.GetInnerType();
-                    if (!MocksByTypeDict[key].Result.ContainsKey(t))
-                        MocksByTypeDict[key].Result[t] = new List<IAutoMock>();
+                    var t = m.GetTarget()?.GetInnerType();
+                    if (t is null) return;
+
+                    if(!MocksByTypeDict[key].Result.ContainsKey(t))
+                        MocksByTypeDict[key].Result[t] = new List<WeakReference<IAutoMock>>();
 
                     MocksByTypeDict[key].Result[t].Add(m);
                 });
@@ -254,7 +256,7 @@ public abstract partial class AutoMockFixture : Fixture
     /// <returns></returns>
     /// <exception cref="Exception">Path not provided</exception>
     /// <exception cref="Exception">Object not found</exception>
-    public List<object?> GetAt(object obj, string path)
+    public List<object> GetAt(object obj, string path)
     {
         obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
 
@@ -266,7 +268,7 @@ public abstract partial class AutoMockFixture : Fixture
         var paths = PathsDict.First(d => d.Key.Target == obj).Value.Result;
         if (paths is null || !paths.ContainsKey(path)) throw new Exception($"`{path}` not found, please ensure that it is the correct path on the correct object");
         
-        return paths[path];
+        return paths[path].GetValidValues();
     }
     public string GetPathForObject(object mainObj, object currentObject)
     {
@@ -312,7 +314,7 @@ public abstract partial class AutoMockFixture : Fixture
         var typeDict = MocksByTypeDict.First(d => d.Key.Target == obj).Value.Result;
 
         return typeDict.Where(td => td.Key.IsAssignableFrom(type))
-                            .SelectMany(td => td.Value);
+                            .SelectMany(td => td.Value.GetValidValues());
     }
 
     public IEnumerable<AutoMock<T>> GetAutoMocks<T>(object obj) where T : class 
@@ -373,7 +375,7 @@ public abstract partial class AutoMockFixture : Fixture
         if (!MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
 
         if (AutoMockHelpers.GetFromObj(obj) is IAutoMock mock) mock.Verify();
-        MocksDict.First(d => d.Key.Target == obj).Value?.Result.ForEach(m => m.Verify());
+        MocksDict.First(d => d.Key.Target == obj).Value?.Result.GetValidValues().ForEach(m => m.Verify());
     }
 
     public void Verify()
@@ -386,7 +388,7 @@ public abstract partial class AutoMockFixture : Fixture
         if (!MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
 
         if (AutoMockHelpers.GetFromObj(obj) is IAutoMock mock) mock.VerifyNoOtherCalls();
-        MocksDict.First(d => d.Key.Target == obj).Value?.Result?.ForEach(m => m.VerifyNoOtherCalls());
+        MocksDict.First(d => d.Key.Target == obj).Value?.Result?.GetValidValues().ForEach(m => m.VerifyNoOtherCalls());
     }
 
     public void VerifyNoOtherCalls()
