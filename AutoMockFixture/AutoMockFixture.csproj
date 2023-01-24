@@ -9,7 +9,7 @@
 
     <!-- Avoid ID conflicts with the package project. -->
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
@@ -40,12 +40,6 @@
 	  
 	<PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
 	<PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
-
-	<PackageReference Include="Moq" Version="4.17.2" />
-	<PackageReference Include="Moq.Analyzers" Version="0.0.9">
-		<PrivateAssets>all</PrivateAssets>
-		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	</PackageReference>
 	<PackageReference Include="NUnit" Version="3.13.2" />
 	<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
   </ItemGroup>
