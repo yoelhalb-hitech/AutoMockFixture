@@ -1,8 +1,9 @@
-﻿using AutoMockFixture.AutoMockUtils;
+﻿using AutoFixture.Kernel;
+using AutoMockFixture.AutoMockUtils;
 using Moq;
 using System.Linq.Expressions;
 
-namespace AutoMockFixture.FixtureUtils.Commands;
+namespace AutoMockFixture.Moq.FixtureUtils.Commands;
 
 internal class AutoMockStubAllPropertiesCommand : ISpecimenCommand
 {

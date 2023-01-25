@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace AutoMockFixture.Expressions;
+namespace AutoMockFixture.Moq.Expressions;
 
 internal class FuncExpressionBuilder<T>
 {
@@ -10,11 +10,11 @@ internal class FuncExpressionBuilder<T>
 
     public Expression<Func<T, TResult>> GetExpression<TAnon, TResult>(
                 Expression<Func<T, Func<TResult>>> expression, TAnon paramData)
-                    => GetExpression<TAnon, TResult>(expression, paramData, new Type[]{});
+                    => GetExpression<TAnon, TResult>(expression, paramData, new Type[] { });
 
     public Expression<Func<T, TResult>> GetExpression<TParam1, TResult, TAnon>(
                     Expression<Func<T, Func<TParam1, TResult>>> expression, TAnon paramData)
-            => GetExpression<TAnon, TResult>(expression, paramData, new[] { typeof(TParam1)});
+            => GetExpression<TAnon, TResult>(expression, paramData, new[] { typeof(TParam1) });
 
     public Expression<Func<T, TResult>> GetExpression<TParam1, TParam2, TResult, TAnon>(
                     Expression<Func<T, Func<TParam1, TParam2, TResult>>> expression, TAnon paramData)
@@ -29,7 +29,7 @@ internal class FuncExpressionBuilder<T>
 
     public Expression<Func<T, TResult>> GetExpression<TParam1, TParam2, TParam3, TParam4, TParam5, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TResult>>> expression, TAnon paramData)
-            => GetExpression<TAnon, TResult>(expression, paramData, 
+            => GetExpression<TAnon, TResult>(expression, paramData,
                 new[] { typeof(TParam1), typeof(TParam2), typeof(TParam3), typeof(TParam4), typeof(TParam5) });
 
     public Expression<Func<T, TResult>> GetExpression<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TResult, TAnon>(

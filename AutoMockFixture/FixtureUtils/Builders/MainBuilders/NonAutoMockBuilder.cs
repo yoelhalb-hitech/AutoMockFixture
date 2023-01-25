@@ -6,12 +6,14 @@ namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class NonAutoMockBuilder : ISpecimenBuilder
 {        
-    public NonAutoMockBuilder(ISpecimenBuilder builder)
+    public NonAutoMockBuilder(ISpecimenBuilder builder, IAutoMockHelpers autoMockHelpers)
     {
         Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public ISpecimenBuilder Builder { get; }
+    public IAutoMockHelpers AutoMockHelpers { get; }
 
     public object? Create(object request, ISpecimenContext context)
     {

@@ -5,7 +5,7 @@ using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.Moq.MockUtils;
 
 internal class ExpressionGenerator
 {
@@ -23,7 +23,7 @@ internal class ExpressionGenerator
         this.method = method;
         this.context = context;
         this.tracker = tracker;
-        this.noMockDependencies = tracker?.StartTracker.MockDependencies == false;
+        noMockDependencies = tracker?.StartTracker.MockDependencies == false;
     }
 
     public Expression? MakeMethodInvocationLambda()
@@ -79,7 +79,7 @@ internal class ExpressionGenerator
             var request = noMockDependencies
                             ? new OutParameterRequest(mockedType, method, parameter, underlyingType, tracker)
                             : new AutoMockOutParameterRequest(mockedType, method, parameter, underlyingType, tracker);
-            
+
             // TODO... change this to to delay generate it when called first time
             object variable = context.Resolve(request);
             Logger.LogInfo("Out underlying result: " + variable.ToString());

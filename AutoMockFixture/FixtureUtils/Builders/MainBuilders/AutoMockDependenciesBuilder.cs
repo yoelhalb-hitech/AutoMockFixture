@@ -7,12 +7,14 @@ namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockDependenciesBuilder : ISpecimenBuilder
 {
-    public AutoMockDependenciesBuilder(ISpecimenBuilder builder)
+    public AutoMockDependenciesBuilder(ISpecimenBuilder builder, IAutoMockHelpers autoMockHelpers)
     {
         Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public ISpecimenBuilder Builder { get; }
+    public IAutoMockHelpers AutoMockHelpers { get; }
 
     public object? Create(object request, ISpecimenContext context)
     {

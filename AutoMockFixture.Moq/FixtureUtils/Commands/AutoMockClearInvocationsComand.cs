@@ -1,7 +1,8 @@
-﻿using AutoMockFixture.AutoMockUtils;
+﻿using AutoFixture.Kernel;
+using AutoMockFixture.AutoMockUtils;
 using Moq;
 
-namespace AutoMockFixture.FixtureUtils.Commands;
+namespace AutoMockFixture.Moq.FixtureUtils.Commands;
 
 internal class AutoMockClearInvocationsCommand : ISpecimenCommand
 {

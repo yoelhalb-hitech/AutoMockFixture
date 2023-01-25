@@ -1,13 +1,14 @@
 ﻿using AutoFixture;
+using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests;
 using Moq;
 using System.Collections;
 using System.Reflection;
 using System.Threading;
 
-namespace AutoMockFixture.AutoMockUtils;
+namespace AutoMockFixture.Moq.AutoMockUtils;
 
-public static class AutoMockHelpers
+internal class AutoMockHelpers : IAutoMockHelpers
 {
     public static AutoMock<T>? GetAutoMock<T>(T? obj) where T : class
     {
@@ -17,19 +18,19 @@ public static class AutoMockHelpers
         catch{ return null; }
     }
 
-    public static bool IsAutoMock<T>() => IsAutoMock(typeof(T));
-    public static bool IsAutoMock(Type? t) => t?.IsGenericType == true && t.GetGenericTypeDefinition() == typeof(AutoMock<>);
-    public static Type? GetMockedType(Type? t) => t?.IsGenericType == true && t.GetGenericTypeDefinition() == typeof(AutoMock<>) ? t.GetTypeInfo().GetGenericArguments().Single() : null;
+    public bool IsAutoMock<T>() => IsAutoMock(typeof(T));
+    public bool IsAutoMock(Type? t) => t?.IsGenericType == true && t.GetGenericTypeDefinition() == typeof(AutoMock<>);
+    public Type? GetMockedType(Type? t) => t?.IsGenericType == true && t.GetGenericTypeDefinition() == typeof(AutoMock<>) ? t.GetTypeInfo().GetGenericArguments().Single() : null;
     /// <summary>
     /// Returns the non generic base interface, for use when it might be already an AutoMock but we don't know the generic type
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static IAutoMock? GetFromObj(object? obj) => obj is IAutoMock m ? m : (obj as IMocked ?? (obj as Delegate)?.Target as IMocked)?.Mock as IAutoMock;
-    public static Type GetAutoMockType(Type inner) => typeof(AutoMock<>).MakeGenericType(inner);
+    public IAutoMock? GetFromObj(object? obj) => obj is IAutoMock m ? m : (obj as IMocked ?? (obj as Delegate)?.Target as IMocked)?.Mock as IAutoMock;
+    public Type GetAutoMockType(Type inner) => typeof(AutoMock<>).MakeGenericType(inner);
 
-    internal static bool IsAutoMockAllowed(Type t)
+    public bool IsAutoMockAllowed(Type t)
     {
         if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType 
                     || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace AutoMockFixture.Expressions;
+namespace AutoMockFixture.Moq.Expressions;
 
 internal class ActionExpressionBuilder<T>
 {
@@ -9,7 +9,7 @@ internal class ActionExpressionBuilder<T>
                 => (Expression<Action<T>>)expressionBuilder.GetExpression(expression, paramData, types);
 
     public Expression<Action<T>> GetExpression<TAnon>(Expression<Func<T, Action>> expression, TAnon paramData)
-                => GetExpression(expression, paramData, new Type[]{});
+                => GetExpression(expression, paramData, new Type[] { });
 
     public Expression<Action<T>> GetExpression<TParam1, TAnon>(
             Expression<Func<T, Action<TParam1>>> expression, TAnon paramData)
@@ -28,7 +28,7 @@ internal class ActionExpressionBuilder<T>
 
     public Expression<Action<T>> GetExpression<TParam1, TParam2, TParam3, TParam4, TParam5, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5>>> expression, TAnon paramData)
-            => GetExpression(expression, paramData, 
+            => GetExpression(expression, paramData,
                 new[] { typeof(TParam1), typeof(TParam2), typeof(TParam3), typeof(TParam4), typeof(TParam5) });
 
     public Expression<Action<T>> GetExpression<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TAnon>(

@@ -1,7 +1,7 @@
 ﻿using Moq;
 using System.Reflection;
 
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.Moq.MockUtils;
 
 public class MatcherGenerator
 {
@@ -34,7 +34,7 @@ public class MatcherGenerator
         else
         {
             // https://stackoverflow.com/a/59144369/640195
-            if (isValueType) constraints = constraints.Union(new[] { typeof(System.ValueType) }).ToArray();
+            if (isValueType) constraints = constraints.Union(new[] { typeof(ValueType) }).ToArray();
             return GetOrAdd(constraints);
         }
     }
@@ -72,7 +72,7 @@ public class MatcherGenerator
         lock (lockObject)
         {
             if (matcherDict.ContainsKey(tag)) return matcherDict[tag];
-            
+
             var newType = CreateTypeMatcher(types);
 
             matcherDict[tag] = newType;

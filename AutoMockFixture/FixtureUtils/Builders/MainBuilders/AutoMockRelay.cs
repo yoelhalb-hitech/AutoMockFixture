@@ -7,19 +7,21 @@ namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockRelay : ISpecimenBuilder
 {
-    public AutoMockRelay(AutoMockFixture fixture)
-             : this(new AutoMockableSpecification(), fixture)
+    public AutoMockRelay(AutoMockFixture fixture, IAutoMockHelpers autoMockHelpers)
+             : this(new AutoMockableSpecification(), fixture, autoMockHelpers)
     {
     }
 
-    public AutoMockRelay(IRequestSpecification mockableSpecification, AutoMockFixture fixture)
+    public AutoMockRelay(IRequestSpecification mockableSpecification, AutoMockFixture fixture, IAutoMockHelpers autoMockHelpers)
     {
         this.MockableSpecification = mockableSpecification ?? throw new ArgumentNullException(nameof(mockableSpecification));
-        Fixture = fixture;
+        Fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public IRequestSpecification MockableSpecification { get; }
     public AutoMockFixture Fixture { get; }
+    public IAutoMockHelpers AutoMockHelpers { get; }
 
     public object? Create(object request, ISpecimenContext context)
     {

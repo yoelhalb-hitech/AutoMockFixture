@@ -1,13 +1,17 @@
-﻿using AutoMockFixture.FixtureUtils.Requests;
+﻿using AutoFixture.Kernel;
+using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.Extensions;
+using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using AutoMockFixture.Moq.MockUtils;
 using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.Moq.MockUtils;
 
-internal abstract class MethodSetupServiceBase
+internal abstract class MethodSetupServiceBase : ISetupService
 {
     protected readonly IAutoMock mock;
     protected readonly Type mockedType;

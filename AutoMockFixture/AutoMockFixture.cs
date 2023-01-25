@@ -37,7 +37,7 @@ internal class AbstractAutoMockFixture : AutoMockFixture
 /// <summary>
 /// Caution the methods are not thread safe
 /// </summary>
-public abstract partial class AutoMockFixture : Fixture
+internal abstract partial class AutoMockFixture : Fixture
 {
     internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
     private readonly static MethodInfo replaceNodeMethod;

@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.AutoMockUtils;
 
 public class CannotSetupMethodException
 {

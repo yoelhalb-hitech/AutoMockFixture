@@ -1,6 +1,6 @@
 ﻿using Moq;
 
-namespace AutoMockFixture.VerifyInfo;
+namespace AutoMockFixture.Moq.VerifyInfo;
 
 public class VerifyAddInfo<T> : IVerifyInfo<T> where T : class
 {

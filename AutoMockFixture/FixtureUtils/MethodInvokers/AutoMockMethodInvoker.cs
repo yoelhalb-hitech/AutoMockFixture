@@ -36,11 +36,14 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         Logger.LogInfo("In ctor arg - creating new");
 
-        var mock = (IAutoMock)Activator.CreateInstance(mockRequest.Request);
+        var obj = Activator.CreateInstance(mockRequest.Request);
+        if (obj is null || obj is not IAutoMock mock || obj is not Mock m) return new NoSpecimen();
+
+        m.DefaultValue = DefaultValue.Empty; // When we want a value we will set it up ourselves with AutoMock
 
         var asMethod = typeof(Mock).GetMethod(nameof(Mock.As));
         foreach (var iface in mock.GetInnerType().GetInterfaces())
-        {            
+        {
             try
             {
                 if (!ProxyUtil.IsAccessible(iface)) continue; // Otherwise it will prevent it from creating the mocked object later

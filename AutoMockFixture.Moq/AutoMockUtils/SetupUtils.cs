@@ -1,11 +1,11 @@
-﻿using AutoMockFixture.Expressions;
+﻿using AutoMockFixture.Moq.Expressions;
 using AutoMockFixture.VerifyInfo;
 using Moq;
 using Moq.Language.Flow;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.AutoMockUtils;
+namespace AutoMockFixture.Moq.AutoMockUtils;
 
 internal class SetupUtils<T> where T : class
 {
@@ -14,9 +14,9 @@ internal class SetupUtils<T> where T : class
         AutoMock = autoMock;
     }
     private readonly BasicExpressionBuilder<T> basicExpression = new();
-    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, global::AutoMockFixture.Extensions.TypeExtensions.AllBindings);
+    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, Extensions.TypeExtensions.AllBindings);
     public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
-    {        
+    {
         return SetupActionInternal(expression, times);
     }
 
@@ -30,7 +30,7 @@ internal class SetupUtils<T> where T : class
 
     public ISetup<T, TResult> SetupInternal<TResult>(LambdaExpression originalExpression, Expression<Func<T, TResult>> expression, Times? times = null)
     {
-        var method = typeof(System.Delegate).IsAssignableFrom(typeof(T)) ? null : basicExpression.GetMethod(originalExpression);
+        var method = typeof(Delegate).IsAssignableFrom(typeof(T)) ? null : basicExpression.GetMethod(originalExpression);
         return SetupFuncInternal(method, expression, times);
     }
     public ISetup<T, TResult> SetupFuncFromLambda<TResult>(MethodInfo method, LambdaExpression expression, Times? times = null)
@@ -44,7 +44,7 @@ internal class SetupUtils<T> where T : class
         if (method?.IsSpecialName == true) // Assumming property get
         {
             AutoMock.SetupGet(expression);
-            if (times.HasValue) AutoMock.VerifyList.Add(new VerifyGetInfo<T, TResult>(expression, times.Value));               
+            if (times.HasValue) AutoMock.VerifyList.Add(new VerifyGetInfo<T, TResult>(expression, times.Value));
         }
 
         var setup = AutoMock.Setup(expression);
@@ -66,12 +66,12 @@ internal class SetupUtils<T> where T : class
 
         return setup;
     }
-    
+
 
     public AutoMock<T> AutoMock { get; }
 
     public MethodInfo GetSetupFuncInternal(Type type)
-        => this.GetType().GetMethod(nameof(SetupFuncFromLambda), global::AutoMockFixture.Extensions.TypeExtensions.AllBindings)
+        => GetType().GetMethod(nameof(SetupFuncFromLambda), Extensions.TypeExtensions.AllBindings)
         .MakeGenericMethod(type);
 
     // Doing this way it because of issues with overload resolution
@@ -80,7 +80,7 @@ internal class SetupUtils<T> where T : class
         var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
         var expr = basicExpression.GetExpression(method, paramData, paramTypes);
 
-        return SetupFuncWithResult<TResult>(method, (Expression<Func<T, TResult>>)expr, result, times);
+        return SetupFuncWithResult(method, (Expression<Func<T, TResult>>)expr, result, times);
     }
 
     // Doing this way it because of issues with overload resolution

@@ -1,11 +1,11 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
-using AutoMockFixture.Expressions;
+using AutoMockFixture.Moq.Expressions;
 using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture;
+namespace AutoMockFixture.Moq.AutoMockUtils;
 
 public partial class AutoMock<T>
 {
@@ -83,7 +83,7 @@ public partial class AutoMock<T>
     #endregion
 
     public AutoMock<T> Setup(Expression<Action<T>> expression, Times times)
-    {        
+    {
         return SetupInternal(expression, expression, times);
     }
 

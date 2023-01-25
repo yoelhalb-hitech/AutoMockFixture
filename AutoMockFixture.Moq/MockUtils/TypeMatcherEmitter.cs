@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.Moq.MockUtils;
 
 // TODO... Maybe we can improve perfomance by batching them together in 1 assembly,
 //        (my benchmarks showed that until 10k there is a performance benefit, but afterwards it degardes)

@@ -1,14 +1,15 @@
 ﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.MockUtils;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockVirtualMethodsCommand : ISpecimenCommand
 {
-    private readonly MethodSetupServiceFactory setupServiceFactory;
+    private readonly IAutoMockHelpers autoMockHelpers;
+    private readonly SetupServiceFactoryBase setupServiceFactory;
 
-    public AutoMockVirtualMethodsCommand(MethodSetupServiceFactory setupServiceFactory)
+    public AutoMockVirtualMethodsCommand(IAutoMockHelpers autoMockHelpers, SetupServiceFactoryBase setupServiceFactory)
     {
+        this.autoMockHelpers = autoMockHelpers;
         this.setupServiceFactory = setupServiceFactory;
     }
 
@@ -18,7 +19,7 @@ internal class AutoMockVirtualMethodsCommand : ISpecimenCommand
 
         try
         {
-            var mock = AutoMockHelpers.GetFromObj(specimen);
+            var mock = autoMockHelpers.GetFromObj(specimen);
             if (mock is null) return;
 
             var setupService = new MockSetupService(mock, context, setupServiceFactory);

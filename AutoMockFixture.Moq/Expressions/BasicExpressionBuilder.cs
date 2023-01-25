@@ -2,13 +2,13 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.Expressions;
+namespace AutoMockFixture.Moq.Expressions;
 
 internal class BasicExpressionBuilder<T>
 {
     public MethodInfo GetMethod(LambdaExpression expression) =>
 (((expression.Body as UnaryExpression)?.Operand as MethodCallExpression)?.Object as ConstantExpression)?
-        .Value as MethodInfo 
+        .Value as MethodInfo
         ?? (expression.Body as MethodCallExpression)?.Method
         ?? throw new Exception("Method not found on object");
 
@@ -25,7 +25,7 @@ internal class BasicExpressionBuilder<T>
 
     public LambdaExpression GetExpression<TAnon>(
             MethodInfo method, TAnon paramData, Type[] types)
-    {            
+    {
         var methodParams = GetParams(method, paramData, types);
         return GetLambdaExpression(method, methodParams);
     }
@@ -48,6 +48,6 @@ internal class BasicExpressionBuilder<T>
     private LambdaExpression GetLambdaExpression(MethodInfo method, IEnumerable<Expression> arguments)
     {
         var actionCall = Expression.Call(Expression.Parameter(typeof(T)), method, arguments);
-        return (Expression.Lambda(actionCall, Expression.Parameter(typeof(T))));
+        return Expression.Lambda(actionCall, Expression.Parameter(typeof(T)));
     }
 }

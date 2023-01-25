@@ -5,7 +5,7 @@ using Moq.Protected;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
 
-namespace AutoMockFixture.AutoMockUtils;
+namespace AutoMockFixture.Moq.AutoMockUtils;
 
 internal class AutoMockProxyGenerator : ProxyGenerator
 {
@@ -18,10 +18,10 @@ internal class AutoMockProxyGenerator : ProxyGenerator
 
     public AutoMockProxyGenerator(object? target, bool callbase) : base(nonCallbaseProxyBuilder)
     {
-        this.Target = target;
-        this.Callbase = callbase;
+        Target = target;
+        Callbase = callbase;
     }
-    public AutoMockProxyGenerator() : base(nonCallbaseProxyBuilder){}
+    public AutoMockProxyGenerator() : base(nonCallbaseProxyBuilder) { }
 
     private void Validate(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options)
     {
@@ -42,12 +42,12 @@ internal class AutoMockProxyGenerator : ProxyGenerator
         return base.CreateInterfaceProxyWithoutTarget(interfaceToProxy, additionalInterfacesToProxy, options, interceptors);
     }
 
-    public override object CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, 
+    public override object CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy,
         ProxyGenerationOptions options, object[] constructorArguments, params IInterceptor[] interceptors)
     {
         // Rememeber that Moq uses the generator as static, so we have to ensure that the target is valid
         if (Target is not null && classToProxy.IsAssignableFrom(Target.GetType()))
-            return originalProxyGenerator.CreateClassProxyWithTarget(classToProxy, additionalInterfacesToProxy, 
+            return originalProxyGenerator.CreateClassProxyWithTarget(classToProxy, additionalInterfacesToProxy,
                         Target, options, constructorArguments, interceptors);
 
         // In Moq they use two types of proxies
@@ -55,10 +55,10 @@ internal class AutoMockProxyGenerator : ProxyGenerator
         //      2) for recording which doesn't need to callbase (and might have issues if we don't supply the ctor args and there is no defualt ctor)
         var imockedType = classToProxy.IsClass ? typeof(IMocked<>).MakeGenericType(classToProxy) : null;
 
-        if (typeof(Type) == classToProxy || 
-            (this.Callbase != false && imockedType is not null && additionalInterfacesToProxy.Contains(imockedType))) 
-                return originalProxyGenerator.CreateClassProxy(classToProxy, additionalInterfacesToProxy, 
-                        options, constructorArguments, interceptors);
+        if (typeof(Type) == classToProxy ||
+            Callbase != false && imockedType is not null && additionalInterfacesToProxy.Contains(imockedType))
+            return originalProxyGenerator.CreateClassProxy(classToProxy, additionalInterfacesToProxy,
+                    options, constructorArguments, interceptors);
 
         var typeToUse = GetTypeToUse(classToProxy);
 
@@ -98,12 +98,12 @@ internal class AutoMockProxyGenerator : ProxyGenerator
                                         .Except(new ConstructorInfo[] { classToProxy.GetConstructor(f, null, new Type[] { }, null) })
                                         .Union(new[] { emptyConstuctor }).ToArray();
 
-        mockType.Setup(t => t.GetConstructors(It.Is<BindingFlags>(bindingExpr)))
+        mockType.Setup(t => t.GetConstructors(It.Is(bindingExpr)))
             .Returns(ctorsFunc);
 
         mockType.Protected()
             .Setup<ConstructorInfo>("GetConstructorImpl",
-                    new object[] { It.Is<BindingFlags>(bindingExpr), ItExpr.IsAny<Binder>(),
+                    new object[] { It.Is(bindingExpr), ItExpr.IsAny<Binder>(),
                                         ItExpr.IsAny<CallingConventions>(), ItExpr.Is<Type[]>(t => !t.Any()),
                                         ItExpr.IsAny<ParameterModifier[]>() })
             .Returns(() => emptyConstuctor);

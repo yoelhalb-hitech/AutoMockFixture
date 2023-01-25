@@ -1,17 +1,13 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests;
-using AutoMockFixture.MockUtils;
-using AutoMockFixture.VerifyInfo;
+using AutoMockFixture.Moq.AutoMockUtils;
+using AutoMockFixture.Moq.VerifyInfo;
 using Castle.DynamicProxy;
 using Moq;
 using System.Reflection;
 
-namespace AutoMockFixture;
+namespace AutoMockFixture.Moq;
 
-internal interface ISetCallBase
-{
-    void ForceSetCallbase(bool value);
-}
 public static class AutoMock
 {
     public static T Of<T>() where T : class => new AutoMock<T>();

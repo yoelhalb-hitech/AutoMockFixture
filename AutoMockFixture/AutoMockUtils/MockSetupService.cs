@@ -3,9 +3,9 @@ using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using Castle.DynamicProxy;
 using System.Reflection;
-using static AutoMockFixture.MockUtils.CannotSetupMethodException;
+using static AutoMockFixture.AutoMockUtils.CannotSetupMethodException;
 
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.AutoMockUtils;
 
 internal class MockSetupService
 {
@@ -13,20 +13,20 @@ internal class MockSetupService
 
     private readonly IAutoMock mock;
     private readonly ISpecimenContext context;
-    private readonly MethodSetupServiceFactory setupServiceFactory;
+    private readonly SetupServiceFactoryBase setupServiceFactory;
     private readonly Type mockedType;
     private readonly ITracker? tracker;
     private readonly bool noMockDependencies;
 
-    public MockSetupService(IAutoMock mock, ISpecimenContext context, MethodSetupServiceFactory setupServiceFactory)
+    public MockSetupService(IAutoMock mock, ISpecimenContext context, SetupServiceFactoryBase setupServiceFactory)
     {
         this.mock = mock;
         this.context = context;
         this.setupServiceFactory = setupServiceFactory;
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
-        this.mockedType = mock.GetInnerType();
-        this.tracker = mock.Tracker;
-        this.noMockDependencies = mock.Tracker?.StartTracker.MockDependencies ?? false;
+        mockedType = mock.GetInnerType();
+        tracker = mock.Tracker;
+        noMockDependencies = mock.Tracker?.StartTracker.MockDependencies ?? false;
     }
 
     public void Setup()
@@ -55,7 +55,7 @@ internal class MockSetupService
         }
 
         if (mock.CallBase || delegateSpecification.IsSatisfiedBy(mockedType)) return; // Explicit interface implementation must have an implementation so only if !callbase
-        
+
         var explicitProperties = mockedType.GetExplicitInterfaceProperties().ToArray();
         foreach (var prop in explicitProperties.Where(p => !p.HasGetAndSet(false)))
         {
@@ -74,7 +74,7 @@ internal class MockSetupService
     {
         var trackingPath = prop.GetTrackingPath();
 
-        Func<MethodInfo, MethodSetupServiceBase> setupFunc = ifaceMethod
+        Func<MethodInfo, ISetupService> setupFunc = ifaceMethod
                                 => setupServiceFactory.GetPropertySetup(mock, ifaceMethod, context, trackingPath, ifaceMethod.DeclaringType);
 
         SetupExplicitMember(prop.GetMethods().First(), mockedType, mock, prop, trackingPath, setupFunc);
@@ -84,19 +84,19 @@ internal class MockSetupService
     {
         var trackingPath = method.GetTrackingPath();
 
-        Func<MethodInfo, MethodSetupServiceBase> setupFunc = ifaceMethod
+        Func<MethodInfo, ISetupService> setupFunc = ifaceMethod
                                 => setupServiceFactory.GetMethodSetup(mock, ifaceMethod, context, trackingPath, ifaceMethod.DeclaringType);
 
         SetupExplicitMember(method, mockedType, mock, method, trackingPath, setupFunc);
     }
 
     private void SetupExplicitMember(MethodInfo method, Type mockedType, IAutoMock mock, MemberInfo member,
-        string trackingPath, Func<MethodInfo, MethodSetupServiceBase> setupService)
-    {        
+        string trackingPath, Func<MethodInfo, ISetupService> setupService)
+    {
         try
         {
             var ifaceMethod = method.GetExplicitInterfaceMethod();
-            if(ifaceMethod is null) // Should not happen...
+            if (ifaceMethod is null) // Should not happen...
             {
                 HandleCannotSetup(trackingPath, CannotSetupReason.InterfaceMethodNotFound);
                 return;
@@ -152,7 +152,7 @@ internal class MockSetupService
 
     private void SetupMethod(MethodInfo method)
     {
-        Setup(method, () => setupServiceFactory.GetMethodSetup(mock, method, context).Setup());          
+        Setup(method, () => setupServiceFactory.GetMethodSetup(mock, method, context).Setup());
     }
 
     private void SetupSingleMethodProperty(PropertyInfo prop)
@@ -171,7 +171,7 @@ internal class MockSetupService
                                     ? new PropertyRequest(mockedType, prop, tracker)
                                     : new AutoMockPropertyRequest(mockedType, prop, tracker);
             var propValue = context.Resolve(request);
-            SetupHelpers.SetupAutoProperty(mockedType, prop.PropertyType, mock, prop, propValue);
+            setupServiceFactory.GetAutoPropertySetup(mockedType, prop.PropertyType, mock, prop, propValue).Setup();
         });
     }
 
@@ -186,16 +186,16 @@ internal class MockSetupService
         return methods.Except(propMethods).Where(m => m.IsPublicOrInternal());
     }
 
-    private void HandleCannotSetup(string trackingPath, CannotSetupReason reason) 
+    private void HandleCannotSetup(string trackingPath, CannotSetupReason reason)
         => mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(reason));
 
     private (bool CanConfigure, CannotSetupReason? Reason) CanBeConfigured(MethodInfo[] methods)
     {
         if (!mockedType.IsInterface && methods.Any(m => !m.IsOverridable())) return (false, CannotSetupReason.NonVirtual);
 
-        if (methods.Any(m => m.IsPrivate)) return (false, CannotSetupReason.Private);           
+        if (methods.Any(m => m.IsPrivate)) return (false, CannotSetupReason.Private);
 
-        if (methods.Any(m => !m.IsPublicOrInternal())) return (false, CannotSetupReason.Protected);            
+        if (methods.Any(m => !m.IsPublicOrInternal())) return (false, CannotSetupReason.Protected);
 
         return (true, null);
     }

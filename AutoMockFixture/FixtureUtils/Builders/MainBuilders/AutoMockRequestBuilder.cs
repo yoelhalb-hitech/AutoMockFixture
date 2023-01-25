@@ -9,6 +9,13 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
 {
     private static readonly AutoMockableSpecification autoMockableSpecification = new();
 
+    public AutoMockRequestBuilder(IAutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
+    }
+
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public object? Create(object request, ISpecimenContext context)
     {            
         if (request is not AutoMockRequest mockRequest)

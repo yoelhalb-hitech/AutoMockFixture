@@ -1,7 +1,8 @@
-﻿using Moq;
+﻿using AutoFixture.Kernel;
+using Moq;
 using System.Reflection;
 
-namespace AutoMockFixture.MockUtils;
+namespace AutoMockFixture.Moq.MockUtils;
 
 internal class MethodSetupServiceWithDifferentResult : MethodLazySetupServiceBase
 {
