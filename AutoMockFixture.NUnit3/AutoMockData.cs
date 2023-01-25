@@ -15,15 +15,15 @@ namespace AutoMockFixture;
 /// </summary>
 internal class AutoMockData : AutoDataAttribute
 {
-    private readonly Lazy<AutoMockFixture> fixtureLazy;
+    private readonly Lazy<IAutoMockFixture> fixtureLazy;
 
-    private AutoMockFixture Fixture => this.fixtureLazy.Value;
+    private IAutoMockFixture Fixture => this.fixtureLazy.Value;
 
-    public AutoMockData(Func<AutoMockFixture> fixtureFactory) : base(fixtureFactory)
+    public AutoMockData(Func<IAutoMockFixture> fixtureFactory) : base(fixtureFactory)
     {
         if (fixtureFactory == null) throw new ArgumentNullException(nameof(fixtureFactory));
 
-        this.fixtureLazy = new Lazy<AutoMockFixture>(fixtureFactory, LazyThreadSafetyMode.PublicationOnly);
+        this.fixtureLazy = new Lazy<IAutoMockFixture>(fixtureFactory, LazyThreadSafetyMode.PublicationOnly);
     }
 
     public new IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)

@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMoqSourceGenerator.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.Moq", "AutoMockFixture.Moq\AutoMockFixture.Moq.csproj", "{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.NUnit3", "AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj", "{D9FF0209-AAE5-4679-93BB-810EC9548B0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.NUnit3.Moq4", "AutoMockFixture.NUnit3.Moq4\AutoMockFixture.NUnit3.Moq4.csproj", "{8357B664-76A0-48D5-A363-FF28DFB65C4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9FF0209-AAE5-4679-93BB-810EC9548B0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9FF0209-AAE5-4679-93BB-810EC9548B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9FF0209-AAE5-4679-93BB-810EC9548B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9FF0209-AAE5-4679-93BB-810EC9548B0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8357B664-76A0-48D5-A363-FF28DFB65C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8357B664-76A0-48D5-A363-FF28DFB65C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8357B664-76A0-48D5-A363-FF28DFB65C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8357B664-76A0-48D5-A363-FF28DFB65C4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
