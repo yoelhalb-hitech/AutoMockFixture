@@ -12,12 +12,13 @@ internal class AutoMockDependenciesBuilder_Tests
     [Test]
     public void Test_Create_CreatesAutoMockRequest_WhenRequestIsAutoMock()
     {
+        var fixture = new AbstractAutoMockFixture();
+
         var innerType = typeof(AutoMockDependenciesBuilder_Tests);
-        var requestMock = new Mock<AutoMockDependenciesRequest>(AutoMockHelpers.GetAutoMockType(innerType),
-                              new AbstractAutoMockFixture()){ CallBase = true };
+        var requestMock = new Mock<AutoMockDependenciesRequest>(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture){ CallBase = true };
         var expectedResult = new AutoMock<object>();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(expectedResult.Object);
 
@@ -34,11 +35,12 @@ internal class AutoMockDependenciesBuilder_Tests
     [Test]
     public void Test_Create_AsksForCallBase_WhenRequestIsAutoMock_EvenIfCallBaseIsFalse()
     {
-        var innerType = typeof(AutoMockDependenciesBuilder_Tests);
-        var request = new AutoMockDependenciesRequest(AutoMockHelpers.GetAutoMockType(innerType),
-                                new AbstractAutoMockFixture()) { MockShouldCallbase = false };
+        var fixture = new AbstractAutoMockFixture();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var innerType = typeof(AutoMockDependenciesBuilder_Tests);
+        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture) { MockShouldCallbase = false };
+
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(AutoMock.Of<object>());
 
@@ -51,13 +53,14 @@ internal class AutoMockDependenciesBuilder_Tests
     [Test]
     public void Test_Create_ReturnsNoSpecimen_WhenRequestIsAutoMock_AndResultIsNotAutoMock()
     {
+        var fixture = new AbstractAutoMockFixture();
+
         var innerType = typeof(AutoMockDependenciesBuilder_Tests);
-        var request = new AutoMockDependenciesRequest(AutoMockHelpers.GetAutoMockType(innerType),
-                                                                        new AbstractAutoMockFixture());
+        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture);
 
         var expectedResult = new object();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(expectedResult);
 
@@ -71,12 +74,13 @@ internal class AutoMockDependenciesBuilder_Tests
     [Test]
     public void Test_Create_ReturnsNoSpecimen_WhenRequestIsAutoMock_AndHasAutoMockOnSameLevel()
     {
+        var fixture = new AbstractAutoMockFixture();
+
         var innerType = typeof(AutoMockDependenciesBuilder_Tests);
         var topRequest = new AutoMockRequest(innerType, new AbstractAutoMockFixture());
-        var request = new AutoMockDependenciesRequest(AutoMockHelpers.GetAutoMockType(innerType),
-                                                                        topRequest);
+        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), topRequest);
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
 
         var result = builder.Create(request, contextMock.Object);
@@ -88,16 +92,16 @@ internal class AutoMockDependenciesBuilder_Tests
     [Test]
     public void Test_Create_CreatesAutoMockRequest_WhenRequestIsAutoMock_AndHasAutoMockOnAnotherLevel()
     {
+        var fixture = new AbstractAutoMockFixture();
+
         var innerType = typeof(AutoMockDependenciesBuilder_Tests);
         var topRequest = new AutoMockRequest(innerType, new AbstractAutoMockFixture());
-        var propertyRequest = new PropertyRequest(AutoMockHelpers.GetAutoMockType(innerType), Mock.Of<PropertyInfo>(),
-                                                                        topRequest);
+        var propertyRequest = new PropertyRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), Mock.Of<PropertyInfo>(), topRequest);
 
-        var requestMock = new Mock<AutoMockDependenciesRequest>(AutoMockHelpers.GetAutoMockType(innerType),
-                                    propertyRequest) { CallBase = true };
+        var requestMock = new Mock<AutoMockDependenciesRequest>(fixture.AutoMockHelpers.GetAutoMockType(innerType), propertyRequest) { CallBase = true };
         var expectedResult = new AutoMock<object>();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(expectedResult.Object);
 
@@ -118,22 +122,19 @@ internal class AutoMockDependenciesBuilder_Tests
     [TestCase(typeof(TestAbstract))]
     public void Test_Create_CreatesAutoMockRequest_WhenRequestIsInterfaceAbstract(Type type)
     {
-        var requestMock = new Mock<AutoMockDependenciesRequest>(type,
-                                                                        new AbstractAutoMockFixture())
-        {
-            CallBase = true
-        };
+        var fixture = new AbstractAutoMockFixture();
+
+        var requestMock = new Mock<AutoMockDependenciesRequest>(type, fixture) { CallBase = true };
         var expectedResult = new AutoMock<object>();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(expectedResult.Object);
 
         var result = builder.Create(requestMock.Object, contextMock.Object);
         result.Should().Be(expectedResult.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == type
-                                                            && r.Parent == requestMock.Object)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == type && r.Parent == requestMock.Object)));
         contextMock.VerifyNoOtherCalls();
 
         requestMock.Verify(r => r.SetResult(expectedResult.Object, builder));
@@ -144,12 +145,11 @@ internal class AutoMockDependenciesBuilder_Tests
     [TestCase(typeof(TestAbstract))]
     public void Test_Create_AsksForCallBase_WhenRequestIsInterfaceAbstract_EvenIfCallBaseIsFalse(Type type)
     {
-        var request = new AutoMockDependenciesRequest(type, new AbstractAutoMockFixture())
-        {
-            MockShouldCallbase = false,
-        };
+        var fixture = new AbstractAutoMockFixture();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var request = new AutoMockDependenciesRequest(type, fixture) { MockShouldCallbase = false, };
+
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(AutoMock.Of<object>());
 
@@ -164,11 +164,12 @@ internal class AutoMockDependenciesBuilder_Tests
     [TestCase(typeof(TestAbstract))]
     public void Test_Create_ReturnsResult_WhenRequestIsInterfaceAbstarct_AndResultIsNotAutoMock(Type type)
     {
-        var requestMock = new Mock<AutoMockDependenciesRequest>(type,
-                                 new AbstractAutoMockFixture()) { CallBase = true };
+        var fixture = new AbstractAutoMockFixture();
+
+        var requestMock = new Mock<AutoMockDependenciesRequest>(type, fixture) { CallBase = true };
         var expectedResult = new object();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(expectedResult);
 
@@ -186,10 +187,12 @@ internal class AutoMockDependenciesBuilder_Tests
     [TestCase(typeof(TestAbstract))]
     public void Test_Create_ReturnsNoSpecimen_WhenRequestIsInterfaceAbstarct_AndHasAutoMockOnSameLevel(Type type)
     {
-        var topRequest = new AutoMockRequest(type, new AbstractAutoMockFixture());
+        var fixture = new AbstractAutoMockFixture();
+
+        var topRequest = new AutoMockRequest(type, fixture);
         var request = new AutoMockDependenciesRequest(type, topRequest);
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
 
         var result = builder.Create(request, contextMock.Object);
@@ -203,14 +206,16 @@ internal class AutoMockDependenciesBuilder_Tests
     [TestCase(typeof(TestAbstract))]
     public void Test_Create_CreatesAutoMockRequest_WhenRequestIsInterfaceAbstarct_AndHasAutoMockOnAnotherLevel(Type type)
     {
-        var topRequest = new AutoMockRequest(type, new AbstractAutoMockFixture());
+        var fixture = new AbstractAutoMockFixture();
+
+        var topRequest = new AutoMockRequest(type, fixture);
         var propertyRequest = new PropertyRequest(type, Mock.Of<PropertyInfo>(),
                                                                         topRequest);
 
         var requestMock = new Mock<AutoMockDependenciesRequest>(type, propertyRequest) { CallBase = true };
         var expectedResult = new AutoMock<object>();
 
-        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>());
+        var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
         contextMock.Setup(c => c.Resolve(It.IsAny<AutoMockRequest>())).Returns(expectedResult.Object);
 

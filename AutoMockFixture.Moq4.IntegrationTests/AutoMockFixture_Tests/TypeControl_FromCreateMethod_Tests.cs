@@ -24,9 +24,7 @@ internal class TypeControl_FromCreateMethod_Tests
             NeverAutoMockTypes = new List<Type> { typeof(InternalSimpleTestClass) }
         };
 
-    private bool IsAutoMock(object obj) => obj is not null && AutoMockHelpers.GetFromObj(obj) is not null;
-    private bool IsNotAutoMock(object obj) => obj is not null && AutoMockHelpers.GetFromObj(obj) is null;
-    private bool IsCallbase(object obj) => AutoMockHelpers.GetFromObj(obj)?.CallBase == true;
+    private bool IsCallbase<T>(T obj) where T : class => AutoMock.Get(obj)?.CallBase == true;
 
     T CreateNonAutoMock<T>(AutoMockTypeControl typeControl) => fixture.CreateNonAutoMock<T>(typeControl);
 
@@ -34,8 +32,8 @@ internal class TypeControl_FromCreateMethod_Tests
     public void Test_AlwaysAutoMockTypes_WillAutoMock_WhenNonAutoMock_FromCreateMethod_ObjectItself()
     {
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>(GetMockTypeControl());
-        
-        IsAutoMock(obj).Should().BeTrue();
+
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
     }
 
     [Test]
@@ -43,7 +41,7 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateWithAutoMockDependencies<InternalSimpleTestClass>(false, GetMockTypeControl());
 
-        IsAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
     }
 
     [Test]
@@ -75,10 +73,10 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>(GetMockTypeControl());
 
-        IsNotAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj).Should().BeFalse();
 
-        IsAutoMock(obj.TestCtorArg).Should().BeTrue();
-        IsAutoMock(obj!.TestClassProp!).Should().BeTrue();
+        AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeTrue();
+        AutoMock.IsAutoMock(obj!.TestClassProp!).Should().BeTrue();
     }
 
     [Test]
@@ -86,10 +84,10 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(false, GetMockTypeControl());
 
-        IsNotAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj).Should().BeFalse();
 
-        IsAutoMock(obj.TestCtorArg).Should().BeTrue();
-        IsAutoMock(obj!.TestClassProp!).Should().BeTrue();
+        AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeTrue();
+        AutoMock.IsAutoMock(obj!.TestClassProp!).Should().BeTrue();
     }
 
     [Test]
@@ -124,7 +122,7 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(false, GetNonMockTypeControl());
 
-        IsNotAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj).Should().BeFalse();
     }
 
     [Test]
@@ -133,10 +131,10 @@ internal class TypeControl_FromCreateMethod_Tests
         // Needs to be true to get the ctor args
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(true, GetNonMockTypeControl());
 
-        IsAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
 
-        IsNotAutoMock(obj.TestCtorArg).Should().BeTrue();
-        IsNotAutoMock(obj!.TestClassProp!).Should().BeTrue();
+        AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeFalse();
+        AutoMock.IsAutoMock(obj!.TestClassProp!).Should().BeFalse();
     }
 
     [Test]
@@ -144,9 +142,9 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(false, GetNonMockTypeControl());
 
-        IsNotAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj).Should().BeFalse();
 
-        IsNotAutoMock(obj.TestCtorArg).Should().BeTrue();
-        IsNotAutoMock(obj!.TestClassProp!).Should().BeTrue();
+        AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeFalse();
+        AutoMock.IsAutoMock(obj!.TestClassProp!).Should().BeFalse();
     }
 }

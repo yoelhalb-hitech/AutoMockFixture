@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
 	<LangVersion>11.0</LangVersion>
 	<Nullable>enable</Nullable>
@@ -27,37 +27,39 @@
 	  <Using Include="System.Collections.Generic" />
 	  <Using Include="AutoFixture.Kernel" />
 	  <Using Include="AutoMockFixture.Extensions" />
-	  <Using Include="AutoMockFixture.Attributes" />
 	  <Using Include="FluentAssertions" />
 	  <Using Include="NUnit.Framework" />
+	  <Using Include="AutoMockFixture.TestUtils" />
+	  <Using Include="AutoMockFixture.Moq" />
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-	  <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
-	  <PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
-	  <PackageReference Include="FluentAssertions" Version="5.10.3" />
-	  <PackageReference Include="FluentAssertions.Analyzers" Version="0.17.2">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-	  <PackageReference Include="Moq" Version="4.17.2" />
-	  <PackageReference Include="Moq.Analyzers" Version="0.0.9">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="NUnit" Version="3.13.2" />
-	  <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
-	  <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
-	  <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="1.0.1" />
-	  <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="1.0.1">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
+	<PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
+	<PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
+	<PackageReference Include="FluentAssertions" Version="5.10.3" />
+	<PackageReference Include="FluentAssertions.Analyzers" Version="0.17.2">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
+	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+	<PackageReference Include="Moq" Version="4.17.2" />
+	<PackageReference Include="Moq.Analyzers" Version="0.0.9">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
+	<PackageReference Include="NUnit" Version="3.13.3" />
+	<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
+	<PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
+	<PackageReference Include="SequelPay.DotNetPowerExtensions" Version="1.0.1" />
+	<PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="1.0.1">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AutoMockFixture.Moq\AutoMockFixture.Moq.csproj" />
+    <ProjectReference Include="..\AutoMockFixture.TestUtils\AutoMockFixture.TestUtils.csproj" />
     <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" />
   </ItemGroup>
 </Project>

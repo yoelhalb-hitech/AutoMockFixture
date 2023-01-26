@@ -28,14 +28,14 @@ internal class AutoMock_NoConfigureMembers_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-        var mock = AutoMockHelpers.GetAutoMock(obj);
+        var mock = AutoMock.Get(obj);
         mock.Should().NotBeNull();
 
         var inner = (WithCtorArgsTestClass)obj;
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg.InternalTest.Should().BeNull();
-        AutoMockHelpers.GetAutoMock(inner.TestCtorArg).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestCtorArg).Should().BeTrue();
 
         inner.TestClassProp.Should().BeNull();        
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
@@ -79,7 +79,7 @@ internal class AutoMock_NoConfigureMembers_Tests
 
         // Assert
         obj.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
     }
 
     [Test]
@@ -92,7 +92,7 @@ internal class AutoMock_NoConfigureMembers_Tests
 
         // Assert
         obj.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
     }
     [Test]
     public void Test_CreateAutoMock_NoConfigureMembers_WithCtorParams_CallBase()
@@ -109,7 +109,7 @@ internal class AutoMock_NoConfigureMembers_Tests
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg!.InternalTest.Should().BeNull();
-        AutoMockHelpers.GetAutoMock(inner.TestCtorArg).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestCtorArg).Should().BeTrue();
 
         inner.TestClassProp.Should().BeNull();
         inner.TestClassField.Should().BeNull();

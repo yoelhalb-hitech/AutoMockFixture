@@ -4,7 +4,7 @@ namespace AutoMockFixture.Tests;
 
 public static class LinqPadDump
 {
-    public static object ToDump(this AutoMockFixture fixture, object obj)
+    public static object ToDump(this AutoMockFixture.FixtureUtils.AutoMockFixture fixture, object obj)
     {
         var tracker = fixture.GetTracker(obj);
 
@@ -24,7 +24,7 @@ public static class LinqPadDump
             Builder = tracker.Builder?.GetType().Name,
             Command = tracker.Command?.GetType().Name,
             Result = tracker.Result is null ? null : new Lazy<object?>(() => tracker.Result),
-            Children = tracker.Children.Select(c => ToDump(c)).ToList(),
+            Children = tracker.Children?.Select(c => ToDump(c)).ToList(),
         };
     }
 }

@@ -1,4 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.Commands;
+using AutoMockFixture.Moq.AutoMockUtils;
+using AutoMockFixture.Moq.FixtureUtils.Commands;
 
 namespace AutoMockFixture.Tests.FixtureUtils.Commands;
 
@@ -51,9 +53,9 @@ internal class AutoMockStubAllPropertiesCommand_Tests
 
     public void Test_SetsUpAllProperties_WhenNotCallBase(Type type)
     {
-        var mock = (Activator.CreateInstance(type) as Moq.Mock)!;
+        var mock = (Activator.CreateInstance(type) as global::Moq.Mock)!;
 
-        var command = new AutoMockStubAllPropertiesCommand();
+        var command = new AutoMockStubAllPropertiesCommand(new AutoMockHelpers());
 
         command.Execute(mock, null!);
 
@@ -66,7 +68,7 @@ internal class AutoMockStubAllPropertiesCommand_Tests
         var mock = new AutoMock<TestClass>();
         mock.CallBase = true;
 
-        var command = new AutoMockStubAllPropertiesCommand();
+        var command = new AutoMockStubAllPropertiesCommand(new AutoMockHelpers());
 
         command.Execute(mock, null!);
 
@@ -79,7 +81,7 @@ internal class AutoMockStubAllPropertiesCommand_Tests
         var mock = new AutoMock<TestAbstractClass>();
         mock.CallBase = true;
 
-        var command = new AutoMockStubAllPropertiesCommand();
+        var command = new AutoMockStubAllPropertiesCommand(new AutoMockHelpers());
 
         command.Execute(mock, null!);
 
@@ -104,7 +106,7 @@ internal class AutoMockStubAllPropertiesCommand_Tests
         var mock = new AutoMock<TestInterface>();
         mock.CallBase = true;
 
-        var command = new AutoMockStubAllPropertiesCommand();
+        var command = new AutoMockStubAllPropertiesCommand(new AutoMockHelpers());
 
         command.Execute(mock, null!);
 

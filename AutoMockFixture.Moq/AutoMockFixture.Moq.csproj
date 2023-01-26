@@ -12,6 +12,18 @@
     <Platforms>AnyCPU</Platforms>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+	
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AutoMockFixture.TestUtils</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AutoMockFixture.Moq4.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AutoMockFixture.Moq4.IntegrationTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />

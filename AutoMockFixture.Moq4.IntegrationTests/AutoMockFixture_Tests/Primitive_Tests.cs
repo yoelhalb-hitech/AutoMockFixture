@@ -65,11 +65,11 @@ internal class Primitive_Tests
         fixture.Behaviors.Add(new TraceBehavior(info));
 
         //var result = new SpecimenContext(fixture).Resolve(typeof(EventHandler<string>));
-        //AutoMockHelpers.GetFromObj(result).Should().BeNull();
+        //AutoMock.IsAutoMock(result).Should().BeFalse();
         var e = fixture.CreateNonAutoMock<EventHandler<string>>();
 
         e.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(e).Should().BeNull();
+        AutoMock.IsAutoMock(e).Should().BeFalse();
     }
 
     [Test]
@@ -79,7 +79,7 @@ internal class Primitive_Tests
         var e = fixture.CreateWithAutoMockDependencies<EventHandler<string>>();
 
         e.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(e).Should().BeNull();
+        AutoMock.IsAutoMock(e).Should().BeFalse();
     }
 
     [Test]
@@ -89,6 +89,6 @@ internal class Primitive_Tests
         var e = fixture.CreateAutoMock<EventHandler<string>>();
 
         e.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(e).Should().NotBeNull();
+        AutoMock.IsAutoMock(e).Should().BeTrue();
     }
 }

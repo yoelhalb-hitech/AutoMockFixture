@@ -1,4 +1,5 @@
-﻿using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
+﻿using AutoFixture;
+using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 
@@ -10,16 +11,17 @@ internal class AutoMockBuilder_Tests
     [Test]
     public void Test_SetsTracker()
     {
+        var fixture = new AbstractAutoMockFixture();
         var autoMock = new AutoMock<Test>();
 
-        var request = new AutoMockDirectRequest(autoMock.GetType(), new AbstractAutoMockFixture());
+        var request = new AutoMockDirectRequest(autoMock.GetType(), fixture);
 
         var context = Mock.Of<ISpecimenContext>();
         var builder = new Mock<ISpecimenBuilder>();
 
         builder.Setup(b => b.Create(request, context)).Returns(autoMock);
 
-        var obj = new AutoMockBuilder(builder.Object);
+        var obj = new AutoMockBuilder(builder.Object, fixture.AutoMockHelpers);
         obj.Create(request, context);
 
         autoMock.Tracker.Should().Be(request);
@@ -45,7 +47,7 @@ internal class AutoMockBuilder_Tests
 
         builder.Setup(b => b.Create(request, context)).Returns(autoMock);
 
-        var obj = new AutoMockBuilder(builder.Object);
+        var obj = new AutoMockBuilder(builder.Object, fixture.AutoMockHelpers);
         obj.Create(request, context);
 
         requestMock.Verify(m => m.SetResult(autoMock, obj));

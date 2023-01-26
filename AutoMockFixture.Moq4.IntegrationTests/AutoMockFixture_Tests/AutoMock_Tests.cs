@@ -145,19 +145,19 @@ internal class AutoMock_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-        var mock = AutoMockHelpers.GetAutoMock(obj);
+        var mock = AutoMock.Get(obj);
         mock.Should().NotBeNull();
 
         var inner = (WithCtorArgsTestClass)obj;
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg.InternalTest.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(inner.TestCtorArg).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestCtorArg).Should().BeTrue();
 
         inner.TestClassProp.Should().NotBeNull();
         inner.TestClassProp!.InternalTest.Should().NotBeNull();
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
-        AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassProp).Should().BeTrue();
 
         inner.TestClassPropWithPrivateSet.Should().BeNull(); // We do not setup private setters so far for callbase
         inner.TestClassPropWithProtectedSet.Should().BeNull(); // We do not setup private setters so far for callbase
@@ -169,7 +169,7 @@ internal class AutoMock_Tests
         inner.TestClassField!.Should().NotBe(inner.TestCtorArg);
         inner.TestClassField!.Should().NotBe(inner.TestClassProp);
         inner.TestClassField!.Should().NotBe(inner.TestClassPropGet);
-        AutoMockHelpers.GetAutoMock(inner.TestClassField).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassField).Should().BeTrue();
     }
 
     [Test]
@@ -188,17 +188,17 @@ internal class AutoMock_Tests
         inner.TestClassProp.Should().NotBeNull();
         inner.TestClassProp!.InternalTest.Should().NotBeNull();
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
-        AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassProp).Should().BeTrue();
 
         inner.TestClassPropWithPrivateSet.Should().NotBeNull();
         inner.TestClassPropWithPrivateSet!.InternalTest.Should().NotBeNull();
         inner.TestClassPropWithPrivateSet!.Should().NotBe(inner.TestCtorArg);
-        AutoMockHelpers.GetAutoMock(inner.TestClassPropWithPrivateSet).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassPropWithPrivateSet).Should().BeTrue();
 
         inner.TestClassPropWithProtectedSet.Should().NotBeNull();
         inner.TestClassPropWithProtectedSet!.InternalTest.Should().NotBeNull();
         inner.TestClassPropWithProtectedSet!.Should().NotBe(inner.TestCtorArg);
-        AutoMockHelpers.GetAutoMock(inner.TestClassPropWithProtectedSet).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassPropWithProtectedSet).Should().BeTrue();
 
         inner.TestClassPropGet.Should().NotBeNull();
         inner.TestClassPropGet!.InternalTest.Should().NotBeNull();
@@ -216,14 +216,14 @@ internal class AutoMock_Tests
 
         inner.TestClassPropGet!.Should().NotBe(inner.TestCtorArg);
         inner.TestClassPropGet!.Should().NotBe(inner.TestClassProp);
-        AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassPropGet).Should().BeTrue();
 
         inner.TestClassField.Should().NotBeNull();
         inner.TestClassField!.InternalTest.Should().NotBeNull();
         inner.TestClassField!.Should().NotBe(inner.TestCtorArg);
         inner.TestClassField!.Should().NotBe(inner.TestClassProp);
         inner.TestClassField!.Should().NotBe(inner.TestClassPropGet);
-        AutoMockHelpers.GetAutoMock(inner.TestClassField).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassField).Should().BeTrue();
     }
 
     [Test]
@@ -236,7 +236,7 @@ internal class AutoMock_Tests
 
         // Assert
         obj.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
     }
 
     [Test]
@@ -249,7 +249,7 @@ internal class AutoMock_Tests
 
         // Assert
         obj.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj).Should().BeTrue();
     }
 
     [Test]
@@ -267,19 +267,19 @@ internal class AutoMock_Tests
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg!.InternalTest.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(inner.TestCtorArg).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestCtorArg).Should().BeTrue();
 
         inner.TestClassProp.Should().NotBeNull();
         inner.TestClassProp!.InternalTest.Should().NotBeNull();
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
-        AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassProp).Should().BeTrue();
 
         inner.TestClassField.Should().NotBeNull();
         inner.TestClassField!.InternalTest.Should().NotBeNull();
         inner.TestClassField!.Should().NotBe(inner.TestCtorArg);
         inner.TestClassField!.Should().NotBe(inner.TestClassProp);
         inner.TestClassField!.Should().NotBe(inner.TestClassPropGet);
-        AutoMockHelpers.GetAutoMock(inner.TestClassField).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassField).Should().BeTrue();
     }
 
     [Test]
@@ -298,19 +298,19 @@ internal class AutoMock_Tests
         inner.TestClassProp.Should().NotBeNull();
         inner.TestClassProp!.InternalTest.Should().NotBeNull();
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
-        AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassProp).Should().BeTrue();
 
         inner.TestClassPropGet.Should().NotBeNull();
         inner.TestClassPropGet!.InternalTest.Should().NotBeNull();
         inner.TestClassPropGet!.Should().NotBe(inner.TestCtorArg);
         inner.TestClassPropGet!.Should().NotBe(inner.TestClassProp);
-        AutoMockHelpers.GetAutoMock(inner.TestClassPropGet).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassPropGet).Should().BeTrue();
 
         inner.TestClassField.Should().NotBeNull();
         inner.TestClassField!.InternalTest.Should().NotBeNull();
         inner.TestClassField!.Should().NotBe(inner.TestCtorArg);
         inner.TestClassField!.Should().NotBe(inner.TestClassProp);
         inner.TestClassField!.Should().NotBe(inner.TestClassPropGet);
-        AutoMockHelpers.GetAutoMock(inner.TestClassField).Should().NotBeNull();
+        AutoMock.IsAutoMock(inner.TestClassField).Should().BeTrue();
     }
 }

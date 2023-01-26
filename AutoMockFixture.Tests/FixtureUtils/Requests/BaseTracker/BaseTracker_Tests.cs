@@ -20,7 +20,8 @@ internal class BaseTracker_Tests
         tracker.SetResult(setResult, (ISpecimenBuilder?)null);
         var result = tracker.GetChildrensPaths();
         result.Should().BeEquivalentTo(new Dictionary<string, object> { [tracker.Path] = setResult });
-        result.First().Key.Should().EndWith("Test");
+        result!.Any().Should().BeTrue();
+        result!.First()!.Key.Should().EndWith("Test");
     }
 
     [Test]

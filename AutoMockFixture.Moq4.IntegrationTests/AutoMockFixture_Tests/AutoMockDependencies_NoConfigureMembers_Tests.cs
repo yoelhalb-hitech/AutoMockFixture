@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-
+﻿
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class AutoMockDependencies_NoConfigureMembers_Tests
@@ -14,7 +13,7 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<WithCtorArgsTestClass>();
-        AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
+        AutoMock.IsAutoMock(obj).Should().BeFalse();
     }
 
     [Test]
@@ -27,22 +26,22 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<WithCtorArgsTestClass>();
-        AutoMockHelpers.GetAutoMock(obj).Should().BeNull();
+        AutoMock.IsAutoMock(obj).Should().BeFalse();
 
-        obj.TestCtorArg.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestCtorArg).Should().NotBeNull();
+        obj!.TestCtorArg.Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeTrue();
 
         obj.TestCtorArgProp.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestCtorArgProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.TestCtorArgProp).Should().BeTrue();
 
         obj.TestCtorArgPrivateProp.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestCtorArgPrivateProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.TestCtorArgPrivateProp).Should().BeTrue();
 
         obj.TestCtorArgVirtualProp.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestCtorArgVirtualProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.TestCtorArgVirtualProp).Should().BeTrue();
 
         obj.TestCtorArgVirtualPrivateProp.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(obj.TestCtorArgVirtualPrivateProp).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.TestCtorArgVirtualPrivateProp).Should().BeTrue();
     }
 
     [Test]

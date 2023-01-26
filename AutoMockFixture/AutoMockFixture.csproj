@@ -11,6 +11,7 @@
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
+
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>AutoMockFixture.Moq</_Parameter1>
@@ -19,7 +20,13 @@
       <_Parameter1>AutoMockFixture.NUnit3</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AutoMockFixture.TestUtils</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>AutoMockFixture.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AutoMockFixture.Moq4.IntegrationTests</_Parameter1>
     </AssemblyAttribute>
 	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>

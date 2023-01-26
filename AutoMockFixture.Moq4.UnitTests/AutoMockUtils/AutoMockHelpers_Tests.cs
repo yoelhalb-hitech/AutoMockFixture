@@ -1,4 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
+﻿using AutoMockFixture.Moq.AutoMockUtils;
 
 namespace AutoMockFixture.Tests.AutoMockUtils;
 
@@ -9,6 +9,6 @@ internal class AutoMockHelpers_Tests
     {
         var mock = new AutoMock<Action>();
 
-        AutoMockHelpers.GetFromObj(mock.Object).Should().NotBeNull();
+        new AutoMockHelpers().GetFromObj(mock.Object).Should().NotBeNull();
     }
 }

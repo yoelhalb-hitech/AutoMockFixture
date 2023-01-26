@@ -22,7 +22,7 @@ internal class Recursion_Tests
         var fixture = new AbstractAutoMockFixture();
         var mock = fixture.CreateAutoMock<AutoMock<Test1>>();
 
-        AutoMockHelpers.GetFromObj(mock).Should().NotBeNull();
+        AutoMock.IsAutoMock(mock).Should().BeTrue();
 
         Test1? obj = null;
         Assert.DoesNotThrow(() => obj = mock.GetMocked());
@@ -33,7 +33,7 @@ internal class Recursion_Tests
         obj!.Test.Should().NotBeNull();
         obj!.Test.Should().BeAssignableTo<Test2>();
 
-        AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.Test).Should().BeTrue();
     }
 
     [Test]
@@ -45,12 +45,12 @@ internal class Recursion_Tests
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Test2>();
-        AutoMockHelpers.GetFromObj(obj!).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj!).Should().BeTrue();
 
         obj!.Test.Should().NotBeNull();
         obj!.Test.Should().BeAssignableTo<Test1>();
 
-        AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.Test).Should().BeTrue();
     }
 
     [Test]
@@ -62,12 +62,12 @@ internal class Recursion_Tests
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Test2>();
-        AutoMockHelpers.GetFromObj(obj!).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj!).Should().BeTrue();
 
         obj!.Test.Should().NotBeNull();
         obj!.Test.Should().BeAssignableTo<Test1>();
 
-        AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.Test).Should().BeTrue();
     }
 
     [Test]
@@ -79,12 +79,12 @@ internal class Recursion_Tests
 
         obj.Should().NotBeNull();
         obj.Should().BeOfType<Test2>();
-        AutoMockHelpers.GetFromObj(obj!).Should().BeNull();
+        AutoMock.IsAutoMock(obj!).Should().BeFalse();
 
         obj!.Test.Should().NotBeNull();
         obj!.Test.Should().BeOfType<Test1>();
 
-        AutoMockHelpers.GetFromObj(obj.Test).Should().BeNull();
+        AutoMock.IsAutoMock(obj.Test).Should().BeFalse();
     }
 
     [Test]
@@ -96,11 +96,11 @@ internal class Recursion_Tests
 
         obj.Should().NotBeNull();
         obj.Should().BeOfType<Test2>();
-        AutoMockHelpers.GetFromObj(obj!).Should().BeNull();
+        AutoMock.IsAutoMock(obj!).Should().BeFalse();
 
         obj!.Test.Should().NotBeNull();
         obj!.Test.Should().BeAssignableTo<Test1>();
 
-        AutoMockHelpers.GetFromObj(obj.Test).Should().NotBeNull(); // Because it is dependency injection
+        AutoMock.IsAutoMock(obj.Test).Should().BeTrue(); // Because it is dependency injection
     }
 }

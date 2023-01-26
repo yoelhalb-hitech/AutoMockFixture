@@ -37,7 +37,7 @@ internal class AutoMockRelay_Tests
         obj.Should().BeAssignableTo<TestRelayByAbstractProperty>();
 
         obj.TestProp.Should().NotBeNull();
-        var mock = AutoMockHelpers.GetAutoMock(obj.TestProp);
+        var mock = AutoMock.Get(obj.TestProp);
         mock.Should().NotBeNull();
 
         obj.TestProp!.InternalTest.Should().NotBeNull();

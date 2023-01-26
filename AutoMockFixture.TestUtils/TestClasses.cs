@@ -1,5 +1,6 @@
-﻿
-namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
+﻿namespace AutoMockFixture.TestUtils;
+
+// CAUTION : The classes are `internal` so to test if AutoMockFixture also works correctly with internal
 
 internal interface InternalReadOnlyTestInterface
 {
@@ -73,11 +74,11 @@ internal class WithCtorArgsTestClass
         InternalSimpleTestClass testCtorArgProp, InternalSimpleTestClass testCtorArgVirtualProp,
         InternalSimpleTestClass testCtorArgVirtualPrivateProp, InternalSimpleTestClass testCtorArgPrivateProp)
     {
-        this.TestCtorArg = testArg;
-        this.TestCtorArgProp = testCtorArgProp;
-        this.TestCtorArgVirtualProp = testCtorArgVirtualProp;
-        this.TestCtorArgVirtualPrivateProp = testCtorArgVirtualPrivateProp;
-        this.TestCtorArgPrivateProp = testCtorArgPrivateProp;
+        TestCtorArg = testArg;
+        TestCtorArgProp = testCtorArgProp;
+        TestCtorArgVirtualProp = testCtorArgVirtualProp;
+        TestCtorArgVirtualPrivateProp = testCtorArgVirtualPrivateProp;
+        TestCtorArgPrivateProp = testCtorArgPrivateProp;
     }
     public InternalSimpleTestClass? TestClassProp { get; set; }
     public InternalSimpleTestClass? TestClassPrivateNonVirtualProp { get; private set; }
@@ -97,6 +98,6 @@ internal class WithCtorNoArgsTestClass
     public readonly int TestCtor;
     public WithCtorNoArgsTestClass()
     {
-        this.TestCtor = 25;
+        TestCtor = 25;
     }
 }

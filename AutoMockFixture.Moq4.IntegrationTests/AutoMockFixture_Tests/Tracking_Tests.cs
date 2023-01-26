@@ -40,7 +40,7 @@ internal class Tracking_Tests
     {
         var fixture = new AbstractAutoMockFixture();
         var result = fixture.CreateAutoMock<WithCtorArgsTestClass>();
-        var mock = AutoMockHelpers.GetAutoMock(result);
+        var mock = AutoMock.Get(result);
 
         mock!.MethodsSetup.Should().ContainKey(nameof(WithCtorArgsTestClass.TestClassPropGet));
         mock!.MethodsNotSetup.Should().ContainKey(nameof(WithCtorArgsTestClass.TestClassPrivateNonVirtualProp));

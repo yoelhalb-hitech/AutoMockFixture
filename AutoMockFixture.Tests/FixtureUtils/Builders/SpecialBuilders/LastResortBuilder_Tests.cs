@@ -8,13 +8,15 @@ namespace AutoMockFixture.Tests.FixtureUtils.Builders.SpecialBuilders;
 
 internal class LastResortBuilder_Tests
 {
-    [Test]
-    [UnitAutoData]
-    public void Test_When_AutoMock_Creates_AutoMockDependencies([AutoMock] ISpecimenContext context)
-    {            
-        var request = new AutoMockRequest(typeof(LastResortBuilder_Tests), new AbstractAutoMockFixture());
+    [Test]    
+    public void Test_When_AutoMock_Creates_AutoMockDependencies()
+    {
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
 
-        var builder = new LastResortBuilder();
+        var request = new AutoMockRequest(typeof(LastResortBuilder_Tests), fixture);
+
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c => 
@@ -23,26 +25,30 @@ internal class LastResortBuilder_Tests
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]
-    [UnitAutoData]
-    public void Test_When_AutoMockDependencies_Creates_NonAutoMock([AutoMock] ISpecimenContext context)
+    [Test]    
+    public void Test_When_AutoMockDependencies_Creates_NonAutoMock()
     {
-        var request = new AutoMockDependenciesRequest(typeof(LastResortBuilder_Tests), new AbstractAutoMockFixture());
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
 
-        var builder = new LastResortBuilder();
+        var request = new AutoMockDependenciesRequest(typeof(LastResortBuilder_Tests), fixture);
+
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c => c.Resolve(It.Is<NonAutoMockRequest>(r => r.Request == request.Request && r.Parent == request)), Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]
-    [UnitAutoData]
-    public void Test_When_RequestWithType_SendsRequestType([AutoMock] ISpecimenContext context)
+    [Test]    
+    public void Test_When_RequestWithType_SendsRequestType()
     {
-        var request = new NonAutoMockRequest(typeof(LastResortBuilder_Tests), new AbstractAutoMockFixture());
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
 
-        var builder = new LastResortBuilder();
+        var request = new NonAutoMockRequest(typeof(LastResortBuilder_Tests), fixture);
+
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c => c.Resolve(It.Is<Type>(r => r == request.Request)), Times.Once());
@@ -50,66 +56,76 @@ internal class LastResortBuilder_Tests
     }
 
     [Test]
-    [UnitAutoData]
-    public void Test_When_NotRequestWithType_SendsRequest([AutoMock] ISpecimenContext context)
+    public void Test_When_NotRequestWithType_SendsRequest()
     {
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
+
         var request = new object();
 
-        var builder = new LastResortBuilder();
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c => c.Resolve(It.Is<object>(r => r == request)), Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]
-    [UnitAutoData]
-    public void Test_When_AutoMockDependencies_AndRecursion_SendsRequestType([AutoMock] ISpecimenContext context)
+    [Test]    
+    public void Test_When_AutoMockDependencies_AndRecursion_SendsRequestType()
     {
-        var nonAutoMock = new NonAutoMockRequest(typeof(LastResortBuilder_Tests), new AbstractAutoMockFixture());
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
+
+        var nonAutoMock = new NonAutoMockRequest(typeof(LastResortBuilder_Tests), fixture);
         var request = new AutoMockDependenciesRequest(typeof(LastResortBuilder_Tests), nonAutoMock);
 
-        var builder = new LastResortBuilder();
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c => c.Resolve(It.Is<Type>(r => r == request.Request)), Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]
-    [UnitAutoData]
-    public void Test_When_AutoMockDependencies_AndRecursionOnDifferentLevel_Creates_NonAutoMock([AutoMock] ISpecimenContext context)
+    [Test]   
+    public void Test_When_AutoMockDependencies_AndRecursionOnDifferentLevel_Creates_NonAutoMock()
     {
-        var nonAutoMock = new NonAutoMockRequest(typeof(LastResortBuilder_Tests), new AbstractAutoMockFixture());
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
+
+        var nonAutoMock = new NonAutoMockRequest(typeof(LastResortBuilder_Tests), fixture);
         var propertyRequest = new PropertyRequest(typeof(LastResortBuilder_Tests), Mock.Of<PropertyInfo>(), nonAutoMock);
         var request = new AutoMockDependenciesRequest(typeof(LastResortBuilder_Tests), propertyRequest);
 
-        var builder = new LastResortBuilder();
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c => c.Resolve(It.Is<NonAutoMockRequest>(r => r.Request == request.Request && r.Parent == request)), Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]
-    [UnitAutoData]
-    public void Test_Throws_When_ResultIsSame([AutoMock] ISpecimenContext context)
-    {           
+    [Test]    
+    public void Test_Throws_When_ResultIsSame()
+    {
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
+
         var request = new object();
         Mock.Get(context).Setup(c => c.Resolve(It.IsAny<object>())).Returns(request);
 
-        var builder = new LastResortBuilder();
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         Assert.Throws<Exception>(() => builder.Create(request, context));   
     }
 
-    [Test]
-    [UnitAutoData]
-    public void Test_Returns_When_ResultIsSame_AndRequestIsType([AutoMock] ISpecimenContext context)
+    [Test]    
+    public void Test_Returns_When_ResultIsSame_AndRequestIsType()
     {
+        var fixture = new AbstractAutoMockFixture();
+        var context = Mock.Of<ISpecimenContext>();
+
         var request = typeof(Type);
         Mock.Get(context).Setup(c => c.Resolve(It.IsAny<Type>())).Returns(request);
 
-        var builder = new LastResortBuilder();
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         object? result = default!;
 
         Assert.DoesNotThrow(() => result = builder.Create(request, context));

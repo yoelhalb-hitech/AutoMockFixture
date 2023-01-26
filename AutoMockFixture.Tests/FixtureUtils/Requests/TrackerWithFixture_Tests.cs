@@ -8,7 +8,7 @@ internal class TrackerWithFixture_Tests
 {
     class TrackerWithFixtureNonAbstract : TrackerWithFixture
     {
-        public TrackerWithFixtureNonAbstract(AutoMockFixture fixture, ITracker? tracker = null) : base(fixture, tracker)
+        public TrackerWithFixtureNonAbstract(IAutoMockFixture fixture, ITracker? tracker = null) : base(fixture, tracker)
         {
         }
 

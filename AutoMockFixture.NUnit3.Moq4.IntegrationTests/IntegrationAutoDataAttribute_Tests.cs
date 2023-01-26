@@ -1,6 +1,6 @@
-﻿using AutoMockFixture.AutoMockUtils;
+﻿
 
-namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
+namespace AutoMockFixture.NUnit3.Moq4.IntegrationTests;
 
 internal class AutoDataIntegrationAttribute_Tests
 {
@@ -31,7 +31,7 @@ internal class AutoDataIntegrationAttribute_Tests
         testClass.Should().NotBeNull();
 
         testClass.TestCtorArg.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(testClass.TestCtorArg).Should().BeNull();
+        AutoMock.IsAutoMock(testClass.TestCtorArg).Should().BeFalse();
     }
 
     [Test]
@@ -45,6 +45,6 @@ internal class AutoDataIntegrationAttribute_Tests
         inner.Should().NotBeNull();
 
         inner.TestClassProp.Should().NotBeNull();
-        AutoMockHelpers.GetAutoMock(inner.TestClassProp).Should().BeNull();
+        AutoMock.IsAutoMock(inner.TestClassProp).Should().BeFalse();
     }
 }

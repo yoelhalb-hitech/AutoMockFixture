@@ -12,6 +12,8 @@ namespace AutoMockFixture.Moq;
 public static class AutoMock
 {
     public static T Of<T>() where T : class => new AutoMock<T>();
+    public static AutoMock<T>? Get<T>(T? mocked) where T : class => AutoMockHelpers.GetAutoMock(mocked);
+    public static bool IsAutoMock(object? obj) => new AutoMockHelpers().GetFromObj(obj) is not null;
 }
 public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : class
 {

@@ -17,7 +17,7 @@ internal class Path_Tests
         new object[] { AutoMockType.AutoMock },
         new object[] { AutoMockType.AutoMockDependencies },
     };
-    private T? GetObj<T>(AutoMockFixture fixture, AutoMockType type) where T : class
+    private T? GetObj<T>(AbstractAutoMockFixture fixture, AutoMockType type) where T : class
     {
         return type switch
         {

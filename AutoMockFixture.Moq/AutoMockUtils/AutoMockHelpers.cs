@@ -17,12 +17,18 @@ internal class AutoMockHelpers : IAutoMockHelpers
 
     public IRequestSpecification MockRequestSpecification => new MockRequestSpecification();
 
-    public static AutoMock<T>? GetAutoMock<T>(T? obj) where T : class
+    public static AutoMock<T>? GetAutoMock<T>(T? mocked) where T : class
     {
-        if (obj is null) return null;
+        if (mocked is null) return null;
 
-        try { return global::Moq.Mock.Get<T>(obj) as AutoMock<T>;}
-        catch{ return null; }
+        try
+        {
+            return global::Moq.Mock.Get<T>(mocked) as AutoMock<T>;
+        }
+        catch(ArgumentException ex) when (ex.Message == "Object instance was not created by Moq. (Parameter 'mocked')")
+        {
+            throw new ArgumentException("Object instance was not created by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')", ex);
+        }
     }  
 
     public bool IsAutoMock<T>() => IsAutoMock(typeof(T));
