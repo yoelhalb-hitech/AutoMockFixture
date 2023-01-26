@@ -1,13 +1,13 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.Extensions;
 using AutoMockFixture.FixtureUtils.Requests;
-using AutoMockFixture.Moq.AutoMockUtils;
-using AutoMockFixture.Moq.VerifyInfo;
+using AutoMockFixture.Moq4.AutoMockUtils;
+using AutoMockFixture.Moq4.VerifyInfo;
 using Castle.DynamicProxy;
 using Moq;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq;
+namespace AutoMockFixture.Moq4;
 
 public static class AutoMock
 {

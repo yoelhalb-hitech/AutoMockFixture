@@ -2,7 +2,7 @@
 using Moq;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.MockUtils;
+namespace AutoMockFixture.Moq4.MockUtils;
 
 public class MatcherGenerator
 {

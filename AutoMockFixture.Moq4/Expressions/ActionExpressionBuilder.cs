@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace AutoMockFixture.Moq.Expressions;
+namespace AutoMockFixture.Moq4.Expressions;
 
 internal class ActionExpressionBuilder<T>
 {

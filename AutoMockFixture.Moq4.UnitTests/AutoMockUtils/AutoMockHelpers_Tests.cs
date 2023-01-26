@@ -1,4 +1,4 @@
-﻿using AutoMockFixture.Moq.AutoMockUtils;
+﻿using AutoMockFixture.Moq4.AutoMockUtils;
 
 namespace AutoMockFixture.Tests.AutoMockUtils;
 

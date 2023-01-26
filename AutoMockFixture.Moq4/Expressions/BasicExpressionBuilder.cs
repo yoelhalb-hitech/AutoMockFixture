@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.Expressions;
+namespace AutoMockFixture.Moq4.Expressions;
 
 internal class BasicExpressionBuilder<T>
 {

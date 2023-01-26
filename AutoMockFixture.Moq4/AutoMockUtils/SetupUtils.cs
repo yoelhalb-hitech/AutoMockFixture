@@ -1,11 +1,11 @@
-﻿using AutoMockFixture.Moq.Expressions;
-using AutoMockFixture.Moq.VerifyInfo;
+﻿using AutoMockFixture.Moq4.Expressions;
+using AutoMockFixture.Moq4.VerifyInfo;
 using Moq;
 using Moq.Language.Flow;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.AutoMockUtils;
+namespace AutoMockFixture.Moq4.AutoMockUtils;
 
 internal class SetupUtils<T> where T : class
 {

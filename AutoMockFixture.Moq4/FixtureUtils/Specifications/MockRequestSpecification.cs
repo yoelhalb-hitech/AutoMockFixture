@@ -2,7 +2,7 @@
 using Moq;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.FixtureUtils.Specifications;
+namespace AutoMockFixture.Moq4.FixtureUtils.Specifications;
 
 internal class MockRequestSpecification : IRequestSpecification
 {

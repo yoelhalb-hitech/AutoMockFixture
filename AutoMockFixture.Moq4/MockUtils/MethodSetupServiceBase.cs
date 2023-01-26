@@ -4,12 +4,12 @@ using AutoMockFixture.Extensions;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMockFixture.Moq.MockUtils;
+using AutoMockFixture.Moq4.MockUtils;
 using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.MockUtils;
+namespace AutoMockFixture.Moq4.MockUtils;
 
 internal abstract class MethodSetupServiceBase : ISetupService
 {

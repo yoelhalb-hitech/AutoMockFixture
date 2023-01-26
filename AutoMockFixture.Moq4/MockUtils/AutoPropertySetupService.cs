@@ -2,7 +2,7 @@
 using AutoMockFixture.AutoMockUtils;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.MockUtils;
+namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class AutoPropertySetupService : ISetupService
 {

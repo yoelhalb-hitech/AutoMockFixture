@@ -1,6 +1,6 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils;
-using AutoMockFixture.Moq.AutoMockUtils;
+using AutoMockFixture.Moq4.AutoMockUtils;
 
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 

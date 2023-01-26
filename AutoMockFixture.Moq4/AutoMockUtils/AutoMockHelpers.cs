@@ -2,14 +2,14 @@
 using AutoFixture.Kernel;
 using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests;
-using AutoMockFixture.Moq.FixtureUtils.Commands;
-using AutoMockFixture.Moq.FixtureUtils.Specifications;
-using AutoMockFixture.Moq.MockUtils;
+using AutoMockFixture.Moq4.FixtureUtils.Commands;
+using AutoMockFixture.Moq4.FixtureUtils.Specifications;
+using AutoMockFixture.Moq4.MockUtils;
 using Castle.DynamicProxy;
 using System.Collections;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.AutoMockUtils;
+namespace AutoMockFixture.Moq4.AutoMockUtils;
 
 internal class AutoMockHelpers : IAutoMockHelpers
 {

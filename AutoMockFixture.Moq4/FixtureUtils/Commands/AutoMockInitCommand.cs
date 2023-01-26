@@ -2,7 +2,7 @@
 using Castle.DynamicProxy;
 using Moq;
 
-namespace AutoMockFixture.Moq.FixtureUtils.Commands;
+namespace AutoMockFixture.Moq4.FixtureUtils.Commands;
 
 internal class AutoMockInitCommand : ISpecimenCommand
 {

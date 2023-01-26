@@ -1,7 +1,7 @@
 ﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.Moq.AutoMockUtils;
+using AutoMockFixture.Moq4.AutoMockUtils;
 
-namespace AutoMockFixture.Moq;
+namespace AutoMockFixture.Moq4;
 
 /// <summary>
 /// CAUTION: the methods are not thread safe

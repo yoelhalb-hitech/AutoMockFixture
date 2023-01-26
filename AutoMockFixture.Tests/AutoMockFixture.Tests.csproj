@@ -30,7 +30,7 @@
 	  <Using Include="FluentAssertions" />
 	  <Using Include="NUnit.Framework" />
 	  <Using Include="AutoMockFixture.TestUtils" />
-	  <Using Include="AutoMockFixture.Moq" />
+	  <Using Include="AutoMockFixture.Moq4" />
   </ItemGroup>
 	
   <ItemGroup>

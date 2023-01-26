@@ -4,7 +4,7 @@ using Moq;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.MockUtils;
+namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class SetupServiceFactory : SetupServiceFactoryBase
 {

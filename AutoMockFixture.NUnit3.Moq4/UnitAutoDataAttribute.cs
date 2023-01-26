@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using AutoMockFixture.Moq;
+using AutoMockFixture.Moq4;
 using AutoMockFixture.NUnit3;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
