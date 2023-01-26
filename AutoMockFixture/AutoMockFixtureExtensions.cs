@@ -1,16 +1,19 @@
 ﻿
+using System.ComponentModel;
+using System.Diagnostics;
+
 namespace AutoMockFixture;
 
 public static class AutoMockFixtureExtensions
 {
-/// <summary>
-/// Get the value at the specified path (property/field/ctor argument/out parameter/method result etc.)
-/// </summary>
-/// <param name="obj">An object created witht he current <see cref="AutoMockFixture"/></param>
-/// <param name="path">The path to get the value at</param>
-/// <returns></returns>
-/// <exception cref="Exception">Path not provided</exception>
-/// <exception cref="Exception">Object not found</exception>
+    /// <summary>
+    /// Get the value at the specified path (property/field/ctor argument/out parameter/method result etc.)
+    /// </summary>
+    /// <param name="obj">An object created witht he current <see cref="AutoMockFixture"/></param>
+    /// <param name="path">The path to get the value at</param>
+    /// <returns></returns>
+    /// <exception cref="Exception">Path not provided</exception>
+    /// <exception cref="Exception">Object not found</exception>
     public static List<object> GetAt(this IAutoMockFixture fixture, object obj, string path)
     {
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;
@@ -25,6 +28,8 @@ public static class AutoMockFixtureExtensions
         
         return paths[path].GetValidValues();
     }
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static string GetPathForObject(this IAutoMockFixture fixture, object mainObj, object currentObject)
     {
         currentObject = fixture.AutoMockHelpers.GetFromObj(currentObject) ?? currentObject;
@@ -39,6 +44,8 @@ public static class AutoMockFixtureExtensions
         return path;
     }
     public static object? GetSingleAt(this IAutoMockFixture fixture, object obj, string path) => fixture.GetAt(obj, path).Single();
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static IAutoMock GetAutoMock(this IAutoMockFixture fixture, object obj, string path)
     {
         var result = fixture.GetSingleAt(obj, path);
@@ -51,7 +58,7 @@ public static class AutoMockFixtureExtensions
         return mock;
     }
 
-
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static IEnumerable<IAutoMock> GetAutoMocks(this IAutoMockFixture fixture, object obj, Type type)
     {
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;
@@ -64,6 +71,7 @@ public static class AutoMockFixtureExtensions
                             .SelectMany(td => td.Value.GetValidValues());
     }
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static IAutoMock GetAutoMock(this IAutoMockFixture fixture, object obj, Type type)
             => fixture.GetAutoMocks(obj, type).SingleOrDefault() ?? throw new Exception("AutoMock not found or is garbage collected");
 
@@ -78,6 +86,7 @@ public static class AutoMockFixtureExtensions
     /// <param name="obj"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static List<string> GetPaths(this IAutoMockFixture fixture, object obj)
     {
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;

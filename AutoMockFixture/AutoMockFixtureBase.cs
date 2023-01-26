@@ -104,8 +104,10 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
 
     public T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => (T?)Create(typeof(T), autoMockTypeControl);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public abstract object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
@@ -117,6 +119,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
                 => (T?)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null)
     {
         var result = Execute(new NonAutoMockRequest(t, this), autoMockTypeControl);
@@ -126,6 +129,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null)
                 => (T?)CreateNonAutoMock(typeof(T), autoMockTypeControl);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         if (t.IsValueType) throw new InvalidOperationException("Type must be a reference type");
