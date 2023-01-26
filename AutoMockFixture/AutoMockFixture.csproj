@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>AutoMockFixture.Moq</_Parameter1>
+      <_Parameter1>AutoMockFixture.Moq4</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>AutoMockFixture.NUnit3</_Parameter1>

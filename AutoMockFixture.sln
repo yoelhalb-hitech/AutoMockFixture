@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMoqSourceGenerator", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMoqSourceGenerator.Test", "AutoMoqSourceGenerator\AutoMoqSourceGenerator.Test\AutoMoqSourceGenerator.Test.csproj", "{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Moq", "AutoMockFixture.Moq\AutoMockFixture.Moq.csproj", "{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Moq4", "AutoMockFixture.Moq4\AutoMockFixture.Moq4.csproj", "{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.NUnit3", "AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj", "{D9FF0209-AAE5-4679-93BB-810EC9548B0E}"
 EndProject

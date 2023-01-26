@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AutoMockFixture.Moq\AutoMockFixture.Moq.csproj" />
+    <ProjectReference Include="..\AutoMockFixture.Moq4\AutoMockFixture.Moq4.csproj" />
     <ProjectReference Include="..\AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj" />
     <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" />
   </ItemGroup>
