@@ -1,22 +1,29 @@
 ﻿using AutoFixture;
+using AutoFixture.Kernel;
 using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests;
-using Moq;
+using AutoMockFixture.Moq.FixtureUtils.Commands;
+using AutoMockFixture.Moq.FixtureUtils.Specifications;
+using AutoMockFixture.Moq.MockUtils;
+using Castle.DynamicProxy;
 using System.Collections;
 using System.Reflection;
-using System.Threading;
 
 namespace AutoMockFixture.Moq.AutoMockUtils;
 
 internal class AutoMockHelpers : IAutoMockHelpers
 {
+    public Type InterfaceProxyBase => typeof(global::Moq.Internals.InterfaceProxy);
+
+    public IRequestSpecification MockRequestSpecification => new MockRequestSpecification();
+
     public static AutoMock<T>? GetAutoMock<T>(T? obj) where T : class
     {
         if (obj is null) return null;
 
-        try { return Mock.Get<T>(obj) as AutoMock<T>;}
+        try { return global::Moq.Mock.Get<T>(obj) as AutoMock<T>;}
         catch{ return null; }
-    }
+    }  
 
     public bool IsAutoMock<T>() => IsAutoMock(typeof(T));
     public bool IsAutoMock(Type? t) => t?.IsGenericType == true && t.GetGenericTypeDefinition() == typeof(AutoMock<>);
@@ -27,7 +34,7 @@ internal class AutoMockHelpers : IAutoMockHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public IAutoMock? GetFromObj(object? obj) => obj is IAutoMock m ? m : (obj as IMocked ?? (obj as Delegate)?.Target as IMocked)?.Mock as IAutoMock;
+    public IAutoMock? GetFromObj(object? obj) => obj is IAutoMock m ? m : (obj as global::Moq.IMocked ?? (obj as Delegate)?.Target as global::Moq.IMocked)?.Mock as IAutoMock;
     public Type GetAutoMockType(Type inner) => typeof(AutoMock<>).MakeGenericType(inner);
 
     public bool IsAutoMockAllowed(Type t)
@@ -46,9 +53,9 @@ internal class AutoMockHelpers : IAutoMockHelpers
                     || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName.StartsWith(typeof(ValueTuple).FullName)
                     
                     || t == typeof(IntPtr) || t == typeof(UIntPtr)      
-                    || typeof(Mock).IsAssignableFrom(t)
+                    || typeof(global::Moq.Mock).IsAssignableFrom(t)
                     || typeof(Type).IsAssignableFrom(t)
-                    || t.Assembly == typeof(Mock).Assembly
+                    || t.Assembly == typeof(global::Moq.Mock).Assembly
                     || typeof(IFixture).IsAssignableFrom(t) || typeof(IAutoMock).IsAssignableFrom(t) || typeof(ITracker).IsAssignableFrom(t)
                     // TODO...have to figure out why it has a problem to mock it and hwo we can expect it in general
                     //     but maybe with our CustomMockVirtualMethodsCommand it is already fixed
@@ -70,4 +77,15 @@ internal class AutoMockHelpers : IAutoMockHelpers
 
         return true;            
     }
+
+    public SetupServiceFactoryBase GetSetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc)
+        => new SetupServiceFactory(setupTypeFunc);
+
+    public ISpecimenCommand GetStubAllPropertiesCommand() => new AutoMockStubAllPropertiesCommand(this);
+
+    public ISpecimenCommand GetClearInvocationsCommand() => new AutoMockClearInvocationsCommand(this);
+
+    public ISpecimenCommand GetAutoMockInitCommand()  => new AutoMockInitCommand();
+
+    public bool CanMock(Type t) => ProxyUtil.IsAccessible(t);
 }

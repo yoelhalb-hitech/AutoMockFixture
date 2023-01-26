@@ -1,5 +1,4 @@
-﻿using AutoFixture.AutoMoq;
-using AutoFixture.Kernel;
+﻿using AutoFixture.Kernel;
 using AutoMockFixture.AutoMockUtils;
 using Moq;
 using System.ComponentModel;

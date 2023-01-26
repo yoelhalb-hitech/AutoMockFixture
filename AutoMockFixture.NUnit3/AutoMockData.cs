@@ -1,13 +1,11 @@
 ﻿using AutoFixture;
 using AutoFixture.NUnit3;
-using AutoMockFixture.Attributes;
 using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Specifications;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using System.Threading;
 
-namespace AutoMockFixture;
+namespace AutoMockFixture.NUnit3;
 
 /// <summary>
 /// This ineherits the <see cref="AutoDataAttribute"/> class from <see cref="AutoFixture"/>
@@ -15,15 +13,15 @@ namespace AutoMockFixture;
 /// </summary>
 internal class AutoMockData : AutoDataAttribute
 {
-    private readonly Lazy<IAutoMockFixture> fixtureLazy;
+    private readonly Lazy<FixtureUtils.AutoMockFixture> fixtureLazy;
 
-    private IAutoMockFixture Fixture => this.fixtureLazy.Value;
+    private FixtureUtils.AutoMockFixture Fixture => this.fixtureLazy.Value;
 
-    public AutoMockData(Func<IAutoMockFixture> fixtureFactory) : base(fixtureFactory)
+    public AutoMockData(Func<FixtureUtils.AutoMockFixture> fixtureFactory) : base(fixtureFactory)
     {
         if (fixtureFactory == null) throw new ArgumentNullException(nameof(fixtureFactory));
 
-        this.fixtureLazy = new Lazy<IAutoMockFixture>(fixtureFactory, LazyThreadSafetyMode.PublicationOnly);
+        this.fixtureLazy = new Lazy<FixtureUtils.AutoMockFixture>(fixtureFactory, LazyThreadSafetyMode.PublicationOnly);
     }
 
     public new IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
@@ -42,7 +40,7 @@ internal class AutoMockData : AutoDataAttribute
                     var customization = ca.GetCustomization(parameter.ParameterInfo);
                     if(customization is FreezeOnMatchCustomization freezeCustomization)                    
                         this.Fixture
-                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(freezeCustomization.Matcher)));                    
+                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(freezeCustomization.Matcher, Fixture.AutoMockHelpers)));                    
                     else 
                         this.Fixture.Customize(customization);
                 }

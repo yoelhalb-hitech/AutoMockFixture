@@ -1,6 +1,5 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
-using Moq;
 
 namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
@@ -17,12 +16,12 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
 
     public object? Create(object request, ISpecimenContext context)
     {
-        if (request is not NonAutoMockRequest nonMockRequest)
-            return new NoSpecimen();
+        if (request is not NonAutoMockRequest nonMockRequest) return new NoSpecimen();
 
         var isCreatable = !nonMockRequest.Request.IsAbstract && !nonMockRequest.Request.IsInterface;
         var isMock = AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
-            || (typeof(Mock).IsAssignableFrom(nonMockRequest.Request) && nonMockRequest.Request.IsGenericType);
+                                || AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(nonMockRequest.Request);
+        
         if (isMock || !isCreatable)
         {
             // Remember that the request might be IMock<> 

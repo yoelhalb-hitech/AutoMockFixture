@@ -8,9 +8,9 @@ internal class TaskBuilder : NonConformingBuilder
     public override Type[] SupportedTypes => new Type[] 
     {
         typeof(Task),
-        typeof(ValueTask),
         typeof(Task<>),
-        typeof(ValueTask<>)
+        typeof(ValueTask),
+        typeof(ValueTask<>),
     };
     public override int Repeat => 1;
 

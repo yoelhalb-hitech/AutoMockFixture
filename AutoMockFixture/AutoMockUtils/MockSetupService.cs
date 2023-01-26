@@ -1,7 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using Castle.DynamicProxy;
 using System.Reflection;
 using static AutoMockFixture.AutoMockUtils.CannotSetupMethodException;
 
@@ -14,15 +13,17 @@ internal class MockSetupService
     private readonly IAutoMock mock;
     private readonly ISpecimenContext context;
     private readonly SetupServiceFactoryBase setupServiceFactory;
+    private readonly IAutoMockHelpers autoMockHelpers;
     private readonly Type mockedType;
     private readonly ITracker? tracker;
     private readonly bool noMockDependencies;
 
-    public MockSetupService(IAutoMock mock, ISpecimenContext context, SetupServiceFactoryBase setupServiceFactory)
+    public MockSetupService(IAutoMock mock, ISpecimenContext context, SetupServiceFactoryBase setupServiceFactory, IAutoMockHelpers autoMockHelpers)
     {
         this.mock = mock;
         this.context = context;
         this.setupServiceFactory = setupServiceFactory;
+        this.autoMockHelpers = autoMockHelpers;
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
         mockedType = mock.GetInnerType();
         tracker = mock.Tracker;
@@ -102,7 +103,7 @@ internal class MockSetupService
                 return;
             }
 
-            if (!ProxyUtil.IsAccessible(ifaceMethod.DeclaringType))
+            if (!autoMockHelpers.CanMock(ifaceMethod.DeclaringType))
             {
                 HandleCannotSetup(trackingPath, CannotSetupReason.TypeNotPublic);
                 return;

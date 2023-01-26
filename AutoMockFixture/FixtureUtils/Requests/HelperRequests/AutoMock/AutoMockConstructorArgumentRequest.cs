@@ -13,7 +13,7 @@ internal class AutoMockConstructorArgumentRequest : ConstructorArgumentRequest, 
 
     public override void SetResult(object? result, ISpecimenBuilder? builder)
     {
-        if (result is not null && AutoMockHelpers.GetFromObj(result) is not null)
+        if (result is not null && StartTracker.Fixture.AutoMockHelpers.GetFromObj(result) is not null)
         {
             base.SetResult(result, builder);
             return;

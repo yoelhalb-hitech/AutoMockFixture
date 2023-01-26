@@ -7,6 +7,13 @@ namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 internal class InnerBuilder : ISpecimenBuilder
 {
+    public InnerBuilder(IAutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
+    }
+
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public object? Create(object request, ISpecimenContext context)
     {
         if (request is not InnerRequest innerRequest) return new NoSpecimen();

@@ -1,16 +1,23 @@
 ﻿using AutoFixture.Kernel;
-using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.Moq.AutoMockUtils;
 using Moq;
 
 namespace AutoMockFixture.Moq.FixtureUtils.Commands;
 
 internal class AutoMockClearInvocationsCommand : ISpecimenCommand
 {
+    public AutoMockClearInvocationsCommand(AutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers;
+    }
+
+    public AutoMockHelpers AutoMockHelpers { get; }
+
     public void Execute(object specimen, ISpecimenContext context)
     {
-        var mock = AutoMockHelpers.GetFromObj(specimen);
-        if (mock is null) return;
+        var m = AutoMockHelpers.GetFromObj(specimen);
+        if (m is null || m is not Mock mock) return;
 
-        (mock as Mock)?.Invocations.Clear(); // This way we will remove for example counts for property set etc.
+        mock.Invocations.Clear(); // This way we will remove for example counts for property set etc.
     }
 }

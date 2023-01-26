@@ -21,7 +21,7 @@ public class AutoMockCustomization : ICustomization
     public bool GenerateDelegates { get; set; } = true;
     public void Customize(IFixture fixture)
     {
-        if (fixture == null || fixture is not AutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
+        if (fixture == null || fixture is not IAutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new AutoMockTypeControlBuilder(),
@@ -44,7 +44,7 @@ public class AutoMockCustomization : ICustomization
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                        new InnerBuilder(),
+                                        new InnerBuilder(mockFixture.AutoMockHelpers),
                                         new TypeMatchSpecification(typeof(InnerRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -52,7 +52,8 @@ public class AutoMockCustomization : ICustomization
                                             mockFixture,
                                             new AutoMockDependenciesBuilder(
                                                 new DependencyInjectionMethodInvoker(
-                                                    new CustomModestConstructorQuery())),
+                                                    new CustomModestConstructorQuery(mockFixture.AutoMockHelpers)),
+                                                mockFixture.AutoMockHelpers),
                                             ConfigureMembers ? new AutoMockDependenciesAutoPropertiesHandlerCommand(mockFixture) : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
 
@@ -61,7 +62,8 @@ public class AutoMockCustomization : ICustomization
                                             mockFixture,
                                             new NonAutoMockBuilder(
                                                 new MethodInvokerWithRecursion(
-                                                    new CustomModestConstructorQuery())),
+                                                    new CustomModestConstructorQuery(mockFixture.AutoMockHelpers)),
+                                                mockFixture.AutoMockHelpers),
                                             ConfigureMembers ? new CustomAutoPropertiesCommand(mockFixture) : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(NonAutoMockRequest))));
 
@@ -86,29 +88,31 @@ public class AutoMockCustomization : ICustomization
                                         new TypeMatchSpecification(typeof(OutParameterRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
-                                        new AutoMockRequestBuilder(),
-                                        new AutoMockRequestSpecification()));
+                                        new AutoMockRequestBuilder(mockFixture.AutoMockHelpers),
+                                        new AutoMockRequestSpecification(mockFixture.AutoMockHelpers)));
 
         ISpecimenBuilder mockBuilder = new AutoMockBuilder(
                                           new AutoMockMethodInvoker(
-                                            new AutoMockConstructorQuery()));
+                                            new AutoMockConstructorQuery(mockFixture.AutoMockHelpers),
+                                            mockFixture.AutoMockHelpers.GetAutoMockInitCommand()),
+                                          mockFixture.AutoMockHelpers);
 
         // If members should be automatically configured, wrap the builder with members setup postprocessor.
         // This might be useful when wanting to have control over the setup        
         if (ConfigureMembers)
         {
-            var setupFactory = new MockUtils.MethodSetupServiceFactory(() => mockFixture.MethodSetupType);
+            var setupFactory = mockFixture.AutoMockHelpers.GetSetupServiceFactory(() => mockFixture.MethodSetupType);
 
             mockBuilder = new PostprocessorWithRecursion(
                                     fixture: mockFixture,
                                     builder: mockBuilder,
                                     command: new CompositeSpecimenCommand(
-                                                new AutoMockStubAllPropertiesCommand(),
-                                                new AutoMockVirtualMethodsCommand(setupFactory),
+                                                mockFixture.AutoMockHelpers.GetStubAllPropertiesCommand(),
+                                                new AutoMockVirtualMethodsCommand(mockFixture.AutoMockHelpers, setupFactory),
                                                 // This one has to be after `AutoMockStubAllPropertiesCommand`
-                                                new AutoMockAutoPropertiesHandlerCommand(),
+                                                new AutoMockAutoPropertiesHandlerCommand(mockFixture.AutoMockHelpers),
                                                 // This one has to be after `AutoMockAutoPropertiesHandlerCommand`
-                                                new AutoMockClearInvocationsCommand()));
+                                                mockFixture.AutoMockHelpers.GetClearInvocationsCommand()));
         }
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(mockBuilder,
@@ -116,7 +120,7 @@ public class AutoMockCustomization : ICustomization
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new Postprocessor(
-                                            new LastResortBuilder(),
+                                            new LastResortBuilder(mockFixture.AutoMockHelpers),
                                             new CacheCommand(mockFixture.Cache)),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 

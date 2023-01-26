@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using AutoMockFixture.Extensions;
+using Moq;
 using System.Reflection;
 
 namespace AutoMockFixture.Moq.MockUtils;

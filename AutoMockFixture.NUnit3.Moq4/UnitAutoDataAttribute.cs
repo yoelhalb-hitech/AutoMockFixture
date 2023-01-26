@@ -1,8 +1,12 @@
 ﻿using AutoFixture;
+using AutoMockFixture.Moq;
+using AutoMockFixture.NUnit3;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using System;
+using System.Collections.Generic;
 
-namespace AutoMockFixture.Attributes;
+namespace AutoMockFixture.NUnit3.Moq4;
 
 // TODO... add injections
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
@@ -24,7 +28,7 @@ public class UnitAutoDataAttribute : Attribute, ITestBuilder
     public UnitAutoDataAttribute(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes methodSetupType)
         : this(noConfigureMembers, generateDelegates)
     {
-        
+
         this.methodSetupType = methodSetupType;
     }
 

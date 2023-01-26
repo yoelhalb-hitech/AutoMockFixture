@@ -29,14 +29,14 @@ public class ConstructorArgumentCustomization : IRemovableCustomization
 
     public void Customize(IFixture fixture)
     {
-        if (fixture is not AutoMockFixture mockFixture) throw new ArgumentException($"Expected {nameof(fixture)} to be `{nameof(AutoMockFixture)}`");
+        if (fixture is not IAutoMockFixture mockFixture) throw new ArgumentException($"Expected {nameof(fixture)} to be as `{nameof(IAutoMockFixture)}`");
 
         mockFixture.ConstructorArgumentValues.AddRange(ConstructorArgumentValues);
     }
 
     public void RemoveCustomization(IFixture fixture)
     {
-        if (fixture is not AutoMockFixture mockFixture) throw new ArgumentException($"Expected {nameof(fixture)} to be `{nameof(AutoMockFixture)}`");
+        if (fixture is not IAutoMockFixture mockFixture) throw new ArgumentException($"Expected {nameof(fixture)} to be an `{nameof(IAutoMockFixture)}`");
 
         ConstructorArgumentValues.ForEach(v => mockFixture.ConstructorArgumentValues.Remove(v));
     }

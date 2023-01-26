@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.Extensions;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.Moq.AutoMockUtils;
 using AutoMockFixture.Moq.VerifyInfo;
@@ -16,8 +17,8 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 {
     public override T Object => GetMocked();
     public virtual ITracker? Tracker { get; set; }
-    public virtual AutoMockFixture Fixture => Tracker?.StartTracker.Fixture
-            ?? throw new Exception($"Fixture not set, was this created by `{nameof(AutoMockFixture)}`?");
+    public virtual IAutoMockFixture Fixture => Tracker?.StartTracker.Fixture
+            ?? throw new Exception($"Fixture not set, was this created by an `{nameof(IAutoMockFixture)}`?");
     public List<IVerifyInfo<T>> VerifyList { get; } = new List<IVerifyInfo<T>>();
     public Dictionary<string, MemberInfo> MethodsSetup { get; } = new Dictionary<string, MemberInfo>();
     public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; }

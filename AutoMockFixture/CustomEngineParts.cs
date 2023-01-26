@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.MethodInvokers;
 using AutoMockFixture.FixtureUtils.MethodQueries;
 
@@ -6,12 +7,12 @@ namespace AutoMockFixture;
 
 internal class CustomEngineParts : DefaultEngineParts
 {
-    public CustomEngineParts(AutoMockFixture fixture)
+    public CustomEngineParts(IAutoMockHelpers autoMockHelpers)
     {
-        Fixture = fixture;
+        AutoMockHelpers = autoMockHelpers;
     }
 
-    public AutoMockFixture Fixture { get; }
+    public IAutoMockHelpers AutoMockHelpers { get; }
 
     public override IEnumerator<ISpecimenBuilder> GetEnumerator()
     {
@@ -21,7 +22,7 @@ internal class CustomEngineParts : DefaultEngineParts
             if (be.Current is MethodInvoker)
             {
                 yield return new MethodInvokerWithRecursion(
-                                    new CustomModestConstructorQuery());
+                                    new CustomModestConstructorQuery(AutoMockHelpers));
             }
             else yield return be.Current;
         }

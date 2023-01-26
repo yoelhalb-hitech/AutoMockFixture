@@ -9,36 +9,20 @@ using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
 using SequelPay.DotNetPowerExtensions;
-using Moq;
+using System.ComponentModel;
 using System.Reflection;
 
-namespace AutoMockFixture;
+namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)
 
 /// <summary>
-/// For Test project purposes
+/// CAUTION: the methods are not thread safe
 /// </summary>
-internal class AbstractAutoMockFixture : AutoMockFixture 
+[EditorBrowsable(EditorBrowsableState.Advanced)]
+public abstract partial class AutoMockFixture : Fixture, IAutoMockFixture
 {
-    public AbstractAutoMockFixture(bool noConfigureMembers = false) : base(noConfigureMembers) { }
+    MethodSetupTypes IAutoMockFixture.MethodSetupType => MethodSetupType;
+    IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
 
-    public override object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
-    public override T Freeze<T>()
-    {
-        try
-        {
-            base.Freeze<T>();
-        }
-        catch { }
-#pragma warning disable CS8603 // Possible null reference return.
-        return default;
-#pragma warning restore CS8603 // Possible null reference return.
-    }
-}
-/// <summary>
-/// Caution the methods are not thread safe
-/// </summary>
-internal abstract partial class AutoMockFixture : Fixture
-{
     internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
     private readonly static MethodInfo replaceNodeMethod;
     private readonly static FieldInfo graphField;
@@ -63,7 +47,7 @@ internal abstract partial class AutoMockFixture : Fixture
     }
     public AutoMockFixture(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
     {
-        var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this));
+        var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this.AutoMockHelpers));
         
         var newAutoProperties = new AutoPropertiesTarget(
                                     new PostprocessorWithRecursion(
@@ -86,15 +70,16 @@ internal abstract partial class AutoMockFixture : Fixture
         Customizations.Add(new FilteringSpecimenBuilder(
                                 new FixedBuilder(this),
                                 new OrRequestSpecification(
-                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixture))),
-                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture))),
-                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture))),
-                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder))))));
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixture)), AutoMockHelpers),
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture)), AutoMockHelpers),
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture)), AutoMockHelpers),
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder)), AutoMockHelpers))));
 
         Customize(new AutoMockCustomization { ConfigureMembers = !noConfigureMembers, GenerateDelegates = generateDelegates });
 
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)))));
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute))))); // Considering it scoped as it is per fixture whcih is normally scoped
+        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(SingletonAttribute)), AutoMockHelpers)));
+        // Considering it scoped as it is per fixture which is normally scoped
+        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new AttributeMatchSpecification(typeof(ScopedAttribute)), AutoMockHelpers)));
 
         Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
                         .ForEach(b => Behaviors.Remove(b));
@@ -105,13 +90,14 @@ internal abstract partial class AutoMockFixture : Fixture
 
     public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();
 
+    Cache IAutoMockFixture.Cache => Cache;
     internal Cache Cache { get; } = new Cache();
 
     #region Create
     // Override to use our own
     public virtual T? Freeze<T>()
     {
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(typeof(T)))));
+        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(typeof(T)), AutoMockHelpers)));
         
         return Create<T>();
     }
@@ -128,7 +114,7 @@ internal abstract partial class AutoMockFixture : Fixture
 
         return result;
     }
-    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class 
+    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
                 => (T?)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
 
     public object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null)
@@ -137,7 +123,7 @@ internal abstract partial class AutoMockFixture : Fixture
 
         return result;
     }
-    public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null) 
+    public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null)
                 => (T?)CreateNonAutoMock(typeof(T), autoMockTypeControl);
 
     public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
@@ -146,7 +132,7 @@ internal abstract partial class AutoMockFixture : Fixture
 
         var type = AutoMockHelpers.IsAutoMock(t) 
                     ? AutoMockHelpers.GetMockedType(t)!
-                    : !typeof(Mock).IsAssignableFrom(t)
+                    : !AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(t)
                         ? t 
                         : t.IsGenericType ? t.GenericTypeArguments.First(): typeof(object);
         if(!AutoMockHelpers.IsAutoMockAllowed(type))
@@ -163,17 +149,29 @@ internal abstract partial class AutoMockFixture : Fixture
 
     #region Utils
 
+    internal abstract IAutoMockHelpers AutoMockHelpers { get; }
+    IAutoMockHelpers IAutoMockFixture.AutoMockHelpers => AutoMockHelpers;
+
+    List<ConstructorArgumentValue> IAutoMockFixture.ConstructorArgumentValues => ConstructorArgumentValues;
     internal List<ConstructorArgumentValue> ConstructorArgumentValues = new();
 
     internal ITracker? GetTracker(object obj) => TrackerDict
                     .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
                     .Value;
 
+    Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> IAutoMockFixture.PathsDict => PathsDict;
+
     internal Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> PathsDict = new();
+
+    Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> IAutoMockFixture.MocksDict => MocksDict;
     internal Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> MocksDict = new();
+    Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> IAutoMockFixture.MocksByTypeDict => MocksByTypeDict;
     internal Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> MocksByTypeDict = new();
 
+    Dictionary<WeakReference, ITracker> IAutoMockFixture.TrackerDict => TrackerDict;
     internal Dictionary<WeakReference, ITracker> TrackerDict = new();
+
+    Dictionary<object, ITracker> IAutoMockFixture.ProcessingTrackerDict => ProcessingTrackerDict;
     internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
     
     private object? Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
@@ -239,158 +237,6 @@ internal abstract partial class AutoMockFixture : Fixture
 //You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.
 //You can also try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
         }
-    }
-
-    #endregion
-
-    #region Getters
-
-    /// <summary>
-    /// Get the value at the specified path (property/field/ctor argument/out parameter/method result etc.)
-    /// </summary>
-    /// <param name="obj">An object created witht he current <see cref="AutoMockFixture"/></param>
-    /// <param name="path">The path to get the value at</param>
-    /// <returns></returns>
-    /// <exception cref="Exception">Path not provided</exception>
-    /// <exception cref="Exception">Object not found</exception>
-    public List<object> GetAt(object obj, string path)
-    {
-        obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
-
-        if (!PathsDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
-        if (string.IsNullOrWhiteSpace(path)) throw new Exception(nameof(path) + " doesn't have a value");
-
-        path = path.Trim();
-       
-        var paths = PathsDict.First(d => d.Key.Target == obj).Value.Result;
-        if (paths is null || !paths.ContainsKey(path)) throw new Exception($"`{path}` not found, please ensure that it is the correct path on the correct object");
-        
-        return paths[path].GetValidValues();
-    }
-    public string GetPathForObject(object mainObj, object currentObject)
-    {
-        currentObject = AutoMockHelpers.GetFromObj(currentObject) ?? currentObject;
-
-        if (!PathsDict.Any(d => d.Key.Target == mainObj)) throw new Exception("Main object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
-        
-        var path = PathsDict.First(d => d.Key.Target == mainObj).Value.Result
-                            .FirstOrDefault(kvp => kvp.Value.Contains(currentObject)).Key;
-
-        if (path is null) throw new Exception("Object not found or is Garbage Collected, or .Equals() has been overriden incorrectly");
-
-        return path;
-    }
-    public object? GetSingleAt(object obj, string path) => GetAt(obj, path).Single();
-    public IAutoMock GetAutoMock(object obj, string path)
-    {
-        var result = GetSingleAt(obj, path);
-        if (result is null) throw new Exception($"Result object is null (or possibly garbage collected) and not an `{nameof(AutoMock<object>)}`");
-
-        var mock = AutoMockHelpers.GetFromObj(result);
-
-        if (mock is null) throw new Exception($"Result object is not an `{nameof(AutoMock<object>)}`");
-
-        return mock;
-    }
-
-    public AutoMock<T> GetAutoMock<T>(object obj, string path) where T : class
-    {
-        var result = GetAutoMock(obj, path);
-        if (result is not AutoMock<T> mock)
-            throw new Exception($"Result object is `{nameof(AutoMock<object>)}` and not `{nameof(AutoMock<object>)}<{typeof(T).Name}>`");
-
-        return mock;
-    }
-
-    public IEnumerable<IAutoMock> GetAutoMocks(object obj, Type type)
-    {
-        obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
-
-        if (!MocksByTypeDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
-
-        var typeDict = MocksByTypeDict.First(d => d.Key.Target == obj).Value.Result;
-
-        return typeDict.Where(td => td.Key.IsAssignableFrom(type))
-                            .SelectMany(td => td.Value.GetValidValues());
-    }
-
-    public IEnumerable<AutoMock<T>> GetAutoMocks<T>(object obj) where T : class 
-                                => GetAutoMocks(obj, typeof(T)).OfType<AutoMock<T>>();
-
-    public IAutoMock GetAutoMock(object obj, Type type)
-            => GetAutoMocks(obj, type).SingleOrDefault() ?? throw new Exception("AutoMock not found or is garbage collected");
-
-    public AutoMock<T> GetAutoMock<T>(object obj) where T : class 
-            => GetAutoMocks<T>(obj).SingleOrDefault() ?? throw new Exception("AutoMock not found or is garbage collected");
-
-    public IEnumerable<AutoMock<T>> GetAutoMocks<T>(bool freezeAndCreate = false) where T : class
-    {
-        var existing = TrackerDict.Keys.SelectMany(k => GetAutoMocks(k, typeof(T)).OfType<AutoMock<T>>());
-        if (!existing.Any() && freezeAndCreate)
-        {
-            Freeze<T>();
-            var newMock = Create<AutoMock<T>>();
-            if (newMock is not null) return new AutoMock<T>[] { newMock };
-        }
-
-        return existing;
-    }
-
-    public AutoMock<T> GetAutoMock<T>(bool freezeAndCreate = false) where T : class
-                            => GetAutoMocks<T>(freezeAndCreate).SingleOrDefault()
-                                ?? throw new Exception("AutoMock not found or is garbage collected");
-
-    public AutoMock<T> On<T>() where T : class => GetAutoMock<T>(true);
-
-    public T Object<T>() where T : class => GetAutoMock<T>(true).Object;
-
-    /// <summary>
-    /// Gets all paths already materialized for an object.
-    /// </summary>
-    /// <remarks>
-    /// Does not include results of some method calls or some properties that were not yet called.
-    /// </remarks>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    public List<string> GetPaths(object obj)
-    {
-        obj = AutoMockHelpers.GetFromObj(obj) ?? obj;
-
-        if (!PathsDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
-
-        return PathsDict.First(d => d.Key.Target == obj).Value.Result.Keys.ToList();
-    }
-
-    #endregion
-
-    #region Verify
-
-    // NOTE: We don't do VerifyAll() as it will try to verify all setups that the AutoMockFixture has done
-    public void Verify(object obj)
-    {
-        if (!MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
-
-        if (AutoMockHelpers.GetFromObj(obj) is IAutoMock mock) mock.Verify();
-        MocksDict.First(d => d.Key.Target == obj).Value?.Result.GetValidValues().ForEach(m => m.Verify());
-    }
-
-    public void Verify()
-    {
-        TrackerDict.Keys.ToList().ForEach(k => Verify(k));
-    }
-    
-    public void VerifyNoOtherCalls(object obj)
-    {
-        if (!MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");
-
-        if (AutoMockHelpers.GetFromObj(obj) is IAutoMock mock) mock.VerifyNoOtherCalls();
-        MocksDict.First(d => d.Key.Target == obj).Value?.Result?.GetValidValues().ForEach(m => m.VerifyNoOtherCalls());
-    }
-
-    public void VerifyNoOtherCalls()
-    {
-        TrackerDict.Keys.ToList().ForEach(k => VerifyNoOtherCalls(k));
     }
 
     #endregion

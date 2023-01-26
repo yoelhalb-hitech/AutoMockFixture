@@ -5,13 +5,15 @@ namespace AutoMockFixture.FixtureUtils.MethodQueries;
 
 internal class CustomConstructorMethod : IMethod
 {
-    internal CustomConstructorMethod(ConstructorInfo ctor)
+    internal CustomConstructorMethod(ConstructorInfo ctor, IAutoMockHelpers autoMockHelpers)
     {
-        this.Constructor = ctor ?? throw new ArgumentNullException(nameof(ctor));            
+        this.Constructor = ctor ?? throw new ArgumentNullException(nameof(ctor));
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public ConstructorInfo Constructor { get; }
-    
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public IEnumerable<ParameterInfo> Parameters => Constructor.GetParameters();
 
     public object Invoke(IEnumerable<object> parameters)

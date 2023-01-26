@@ -3,7 +3,7 @@ namespace AutoMockFixture.FixtureUtils.Requests;
 
 public interface IFixtureTracker : ITracker
 {
-    public AutoMockFixture Fixture { get; }
+    public IAutoMockFixture Fixture { get; }
     public bool? MockShouldCallbase { get; }
     public bool MockDependencies { get; }
     /// <summary>

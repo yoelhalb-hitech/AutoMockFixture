@@ -9,7 +9,7 @@ internal class NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixtu
         if (tracker is null) throw new Exception("Either tracker or fixture must be provided");
     }
 
-    public NonAutoMockRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
+    public NonAutoMockRequest(Type request, IAutoMockFixture fixture) : base(fixture, null)
     {
         Request = request;
     }

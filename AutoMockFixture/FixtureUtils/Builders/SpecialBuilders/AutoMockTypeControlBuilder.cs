@@ -35,12 +35,12 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
 
     internal class TypeControlHelper
     {
-        private readonly AutoMockFixture fixture;
+        private readonly IAutoMockFixture fixture;
         private readonly IRequestWithType? typedRequest;
         private readonly Type type;
         private readonly ISpecimenContext context;
 
-        public TypeControlHelper(AutoMockFixture fixture, IRequestWithType? typedRequest,
+        public TypeControlHelper(IAutoMockFixture fixture, IRequestWithType? typedRequest,
                                                                         Type type, ISpecimenContext context)
         {            
             this.fixture = fixture;
@@ -58,7 +58,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
             var specimen = context.Resolve(newRequest);
 
             // We might get an AutoMock via the relay        
-            var autoMock = AutoMockHelpers.GetFromObj(specimen);
+            var autoMock = fixture.AutoMockHelpers.GetFromObj(specimen);
             if (autoMock is not null)
             {
                 var tracker = autoMock.Tracker as BaseTracker;

@@ -1,5 +1,5 @@
 ﻿
-namespace AutoMockFixture.Attributes;
+namespace AutoMockFixture;
 
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
 public class AutoMockTypeAttribute : Attribute

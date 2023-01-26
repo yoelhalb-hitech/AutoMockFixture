@@ -1,4 +1,4 @@
-﻿using Moq;
+﻿using AutoMockFixture.FixtureUtils.Commands;
 using System.Reflection;
 
 namespace AutoMockFixture.AutoMockUtils;
@@ -18,4 +18,16 @@ internal interface IAutoMockHelpers
     Type GetAutoMockType(Type inner);
 
     bool IsAutoMockAllowed(Type t);
+
+    SetupServiceFactoryBase GetSetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc);
+
+    ISpecimenCommand GetStubAllPropertiesCommand();
+    ISpecimenCommand GetClearInvocationsCommand();
+
+    ISpecimenCommand GetAutoMockInitCommand();
+
+    Type InterfaceProxyBase { get; }
+    IRequestSpecification MockRequestSpecification { get; }
+
+    bool CanMock(Type t);
 }

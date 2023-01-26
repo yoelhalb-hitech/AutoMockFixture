@@ -1,5 +1,5 @@
 ﻿using AutoMockFixture.Moq.Expressions;
-using AutoMockFixture.VerifyInfo;
+using AutoMockFixture.Moq.VerifyInfo;
 using Moq;
 using Moq.Language.Flow;
 using System.Linq.Expressions;
@@ -97,7 +97,7 @@ internal class SetupUtils<T> where T : class
         else
         {
             var setup = GetSetupFuncInternal(method.ReturnType).Invoke(this, new object?[] { method, expr, times });
-            if (callbase) setup.GetType().GetMethod(nameof(Moq.Language.ICallBase.CallBase)).Invoke(setup, new object[] { });
+            if (callbase) setup.GetType().GetMethod(nameof(global::Moq.Language.ICallBase.CallBase)).Invoke(setup, new object[] { });
         }
     }
 }

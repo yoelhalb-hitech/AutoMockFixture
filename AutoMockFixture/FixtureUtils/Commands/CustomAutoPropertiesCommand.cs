@@ -11,15 +11,15 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
 {
     private static readonly DelegateSpecification delegateSpecification = new DelegateSpecification();
 
-    public AutoMockFixture Fixture { get; }
+    public IAutoMockFixture Fixture { get; }
     public bool IncludePrivateSetters { get; set; }
     public bool IncludePrivateOrMissingGetter { get; set; }
 
-    public CustomAutoPropertiesCommand(AutoMockFixture fixture) : this(new TrueRequestSpecification(), fixture)
+    public CustomAutoPropertiesCommand(IAutoMockFixture fixture) : this(new TrueRequestSpecification(), fixture)
     {
     }
 
-    public CustomAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture) : base(specification)
+    public CustomAutoPropertiesCommand(IRequestSpecification specification, IAutoMockFixture fixture) : base(specification)
     {
         Fixture = fixture;
     }
@@ -39,7 +39,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
 
         // TODO... if we want to have `Create on demend` we have to cache here the original tracker
 
-        var mock = AutoMockHelpers.GetFromObj(specimen);
+        var mock = Fixture.AutoMockHelpers.GetFromObj(specimen);
         var existingTracker = mock?.Tracker;
         if (existingTracker is null) Fixture.ProcessingTrackerDict.TryGetValue(specimen, out existingTracker);
 
@@ -121,7 +121,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
                select pi;
 
         // TODO. what about default implemented interfaces?
-        if (!IncludePrivateSetters || t.BaseType is null || t.BaseType == typeof(Moq.Internals.InterfaceProxy)) return result;
+        if (!IncludePrivateSetters || t.BaseType is null || t.BaseType == Fixture.AutoMockHelpers.InterfaceProxyBase) return result;
 
         var explicitInterfaceProps = t.GetExplicitInterfaceProperties().Where(pi => pi.SetMethod is not null);
 

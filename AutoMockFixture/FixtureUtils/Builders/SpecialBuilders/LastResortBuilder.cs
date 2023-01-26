@@ -9,6 +9,13 @@ namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 /// </summary>
 internal class LastResortBuilder : ISpecimenBuilder
 {
+    public LastResortBuilder(IAutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
+    }
+
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public object Create(object request, ISpecimenContext context)
     {        
         var newRequest = request switch

@@ -8,6 +8,13 @@ internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
 {
     private static readonly DelegateSpecification delegateSpecification = new DelegateSpecification();
 
+    public AutoMockAutoPropertiesHandlerCommand(IAutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
+    }
+
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public virtual void Execute(object specimen, ISpecimenContext context)
     {
         if (context is null) throw new ArgumentNullException(nameof(context));

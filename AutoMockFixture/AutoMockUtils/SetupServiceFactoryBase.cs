@@ -1,5 +1,4 @@
-﻿using Moq;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 
 namespace AutoMockFixture.AutoMockUtils;

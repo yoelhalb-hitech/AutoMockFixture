@@ -6,7 +6,7 @@ namespace AutoMockFixture.FixtureUtils.Postprocessors;
 // AutoFixture expects `AutoPropertiesCommand` to be a single command, so we have to stuff anoything extra in an extra
 internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder, ISpecimenBuilderNode
 {
-    public PostprocessorWithRecursion(AutoMockFixture fixture, ISpecimenBuilder builder, ISpecimenCommand command,
+    public PostprocessorWithRecursion(IAutoMockFixture fixture, ISpecimenBuilder builder, ISpecimenCommand command,
             IRequestSpecification? specification = null, ISpecimenCommand? extraCommand = null)
                 : base(builder, command, specification ?? new TrueRequestSpecification())
     {
@@ -16,7 +16,7 @@ internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder, IS
         ExtraCommand = extraCommand;
     }
 
-    public AutoMockFixture Fixture { get; }
+    public IAutoMockFixture Fixture { get; }
     public ISpecimenCommand? ExtraCommand { get; }
 
     public new object? Create(object request, ISpecimenContext context)

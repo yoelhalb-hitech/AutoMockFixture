@@ -7,21 +7,19 @@ namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockRelay : ISpecimenBuilder
 {
-    public AutoMockRelay(AutoMockFixture fixture, IAutoMockHelpers autoMockHelpers)
-             : this(new AutoMockableSpecification(), fixture, autoMockHelpers)
+    public AutoMockRelay(IAutoMockFixture fixture)
+             : this(new AutoMockableSpecification(fixture.AutoMockHelpers), fixture)
     {
     }
 
-    public AutoMockRelay(IRequestSpecification mockableSpecification, AutoMockFixture fixture, IAutoMockHelpers autoMockHelpers)
+    public AutoMockRelay(IRequestSpecification mockableSpecification, IAutoMockFixture fixture)
     {
         this.MockableSpecification = mockableSpecification ?? throw new ArgumentNullException(nameof(mockableSpecification));
         Fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
-        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public IRequestSpecification MockableSpecification { get; }
-    public AutoMockFixture Fixture { get; }
-    public IAutoMockHelpers AutoMockHelpers { get; }
+    public IAutoMockFixture Fixture { get; }
 
     public object? Create(object request, ISpecimenContext context)
     {
@@ -34,7 +32,7 @@ internal class AutoMockRelay : ISpecimenBuilder
         Logger.LogInfo($"In relay, for {t.FullName}");
 
         // We do direct to bypass the specification test
-        var autoMockType = AutoMockHelpers.GetAutoMockType(t); // We make it for an AutoMock type so it will be automocked
+        var autoMockType = Fixture.AutoMockHelpers.GetAutoMockType(t); // We make it for an AutoMock type so it will be automocked
         var directRequest = new NonAutoMockRequest(autoMockType, Fixture) // Use NonAutoMockRequest so not to mock dependencies
         {
             MockShouldCallbase = true,

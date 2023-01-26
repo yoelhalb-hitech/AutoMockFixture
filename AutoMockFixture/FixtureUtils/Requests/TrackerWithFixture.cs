@@ -7,12 +7,12 @@ namespace AutoMockFixture.FixtureUtils.Requests;
 /// </summary>
 internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
 {
-    public TrackerWithFixture(AutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
+    public TrackerWithFixture(IAutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
     {
         Fixture = fixture;
     }
 
-    public virtual AutoMockFixture Fixture { get; }
+    public virtual IAutoMockFixture Fixture { get; }
 
     public override string InstancePath => "";
 

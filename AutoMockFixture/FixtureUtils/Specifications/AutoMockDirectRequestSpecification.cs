@@ -5,6 +5,13 @@ namespace AutoMockFixture.FixtureUtils.Specifications;
 
 internal class AutoMockDirectRequestSpecification : IRequestSpecification
 {
+    public AutoMockDirectRequestSpecification(IAutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers;
+    }
+
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public bool IsSatisfiedBy(object request)
     {
         var mockRequest = request as AutoMockDirectRequest;

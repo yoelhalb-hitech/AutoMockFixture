@@ -9,7 +9,7 @@ internal class AutoMockRequest : TrackerWithFixture, IAutoMockRequest, IDisposab
         if (tracker is null) throw new Exception("Either tracker or fixture must be provided");
     }
 
-    public AutoMockRequest(Type request, AutoMockFixture fixture) : base(fixture, null)
+    public AutoMockRequest(Type request, IAutoMockFixture fixture) : base(fixture, null)
     {
         Request = request;
     }

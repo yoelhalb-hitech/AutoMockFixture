@@ -1,18 +1,21 @@
-﻿using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
 
 namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockBuilder : ISpecimenBuilder
 {
-    private static AutoMockDirectRequestSpecification requestSpecification = new();
+    private AutoMockDirectRequestSpecification requestSpecification => new(AutoMockHelpers);
 
-    public AutoMockBuilder(ISpecimenBuilder builder)
+    public AutoMockBuilder(ISpecimenBuilder builder, IAutoMockHelpers autoMockHelpers)
     {
         this.Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public ISpecimenBuilder Builder { get; }
+    public IAutoMockHelpers AutoMockHelpers { get; }
 
     public object? Create(object request, ISpecimenContext context)
     {

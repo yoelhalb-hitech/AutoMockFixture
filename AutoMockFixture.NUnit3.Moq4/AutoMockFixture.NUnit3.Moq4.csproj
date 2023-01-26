@@ -9,8 +9,17 @@
 
     <!-- Avoid ID conflicts with the package project. -->
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
-    <Platforms>AnyCPU</Platforms>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>AnyCPU</Platforms>    
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoMockFixture.Moq\AutoMockFixture.Moq.csproj" />
+    <ProjectReference Include="..\AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj" />
+    <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
-using Moq;
 
 namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
@@ -31,8 +30,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             return result;
         }
 
-        if (AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
-            || (typeof(Mock).IsAssignableFrom(dependencyRequest.Request) && dependencyRequest.Request.IsGenericType))
+        if (AutoMockHelpers.IsAutoMock(dependencyRequest.Request) || AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(dependencyRequest.Request))
         {
             var inner = AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
                                 ? AutoMockHelpers.GetMockedType(dependencyRequest.Request)!

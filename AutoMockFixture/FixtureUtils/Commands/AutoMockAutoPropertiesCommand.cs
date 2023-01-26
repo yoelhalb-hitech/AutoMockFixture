@@ -6,8 +6,8 @@ namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
 {
-    public AutoMockAutoPropertiesCommand(AutoMockFixture fixture) : base(fixture) { }
-    public AutoMockAutoPropertiesCommand(IRequestSpecification specification, AutoMockFixture fixture) : base(specification, fixture) { }
+    public AutoMockAutoPropertiesCommand(IAutoMockFixture fixture) : base(fixture) { }
+    public AutoMockAutoPropertiesCommand(IRequestSpecification specification, IAutoMockFixture fixture) : base(specification, fixture) { }
 
 
     protected override void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)

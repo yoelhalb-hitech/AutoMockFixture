@@ -5,8 +5,7 @@ using AutoMockFixture.FixtureUtils.Specifications;
 namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRequest : ITracker
-{
-    private static readonly AutoMockableSpecification autoMockableSpecification = new();
+{   
 
     public virtual object? Create(object request, ISpecimenContext context)
     {
@@ -18,6 +17,8 @@ internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRe
     protected virtual object? HandleInternal(TRequest trackedRequest, ISpecimenContext context)
     {
         var type = GetRequest(trackedRequest);
+        var autoMockableSpecification = new AutoMockableSpecification(trackedRequest.StartTracker.Fixture.AutoMockHelpers);
+
         if (!autoMockableSpecification.IsSatisfiedBy(type) || !trackedRequest.StartTracker.MockDependencies)
         {
             return HandleNonAutoMock(trackedRequest, context, type);

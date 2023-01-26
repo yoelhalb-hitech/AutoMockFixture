@@ -1,8 +1,12 @@
 ﻿using AutoFixture.NUnit3;
+using AutoMockFixture.Moq;
+using AutoMockFixture.NUnit3;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using System;
+using System.Collections.Generic;
 
-namespace AutoMockFixture.Attributes;
+namespace AutoMockFixture.NUnit3.Moq4;
 
 // TODO... add injections
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
@@ -17,7 +21,7 @@ public class IntegrationAutoDataAttribute : Attribute, ITestBuilder
     public IntegrationAutoDataAttribute(bool noConfigureMembers = false, bool generateDelegates = false)
     {
         this.noConfigureMembers = noConfigureMembers;
-        this.generateDelegates = generateDelegates;        
+        this.generateDelegates = generateDelegates;
     }
 
     // Cannot have defualt value or the calls might be ambiguous

@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
-using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.Extensions;
+using AutoMockFixture.Moq.AutoMockUtils;
 using Moq;
 using System.Linq.Expressions;
 
@@ -7,10 +8,17 @@ namespace AutoMockFixture.Moq.FixtureUtils.Commands;
 
 internal class AutoMockStubAllPropertiesCommand : ISpecimenCommand
 {
+    public AutoMockStubAllPropertiesCommand(AutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers;
+    }
+
+    public AutoMockHelpers AutoMockHelpers { get; }
+
     public void Execute(object specimen, ISpecimenContext context)
     {
-        var mock = AutoMockHelpers.GetFromObj(specimen);
-        if (mock is null) return;
+        var m = AutoMockHelpers.GetFromObj(specimen);
+        if (m is null || m is not Mock mock) return;
 
         // Disable generation of default values (if enabled), otherwise SetupAllProperties will hang if there's a circular dependency
         var mockDefaultValueSetting = mock.DefaultValue;

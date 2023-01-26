@@ -69,7 +69,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         var childrenWithResult = Children.Where(c => c.IsCompleted).ToList();
 
         allMocks = childrenWithResult.SelectMany(c => c.GetAllMocks()).ToList();
-        if (result is not null && AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock.ToWeakReference());
+        if (result is not null && StartTracker.Fixture.AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock.ToWeakReference());
 
         // Probably not worth to do Distinct here (as the caller will do it), unless it is the last one
         if (Parent is null) allMocks = allMocks.Distinct().ToList();

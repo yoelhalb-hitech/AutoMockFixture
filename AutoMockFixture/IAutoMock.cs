@@ -14,7 +14,7 @@ namespace AutoMockFixture;
 public interface IAutoMock
 {
     bool CallBase { get; set; }
-    AutoMockFixture Fixture { get; }
+    IAutoMockFixture Fixture { get; }
     void EnsureMocked();
     Type GetInnerType();
     object GetMocked();

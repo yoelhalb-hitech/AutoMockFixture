@@ -8,12 +8,14 @@ namespace AutoMockFixture.FixtureUtils.Specifications;
 /// </summary>
 internal class TypeOrRequestSpecification : IRequestSpecification
 {
-    public TypeOrRequestSpecification(IRequestSpecification specification)
+    public TypeOrRequestSpecification(IRequestSpecification specification, IAutoMockHelpers autoMockHelpers)
     {
         Specification = specification;
+        AutoMockHelpers = autoMockHelpers;
     }
 
     public IRequestSpecification Specification { get; }
+    public IAutoMockHelpers AutoMockHelpers { get; }
 
     public bool IsSatisfiedBy(object request)
     {

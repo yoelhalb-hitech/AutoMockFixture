@@ -3,12 +3,12 @@ namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockDependenciesAutoPropertiesHandlerCommand : ISpecimenCommand
 {
-    public AutoMockDependenciesAutoPropertiesHandlerCommand(AutoMockFixture fixture)
+    public AutoMockDependenciesAutoPropertiesHandlerCommand(IAutoMockFixture fixture)
     {
         Fixture = fixture;
     }
 
-    public AutoMockFixture Fixture { get; }
+    public IAutoMockFixture Fixture { get; }
 
     public virtual void Execute(object specimen, ISpecimenContext context)
     {

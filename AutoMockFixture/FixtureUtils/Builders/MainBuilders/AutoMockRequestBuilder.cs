@@ -7,7 +7,7 @@ namespace AutoMockFixture.FixtureUtils.FixtureUtils.Builders.MainBuilders;
 
 internal class AutoMockRequestBuilder : ISpecimenBuilder
 {
-    private static readonly AutoMockableSpecification autoMockableSpecification = new();
+    private AutoMockableSpecification autoMockableSpecification => new(AutoMockHelpers);
 
     public AutoMockRequestBuilder(IAutoMockHelpers autoMockHelpers)
     {

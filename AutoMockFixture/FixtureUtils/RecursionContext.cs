@@ -3,7 +3,7 @@ namespace AutoMockFixture.FixtureUtils;
 
 internal class RecursionContext : SpecimenContext
 {
-    public RecursionContext(ISpecimenBuilder builder, AutoMockFixture fixture) : base(builder)
+    public RecursionContext(ISpecimenBuilder builder, IAutoMockFixture fixture) : base(builder)
     {
         Fixture = fixture;
     }
@@ -12,5 +12,5 @@ internal class RecursionContext : SpecimenContext
 
     internal AutoMockTypeControl? AutoMockTypeControl { get; set; }
 
-    internal AutoMockFixture Fixture { get; set; }
+    internal IAutoMockFixture Fixture { get; set; }
 }

@@ -5,7 +5,7 @@ using Moq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMockFixture.Moq.AutoMockUtils;
+namespace AutoMockFixture.Moq;
 
 public partial class AutoMock<T>
 {
