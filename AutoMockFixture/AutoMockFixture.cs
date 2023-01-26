@@ -18,7 +18,7 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 /// CAUTION: the methods are not thread safe
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public abstract partial class AutoMockFixture : Fixture, IAutoMockFixture
+public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
 {
     MethodSetupTypes IAutoMockFixture.MethodSetupType => MethodSetupType;
     IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
@@ -28,7 +28,7 @@ public abstract partial class AutoMockFixture : Fixture, IAutoMockFixture
     private readonly static FieldInfo graphField;
     private readonly static MethodInfo updateGraphAndSetupAdapterMethod;
     
-    static AutoMockFixture()
+    static AutoMockFixtureBase()
     {
         replaceNodeMethod = typeof(SpecimenBuilderNode)
             .GetMethod("ReplaceNodes", Extensions.TypeExtensions.AllBindings, null, new Type[]
@@ -45,7 +45,7 @@ public abstract partial class AutoMockFixture : Fixture, IAutoMockFixture
             typeof(ISpecimenBuilderNode),
         }, null);
     }
-    public AutoMockFixture(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
+    public AutoMockFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
     {
         var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this.AutoMockHelpers));
         
@@ -70,7 +70,7 @@ public abstract partial class AutoMockFixture : Fixture, IAutoMockFixture
         Customizations.Add(new FilteringSpecimenBuilder(
                                 new FixedBuilder(this),
                                 new OrRequestSpecification(
-                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixture)), AutoMockHelpers),
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixtureBase)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder)), AutoMockHelpers))));

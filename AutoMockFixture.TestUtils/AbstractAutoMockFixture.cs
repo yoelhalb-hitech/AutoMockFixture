@@ -4,7 +4,7 @@ using AutoMockFixture.Moq4.AutoMockUtils;
 
 namespace AutoMockFixture.TestUtils;
 
-public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixture
+public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixtureBase
 { 
     public AbstractAutoMockFixture(bool noConfigureMembers = false) : base(noConfigureMembers) { }
 

@@ -4,7 +4,7 @@ namespace AutoMockFixture.Tests;
 
 public static class LinqPadDump
 {
-    public static object ToDump(this AutoMockFixture.FixtureUtils.AutoMockFixture fixture, object obj)
+    public static object ToDump(this AutoMockFixture.FixtureUtils.AutoMockFixtureBase fixture, object obj)
     {
         var tracker = fixture.GetTracker(obj);
 
