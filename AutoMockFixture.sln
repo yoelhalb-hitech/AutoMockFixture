@@ -7,23 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture", "AutoMock
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Tests", "AutoMockFixture.Tests\AutoMockFixture.Tests.csproj", "{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMoqSourceGenerator", "AutoMoqSourceGenerator\AutoMoqSourceGenerator\AutoMoqSourceGenerator.csproj", "{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMoqSourceGenerator.Test", "AutoMoqSourceGenerator\AutoMoqSourceGenerator.Test\AutoMoqSourceGenerator.Test.csproj", "{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Moq4", "AutoMockFixture.Moq4\AutoMockFixture.Moq4.csproj", "{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.NUnit3", "AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj", "{D9FF0209-AAE5-4679-93BB-810EC9548B0E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.NUnit3.Moq4", "AutoMockFixture.NUnit3.Moq4\AutoMockFixture.NUnit3.Moq4.csproj", "{8357B664-76A0-48D5-A363-FF28DFB65C4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.NUnit3.Moq4.IntegrationTests", "AutoMockFixture.NUnit3.Moq4.IntegrationTests\AutoMockFixture.NUnit3.Moq4.IntegrationTests.csproj", "{BE76726D-E2B3-41D6-BFBD-44BBA03CD834}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.NUnit3.Moq4.IntegrationTests", "AutoMockFixture.NUnit3.Moq4.IntegrationTests\AutoMockFixture.NUnit3.Moq4.IntegrationTests.csproj", "{BE76726D-E2B3-41D6-BFBD-44BBA03CD834}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.Moq4.IntegrationTests", "AutoMockFixture.Moq4.IntegrationTests\AutoMockFixture.Moq4.IntegrationTests.csproj", "{FC4AAC03-06EC-4FED-8D30-077A0980E728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Moq4.IntegrationTests", "AutoMockFixture.Moq4.IntegrationTests\AutoMockFixture.Moq4.IntegrationTests.csproj", "{FC4AAC03-06EC-4FED-8D30-077A0980E728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.Moq4.UnitTests", "AutoMockFixture.Moq4.UnitTests\AutoMockFixture.Moq4.UnitTests.csproj", "{BBF8628D-6E2C-433A-8558-BE87DAAB983C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Moq4.UnitTests", "AutoMockFixture.Moq4.UnitTests\AutoMockFixture.Moq4.UnitTests.csproj", "{BBF8628D-6E2C-433A-8558-BE87DAAB983C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.TestUtils", "AutoMockFixture.TestUtils\AutoMockFixture.TestUtils.csproj", "{05DB9990-B4E0-4E88-9150-8B6E4539539B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.TestUtils", "AutoMockFixture.TestUtils\AutoMockFixture.TestUtils.csproj", "{05DB9990-B4E0-4E88-9150-8B6E4539539B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,14 +35,6 @@ Global
 		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FEEC7564-E973-4E73-B88E-DC0D5C09AAAD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDA477AD-B3A9-4394-AAE9-E781B8C5F221}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A5B65A5-2C26-41E5-9D6E-A4DAC071322C}.Release|Any CPU.ActiveCfg = Release|Any CPU
