@@ -208,6 +208,9 @@ var order2 = fixture.Create<Order>();
 ####### TODO
 - Support verify that an event was raised and it provided the default AutoFixtrue implementation
 
+#### On NUnit
+- **Generic test methods**: Supporting now generic test methods via the `TestCaseGenericAttribute` and `TestCaseSourceGenericAttribute`, and for C#11 one can use a generic `TestCaseAttribute<>`
+
 #### On AutoFixture
 - **Recursive ctor**: Can create recursive object graphs (i.e. if the ctor of `Foo` requires a `Bar` that in turn requires `Foo`), in this case all of them will use the same object
 - **Freeze by attribute on class**: Freeze if the type has the `Singleton` or `Scoped` DI attribute from [our DotNetPowerExtensions framework](https://github.com/yoelhalb-hitech/DotNetPowerExtensions), note that any frozen object will not be garabage collected while the fixture is in scope
