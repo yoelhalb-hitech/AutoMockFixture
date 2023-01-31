@@ -15,13 +15,17 @@ internal class AutoMockProxyGenerator : ProxyGenerator
 
     internal object? Target { get; }
     internal bool? Callbase { get; }
+    internal bool isMoq = false;
 
     public AutoMockProxyGenerator(object? target, bool callbase) : base(nonCallbaseProxyBuilder)
     {
         Target = target;
         Callbase = callbase;
     }
-    public AutoMockProxyGenerator() : base(nonCallbaseProxyBuilder) { }
+    public AutoMockProxyGenerator() : base(nonCallbaseProxyBuilder)
+    {
+        isMoq = true;
+    }
 
     private void Validate(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options)
     {
@@ -36,7 +40,7 @@ internal class AutoMockProxyGenerator : ProxyGenerator
     public override object CreateInterfaceProxyWithoutTarget(Type interfaceToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, params IInterceptor[] interceptors)
     {
         // Rememeber that Moq uses the generator as static, so we have to ensure that the target is valid
-        if (Target is not null && interfaceToProxy.IsAssignableFrom(Target.GetType()))
+        if (!isMoq && Target is not null && interfaceToProxy.IsAssignableFrom(Target.GetType()))
             return base.CreateInterfaceProxyWithTarget(interfaceToProxy, additionalInterfacesToProxy, Target, options, interceptors);
 
         return base.CreateInterfaceProxyWithoutTarget(interfaceToProxy, additionalInterfacesToProxy, options, interceptors);
@@ -45,6 +49,9 @@ internal class AutoMockProxyGenerator : ProxyGenerator
     public override object CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy,
         ProxyGenerationOptions options, object[] constructorArguments, params IInterceptor[] interceptors)
     {
+        if(isMoq) return originalProxyGenerator.CreateClassProxy(classToProxy, additionalInterfacesToProxy,
+                    options, constructorArguments, interceptors);
+
         // Rememeber that Moq uses the generator as static, so we have to ensure that the target is valid
         if (Target is not null && classToProxy.IsAssignableFrom(Target.GetType()))
             return originalProxyGenerator.CreateClassProxyWithTarget(classToProxy, additionalInterfacesToProxy,

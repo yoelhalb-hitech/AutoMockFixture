@@ -84,12 +84,23 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
         {
             var additionalInterfaces = (List<Type>)additionalInterfaceProp.GetValue(this);
             // The generator is static so we have to reduce it to the minimum
-            SetupGenerator();
-            additionalInterfaces.Add(iautoMockedType);
-            mocked = base.Object;
-            if (this.target is not null && this.CallBase) SetupTargetMethods();            
-            additionalInterfaces.Remove(iautoMockedType);
-            ResetGenerator(); // We need to reset it in case the user wants to use the Mock directly as this property is static...
+            // CAUTION: While it would have been a good idea to lock here we can't do it as this call is called recursively
+            //      (since we mock the Type object in the generator) and we would end up with a deadlock
+            try
+            {
+                SetupGenerator();
+                additionalInterfaces.Add(iautoMockedType);
+                mocked = base.Object;
+                if (this.target is not null && this.CallBase) SetupTargetMethods();
+                additionalInterfaces.Remove(iautoMockedType);
+            }
+            finally
+            {
+                // We need to reset it in case the user wants to use the Mock directly as this property is static...
+                // NOTE: Although this call is called recursively (in particular since we mock the Type object in the generator)
+                //          we aren't concerned about the reset, since at the point it happens the generator was already called...
+                ResetGenerator();
+            }            
         }
     }
    
