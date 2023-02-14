@@ -33,6 +33,6 @@ jobs:
     - name: Test
       run: dotnet test --verbosity normal --configuration Release /p:Version=${VERSION} 
     - name: Pack
-      run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .      
+      run: dotnet pack --configuration Release /p:Version=${VERSION} --output .      
     - name: Push Package to NuGet.org
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
