@@ -1,9 +1,8 @@
 ﻿using AutoFixture;
 
-namespace AutoMockFixture.FixtureUtils.Customizations
+namespace AutoMockFixture.FixtureUtils.Customizations;
+
+public interface IRemovableCustomization : ICustomization
 {
-    public interface IRemovableCustomization : ICustomization
-    {
-        void RemoveCustomization(IFixture fixture);
-    }
+    void RemoveCustomization(IFixture fixture);
 }

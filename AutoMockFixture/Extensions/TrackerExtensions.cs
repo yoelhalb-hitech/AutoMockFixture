@@ -1,23 +1,22 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 
-namespace AutoMockFixture.Extensions
+namespace AutoMockFixture.Extensions;
+
+internal static class TrackerExtensions
 {
-    internal static class TrackerExtensions
+    public static IEnumerable<ITracker> GetParentsOnCurrentLevel(this ITracker tracker)
     {
-        public static IEnumerable<ITracker> GetParentsOnCurrentLevel(this ITracker tracker)
+        var currentLevelPath = tracker.Path;
+        var current = tracker;
+
+        while(current.Parent is not null
+                && !object.ReferenceEquals(current.Parent, current))
         {
-            var currentLevelPath = tracker.Path;
-            var current = tracker;
+            current = current.Parent;
 
-            while(current.Parent is not null
-                    && !object.ReferenceEquals(current.Parent, current))
-            {
-                current = current.Parent;
+            if (current.Path != currentLevelPath) yield break;
 
-                if (current.Path != currentLevelPath) yield break;
-
-                yield return current;
-            }
+            yield return current;
         }
     }
 }
