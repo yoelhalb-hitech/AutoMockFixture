@@ -5,7 +5,7 @@ namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 internal class DelegateBuilder : NonConformingBuilder
 {
-    public override Type[] SupportedTypes => new[] 
+    public override Type[] SupportedTypes => new[]
     {
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),

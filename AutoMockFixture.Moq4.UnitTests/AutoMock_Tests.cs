@@ -37,9 +37,9 @@ public class AutoMock_Tests
         l.Should().BeSameAs(mock.Object);
     }
 
-    internal class TestingCtor 
+    internal class TestingCtor
     {
-        public TestingCtor() { throw new Exception(); }        
+        public TestingCtor() { throw new Exception(); }
     }
 
     [Test]
@@ -166,7 +166,7 @@ public class AutoMock_Tests
 
         mock.Object.Test().Should().Be("In Test");
 
-        mock.Target.Should().Be(target);        
+        mock.Target.Should().Be(target);
     }
 
     [Test]
@@ -193,8 +193,8 @@ public class AutoMock_Tests
         mock.Target.Should().Be(target);
     }
 
-    #endregion  
-  
+    #endregion
+
     #endregion
 
     #region Action

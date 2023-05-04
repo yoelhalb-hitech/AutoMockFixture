@@ -18,7 +18,7 @@ internal class CustomConstructorMethod : IMethod
 
     public object Invoke(IEnumerable<object> parameters)
     {
-        var paramsToUse = GetParamsToUse(parameters);        
+        var paramsToUse = GetParamsToUse(parameters);
         return this.Constructor.Invoke(paramsToUse.ToArray());
     }
 

@@ -28,7 +28,7 @@ internal class TrackerWithFixture_Tests
     public void Test_IsRequestEquals_ReturnsFalse_WhenDifferentFixture()
     {
         var request = new TrackerWithFixtureNonAbstract(new AbstractAutoMockFixture());
-        var request2 = new TrackerWithFixtureNonAbstract(new AbstractAutoMockFixture());            
+        var request2 = new TrackerWithFixtureNonAbstract(new AbstractAutoMockFixture());
 
         request.IsRequestEquals(request2).Should().BeFalse();
     }

@@ -26,7 +26,7 @@ internal class AutoMock_Tests
         var obj = fixture.CreateAutoMock<AutoMock<ITestInterface>>();
         // Assert
         obj.Should().NotBeNull();
-        obj.Should().BeAssignableTo<AutoMock<ITestInterface>>();        
+        obj.Should().BeAssignableTo<AutoMock<ITestInterface>>();
     }
 
     [Test]
@@ -55,7 +55,7 @@ internal class AutoMock_Tests
         // Assert
         first.Should().NotBeNull();
         second.Should().NotBeNull();
-        first.Should().BeSameAs(second);        
+        first.Should().BeSameAs(second);
     }
 
     [Test]

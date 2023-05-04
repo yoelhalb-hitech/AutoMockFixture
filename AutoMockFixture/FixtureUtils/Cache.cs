@@ -16,7 +16,7 @@ internal class Cache
         if (CacheDictionary.ContainsKey(request)) return (true, CacheDictionary[request]);
 
         if (request is ITracker tracker && CacheDictionary.Any(c => (c.Key as ITracker)?.IsRequestEquals(tracker) == true))
-        {               
+        {
             var existing = CacheDictionary.First(c => (c.Key as ITracker)?.IsRequestEquals(tracker) == true);
             return (true, existing.Value);
         }
@@ -30,9 +30,9 @@ internal class Cache
 
         var existing = Get(request);
         if(existing.HasValue && existing.Value == specimen) return;
-        
-        if(existing.HasValue) throw new Exception("A different object is already in cache");            
-        
+
+        if(existing.HasValue) throw new Exception("A different object is already in cache");
+
         CacheDictionary[request] = specimen;
     }
 }

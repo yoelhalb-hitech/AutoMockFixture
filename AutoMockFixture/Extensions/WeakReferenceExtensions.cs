@@ -27,9 +27,9 @@ namespace AutoMockFixture.Extensions
         public static List<object?> GetValues(this List<WeakReference> list)
             // l.Target is actually of type `object?` not `object`
             => list.Select(l => (object?)l.Target).ToList();
-        public static List<T?> GetValues<T>(this List<WeakReference<T>> list) where T : class            
+        public static List<T?> GetValues<T>(this List<WeakReference<T>> list) where T : class
             => list.Select(l => l.GetTarget()).ToList();
-        public static IEnumerable<T?> GetValues<T>(this IEnumerable<WeakReference<T>> list) where T : class            
+        public static IEnumerable<T?> GetValues<T>(this IEnumerable<WeakReference<T>> list) where T : class
             => list.Select(l => l.GetTarget());
         public static List<object> GetValidValues(this List<WeakReference?> list)
             // l.Target is actually of type `object?` not `object`

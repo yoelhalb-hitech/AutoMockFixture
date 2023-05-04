@@ -20,7 +20,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     protected List<WeakReference<IAutoMock>>? allMocks;
 
     public virtual IFixtureTracker StartTracker => Parent?.StartTracker ?? this as IFixtureTracker ?? throw new Exception("No valid start tracker provided");
-    
+
     public virtual ITracker? Parent { get; private set; }
 
     public virtual List<ITracker> Children => children;
@@ -42,7 +42,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     public ISpecimenCommand? Command { get; protected set; }
 
     public void SetCompleted(ISpecimenBuilder? builder)
-    {        
+    {
         if (completed) return;
 
         this.Builder = builder;
@@ -107,7 +107,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
 
         // We don't want a reference to the main result to avoid memory leaks
         if (Path != String.Empty) this.result = result.ToWeakReference();
-        
+
         StartTracker.Fixture.Cache.AddIfNeeded(this, result);
 
         SetCompleted(builder);

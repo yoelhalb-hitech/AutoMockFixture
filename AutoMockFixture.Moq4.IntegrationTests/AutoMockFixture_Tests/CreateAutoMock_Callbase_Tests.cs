@@ -31,7 +31,7 @@ internal class CreateAutoMock_Callbase_Tests
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractMethodTestClass>(true);
         var mock = AutoMock.Get(obj);
-        
+
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();

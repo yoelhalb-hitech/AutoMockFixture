@@ -52,7 +52,7 @@ internal class TypeMatcherEmitter
     private AssemblyBuilder CreateAssemblyBuilder()
     {
         var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.RunAndCollect);
-        
+
         foreach (var refName in AssemblyNames)
         {
             var builder = new CustomAttributeBuilder(ignoreAccessCtor, new object[] { refName });
@@ -83,7 +83,7 @@ internal class TypeMatcherEmitter
     private void CreateMatcherMethod(TypeBuilder tb)
     {
         var matchesMthdBldr = tb.DefineMethod(nameof(ITypeMatcher.Matches), MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, typeof(bool), new[] { typeof(Type) });
-        
+
         var matchesIl = matchesMthdBldr.GetILGenerator();
         matchesIl.Emit(OpCodes.Ldc_I4_1);
         matchesIl.Emit(OpCodes.Ret);
@@ -107,7 +107,7 @@ internal class TypeMatcherEmitter
         if (method.DeclaringType.IsInterface) accessMethod = accessMethod | MethodAttributes.Virtual;
 
         var mthdBldr = tb.DefineMethod(method.Name, accessMethod | MethodAttributes.HideBySig, method.ReturnType, method.GetParameters().Select(p => p.ParameterType).ToArray());
-        
+
         var il = mthdBldr.GetILGenerator();
         il.Emit(OpCodes.Nop);
         il.Emit(OpCodes.Newobj, typeof(NotImplementedException));

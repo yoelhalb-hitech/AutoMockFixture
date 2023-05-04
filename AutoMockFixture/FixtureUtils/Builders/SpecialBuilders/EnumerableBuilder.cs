@@ -7,8 +7,8 @@ namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 internal class EnumerableBuilder : NonConformingBuilder
 {
-    public override Type[] SupportedTypes => new Type[] 
-    { 
+    public override Type[] SupportedTypes => new Type[]
+    {
         typeof(IEnumerable<>),
 #if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
         typeof(IAsyncEnumerable<>)
@@ -36,7 +36,7 @@ internal class EnumerableBuilder : NonConformingBuilder
             .MakeGenericMethod(genericType)
             .Invoke(null, new object[] { data }));
         var isNotEnumerable = requestType.GetInterfaces().All(x => x.IsGenericType && x.GetGenericTypeDefinition() != typeof(IEnumerable<>));
-        
+
         var typeToMatch =
 #if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
             isNotEnumerable ? typeof(IAsyncEnumerable<>).MakeGenericType(genericType) :
@@ -63,7 +63,7 @@ internal class EnumerableBuilder : NonConformingBuilder
             .MakeGenericMethod(genericType)
             .Invoke(null, new object[] { typedData });
 
-        if (new[] {typeof(List<>), typeof(IList<>)}.Contains(requestType.GetGenericTypeDefinition())) 
+        if (new[] {typeof(List<>), typeof(IList<>)}.Contains(requestType.GetGenericTypeDefinition()))
             return typeof(Enumerable).GetMethod(nameof(Enumerable.ToList))
             .MakeGenericMethod(genericType)
             .Invoke(null, new object[] { typedData });
@@ -84,7 +84,7 @@ internal class EnumerableBuilder : NonConformingBuilder
         if (enumerableCtor is not null) return enumerableCtor.Invoke(new object[] { typedData });
 
         var emptyCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 0);
-        var intCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1 
+        var intCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1
                                                 && x.GetParameters().First().ParameterType ==  typeof(int));
         var methods = requestType.GetAllMethods();
         if (emptyCtor is not null || intCtor is not null)
@@ -111,7 +111,7 @@ internal class EnumerableBuilder : NonConformingBuilder
                 return obj;
             }
         }
-        // TODO... we can go further and look for a ctor or a method that can take another enumerable descendent as parameter and 
+        // TODO... we can go further and look for a ctor or a method that can take another enumerable descendent as parameter and
         //      if that one has a method that can accept the data, and we can go further recursviely
         // var typeToBaseOf = isNotEnumerable ? typeToMatch : typeof(IEnumerable<>).MakeGenericType(genericType);
         //var otherCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1 && typeToBaseOf.IsAssignableFrom(x.GetParameters()[0].ParameterType));

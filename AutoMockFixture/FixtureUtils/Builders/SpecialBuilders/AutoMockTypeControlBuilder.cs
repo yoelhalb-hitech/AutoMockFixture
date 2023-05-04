@@ -42,7 +42,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
 
         public TypeControlHelper(IAutoMockFixture fixture, IRequestWithType? typedRequest,
                                                                         Type type, ISpecimenContext context)
-        {            
+        {
             this.fixture = fixture;
             this.typedRequest = typedRequest;
             this.type = type;
@@ -50,14 +50,14 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
         }
 
         public object? GetResult(AutoMockTypeControl autoMockTypeControl)
-        {           
+        {
             object? newRequest = GetRequest(autoMockTypeControl);
 
             if (newRequest is null) return new NoSpecimen();
 
             var specimen = context.Resolve(newRequest);
 
-            // We might get an AutoMock via the relay        
+            // We might get an AutoMock via the relay
             var autoMock = fixture.AutoMockHelpers.GetFromObj(specimen);
             if (autoMock is not null)
             {
@@ -71,7 +71,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
         public object? GetRequest(AutoMockTypeControl autoMockTypeControl)
         {
             if (typedRequest is AutoMockDirectRequest) return null; // Not changing anything on a direct request...
-                
+
             if (autoMockTypeControl.AlwaysAutoMockTypes.Contains(type))
             {
                 if (typedRequest is AutoMockRequest) return null;
@@ -89,7 +89,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
                 if (typedRequest is not AutoMockRequest) return null;
 
                 return typedRequest is not null
-                            ? typedRequest.StartTracker.MockDependencies 
+                            ? typedRequest.StartTracker.MockDependencies
                                 ? new AutoMockDependenciesRequest(type, typedRequest)
                                 : new NonAutoMockRequest(type, typedRequest)
                             : new NonAutoMockRequest(type, fixture);

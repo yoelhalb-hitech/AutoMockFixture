@@ -7,10 +7,10 @@ internal class Test_Overloads
     {
         public virtual Task Overload() { return Task.CompletedTask; }
         public virtual Task Overload(string str) { return Task.CompletedTask; }
-        public virtual Task Overload(int i) { return Task.CompletedTask; }            
+        public virtual Task Overload(int i) { return Task.CompletedTask; }
     }
 
-    [Test]  
+    [Test]
     public void Test_Overloads_DoesNotThrow_WhenAutoMockDependencies()
     {
         // Arrange
@@ -28,7 +28,7 @@ internal class Test_Overloads
         Assert.DoesNotThrow(() => o.Overload(24));
     }
 
-    [Test]   
+    [Test]
     public void Test_Overloads_DoesNotThrow_WhenAutoMock()
     {
         // Arrange

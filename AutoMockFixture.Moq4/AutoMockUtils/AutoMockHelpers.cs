@@ -29,7 +29,7 @@ internal class AutoMockHelpers : IAutoMockHelpers
         {
             throw new ArgumentException("Object instance was not created by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')", ex);
         }
-    }  
+    }
 
     public bool IsAutoMock<T>() => IsAutoMock(typeof(T));
     public bool IsAutoMock(Type? t) => t?.IsGenericType == true && t.GetGenericTypeDefinition() == typeof(AutoMock<>);
@@ -45,20 +45,20 @@ internal class AutoMockHelpers : IAutoMockHelpers
 
     public bool IsAutoMockAllowed(Type t)
     {
-        if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType 
+        if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType
                     || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
-                    || t == typeof(Array) 
+                    || t == typeof(Array)
                     || typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
 
-#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER             
+#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
                     || t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))
 #endif
 
                     // This way we cover all different Tuple types...
                     || (t.Assembly == typeof(Tuple).Assembly) && t.FullName.StartsWith(typeof(Tuple).FullName)
                     || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName.StartsWith(typeof(ValueTuple).FullName)
-                    
-                    || t == typeof(IntPtr) || t == typeof(UIntPtr)      
+
+                    || t == typeof(IntPtr) || t == typeof(UIntPtr)
                     || typeof(global::Moq.Mock).IsAssignableFrom(t)
                     || typeof(Type).IsAssignableFrom(t)
                     || t.Assembly == typeof(global::Moq.Mock).Assembly
@@ -81,7 +81,7 @@ internal class AutoMockHelpers : IAutoMockHelpers
         }.Contains(t.GetGenericTypeDefinition()))
             return false;
 
-        return true;            
+        return true;
     }
 
     public SetupServiceFactoryBase GetSetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc)

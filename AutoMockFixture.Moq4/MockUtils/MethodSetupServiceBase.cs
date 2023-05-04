@@ -56,11 +56,11 @@ internal abstract class MethodSetupServiceBase : ISetupService
             SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);
             return;
         }
-       
+
         Logger.LogInfo("\t\t\tBefore return: " + method.ReturnType.Name);
         // We have to use InvocationFunc for generic
-        //  but even for non generic it's better for perfomance not to generate the object until we need it        
-        
+        //  but even for non generic it's better for perfomance not to generate the object until we need it
+
         if (method.ReturnType.ContainsGenericParameters)
         {
             var genericArgs = returnType.GetGenericArguments().Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray();
@@ -115,7 +115,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
                 ?? new Exception("Method not setup but without an exception, shouldn't arrive here");
 
         Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
-        
+
         var request = noMockDependencies
                              ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
                              : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker, customTrackingPath);
@@ -138,6 +138,6 @@ internal abstract class MethodSetupServiceBase : ISetupService
             if (mock.MethodsSetup.ContainsKey(trackingPath)) mock.MethodsSetup.Remove(trackingPath);
             mock.MethodsNotSetup[trackingPath] = new CannotSetupMethodException(CannotSetupMethodException.CannotSetupReason.Exception, ex);
             throw;
-        }            
+        }
     }
 }

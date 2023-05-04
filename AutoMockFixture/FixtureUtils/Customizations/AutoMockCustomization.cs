@@ -98,7 +98,7 @@ public class AutoMockCustomization : ICustomization
                                           mockFixture.AutoMockHelpers);
 
         // If members should be automatically configured, wrap the builder with members setup postprocessor.
-        // This might be useful when wanting to have control over the setup        
+        // This might be useful when wanting to have control over the setup
         if (ConfigureMembers)
         {
             var setupFactory = mockFixture.AutoMockHelpers.GetSetupServiceFactory(() => mockFixture.MethodSetupType);

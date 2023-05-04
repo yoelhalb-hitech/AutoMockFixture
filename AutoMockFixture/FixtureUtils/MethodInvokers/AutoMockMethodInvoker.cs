@@ -8,7 +8,7 @@ using System.Reflection;
 namespace AutoMockFixture.FixtureUtils.MethodInvokers;
 
 internal class AutoMockMethodInvoker : ISpecimenBuilder
-{    
+{
     public AutoMockMethodInvoker(IMethodQuery query, ISpecimenCommand autoMockInitCommand)
     {
         this.Query = query ?? throw new ArgumentNullException(nameof(query));
@@ -30,7 +30,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
         Logger.LogInfo("In autmock ctor arg - type is " + mockRequest.Request.FullName);
 
         // Not doing this in a special builder, to ensure that no matter what happens we do it on recursion
-        if (context is RecursionContext recursionContext && recursionContext.BuilderCache.ContainsKey(mockRequest.Request)) 
+        if (context is RecursionContext recursionContext && recursionContext.BuilderCache.ContainsKey(mockRequest.Request))
             return recursionContext.BuilderCache[mockRequest.Request]; // We are in recursion
 
 
@@ -102,7 +102,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
         if (!methods.Any(m => m.Parameters.Any())) return mock;
 
         foreach (var ci in methods)
-        {           
+        {
             if (ci is not CustomConstructorMethod cm) throw new Exception("Should not arrive here");
 
             if(HandleCtor(cm, mockRequest, inner, context)) return mock;
@@ -123,7 +123,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
     }
 
     protected virtual object ResolveParamater(AutoMockDirectRequest mockRequest, ParameterInfo pi, ISpecimenContext context)
-    {            
+    {
         var argsRequest = !mockRequest.MockDependencies
                 ? new ConstructorArgumentRequest(mockRequest.Request, pi, mockRequest)
                 : new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);

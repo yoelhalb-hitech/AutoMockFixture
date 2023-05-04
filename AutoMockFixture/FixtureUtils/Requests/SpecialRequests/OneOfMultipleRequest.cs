@@ -6,9 +6,9 @@ internal abstract class OneOfMultipleRequest : InnerRequest
     {
         Index = index;
     }
-   
+
     public int Index { get; }
-    
+
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Index);
     public override bool IsRequestEquals(ITracker other)
         => base.IsRequestEquals(other) && other is OneOfMultipleRequest otherRequest && otherRequest.Index == Index;

@@ -25,7 +25,7 @@ internal class AutoMockDependenciesBuilder_Tests
         var result = builder.Create(requestMock.Object, contextMock.Object);
         result.Should().Be(expectedResult);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == innerType 
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == innerType
                                                             && r.Parent == requestMock.Object)));
         contextMock.VerifyNoOtherCalls();
 

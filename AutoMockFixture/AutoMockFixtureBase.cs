@@ -28,7 +28,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     private readonly static MethodInfo replaceNodeMethod;
     private readonly static FieldInfo graphField;
     private readonly static MethodInfo updateGraphAndSetupAdapterMethod;
-    
+
     static AutoMockFixtureBase()
     {
         replaceNodeMethod = typeof(SpecimenBuilderNode)
@@ -49,7 +49,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     public AutoMockFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
     {
         var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this.AutoMockHelpers));
-        
+
         var newAutoProperties = new AutoPropertiesTarget(
                                     new PostprocessorWithRecursion(
                                         this,
@@ -60,12 +60,12 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
                                         new CustomAutoPropertiesCommand(this),
                                         new AnyTypeSpecification(),
                                         new CacheCommand(this.Cache)));
-        
+
         var currentGraph = graphField.GetValue(this);
         Func<ISpecimenBuilderNode, bool> matcher = node => node is AutoPropertiesTarget;
         var newGraph = replaceNodeMethod.Invoke(null, new[] { currentGraph, newAutoProperties, matcher }) as ISpecimenBuilderNode;
         updateGraphAndSetupAdapterMethod.Invoke(this, new[] { newGraph });
-        
+
         Customizations.Add(new CacheBuilder(Cache));
 
         Customizations.Add(new FilteringSpecimenBuilder(
@@ -99,7 +99,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     public virtual T? Freeze<T>()
     {
         Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(typeof(T)), AutoMockHelpers)));
-        
+
         return Create<T>();
     }
 
@@ -135,10 +135,10 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     {
         if (t.IsValueType) throw new InvalidOperationException("Type must be a reference type");
 
-        var type = AutoMockHelpers.IsAutoMock(t) 
+        var type = AutoMockHelpers.IsAutoMock(t)
                     ? AutoMockHelpers.GetMockedType(t)!
                     : !AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(t)
-                        ? t 
+                        ? t
                         : t.IsGenericType ? t.GenericTypeArguments.First(): typeof(object);
         if(!AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
@@ -178,13 +178,13 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
 
     Dictionary<object, ITracker> IAutoMockFixture.ProcessingTrackerDict => ProcessingTrackerDict;
     internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
-    
+
     private object? Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
     {
         try
         {
             var result = new RecursionContext(this, this) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
-            
+
             // TODO... we might have a problem if there is duplicates (for example for primitive typs or strings)
 
             // We will rather deal with the underlying mock for consistancy

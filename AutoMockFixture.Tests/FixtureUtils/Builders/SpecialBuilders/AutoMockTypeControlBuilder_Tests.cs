@@ -112,7 +112,7 @@ internal class AutoMockTypeControlBuilder_Tests
 
             var helper = GetTypeControlHelper(requestType, type);
             var request = helper.GetRequest(typeControl);
-            
+
             request!.Should().BeOfType<AutoMockRequest>();
             ((AutoMockRequest)request!).StartTracker.MockDependencies.Should().Be(noMockDependencies);
         }

@@ -118,7 +118,7 @@ internal class NonConforming_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Task>();
 
-        obj.IsCompleted.Should().BeTrue();       
+        obj.IsCompleted.Should().BeTrue();
     }
 
     [Test]
@@ -148,7 +148,7 @@ internal class NonConforming_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Task>();
 
-        obj.IsCompleted.Should().BeTrue();      
+        obj.IsCompleted.Should().BeTrue();
     }
 
     [Test]

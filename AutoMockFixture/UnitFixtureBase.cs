@@ -10,7 +10,7 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public abstract class UnitFixtureBase : AutoMockFixtureBase
 {
-    public UnitFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null) 
+    public UnitFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
                 : base(noConfigureMembers, generateDelegates, methodSetupType)
     {
         Customizations.Add(new FilteringSpecimenBuilder(

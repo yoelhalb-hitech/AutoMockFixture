@@ -271,7 +271,7 @@ internal class AutoMockDependencies_Tests
 
         obj.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.WithCtorArgs.TestClassPrivateNonVirtualProp).Should().BeTrue();
-        
+
         obj.WithCtorArgs.TestClassPropGet.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.WithCtorArgs.TestClassPropGet).Should().BeTrue();
     }
@@ -291,7 +291,7 @@ internal class AutoMockDependencies_Tests
 
         obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp).Should().BeTrue();
-        
+
         obj.Object.WithCtorArgs.TestClassPropGet.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.Object.WithCtorArgs.TestClassPropGet).Should().BeTrue();
     }
@@ -322,7 +322,7 @@ internal class AutoMockDependencies_Tests
         obj!.Object.WithCtorArgs.Should().NotBeNull();
 
         obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet.Should().BeNull();
-        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().BeNull();        
+        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().BeNull();
         obj.Object.WithCtorArgs.TestClassPropGet.Should().BeNull();
     }
 

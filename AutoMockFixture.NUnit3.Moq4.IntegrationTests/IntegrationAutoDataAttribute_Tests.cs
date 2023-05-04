@@ -1,5 +1,4 @@
 ﻿
-
 namespace AutoMockFixture.NUnit3.Moq4.IntegrationTests;
 
 internal class AutoDataIntegrationAttribute_Tests

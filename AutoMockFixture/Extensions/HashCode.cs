@@ -13,20 +13,20 @@ https://raw.githubusercontent.com/Cyan4973/xxHash/5c174cfa4e45a42f94082dc0d4539b
 
   xxHash - Fast Hash algorithm
   Copyright (C) 2012-2016, Yann Collet
-  
+
   BSD 2-Clause License (http://www.opensource.org/licenses/bsd-license.php)
-  
+
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
   met:
-  
+
   * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
   * Redistributions in binary form must reproduce the above
   copyright notice, this list of conditions and the following disclaimer
   in the documentation and/or other materials provided with the
   distribution.
-  
+
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -38,7 +38,7 @@ https://raw.githubusercontent.com/Cyan4973/xxHash/5c174cfa4e45a42f94082dc0d4539b
   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  
+
   You can contact the author at :
   - xxHash homepage: http://www.xxhash.com
   - xxHash source repository : https://github.com/Cyan4973/xxHash
@@ -72,7 +72,7 @@ namespace System
         private uint _v1, _v2, _v3, _v4;
         private uint _queue1, _queue2, _queue3;
         private uint _length;
-        
+
         static RNGCryptoServiceProvider? _rng;
 
         private uint GenerateGlobalSeed()
@@ -413,10 +413,10 @@ namespace System
         }
 
 #pragma warning disable 0809
-        // Obsolete member 'memberA' overrides non-obsolete member 'memberB'. 
+        // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
         // Disallowing GetHashCode and Equals is by design
 
-        // * We decided to not override GetHashCode() to produce the hash code 
+        // * We decided to not override GetHashCode() to produce the hash code
         //   as this would be weird, both naming-wise as well as from a
         //   behavioral standpoint (GetHashCode() should return the object's
         //   hash code, not the one being computed).

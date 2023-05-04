@@ -3,7 +3,7 @@
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class NonAutoMock_Tests
-{       
+{
 
     [Test]
     public void Test_CtorArguments_NotAutoMocked()

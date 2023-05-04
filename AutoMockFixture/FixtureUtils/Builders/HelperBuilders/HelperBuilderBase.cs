@@ -5,12 +5,11 @@ using AutoMockFixture.FixtureUtils.Specifications;
 namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRequest : ITracker
-{   
-
+{
     public virtual object? Create(object request, ISpecimenContext context)
     {
         if (request is not TRequest trackedRequest) return new NoSpecimen();
-        
+
         return HandleInternal(trackedRequest, context);
     }
 

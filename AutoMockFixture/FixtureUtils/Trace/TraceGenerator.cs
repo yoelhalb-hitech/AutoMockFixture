@@ -11,18 +11,18 @@ internal class TraceGenerator
         Depth = depth;
 
         var properties = builder.GetType().GetAllProperties(true);
-        SingleProps = properties.Where(p => 
+        SingleProps = properties.Where(p =>
             (typeof(ISpecimenBuilder) == p.PropertyType || typeof(ISpecimenBuilderNode) == p.PropertyType)
             && p.SetMethod is not null).ToArray();
 
         EnumerableProps = properties.Where(p => typeof(IList<ISpecimenBuilder>).IsAssignableFrom(p.PropertyType)
                                 || typeof(IList<ISpecimenBuilderNode>).IsAssignableFrom(p.PropertyType)).ToArray();
-        
+
         var fields = builder.GetType().GetAllFields(true);
-        SingleFields = fields.Where(f => (typeof(ISpecimenBuilder) == f.FieldType 
+        SingleFields = fields.Where(f => (typeof(ISpecimenBuilder) == f.FieldType
                                                 || typeof(ISpecimenBuilderNode) == f.FieldType)).ToArray();
 
-        EnumerableFields = fields.Where(f => typeof(IList<ISpecimenBuilder>).IsAssignableFrom(f.FieldType) 
+        EnumerableFields = fields.Where(f => typeof(IList<ISpecimenBuilder>).IsAssignableFrom(f.FieldType)
                                 || typeof(IList<ISpecimenBuilderNode>).IsAssignableFrom(f.FieldType)).ToArray();
     }
 

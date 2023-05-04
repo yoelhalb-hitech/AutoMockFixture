@@ -28,7 +28,7 @@ internal class TypeControl_FromCreateMethod_Tests
 
     T CreateNonAutoMock<T>(AutoMockTypeControl typeControl) => fixture.CreateNonAutoMock<T>(typeControl);
 
-    [Test]       
+    [Test]
     public void Test_AlwaysAutoMockTypes_WillAutoMock_WhenNonAutoMock_FromCreateMethod_ObjectItself()
     {
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>(GetMockTypeControl());
@@ -101,7 +101,7 @@ internal class TypeControl_FromCreateMethod_Tests
 
     [Test]
     public void Test_AlwaysAutoMockTypes_WillCallBase_WhenNonDependency_FromCreateMethod_WhenCallbase_Dependencies()
-    {          
+    {
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(true, GetMockTypeControl());
 
         IsCallbase(obj.TestCtorArg).Should().BeTrue();

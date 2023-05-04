@@ -15,7 +15,7 @@ internal static class SetupHelpers
     {
         GetMethod(nameof(SetupCallbaseMethod))
             .MakeGenericMethod(mockedType, returnType)
-            .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda }); 
+            .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda });
     }
 
     public static void SetupVoidMethod(Type mockedType, IAutoMock mock, Expression methodInvocationLambda)
@@ -25,15 +25,15 @@ internal static class SetupHelpers
             .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda });
     }
 
-    public static void SetupMethodWithResult(Type mockedType, Type returnType, 
+    public static void SetupMethodWithResult(Type mockedType, Type returnType,
                     IAutoMock mock, Expression methodInvocationLambda, object? returnValue)
     {
         GetMethod(nameof(SetupMethodWithResult))
                .MakeGenericMethod(mockedType, returnType)
                .Invoke(null, new object?[] { GetMock(mock, mockedType), methodInvocationLambda, returnValue });
     }
-    
-    public static void SetupMethodWithInvocationFunc(Type mockedType, Type returnType, 
+
+    public static void SetupMethodWithInvocationFunc(Type mockedType, Type returnType,
                     IAutoMock mock, Expression methodInvocationLambda, InvocationFunc invocationFunc)
     {
         GetMethod(nameof(SetupMethodWithInvocationFunc)).MakeGenericMethod(mockedType, returnType)
@@ -69,13 +69,13 @@ where TMock : class
     {
         mock.Setup(methodCallExpression);
     }
-    
+
     private static void SetupCallbaseMethod<TMock, TResult>(Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
 where TMock : class
     {
         mock.Setup(methodCallExpression).CallBase();
     }
-    
+
     private static void SetupMethodWithInvocationFunc<TMock, TResult>(
         Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression,
                                 InvocationFunc invocationFunc)
@@ -83,7 +83,7 @@ where TMock : class
     {
         mock.Setup(methodCallExpression).Returns(invocationFunc);
     }
-    
+
     private static void SetupMethodWithResult<TMock, TResult>(
         Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression, TResult result)
     where TMock : class

@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 
 namespace AutoMockFixture;
@@ -22,10 +21,10 @@ public static class AutoMockFixtureExtensions
         if (string.IsNullOrWhiteSpace(path)) throw new Exception(nameof(path) + " doesn't have a value");
 
         path = path.Trim();
-       
+
         var paths = fixture.PathsDict.First(d => d.Key.Target == obj).Value.Result;
         if (paths is null || !paths.ContainsKey(path)) throw new Exception($"`{path}` not found, please ensure that it is the correct path on the correct object");
-        
+
         return paths[path].GetValidValues();
     }
 
@@ -35,7 +34,7 @@ public static class AutoMockFixtureExtensions
         currentObject = fixture.AutoMockHelpers.GetFromObj(currentObject) ?? currentObject;
 
         if (!fixture.PathsDict.Any(d => d.Key.Target == mainObj)) throw new Exception("Main object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
-        
+
         var path = fixture.PathsDict.First(d => d.Key.Target == mainObj).Value.Result
                             .FirstOrDefault(kvp => kvp.Value.Contains(currentObject)).Key;
 

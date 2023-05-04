@@ -38,10 +38,10 @@ internal class AutoMockData : AutoDataAttribute
                 foreach (var ca in customizeAttributes)
                 {
                     var customization = ca.GetCustomization(parameter.ParameterInfo);
-                    if(customization is FreezeOnMatchCustomization freezeCustomization)                    
+                    if(customization is FreezeOnMatchCustomization freezeCustomization)
                         this.Fixture
-                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(freezeCustomization.Matcher, Fixture.AutoMockHelpers)));                    
-                    else 
+                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(freezeCustomization.Matcher, Fixture.AutoMockHelpers)));
+                    else
                         this.Fixture.Customize(customization);
                 }
 
@@ -57,7 +57,7 @@ internal class AutoMockData : AutoDataAttribute
                     _ => Fixture.Create(parameter.ParameterType),
                 };
             });
-        
+
         var test = this.TestMethodBuilder.Build(method, suite, parameters, 0);
 
         yield return test;

@@ -17,7 +17,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
     public IAutoMockHelpers AutoMockHelpers { get; }
 
     public object? Create(object request, ISpecimenContext context)
-    {            
+    {
         if (request is not AutoMockRequest mockRequest)
                     return new NoSpecimen();
 
@@ -40,7 +40,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
 
             // Handle it here so we should be able to set the result
             var otherResult = context.Resolve(mockRequest.Request);
-               
+
             mockRequest.SetResult(otherResult, this);
             return otherResult;
         }
@@ -48,12 +48,12 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
         var type = mockRequest.Request;
         if (!AutoMockHelpers.IsAutoMock(type)) type = AutoMockHelpers.GetAutoMockType(type);
 
-        var directRequest = new AutoMockDirectRequest(type, mockRequest) 
-        { 
+        var directRequest = new AutoMockDirectRequest(type, mockRequest)
+        {
             MockShouldCallbase = mockRequest.MockShouldCallbase,
         };
 
-     
+
         var specimen = context.Resolve(directRequest);
         if (specimen is null)
         {

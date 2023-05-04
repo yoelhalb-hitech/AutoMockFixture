@@ -44,7 +44,7 @@ internal class TrackerExtensions_Tests
     {
         var tracker1 = Mock.Of<ITracker>();
         var tracker2Mock = new Mock<ITracker>();
-        var tracker3Mock = new Mock<ITracker>();            
+        var tracker3Mock = new Mock<ITracker>();
 
         const string path = "Test";
         tracker2Mock.SetupGet(t => t.Parent).Returns(tracker1);

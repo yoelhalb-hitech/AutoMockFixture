@@ -22,7 +22,7 @@ internal class TraceWrapper : ISpecimenBuilderNode
     public ISpecimenBuilderNode? Compose(IEnumerable<ISpecimenBuilder> builders)
     {
         var wrapped = builders.Select(b => b is TraceWrapper w ? w : new TraceWrapper(b, TraceInfo, Depth + 1));
-        
+
         var result = Builder is ISpecimenBuilderNode n ? n.Compose(wrapped) : ComposeIfMultipleMethod.Invoke(null, new object[] { wrapped }) as ISpecimenBuilder;
 
         if (result is null) return null;
@@ -34,7 +34,7 @@ internal class TraceWrapper : ISpecimenBuilderNode
         // Do it here instead of the ctor, so we will only do it when used
         // We anyway have to do it here in case anything changed
         TraceGenerator.EnsureAllBuilders();
-        
+
         TraceInfo.TraceValues.Add((Builder, context, request, null, null, Depth));// First add so it should be in order
 
         var index = TraceInfo.TraceValues.Count - 1;
@@ -46,7 +46,7 @@ internal class TraceWrapper : ISpecimenBuilderNode
         }
         catch (Exception ex)
         {
-            TraceInfo.TraceValues[index] = (Builder, context, request, null, ex, Depth);           
+            TraceInfo.TraceValues[index] = (Builder, context, request, null, ex, Depth);
             throw;
         }
     }

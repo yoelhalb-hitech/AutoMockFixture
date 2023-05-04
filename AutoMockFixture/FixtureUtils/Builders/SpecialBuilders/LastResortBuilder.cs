@@ -17,7 +17,7 @@ internal class LastResortBuilder : ISpecimenBuilder
     public IAutoMockHelpers AutoMockHelpers { get; }
 
     public object Create(object request, ISpecimenContext context)
-    {        
+    {
         var newRequest = request switch
         {
             AutoMockRequest autoMockRequest => new AutoMockDependenciesRequest(autoMockRequest.Request, autoMockRequest),
@@ -35,8 +35,8 @@ internal class LastResortBuilder : ISpecimenBuilder
 
                 if (newRequest is IRequestWithType requestWithType) newRequest = requestWithType.Request;
                 else throw new Exception("Unable to fulfill request");
-            }            
-        }       
+            }
+        }
 
         var specimen = context.Resolve(newRequest);
 

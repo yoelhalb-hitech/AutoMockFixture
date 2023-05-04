@@ -5,7 +5,7 @@ namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
 internal class TaskBuilder : NonConformingBuilder
 {
-    public override Type[] SupportedTypes => new Type[] 
+    public override Type[] SupportedTypes => new Type[]
     {
         typeof(Task),
         typeof(Task<>),

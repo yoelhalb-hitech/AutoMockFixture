@@ -20,7 +20,7 @@ public class MethodInvokerWithRecursion : ISpecimenBuilder
         if (context is null) throw new ArgumentNullException(nameof(context));
 
         var requestedType = GetRequestedType(request);
-        if(requestedType is null || requestedType.IsInterface 
+        if(requestedType is null || requestedType.IsInterface
                 || requestedType.IsAbstract || requestedType.IsGenericTypeDefinition) return new NoSpecimen();
 
         var methods = Query.SelectMethods(requestedType);
@@ -31,7 +31,7 @@ public class MethodInvokerWithRecursion : ISpecimenBuilder
         if (recursionContext is not null && methods.Any(m => m is CustomConstructorMethod))
         {
             // Not doing this in a special builder, to ensure that no matter what happens we do it on recursion
-            if (recursionContext.BuilderCache.ContainsKey(requestedType)) 
+            if (recursionContext.BuilderCache.ContainsKey(requestedType))
                 return recursionContext.BuilderCache[requestedType]; // We are in recursion
 
             methods = methods.Where(m => m is CustomConstructorMethod);
@@ -44,7 +44,7 @@ public class MethodInvokerWithRecursion : ISpecimenBuilder
         }
 
         try
-        {           
+        {
             foreach (var ci in methods)
             {
                 var paramValues = ci.Parameters

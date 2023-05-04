@@ -31,7 +31,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         // Act
         var obj = fixture.CreateAutoMock<InternalAbstractMethodTestClass>(false);
         var mock = AutoMock.Get(obj);
-        
+
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();
@@ -108,7 +108,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateAutoMock<InternalReadOnlyTestInterface>(false);            
+        var obj = fixture.CreateAutoMock<InternalReadOnlyTestInterface>(false);
 
         // Assert
         obj.InternalTest.Should().NotBeNull();
@@ -120,7 +120,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateAutoMock<InternalAbstractReadonlyPropertyClass>(false);        
+        var obj = fixture.CreateAutoMock<InternalAbstractReadonlyPropertyClass>(false);
 
         // Assert
         obj.InternalTest.Should().NotBeNull();

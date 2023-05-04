@@ -3,7 +3,7 @@
 namespace AutoMockFixture.Moq4;
 
 public static class AutoMockFixtureExtensions
-{ 
+{
 
     #region Getters
 
@@ -17,10 +17,10 @@ public static class AutoMockFixtureExtensions
     }
 
 
-    public static IEnumerable<AutoMock<T>> GetAutoMocks<T>(this IAutoMockFixture fixture, object obj) where T : class 
+    public static IEnumerable<AutoMock<T>> GetAutoMocks<T>(this IAutoMockFixture fixture, object obj) where T : class
                                 => fixture.GetAutoMocks(obj, typeof(T)).OfType<AutoMock<T>>();
- 
-    public static AutoMock<T> GetAutoMock<T>(this IAutoMockFixture fixture, object obj) where T : class 
+
+    public static AutoMock<T> GetAutoMock<T>(this IAutoMockFixture fixture, object obj) where T : class
             => fixture.GetAutoMocks<T>(obj).SingleOrDefault() ?? throw new Exception("AutoMock not found or is garbage collected");
 
     public static IEnumerable<AutoMock<T>> GetAutoMocks<T>(this IAutoMockFixture fixture, bool freezeAndCreate = false) where T : class
@@ -61,7 +61,7 @@ public static class AutoMockFixtureExtensions
     {
         fixture.TrackerDict.Keys.ToList().ForEach(k => fixture.Verify(k));
     }
-    
+
     public static void VerifyNoOtherCalls(this IAutoMockFixture fixture, object obj)
     {
         if (!fixture.MocksDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and possibly verify that .Equals() works correctly on the object");

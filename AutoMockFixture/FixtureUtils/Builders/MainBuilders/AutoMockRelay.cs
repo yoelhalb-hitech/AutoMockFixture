@@ -37,7 +37,7 @@ internal class AutoMockRelay : ISpecimenBuilder
         {
             MockShouldCallbase = true,
         };
-        
+
         var result = context.Resolve(directRequest);
 
         // Note: null is a valid specimen (e.g., returned by NullRecursionHandler)

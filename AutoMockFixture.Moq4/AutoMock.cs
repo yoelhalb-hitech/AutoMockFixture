@@ -53,7 +53,7 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     public object? Target => target;
 
     void ISetCallBase.ForceSetCallbase(bool value) => base.CallBase = value;
-   
+
     private void SetupGenerator()
         => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target, this.CallBase));
     private static void ResetGenerator()
@@ -101,10 +101,10 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
                 // NOTE: Although this call is called recursively (in particular since we mock the Type object in the generator)
                 //          we aren't concerned about the reset, since at the point it happens the generator was already called...
                 ResetGenerator();
-            }            
+            }
         }
     }
-   
+
     private void SetupTargetMethods()
     {
         var t = typeof(T);
@@ -113,8 +113,8 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
                             .Select(s => s.GetType().GetProperty("Method")?.GetValue(s) as MethodInfo)
                             .Where(m => m is not null)
                             .ToList();
-  
-        //TODO... the whole idea is because we want to override the setup for HttpClient and we want to also Mock the `When` method by using the original as target 
+
+        //TODO... the whole idea is because we want to override the setup for HttpClient and we want to also Mock the `When` method by using the original as target
 
         //It appears that it doesn't setup abstract methods automatically for whatever reason
         var setupUtils = new SetupUtils<T>(this);
@@ -138,7 +138,7 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     public AutoMock(params object?[] args) : base(args) { setupUtils = new SetupUtils<T>(this); }
     public AutoMock(MockBehavior behavior, params object?[] args) : base(behavior, args)
     {
-        setupUtils = new SetupUtils<T>(this);            
+        setupUtils = new SetupUtils<T>(this);
     }
     public AutoMock() : base() { setupUtils = new SetupUtils<T>(this); }
 

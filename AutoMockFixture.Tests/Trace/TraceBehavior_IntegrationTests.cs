@@ -10,10 +10,10 @@ internal class TraceBehavior_IntegrationTests
         var fixture = new AbstractAutoMockFixture();
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
-        
+
         _ = fixture.CreateNonAutoMock<TestClass>();
 
-        info.TraceValues.Count.Should().BePositive();        
+        info.TraceValues.Count.Should().BePositive();
     }
 
     [Test]
@@ -35,7 +35,7 @@ internal class TraceBehavior_IntegrationTests
         var fixture = new AbstractAutoMockFixture();
         var info = new TraceInfo();
         fixture.Behaviors.Add(new TraceBehavior(info));
-        
+
         _ = fixture.CreateNonAutoMock<TestClass>();
 
         // TraceValues can branch mutiple times but GetWithValues should be ordered straight

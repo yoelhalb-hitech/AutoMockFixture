@@ -48,7 +48,7 @@ internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder, IS
                 return specimen;
 
             var type = request as Type ?? (request as IRequestWithType)?.Request;
-            if (type is not null && context is RecursionContext recursionContext 
+            if (type is not null && context is RecursionContext recursionContext
                     && recursionContext.BuilderCache.ContainsKey(type)
                     && object.ReferenceEquals(recursionContext.BuilderCache[type], specimen)) return specimen; // We are in recursion so no commands
 

@@ -33,7 +33,7 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
                 => Object.ReferenceEquals(other.Fixture, Fixture)
                     && other.MockDependencies == MockDependencies
                     && (other.MockShouldCallbase ?? other.StartTracker.MockShouldCallbase) == (MockShouldCallbase ?? StartTracker.MockShouldCallbase);
-    
+
     public event EventHandler<UpdateData>? DataUpdated;
 
     public override void UpdateResult()
@@ -43,7 +43,7 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
 
         base.UpdateResult();
 
-        var childrensPaths = this.childrensPaths.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) 
+        var childrensPaths = this.childrensPaths.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
                                 ?? new Dictionary<string, List<WeakReference?>>();
 
         // Assuming that all paths and mocks are add only
@@ -52,7 +52,7 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
 
         var modifiedPaths = currentPaths
             .Select(c => new KeyValuePair<string, List<WeakReference?>>(c.Key, childrensPaths[c.Key].Except(c.Value).ToList()))
-            .Where(kvp => kvp.Value.Any())            
+            .Where(kvp => kvp.Value.Any())
             .Union(childrensPaths.Where(c => newPaths.Contains(c.Key)))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 

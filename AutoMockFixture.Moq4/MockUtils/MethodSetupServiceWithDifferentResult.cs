@@ -7,7 +7,7 @@ namespace AutoMockFixture.Moq4.MockUtils;
 internal class MethodSetupServiceWithDifferentResult : MethodLazySetupServiceBase
 {
     public MethodSetupServiceWithDifferentResult(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-        string? customTrackingPath = null, Type? mockType = null) 
+        string? customTrackingPath = null, Type? mockType = null)
             : base(mock, method, context, customTrackingPath, mockType)
     {
     }
@@ -17,6 +17,6 @@ internal class MethodSetupServiceWithDifferentResult : MethodLazySetupServiceBas
         var result = GenerateResult(invocation.Method);
 
         Logger.LogInfo("Resolved type: " + (result?.GetType().FullName ?? "null"));
-        return result;        
+        return result;
     }
 }

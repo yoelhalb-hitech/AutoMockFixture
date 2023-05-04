@@ -35,8 +35,8 @@ internal class MethodInfoExtensions_Tests
     [Test]
     [TestCase(nameof(TestClass.NonOverload),"NonOverload")]
     [TestCase(nameof(TestClass.NonOverloadWithArgs), "NonOverloadWithArgs")]
-    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs),"NonOverloadWithGenericArgs`1")]      
-    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), "NonOverloadWithNonUsingGenericArgs`1")]        
+    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs),"NonOverloadWithGenericArgs`1")]
+    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), "NonOverloadWithNonUsingGenericArgs`1")]
     public void TestGetTrackingPath_ReturnsCorrectly_ForNonOverloads(string name, string expectedTrackingPath)
     {
         var trackingPath = GetMethod(m => m.Name == name).GetTrackingPath();
@@ -106,7 +106,7 @@ internal class MethodInfoExtensions_Tests
             "OverloadDifferentArgNumber<String,Int32>(`4)"},
     };
 
-       
+
 
     [Test]
     [TestCaseSource(nameof(MethodInfoExtensions_Tests.OverloadMethods))]

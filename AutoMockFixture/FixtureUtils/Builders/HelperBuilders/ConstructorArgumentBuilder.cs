@@ -12,7 +12,7 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
     }
 
     public List<ConstructorArgumentValue> ConstructorArgumentValues { get; }
- 
+
     protected override object? HandleInternal(ConstructorArgumentRequest ctorArgsRequest, ISpecimenContext context)
     {
         var type = GetRequest(ctorArgsRequest);
@@ -35,7 +35,7 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
     {
         if (!string.IsNullOrWhiteSpace(argumentValue.Path) && argumentValue.Path != path) return false;
 
-        if (argumentValue.Value is not null) return type.IsInstanceOfType(argumentValue.Value) 
+        if (argumentValue.Value is not null) return type.IsInstanceOfType(argumentValue.Value)
                 || (argumentValue.Value is IAutoMock mock && type.IsInstanceOfType(mock.GetMocked()));
 
         return type.IsNullAllowed();

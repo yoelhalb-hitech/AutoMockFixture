@@ -33,16 +33,16 @@ public class MatcherGenerator_Tests
     public void Test_GetGenericMatcher_Works_WithSingleInterface() => Executer(nameof(TestClass.TestSingleInterface));
 
     [Test]
-    public void Test_GetGenericMatcher_Works_WithMultipleInterfaces() => Executer(nameof(TestClass.TestMultipleInterfaces));        
+    public void Test_GetGenericMatcher_Works_WithMultipleInterfaces() => Executer(nameof(TestClass.TestMultipleInterfaces));
 
     [Test]
     public void Test_GetGenericMatcher_Works_WithClassNoInterface() => Executer(nameof(TestClass.TestClassNoInterface));
 
     [Test]
-    public void Test_GetGenericMatcher_Works_WithClassWithSingleInterface() 
+    public void Test_GetGenericMatcher_Works_WithClassWithSingleInterface()
             => Executer(nameof(TestClass.TestClassWithSingleInterface));
 
     [Test]
-    public void Test_GetGenericMatcher_Works_WithClassWithMultipleInterfaces() 
+    public void Test_GetGenericMatcher_Works_WithClassWithMultipleInterfaces()
             => Executer(nameof(TestClass.TestClassWithMultipleInterfaces));
 }

@@ -37,7 +37,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         inner.TestCtorArg.InternalTest.Should().BeNull();
         AutoMock.IsAutoMock(inner.TestCtorArg).Should().BeTrue();
 
-        inner.TestClassProp.Should().BeNull();        
+        inner.TestClassProp.Should().BeNull();
         inner.TestClassProp!.Should().NotBe(inner.TestCtorArg);
 
         inner.TestClassPropWithPrivateSet.Should().BeNull();

@@ -17,11 +17,11 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         if (request is not IRequestWithType typeRequest) return new NoSpecimen();
 
         var genericDefinitions = typeRequest.Request.GetAllGenericDefinitions();
- 
+
         // generic type defintions are not conisdered assignable
         if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request)
                     || (t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
- 
+
         var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
 
         if (innerResult is NoSpecimen) return innerResult;
@@ -29,11 +29,11 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         var finalResult = CreateResult(typeRequest.Request, (object[][])innerResult);
         typeRequest.SetResult(finalResult, this);
 
-        return finalResult;      
+        return finalResult;
     }
 
     protected virtual object GetRepeatedInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
-    { 
+    {
         var resultArray = new object[Repeat][];
         for (int i = 0; i < Repeat; i++)
         {
@@ -80,4 +80,4 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
     }
 
     protected abstract InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex);
-}    
+}

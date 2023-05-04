@@ -34,7 +34,7 @@ internal class InnerBuilder : ISpecimenBuilder
         newRequest.SetResult(specimen, this);
 
         if (specimen is NoSpecimen || specimen is OmitSpecimen)
-        {            
+        {
             return new NoSpecimen(); // Let the system handle it
         }
 

@@ -22,9 +22,9 @@ internal class TypeOrRequestSpecification : IRequestSpecification
         return (request is Type t && Specification.IsSatisfiedBy(t))
                 || (request is AutoMockRequest r && Specification.IsSatisfiedBy(r.Request))
                 || (request is NonAutoMockRequest n && Specification.IsSatisfiedBy(n.Request))
-                || (request is AutoMockDirectRequest dr 
-                            && (Specification.IsSatisfiedBy(dr.Request) 
-                                      || (AutoMockHelpers.IsAutoMock(dr.Request) 
+                || (request is AutoMockDirectRequest dr
+                            && (Specification.IsSatisfiedBy(dr.Request)
+                                      || (AutoMockHelpers.IsAutoMock(dr.Request)
                                                  && Specification.IsSatisfiedBy(AutoMockHelpers.GetMockedType(dr.Request)))))
                 || (request is AutoMockDependenciesRequest der && Specification.IsSatisfiedBy(der.Request));
     }

@@ -29,7 +29,7 @@ internal class TypeControl_FromFixture_Tests
 
     T CreateNonAutoMock<T>(AutoMockTypeControl typeControl) => fixture.CreateNonAutoMock<T>(typeControl)!;
 
-    [Test]       
+    [Test]
     public void Test_AlwaysAutoMockTypes_WillAutoMock_WhenNonAutoMock_FromFixture_ObjectItself()
     {
         fixture.AutoMockTypeControl = GetMockTypeControl();

@@ -14,7 +14,7 @@ internal static class MethodInfoExtensions
                      .Any(p => p.ParameterType.IsByRef && !p.IsOut);
 
     internal static bool HasOverloads(this MethodInfo method)
-        => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name && m != method 
+        => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name && m != method
                         && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m));
 
     internal static bool HasOverloadSameCount(this MethodInfo method)

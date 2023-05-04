@@ -19,6 +19,6 @@ public interface ITracker
     public void SetCompleted(ISpecimenBuilder? builder);
     public void SetCompleted(ISpecimenCommand command);
     public void UpdateResult();
-    public void AddChild(ITracker tracker);    
+    public void AddChild(ITracker tracker);
     public bool IsRequestEquals(ITracker other);
 }

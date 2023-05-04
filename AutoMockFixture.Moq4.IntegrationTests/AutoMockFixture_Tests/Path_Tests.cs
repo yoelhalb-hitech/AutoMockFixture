@@ -40,10 +40,10 @@ internal class Path_Tests
 
         paths.Should().Contain(".InternalTest");
         fixture.GetAt(obj, ".InternalTest").First().Should().Be(obj.InternalTest);
-    }   
+    }
 
     [Test]
-    [TestCase(AutoMockType.AutoMock)]        
+    [TestCase(AutoMockType.AutoMock)]
     public void Test_ReadOnlyProperty(AutoMockType type)
     {
         var fixture = new AbstractAutoMockFixture();
@@ -55,12 +55,12 @@ internal class Path_Tests
         paths.Should().Contain(".InternalTest");
         fixture.GetAt(obj, ".InternalTest").First().Should().Be(obj.InternalTest);
     }
-    
+
     [Test]
     [TestCase(AutoMockType.AutoMock)]
     public void Test_Method(AutoMockType type)
     {
-        var fixture = new AbstractAutoMockFixture();            
+        var fixture = new AbstractAutoMockFixture();
 
         var obj = GetObj<InternalTestMethods>(fixture, type);
         var f = obj.InternalTestMethod(); // We need first to invoke the property is it might be lazy

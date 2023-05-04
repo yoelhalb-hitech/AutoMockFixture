@@ -35,7 +35,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             var inner = AutoMockHelpers.IsAutoMock(dependencyRequest.Request)
                                 ? AutoMockHelpers.GetMockedType(dependencyRequest.Request)!
                                 : dependencyRequest.Request.GenericTypeArguments.First();
-            
+
             var result = TryAutoMock(dependencyRequest, context, inner);
 
             object? autoMock = AutoMockHelpers.GetFromObj(result);
@@ -45,7 +45,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             return autoMock;
         }
 
-        if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request) 
+        if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request)
             || typeof(System.Delegate).IsAssignableFrom(dependencyRequest.Request))
         {
             // Note that IEnumerable etc. should already be handled in the special builders
@@ -58,7 +58,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
         {
             var specimen = Builder.Create(request, context);
             if (specimen is NoSpecimen || specimen is OmitSpecimen) return TryAutoMock(dependencyRequest, context);
-            
+
             if (specimen is null)
             {
                 dependencyRequest.SetResult(specimen, this);
@@ -89,9 +89,9 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
         if (dependencyRequest.GetParentsOnCurrentLevel().Any(t => t.GetType() == typeof(AutoMockRequest))
                         || !AutoMockHelpers.IsAutoMockAllowed(requestedType))
             return new NoSpecimen();
-        
+
         try
-        {            
+        {
             var autoMockRequest = new AutoMockRequest(requestedType, dependencyRequest)
             {
                 // We want MockShouldCallbase so to get ctor dependencies and also because AutoMockDependencies is a SUT
@@ -101,7 +101,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             };
 
             var autoMockResult = context.Resolve(autoMockRequest);
-            
+
             return autoMockResult;
         }
         catch

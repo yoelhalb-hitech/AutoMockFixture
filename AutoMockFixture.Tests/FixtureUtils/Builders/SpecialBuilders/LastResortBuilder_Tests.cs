@@ -8,7 +8,7 @@ namespace AutoMockFixture.Tests.FixtureUtils.Builders.SpecialBuilders;
 
 internal class LastResortBuilder_Tests
 {
-    [Test]    
+    [Test]
     public void Test_When_AutoMock_Creates_AutoMockDependencies()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -19,13 +19,13 @@ internal class LastResortBuilder_Tests
         var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
-        Mock.Get(context).Verify(c => 
+        Mock.Get(context).Verify(c =>
             c.Resolve(It.Is<AutoMockDependenciesRequest>(r => r.Request == request.Request && r.Parent == request)),
                 Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]    
+    [Test]
     public void Test_When_AutoMockDependencies_Creates_NonAutoMock()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -40,7 +40,7 @@ internal class LastResortBuilder_Tests
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]    
+    [Test]
     public void Test_When_RequestWithType_SendsRequestType()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -70,7 +70,7 @@ internal class LastResortBuilder_Tests
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]    
+    [Test]
     public void Test_When_AutoMockDependencies_AndRecursion_SendsRequestType()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -86,7 +86,7 @@ internal class LastResortBuilder_Tests
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]   
+    [Test]
     public void Test_When_AutoMockDependencies_AndRecursionOnDifferentLevel_Creates_NonAutoMock()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -103,7 +103,7 @@ internal class LastResortBuilder_Tests
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
-    [Test]    
+    [Test]
     public void Test_Throws_When_ResultIsSame()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -113,10 +113,10 @@ internal class LastResortBuilder_Tests
         Mock.Get(context).Setup(c => c.Resolve(It.IsAny<object>())).Returns(request);
 
         var builder = new LastResortBuilder(fixture.AutoMockHelpers);
-        Assert.Throws<Exception>(() => builder.Create(request, context));   
+        Assert.Throws<Exception>(() => builder.Create(request, context));
     }
 
-    [Test]    
+    [Test]
     public void Test_Returns_When_ResultIsSame_AndRequestIsType()
     {
         var fixture = new AbstractAutoMockFixture();

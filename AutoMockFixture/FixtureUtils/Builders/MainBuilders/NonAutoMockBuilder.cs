@@ -4,7 +4,7 @@ using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
 internal class NonAutoMockBuilder : ISpecimenBuilder
-{        
+{
     public NonAutoMockBuilder(ISpecimenBuilder builder, IAutoMockHelpers autoMockHelpers)
     {
         Builder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -21,17 +21,17 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
         var isCreatable = !nonMockRequest.Request.IsAbstract && !nonMockRequest.Request.IsInterface;
         var isMock = AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
                                 || AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(nonMockRequest.Request);
-        
+
         if (isMock || !isCreatable)
         {
-            // Remember that the request might be IMock<> 
+            // Remember that the request might be IMock<>
             var inner = !isMock
                             ? nonMockRequest.Request
                             : AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
                                 ? AutoMockHelpers.GetMockedType(nonMockRequest.Request)!
                                 : nonMockRequest.Request.GenericTypeArguments.First();
-                       
-            var automockRequest = new AutoMockRequest(inner, nonMockRequest) 
+
+            var automockRequest = new AutoMockRequest(inner, nonMockRequest)
             {
                 MockShouldCallbase = !isMock || nonMockRequest.MockShouldCallbase == true
             };

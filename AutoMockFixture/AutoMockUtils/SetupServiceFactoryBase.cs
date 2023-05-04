@@ -31,5 +31,5 @@ internal abstract class SetupServiceFactoryBase
     public abstract ISetupService GetAutoPropertySetup(Type mockedType, Type propertyType, IAutoMock mock, PropertyInfo prop, object? propValue);
 
     protected abstract ISetupService GetService(MethodSetupTypes setupType,
-        IAutoMock mock, MethodInfo method, ISpecimenContext context, string? customTrackingPath, Type? mockType = null);    
+        IAutoMock mock, MethodInfo method, ISpecimenContext context, string? customTrackingPath, Type? mockType = null);
 }
