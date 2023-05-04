@@ -1,7 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
-using AutoMockFixture.TestUtils;
 using System.Collections;
 using static AutoMockFixture.FixtureUtils.Builders.SpecialBuilders.AutoMockTypeControlBuilder;
 

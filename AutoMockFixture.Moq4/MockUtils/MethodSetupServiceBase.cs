@@ -1,14 +1,7 @@
-﻿using AutoFixture.Kernel;
-using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.Extensions;
-using AutoMockFixture.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using AutoMockFixture.Moq4.MockUtils;
 using DotNetPowerExtensions.Reflection;
-using Moq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace AutoMockFixture.Moq4.MockUtils;
 
@@ -45,7 +38,6 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
         if (methodInvocationLambda is null) return;
 
-        // TODO... this is all based on the assumption that the method can return the same object everytime
         if (method.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
         {
             SetupHelpers.SetupCallbaseMethod(mockedType, returnType, mock, methodInvocationLambda);

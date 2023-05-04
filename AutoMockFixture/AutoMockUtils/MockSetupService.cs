@@ -2,7 +2,6 @@
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using DotNetPowerExtensions.Reflection;
-using System.Reflection;
 using static AutoMockFixture.AutoMockUtils.CannotSetupMethodException;
 
 namespace AutoMockFixture.AutoMockUtils;

@@ -1,5 +1,4 @@
-﻿using Moq;
-
+﻿
 namespace AutoMockFixture.Moq4.VerifyInfo;
 
 public class VerifySetInfo<T> : IVerifyInfo<T> where T : class

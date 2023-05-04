@@ -1,6 +1,4 @@
-﻿using Moq;
-using System.Linq.Expressions;
-
+﻿
 namespace AutoMockFixture.Moq4.VerifyInfo;
 
 public class VerifyActionInfo<T> : IVerifyInfo<T> where T : class

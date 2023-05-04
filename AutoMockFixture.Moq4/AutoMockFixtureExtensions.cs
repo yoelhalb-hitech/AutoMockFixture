@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.Extensions;
-
+﻿
 namespace AutoMockFixture.Moq4;
 
 public static class AutoMockFixtureExtensions

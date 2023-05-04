@@ -1,10 +1,7 @@
 ﻿using AutoMockFixture.Moq4.Expressions;
 using AutoMockFixture.Moq4.VerifyInfo;
 using DotNetPowerExtensions.Reflection;
-using Moq;
 using Moq.Language.Flow;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace AutoMockFixture.Moq4.AutoMockUtils;
 

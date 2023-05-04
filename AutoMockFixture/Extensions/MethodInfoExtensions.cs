@@ -1,5 +1,4 @@
 ﻿using DotNetPowerExtensions.Reflection;
-using System.Reflection;
 
 namespace AutoMockFixture.Extensions;
 

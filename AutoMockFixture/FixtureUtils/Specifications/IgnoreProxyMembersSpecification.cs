@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-
+﻿
 namespace AutoMockFixture.FixtureUtils.Specifications;
 
 internal class IgnoreProxyMembersSpecification : IRequestSpecification

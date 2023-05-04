@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-
+﻿
 namespace AutoMockFixture.FixtureUtils.MethodQueries;
 
 internal class CustomModestConstructorQuery : IMethodQuery

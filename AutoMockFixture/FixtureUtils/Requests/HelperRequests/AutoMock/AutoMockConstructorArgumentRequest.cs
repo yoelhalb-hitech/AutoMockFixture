@@ -1,6 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using System.Reflection;
+﻿using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 

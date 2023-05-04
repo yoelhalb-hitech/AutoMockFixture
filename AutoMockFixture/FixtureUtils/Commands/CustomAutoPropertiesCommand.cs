@@ -1,9 +1,7 @@
-﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using DotNetPowerExtensions.Reflection;
-using System.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 

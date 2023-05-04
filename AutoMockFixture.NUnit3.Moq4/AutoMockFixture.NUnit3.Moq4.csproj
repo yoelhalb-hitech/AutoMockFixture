@@ -8,7 +8,7 @@
 	<Nullable>enable</Nullable>
 
     <Platforms>AnyCPU</Platforms>
-	  
+
 	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
@@ -27,7 +27,7 @@
 	<Company>SequelPay</Company>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-	
+
   <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
@@ -42,7 +42,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AutoMockFixture.Moq4\AutoMockFixture.Moq4.csproj" />
     <ProjectReference Include="..\AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" PrivateAssets="All" ReferenceOutputAssembly="false" /><!-- AutoMockFixture.Moq4 is already referencing it -->	  
+    <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" PrivateAssets="All" ReferenceOutputAssembly="false" /><!-- AutoMockFixture.Moq4 is already referencing it -->
   </ItemGroup>
 
   <!--From https://github.com/NuGet/Home/issues/3891#issuecomment-377319939-->
@@ -50,5 +50,5 @@
     <ItemGroup>
 		<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))" />
     </ItemGroup>
-  </Target>	
+  </Target>
 </Project>

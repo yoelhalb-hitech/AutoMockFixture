@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-
+﻿
 namespace AutoMockFixture.Extensions;
 
 internal static class PropertyInfoExtensions

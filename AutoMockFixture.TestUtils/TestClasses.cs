@@ -1,4 +1,5 @@
-﻿namespace AutoMockFixture.TestUtils;
+﻿
+namespace AutoMockFixture.TestUtils;
 
 // CAUTION : The classes are `internal` so to test if AutoMockFixture also works correctly with internal
 

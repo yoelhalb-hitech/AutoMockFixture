@@ -1,8 +1,4 @@
-﻿using AutoFixture.Kernel;
-using Moq;
-using System.Linq.Expressions;
-using System.Reflection;
-
+﻿
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class MethodEagerSetupService : MethodSetupServiceBase

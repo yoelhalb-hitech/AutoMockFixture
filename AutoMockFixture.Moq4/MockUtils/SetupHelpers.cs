@@ -1,7 +1,4 @@
-﻿using Moq;
-using System.Linq.Expressions;
-using System.Reflection;
-
+﻿
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal static class SetupHelpers

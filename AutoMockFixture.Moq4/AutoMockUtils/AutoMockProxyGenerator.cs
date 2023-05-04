@@ -1,8 +1,5 @@
 ﻿using Castle.DynamicProxy;
-using System.Reflection;
-using Moq;
 using Moq.Protected;
-using System.Linq.Expressions;
 using System.Reflection.Emit;
 
 namespace AutoMockFixture.Moq4.AutoMockUtils;

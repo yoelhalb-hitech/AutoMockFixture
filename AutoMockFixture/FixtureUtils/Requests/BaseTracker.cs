@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-
+﻿
 namespace AutoMockFixture.FixtureUtils.Requests;
 
 internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>

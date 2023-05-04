@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.MethodInvokers;
 using AutoMockFixture.FixtureUtils.MethodQueries;
 

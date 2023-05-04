@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-
+﻿
 namespace AutoMockFixture.FixtureUtils.Specifications;
 
 internal class AutoMockableSpecification : IRequestSpecification

@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-
+﻿
 namespace AutoMockFixture.Moq4.Expressions;
 
 internal class FuncExpressionBuilder<T>

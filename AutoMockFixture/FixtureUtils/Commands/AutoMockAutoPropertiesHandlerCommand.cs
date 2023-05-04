@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
 
 namespace AutoMockFixture.FixtureUtils.Commands;

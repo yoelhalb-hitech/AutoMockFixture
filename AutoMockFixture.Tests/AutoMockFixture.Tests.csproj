@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 
@@ -10,7 +10,7 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
-	
+
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
@@ -18,8 +18,8 @@
 	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>LINQPadQuery</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup> 
-	
+  </ItemGroup>
+
   <ItemGroup>
 	  <Using Include="System" />
 	  <Using Include="System.Linq" />
@@ -32,7 +32,7 @@
 	  <Using Include="AutoMockFixture.TestUtils" />
 	  <Using Include="AutoMockFixture.Moq4" />
   </ItemGroup>
-	
+
   <ItemGroup>
 	<PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
 	<PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />

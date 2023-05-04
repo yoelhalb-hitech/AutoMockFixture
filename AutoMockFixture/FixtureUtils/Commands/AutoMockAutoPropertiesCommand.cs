@@ -1,6 +1,5 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
-using System.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 

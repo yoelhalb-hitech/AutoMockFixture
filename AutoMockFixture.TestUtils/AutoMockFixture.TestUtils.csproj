@@ -22,7 +22,7 @@
       <_Parameter1>AutoMockFixture.NUnit3.Moq4.IntegrationTests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-	
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />

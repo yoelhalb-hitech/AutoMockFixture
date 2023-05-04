@@ -1,7 +1,4 @@
-﻿using AutoMockFixture.Extensions;
-using Moq;
-using System.Reflection;
-using System.Reflection.Emit;
+﻿using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
 namespace AutoMockFixture.Moq4.MockUtils;

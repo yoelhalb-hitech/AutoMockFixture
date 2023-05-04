@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
+﻿using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;

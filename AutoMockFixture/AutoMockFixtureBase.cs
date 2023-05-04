@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 using AutoMockFixture.FixtureUtils.Commands;
@@ -11,7 +10,6 @@ using AutoMockFixture.FixtureUtils.Specifications;
 using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.ComponentModel;
-using System.Reflection;
 
 namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)
 

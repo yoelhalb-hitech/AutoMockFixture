@@ -1,10 +1,6 @@
-﻿using AutoFixture.Kernel;
-using AutoMockFixture.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using Moq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace AutoMockFixture.Moq4.MockUtils;
 

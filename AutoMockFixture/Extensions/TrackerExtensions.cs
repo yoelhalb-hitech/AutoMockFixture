@@ -1,7 +1,4 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AutoMockFixture.Extensions
 {

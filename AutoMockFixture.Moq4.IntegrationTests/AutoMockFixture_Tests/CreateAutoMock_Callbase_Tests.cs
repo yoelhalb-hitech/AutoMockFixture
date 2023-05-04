@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-
+﻿
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class CreateAutoMock_Callbase_Tests

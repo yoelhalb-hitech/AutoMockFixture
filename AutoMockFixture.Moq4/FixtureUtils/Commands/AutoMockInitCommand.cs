@@ -1,6 +1,4 @@
-﻿using AutoFixture.Kernel;
-using Castle.DynamicProxy;
-using Moq;
+﻿using Castle.DynamicProxy;
 
 namespace AutoMockFixture.Moq4.FixtureUtils.Commands;
 

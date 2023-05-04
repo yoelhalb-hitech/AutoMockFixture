@@ -1,5 +1,4 @@
-﻿using AutoMockFixture.AutoMockUtils;
-
+﻿
 namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockVirtualMethodsCommand : ISpecimenCommand

@@ -1,6 +1,4 @@
-﻿using AutoFixture.Kernel;
-using AutoMockFixture.Moq4.AutoMockUtils;
-using Moq;
+﻿using AutoMockFixture.Moq4.AutoMockUtils;
 
 namespace AutoMockFixture.Moq4.FixtureUtils.Commands;
 
