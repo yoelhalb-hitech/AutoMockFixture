@@ -5,6 +5,7 @@ using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMockFixture.Moq4.MockUtils;
+using DotNetPowerExtensions.Reflection;
 using Moq;
 using System.Linq.Expressions;
 using System.Reflection;

@@ -8,6 +8,7 @@ using AutoMockFixture.FixtureUtils.Postprocessors;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
+using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.ComponentModel;
 using System.Reflection;
@@ -31,16 +32,16 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     static AutoMockFixtureBase()
     {
         replaceNodeMethod = typeof(SpecimenBuilderNode)
-            .GetMethod("ReplaceNodes", Extensions.TypeExtensions.AllBindings, null, new Type[]
+            .GetMethod("ReplaceNodes", BindingFlagsExtensions.AllBindings, null, new Type[]
             {
                 typeof(ISpecimenBuilderNode),
                 typeof(ISpecimenBuilderNode),
                 typeof(Func<ISpecimenBuilderNode, bool>),
             }, null);
-        
-        graphField = typeof(Fixture).GetField("graph", Extensions.TypeExtensions.AllBindings);
-        
-        updateGraphAndSetupAdapterMethod = typeof(Fixture).GetMethod("UpdateGraphAndSetupAdapters", Extensions.TypeExtensions.AllBindings, null, new Type[]
+
+        graphField = typeof(Fixture).GetField("graph", BindingFlagsExtensions.AllBindings);
+
+        updateGraphAndSetupAdapterMethod = typeof(Fixture).GetMethod("UpdateGraphAndSetupAdapters", BindingFlagsExtensions.AllBindings, null, new Type[]
         {
             typeof(ISpecimenBuilderNode),
         }, null);

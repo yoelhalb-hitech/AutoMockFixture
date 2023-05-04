@@ -1,5 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
+using DotNetPowerExtensions.Reflection;
 using System.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
@@ -77,7 +78,7 @@ internal class EnumerableBuilder : NonConformingBuilder
                                     IEnumerable<object> typedData, Func<Type, bool> isMatch)
     {
         // TODO... interfaces
-        var ctors = requestType.GetConstructors(Extensions.TypeExtensions.AllBindings);
+        var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings);
         var singleCtors = ctors.Where(x => x.GetParameters().Length == 1);
         var enumerableCtor = singleCtors.FirstOrDefault(x => isMatch(x.GetParameters()[0].ParameterType));
         if (enumerableCtor is not null) return enumerableCtor.Invoke(new object[] { typedData });

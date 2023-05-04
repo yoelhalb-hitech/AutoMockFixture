@@ -4,6 +4,7 @@ using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.Moq4.AutoMockUtils;
 using AutoMockFixture.Moq4.VerifyInfo;
 using Castle.DynamicProxy;
+using DotNetPowerExtensions.Reflection;
 using Moq;
 using System.Reflection;
 

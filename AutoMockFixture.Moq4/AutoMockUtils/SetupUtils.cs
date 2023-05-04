@@ -1,5 +1,6 @@
 ﻿using AutoMockFixture.Moq4.Expressions;
 using AutoMockFixture.Moq4.VerifyInfo;
+using DotNetPowerExtensions.Reflection;
 using Moq;
 using Moq.Language.Flow;
 using System.Linq.Expressions;
@@ -14,7 +15,7 @@ internal class SetupUtils<T> where T : class
         AutoMock = autoMock;
     }
     private readonly BasicExpressionBuilder<T> basicExpression = new();
-    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, Extensions.TypeExtensions.AllBindings);
+    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, BindingFlagsExtensions.AllBindings);
     public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
     {
         return SetupActionInternal(expression, times);
@@ -71,7 +72,7 @@ internal class SetupUtils<T> where T : class
     public AutoMock<T> AutoMock { get; }
 
     public MethodInfo GetSetupFuncInternal(Type type)
-        => GetType().GetMethod(nameof(SetupFuncFromLambda), Extensions.TypeExtensions.AllBindings)
+        => GetType().GetMethod(nameof(SetupFuncFromLambda), BindingFlagsExtensions.AllBindings)
         .MakeGenericMethod(type);
 
     // Doing this way it because of issues with overload resolution

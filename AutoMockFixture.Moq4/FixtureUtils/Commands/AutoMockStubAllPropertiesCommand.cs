@@ -1,6 +1,7 @@
 ﻿using AutoFixture.Kernel;
 using AutoMockFixture.Extensions;
 using AutoMockFixture.Moq4.AutoMockUtils;
+using DotNetPowerExtensions.Reflection;
 using Moq;
 using System.Linq.Expressions;
 

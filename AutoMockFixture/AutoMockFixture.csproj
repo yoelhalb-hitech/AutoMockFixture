@@ -43,11 +43,12 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net461'" />
-    <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="1.0.1" />
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="1.0.1">
+    <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="2.0.0" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="2.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="2.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" Condition="'$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461'" />
 	<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461'" />  
   </ItemGroup>

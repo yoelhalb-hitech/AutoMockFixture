@@ -1,4 +1,5 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection;
+
 namespace AutoMockFixture.FixtureUtils.Specifications;
 
 internal class InnerTypeSpecification : IRequestSpecification

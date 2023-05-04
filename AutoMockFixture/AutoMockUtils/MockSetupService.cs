@@ -1,6 +1,7 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using DotNetPowerExtensions.Reflection;
 using System.Reflection;
 using static AutoMockFixture.AutoMockUtils.CannotSetupMethodException;
 
@@ -63,7 +64,7 @@ internal class MockSetupService
             SetupExplicitProperty(prop, mockedType, mock);
         }
 
-        var explicitMethods = mockedType.GetExplicitInterfaceMethods().Except(explicitProperties.SelectMany(p => p.GetMethods()));
+        var explicitMethods = mockedType.GetExplicitInterfaceMethods().Except(explicitProperties.SelectMany(p => p.GetAllMethods()));
         foreach (var method in explicitMethods)
         {
             SetupExplicitMethod(method, mockedType, mock);
@@ -78,7 +79,7 @@ internal class MockSetupService
         Func<MethodInfo, ISetupService> setupFunc = ifaceMethod
                                 => setupServiceFactory.GetPropertySetup(mock, ifaceMethod, context, trackingPath, ifaceMethod.DeclaringType);
 
-        SetupExplicitMember(prop.GetMethods().First(), mockedType, mock, prop, trackingPath, setupFunc);
+        SetupExplicitMember(prop.GetAllMethods().First(), mockedType, mock, prop, trackingPath, setupFunc);
     }
 
     private void SetupExplicitMethod(MethodInfo method, Type mockedType, IAutoMock mock)
@@ -96,7 +97,7 @@ internal class MockSetupService
     {
         try
         {
-            var ifaceMethod = method.GetExplicitInterfaceMethod();
+            var ifaceMethod = method.GetInterfaceMethods().FirstOrDefault(); // TODO... can there be more than 1?
             if (ifaceMethod is null) // Should not happen...
             {
                 HandleCannotSetup(trackingPath, CannotSetupReason.InterfaceMethodNotFound);
@@ -125,9 +126,9 @@ internal class MockSetupService
         var prop = member as PropertyInfo;
 
         trackingPath ??= method?.GetTrackingPath() ?? prop!.GetTrackingPath();
-        var methods = prop?.GetMethods() ?? new[] { method! };
+        var methods = prop?.GetAllMethods() ?? new[] { method! };
 
-        if (mock.CallBase && !mock.GetInnerType().IsInterface && !methods.Any(m => m.IsAbstract))
+        if (mock.CallBase && !methods.Any(m => m.IsAbstract)) // Cannot check by interface as an interface can have a default implementation
         { // It is callbase and has an implementation so let's ignore it
             HandleCannotSetup(trackingPath, CannotSetupReason.CallBaseNoAbstract);
             return;
@@ -158,7 +159,7 @@ internal class MockSetupService
 
     private void SetupSingleMethodProperty(PropertyInfo prop)
     {
-        var method = prop.GetMethods().First();
+        var method = prop.GetAllMethods().First();
 
         var trackingPath = prop.GetTrackingPath();
         Setup(method, () => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath).Setup(), trackingPath);
@@ -183,7 +184,7 @@ internal class MockSetupService
             ? new[] { mockedType.GetTypeInfo().GetMethod("Invoke") }
             : mockedType.GetAllMethods();
 
-        var propMethods = mockedType.GetAllProperties().SelectMany(p => p.GetMethods());
+        var propMethods = mockedType.GetAllProperties().SelectMany(p => p.GetAllMethods());
         return methods.Except(propMethods).Where(m => m.IsPublicOrInternal());
     }
 
