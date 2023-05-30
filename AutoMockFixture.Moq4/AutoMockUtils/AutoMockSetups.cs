@@ -106,25 +106,32 @@ public partial class AutoMock<T>
 
     #region SetupAction
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup(Expression<Func<T, Action>> expression, Times? times = null)
     {
         var expr = actionExpression.GetExpression(expression, new { });
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam>(Expression<Func<T, Action<TParam>>> expression, Times? times = null)
     {
         var expr = actionExpression.GetExpression(expression, new { });
         return SetupInternal(expression, expr, times);
     }
 
-
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2>(Expression<Func<T, Action<TParam1, TParam2>>> expression, Times? times = null)
     {
         var expr = actionExpression.GetExpression(expression, new { });
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2>>> expression, TAnon paramData, Times? times = null)
         where TAnon : class // Doing TAnon : class to avoid overload resolution issues
@@ -133,6 +140,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3>(
                 Expression<Func<T, Action<TParam1, TParam2, TParam3>>> expression, Times? times = null)
     {
@@ -140,6 +149,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3>>> expression, TAnon paramData, Times? times = null)
         where TAnon : class // Doing TAnon : class to avoid overload resolution issues
@@ -148,6 +159,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4>>> expression, Times? times = null)
     {
@@ -155,6 +168,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4>>> expression, TAnon paramData, Times? times = null)
         where TAnon : class // Doing TAnon : class to avoid overload resolution issues
@@ -163,6 +178,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5>>> expression, Times? times = null)
     {
@@ -170,6 +187,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5>>> expression,
         TAnon paramData, Times? times = null)
@@ -179,6 +198,8 @@ public partial class AutoMock<T>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>(
 Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>> expression, Times? times = null)
     {
@@ -186,6 +207,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>> expression,
         TAnon paramData, Times? times = null)
@@ -195,6 +218,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7>(
 Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7>>> expression, Times? times = null)
     {
@@ -202,6 +227,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TAnon>(
         Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7>>> expression,
         TAnon paramData, Times? times = null)
@@ -214,25 +241,32 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
     #endregion
     #region SetupFunc
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TResult>(Expression<Func<T, Func<TResult>>> expression, Times? times = null)
     {
         var expr = funcExpression.GetExpression(expression, new { });
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam, TResult>(Expression<Func<T, Func<TParam, TResult>>> expression, Times? times = null)
     {
         var expr = funcExpression.GetExpression(expression, new { });
         return SetupInternal(expression, expr, times);
     }
 
-
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TResult>(Expression<Func<T, Func<TParam1, TParam2, TResult>>> expression, Times? times = null)
     {
         var expr = funcExpression.GetExpression(expression, new { });
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TResult>>> expression, TAnon paramData, Times? times = null)
         where TAnon : class // Doing TAnon : class to avoid overload resolution issues
@@ -241,6 +275,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TResult>(
                 Expression<Func<T, Func<TParam1, TParam2, TParam3, TResult>>> expression, Times? times = null)
     {
@@ -248,6 +284,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TResult>>> expression, TAnon paramData, Times? times = null)
         where TAnon : class // Doing TAnon : class to avoid overload resolution issues
@@ -256,6 +294,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TResult>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TResult>>> expression, Times? times = null)
     {
@@ -263,6 +303,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TResult>>> expression, TAnon paramData, Times? times = null)
         where TAnon : class // Doing TAnon : class to avoid overload resolution issues
@@ -271,6 +313,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TResult, TParam5>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TResult, TParam5>>> expression, Times? times = null)
     {
@@ -278,6 +322,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TResult>>> expression,
         TAnon paramData, Times? times = null)
@@ -287,6 +333,8 @@ Expression<Func<T, Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TResult>(
 Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>> expression, Times? times = null)
     {
@@ -294,6 +342,8 @@ Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>> 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>> expression,
         TAnon paramData, Times? times = null)
@@ -303,6 +353,8 @@ Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>>> 
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TResult>(
 Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TResult>>> expression, Times? times = null)
     {
@@ -310,6 +362,8 @@ Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TP
         return SetupInternal(expression, expr, times);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use the overload that takes a string/nameof")]
     public AutoMock<T> Setup<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TResult, TAnon>(
         Expression<Func<T, Func<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TResult>>> expression,
         TAnon paramData, Times? times = null)

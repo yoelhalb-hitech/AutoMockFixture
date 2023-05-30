@@ -200,6 +200,7 @@ public class AutoMock_Tests
     #region Action
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Action_Works()
     {
         var mock = new AutoMock<Test>();
@@ -222,6 +223,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Action_ThrowsOnVerify()
     {
         var mock = new AutoMock<Test>();
@@ -244,6 +246,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Action_Works_WithParams()
     {
         var mock = new AutoMock<Test>();
@@ -268,6 +271,7 @@ public class AutoMock_Tests
 
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Action_ThrowsOnVerify_WithParams()
     {
         var mock = new AutoMock<Test>();
@@ -290,6 +294,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Action_Works_BasedOnParam()
     {
         var mock = new AutoMock<Test>();
@@ -312,6 +317,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Action_ThrowsOnVerify_BasedOnParam()
     {
         var mock = new AutoMock<Test>();
@@ -337,6 +343,7 @@ public class AutoMock_Tests
     #region Func
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Func_Works()
     {
         var mock = new AutoMock<Test>();
@@ -359,6 +366,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Func_ThrowsOnVerify()
     {
         var mock = new AutoMock<Test>();
@@ -381,6 +389,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Func_Works_WithParams()
     {
         var mock = new AutoMock<Test>();
@@ -405,6 +414,7 @@ public class AutoMock_Tests
 
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Func_ThrowsOnVerify_WithParams()
     {
         var mock = new AutoMock<Test>();
@@ -427,6 +437,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Func_Works_BasedOnParam()
     {
         var mock = new AutoMock<Test>();
@@ -449,6 +460,7 @@ public class AutoMock_Tests
     }
 
     [Test]
+    [Obsolete]
     public void Test_Setup_Func_ThrowsOnVerify_BasedOnParam()
     {
         var mock = new AutoMock<Test>();
