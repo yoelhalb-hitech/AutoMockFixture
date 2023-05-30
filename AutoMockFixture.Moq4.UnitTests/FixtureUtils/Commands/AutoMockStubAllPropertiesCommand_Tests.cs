@@ -1,5 +1,6 @@
 ﻿using AutoMockFixture.Moq4.AutoMockUtils;
 using AutoMockFixture.Moq4.FixtureUtils.Commands;
+using Moq;
 
 namespace AutoMockFixture.Tests.FixtureUtils.Commands;
 
@@ -53,6 +54,7 @@ internal class AutoMockStubAllPropertiesCommand_Tests
     public void Test_SetsUpAllProperties_WhenNotCallBase(Type type)
     {
         var mock = (Activator.CreateInstance(type) as global::Moq.Mock)!;
+        mock.CallBase = false;
 
         var command = new AutoMockStubAllPropertiesCommand(new AutoMockHelpers());
 

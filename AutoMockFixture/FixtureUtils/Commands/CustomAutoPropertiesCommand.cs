@@ -2,6 +2,8 @@
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
+using System.Linq;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 
@@ -104,38 +106,43 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
     // However no need for private protected properties as it is only used if callbase and if so the base should set it...
     protected IEnumerable<FieldInfo> GetFields(object specimen)
     {
-        return from fi in GetSpecimenType(specimen).GetTypeInfo().GetAllFields()
-               where !fi.IsInitOnly
-               && fi.IsPublicOrInternal()
-               && Specification?.IsSatisfiedBy(fi) != false
-               select fi;
+        var type = GetSpecimenType(specimen);
+
+        var detailInfo = type.GetTypeDetailInfo();
+
+        // Remember that backing fields will get filtered out by the TypeDetailInfo
+        var details = from fd in detailInfo.FieldDetails
+                                // Setting it up in case a specific method is setup to `callbase` and it calls the base private field
+                                .Concat(detailInfo.BasePrivateFieldDetails.Where(_ => IncludePrivateSetters && IncludePrivateOrMissingGetter))
+                                .Concat(detailInfo.ShadowedFieldDetails)
+                        select fd.ReflectionInfo;
+
+        // Reflection throws when setting a static InitOnly field
+        // InitOnly is meant to be set by the ctor only so it's like a private setter
+        return from fi in details
+                            where !fi.IsInitOnly || (!fi.IsStatic && IncludePrivateSetters)
+                            where (IncludePrivateSetters && IncludePrivateOrMissingGetter) || fi.IsPublicOrInternal()
+                            where Specification?.IsSatisfiedBy(fi) != false
+                               select fi;
     }
 
     protected IEnumerable<PropertyInfo> GetPropertiesWithSet(object specimen)
     {
-        var t = GetSpecimenType(specimen).GetTypeInfo();
-        var result = from pi in t.GetAllProperties()
-               where pi.SetMethod is not null
-               && (IncludePrivateSetters || pi.SetMethod.IsPublicOrInternal())
-               select pi;
+        var type = GetSpecimenType(specimen);
 
-        // TODO. what about default implemented interfaces?
-        if (!IncludePrivateSetters || t.BaseType is null || t.BaseType == Fixture.AutoMockHelpers.InterfaceProxyBase) return result;
+        var detailInfo = type.GetTypeDetailInfo();
 
-        var explicitInterfaceProps = t.GetExplicitInterfaceProperties().Where(pi => pi.SetMethod is not null);
+        // Remember that type might be a mock and that mock usually has added interfaces, so we go in that case by the interfaces on the base type
+        var validInterfaces = type.GetInterface(typeof(IAutoMock).FullName) != typeof(IAutoMock) ? type.GetInterfaces() : type.BaseType.GetInterfaces();
 
-        // For AutoMock callbase properties with private setters in the base that are not virtual, we need to set it up by the base
-        var readOnlyProps = t.GetAllProperties()
-                            .Where(pi => pi.SetMethod is null && pi.DeclaringType != t) // Only properties not added by Moq
-                            .Select(p => p.GetWritablePropertyInfo())
-                            .Where(p => p is not null)
-                            .Select(p => p!);
-
-        return result
-            .Union(readOnlyProps)
-            .Union(explicitInterfaceProps)
-            .Where(pi => (IncludePrivateOrMissingGetter || pi.GetMethod?.IsPublicOrInternal() == true)
-                                           && pi.GetIndexParameters().Length == 0
-                                           && Specification?.IsSatisfiedBy(pi) != false);
+        return from pi in detailInfo.PropertyDetails
+                        .Concat(detailInfo.BasePrivatePropertyDetails.Where(_ => IncludePrivateSetters))
+                        .Concat(detailInfo.ShadowedPropertyDetails)
+                        .Concat(detailInfo.ExplicitPropertyDetails.Where(d => validInterfaces.Contains(d.ExplicitInterface)))
+                     where pi.SetMethod is not null || pi.BasePrivateSetMethod is not null
+                     where IncludePrivateSetters || pi.SetMethod?.ReflectionInfo.IsPublicOrInternal() == true
+                     where IncludePrivateOrMissingGetter || pi.GetMethod?.ReflectionInfo.IsPublicOrInternal() == true
+                     where pi.ReflectionInfo.GetIndexParameters().Length == 0 && Specification?.IsSatisfiedBy(pi.ReflectionInfo) != false
+                     select pi.ReflectionInfo;
     }
 }

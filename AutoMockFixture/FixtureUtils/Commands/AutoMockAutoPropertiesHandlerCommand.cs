@@ -32,8 +32,11 @@ internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
             ? new CustomAutoPropertiesCommand(specification, fixture)
             : new AutoMockAutoPropertiesCommand(specification, fixture);
 
-        // Private setters is normally the job of the called but if not callbase we have to do it
+        // Private setters is normally the job of the class code but if not callbase we have to do it
         command.IncludePrivateSetters = !mock.CallBase;
+        // Private getters is normally not relevent outside the class code and the caller code has to handle it
+        //      but if not callbase we have to do it in case some method is setup with callbase and will run into issues (because the other methods are not callbase)
+        command.IncludePrivateOrMissingGetter = !mock.CallBase;
 
         command.Execute(mock.GetMocked(), context);
     }
