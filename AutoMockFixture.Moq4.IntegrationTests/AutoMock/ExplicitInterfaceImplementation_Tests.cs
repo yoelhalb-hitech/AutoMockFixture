@@ -19,6 +19,20 @@ internal class ExplicitInterfaceImplementation_Tests
     }
 
     [Test]
+    public void Test_DoesNotThrow_WithSetup_UsingReflectionWithClassMethods()
+    {
+        // This tests another workaround on Moq, as Moq has an issue with explicit methods
+        var autoMock = new AutoMock<Test>();
+
+        var methods = typeof(Test).GetMethods(BindingFlagsExtensions.AllBindings);
+        var testPropGet = methods.First(m => m.Name.EndsWith(nameof(ITest.TestProp)));
+        var testMethod = methods.First(m => m.Name.EndsWith(nameof(ITest.TestMethod)));
+
+        Assert.DoesNotThrow(() => autoMock.Setup(testPropGet, new { }, 50));
+        Assert.DoesNotThrow(() => autoMock.Setup(testMethod, new { }, 100));
+    }
+
+    [Test]
     public void Test_WorksWithDefaultCallBase_NoSetup()
     {
         var autoMock = new AutoMock<Test>() { CallBase = true };
@@ -69,6 +83,24 @@ internal class ExplicitInterfaceImplementation_Tests
     }
 
     [Test]
+    public void Test_WorksWithDefaultCallBase_WithSetup_UsingReflectionWithClassMethods()
+    {
+        // This also tests another workaround on Moq, as Moq has an issue with explicit methods
+        var autoMock = new AutoMock<Test>() { CallBase = true };
+
+        var methods = typeof(Test).GetMethods(BindingFlagsExtensions.AllBindings);
+        var testPropGet = methods.First(m => m.Name.EndsWith(nameof(ITest.TestProp)));
+        var testMethod = methods.First(m => m.Name.EndsWith(nameof(ITest.TestMethod)));
+
+        Assert.DoesNotThrow(() => autoMock.Setup(testPropGet, new { }, 50));
+        Assert.DoesNotThrow(() => autoMock.Setup(testMethod, new { }, 100));
+
+        var itest = autoMock.Object as ITest;
+        itest.TestProp.Should().Be(50);
+        itest.TestMethod().Should().Be(100);
+    }
+
+    [Test]
     public void Test_WorksWithDefaultNonCallBase_NoSetup()
     {
         var autoMock = new AutoMock<Test>() { CallBase = false };
@@ -111,6 +143,24 @@ internal class ExplicitInterfaceImplementation_Tests
         var autoMock = new AutoMock<Test>() { CallBase = false };
         autoMock.Setup(typeof(ITest).GetProperty(nameof(ITest.TestProp), BindingFlagsExtensions.AllBindings)!.GetMethod!, new { }, 50);
         autoMock.Setup(typeof(ITest).GetMethod(nameof(ITest.TestMethod), BindingFlagsExtensions.AllBindings)!, new { }, 100);
+
+        var itest = autoMock.Object as ITest;
+        itest.TestProp.Should().Be(50);
+        itest.TestMethod().Should().Be(100);
+    }
+
+    [Test]
+    public void Test_WorksWithDefaultNonCallBase_WithSetup_UsingReflectionWithClassMethods()
+    {
+        // This also tests another workaround on Moq, as Moq has an issue with explicit methods
+        var autoMock = new AutoMock<Test>() { CallBase = false };
+
+        var methods = typeof(Test).GetMethods(BindingFlagsExtensions.AllBindings);
+        var testPropGet = methods.First(m => m.Name.EndsWith(nameof(ITest.TestProp)));
+        var testMethod = methods.First(m => m.Name.EndsWith(nameof(ITest.TestMethod)));
+
+        Assert.DoesNotThrow(() => autoMock.Setup(testPropGet, new { }, 50));
+        Assert.DoesNotThrow(() => autoMock.Setup(testMethod, new { }, 100));
 
         var itest = autoMock.Object as ITest;
         itest.TestProp.Should().Be(50);

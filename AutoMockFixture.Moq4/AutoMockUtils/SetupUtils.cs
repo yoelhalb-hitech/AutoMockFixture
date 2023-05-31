@@ -12,7 +12,11 @@ internal class SetupUtils<T> where T : class
         AutoMock = autoMock;
     }
     private readonly BasicExpressionBuilder<T> basicExpression = new();
-    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, BindingFlagsExtensions.AllBindings);
+    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, BindingFlagsExtensions.AllBindings)
+                                                      ?? typeof(T).GetProperty(methodName, BindingFlagsExtensions.AllBindings)?.GetMethod
+                                                      ?? typeof(T).GetInterfaces().Select(i => i.GetMethod(methodName, BindingFlagsExtensions.AllBindings)).SingleOrDefault()
+                                                      ?? typeof(T).GetInterfaces().Select(i => i.GetProperty(methodName, BindingFlagsExtensions.AllBindings)).SingleOrDefault()?.GetMethod
+                                                      ?? throw new MissingMethodException(methodName);
     public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
     {
         return SetupActionInternal(expression, times);
@@ -74,9 +78,29 @@ internal class SetupUtils<T> where T : class
         => GetType().GetMethod(nameof(SetupFuncFromLambda), BindingFlagsExtensions.AllBindings)
         .MakeGenericMethod(type);
 
+    public MethodInfo GetCorrectMethod(MethodInfo method)
+    {
+        if (!method.IsExplicitImplementation()) return method;
+
+        // Moq bug workaround
+        // Moq has an issue setting up the explicit method but no issue setting up the original method, so let's swap it
+        var typeDetailInfo = method.DeclaringType.GetTypeDetailInfo();
+        var explicitMethod = typeDetailInfo.ExplicitMethodDetails.FirstOrDefault(m => m.ReflectionInfo.IsEqual(method))
+                            ?? typeDetailInfo.ExplicitPropertyDetails.FirstOrDefault(m => m.GetMethod?.ReflectionInfo.IsEqual(method) == true).GetMethod
+                            ?? typeDetailInfo.ExplicitPropertyDetails.FirstOrDefault(m => m.SetMethod?.ReflectionInfo.IsEqual(method) == true).SetMethod
+                            // No need to check base private since we are dealing with the method declaring type...
+                            ?? typeDetailInfo.ExplicitEventDetails.FirstOrDefault(m => m.AddMethod.ReflectionInfo.IsEqual(method) == true).AddMethod
+                            ?? typeDetailInfo.ExplicitEventDetails.FirstOrDefault(m => m.RemoveMethod.ReflectionInfo.IsEqual(method) == true).RemoveMethod;
+
+        var iface = explicitMethod.ExplicitInterface!;
+        return iface.GetMethod(explicitMethod.Name, BindingFlagsExtensions.AllBindings);
+    }
+
     // Doing this way it because of issues with overload resolution
     public IReturnsResult<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times? times) where TAnon : class
     {
+        method = GetCorrectMethod(method);
+
         var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
         var expr = basicExpression.GetExpression(method, paramData, paramTypes);
 
@@ -86,6 +110,8 @@ internal class SetupUtils<T> where T : class
     // Doing this way it because of issues with overload resolution
     public void SetupInternal<TAnon>(MethodInfo method, TAnon paramData, Times? times, bool callbase = false) where TAnon : class
     {
+        method = GetCorrectMethod(method);
+
         var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
         var expr = basicExpression.GetExpression(method, paramData, paramTypes);
 

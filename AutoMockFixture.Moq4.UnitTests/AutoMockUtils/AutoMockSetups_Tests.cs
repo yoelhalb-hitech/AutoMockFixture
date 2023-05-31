@@ -148,5 +148,4 @@ internal class AutoMockSetups_Tests
         Verify(autoMock.MutableSetups[0]);
         Verify(autoMock.VerifyList);
     }
-
 }
