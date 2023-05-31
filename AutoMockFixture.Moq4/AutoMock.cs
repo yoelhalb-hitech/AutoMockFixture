@@ -3,6 +3,7 @@ using AutoMockFixture.Moq4.AutoMockUtils;
 using AutoMockFixture.Moq4.VerifyInfo;
 using Castle.DynamicProxy;
 using DotNetPowerExtensions.Reflection;
+using Moq;
 
 namespace AutoMockFixture.Moq4;
 
@@ -77,27 +78,44 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     private static Type iautoMockedType = typeof(IAutoMocked);
     public void EnsureMocked()
     {
-        if (mocked is null)
+        if (mocked is not null) return;
+
+        // Moq Bug Workaround
+        // This has to be done otherwise explicit interface implementations and default interface implementations might not work correctly
+        // While for callbase without a setup it will work correctly even without calling "As", it will not work correctly in the following situations:
+        // 1) For non callbase without a setup
+        // 2) For a custom setup if `As` has been called only after object creation
+        // 3) When setting up via reflection
+        var asMethod = typeof(Mock).GetMethod(nameof(Mock.As));
+        foreach (var iface in GetInnerType().GetInterfaces())
         {
-            var additionalInterfaces = (List<Type>)additionalInterfaceProp.GetValue(this);
-            // The generator is static so we have to reduce it to the minimum
-            // CAUTION: While it would have been a good idea to lock here we can't do it as this call is called recursively
-            //      (since we mock the Type object in the generator) and we would end up with a deadlock
             try
             {
-                SetupGenerator();
-                additionalInterfaces.Add(iautoMockedType);
-                mocked = base.Object;
-                if (this.target is not null && this.CallBase) SetupTargetMethods();
-                additionalInterfaces.Remove(iautoMockedType);
+                if (!ProxyUtil.IsAccessible(iface)) continue; // Otherwise it will prevent it from creating the mocked object later
+
+                asMethod.MakeGenericMethod(iface).Invoke(this, new Type[] { }); // This has to be done before creating the mocked object, otherwise it won't work
             }
-            finally
-            {
-                // We need to reset it in case the user wants to use the Mock directly as this property is static...
-                // NOTE: Although this call is called recursively (in particular since we mock the Type object in the generator)
-                //          we aren't concerned about the reset, since at the point it happens the generator was already called...
-                ResetGenerator();
-            }
+            catch { } // TODO...
+        }
+
+        var additionalInterfaces = (List<Type>)additionalInterfaceProp.GetValue(this);
+        // The generator is static so we have to reduce it to the minimum
+        // CAUTION: While it would have been a good idea to lock here we can't do it as this call is called recursively
+        //      (since we mock the Type object in the generator) and we would end up with a deadlock
+        try
+        {
+            SetupGenerator();
+            additionalInterfaces.Add(iautoMockedType);
+            mocked = base.Object;
+            if (this.target is not null && this.CallBase) SetupTargetMethods();
+            additionalInterfaces.Remove(iautoMockedType);
+        }
+        finally
+        {
+            // We need to reset it in case the user wants to use the Mock directly as this property is static...
+            // NOTE: Although this call is called recursively (in particular since we mock the Type object in the generator)
+            //          we aren't concerned about the reset, since at the point it happens the generator was already called...
+            ResetGenerator();
         }
     }
 
