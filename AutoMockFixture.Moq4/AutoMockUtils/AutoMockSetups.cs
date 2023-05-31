@@ -1,5 +1,6 @@
 ﻿using AutoFixture.AutoMoq;
 using AutoMockFixture.Moq4.Expressions;
+using static AutoMockFixture.Moq4.Expressions.Visitors;
 
 namespace AutoMockFixture.Moq4;
 
@@ -78,29 +79,135 @@ public partial class AutoMock<T>
 
     #endregion
 
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
+    public new Moq.Language.Flow.ISetup<T> Setup(Expression<Action<T>> expression)
+    {
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        return setupUtils.SetupInternal(modifiedExpr, (Expression<Action<T>>)modifiedExpr, null);
+    }
+
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
     public AutoMock<T> Setup(Expression<Action<T>> expression, Times times)
     {
-        return SetupInternal(expression, expression, times);
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        return SetupInternal(modifiedExpr, (Expression<Action<T>>)modifiedExpr, times);
     }
 
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <param name="setupAction"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
+    public AutoMock<T> Setup(Expression<Action<T>> expression, Action<Moq.Language.Flow.ISetup<T>> setupAction, Times? times = null)
+    {
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        var setup = setupUtils.SetupInternal(modifiedExpr, (Expression<Action<T>>)modifiedExpr, times);
+
+        setupAction(setup);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="expression"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
+    public new Moq.Language.Flow.ISetup<T, TResult> Setup<TResult>(Expression<Func<T, TResult>> expression)
+    {
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        return setupUtils.SetupInternal(modifiedExpr, (Expression<Func<T, TResult>>)modifiedExpr, null);
+    }
+
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="expression"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
     public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, Times times)
     {
-        return SetupInternal(expression, expression, times);
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        return SetupInternal(modifiedExpr, (Expression<Func<T, TResult>>)modifiedExpr, times);
     }
 
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="expression"></param>
+    /// <param name="result"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
     public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, TResult result, Times? times = null)
     {
-        var setup = setupUtils.SetupInternal(expression, expression, times);
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        var setup = setupUtils.SetupInternal(modifiedExpr, (Expression<Func<T, TResult>>)modifiedExpr, times);
         setup.Returns(result);
 
         return this;
     }
 
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="expression"></param>
+    /// <param name="fixture"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
     public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, IFixture fixture, Times? times = null)
     {
-        var setup = setupUtils.SetupInternal(expression, expression, times);
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        var setup = setupUtils.SetupInternal(modifiedExpr, (Expression<Func<T, TResult>>)modifiedExpr, times);
         setup.ReturnsUsingFixture(fixture);
 
+        return this;
+    }
+
+    /// <summary>
+    /// Sets up with Moq and optionaly adds verification
+    /// NOTE: This changes all default values to <see cref="It.IsAny{TValue}"/>,
+    /// to match the default values use <see cref="It.Is{TValue}(Expression{Func{TValue, bool}})"/>
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="expression"></param>
+    /// <param name="setupAction"></param>
+    /// <param name="times"></param>
+    /// <returns></returns>
+    public AutoMock<T> Setup<TResult>(Expression<Func<T, TResult>> expression, Action<Moq.Language.Flow.ISetup<T, TResult>> setupAction, Times? times = null)
+    {
+        var modifiedExpr = (LambdaExpression)new TopVisitor().Visit(expression);
+        var setup = setupUtils.SetupInternal(modifiedExpr, (Expression<Func<T, TResult>>)modifiedExpr, times);
+
+        setupAction(setup);
         return this;
     }
 

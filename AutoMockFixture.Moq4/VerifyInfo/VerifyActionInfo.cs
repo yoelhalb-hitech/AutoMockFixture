@@ -3,17 +3,17 @@ namespace AutoMockFixture.Moq4.VerifyInfo;
 
 public class VerifyActionInfo<T> : IVerifyInfo<T> where T : class
 {
-    private readonly Expression<Action<T>> expression;
-    private readonly Times times;
+    public Expression<Action<T>> Expression { get; }
+    public Times Times { get; }
 
     public VerifyActionInfo(Expression<Action<T>> expression, Times times)
     {
-        this.expression = expression;
-        this.times = times;
+        this.Expression = expression;
+        this.Times = times;
     }
 
     public void Verify(Mock<T> obj)
     {
-        obj.Verify(expression, times);
+        obj.Verify(Expression, Times);
     }
 }

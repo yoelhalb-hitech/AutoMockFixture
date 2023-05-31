@@ -19,8 +19,8 @@ internal class PostprocessorWithRecursion_Tests
 
         var commandMock = new AutoMock<ISpecimenCommand>();
         var hasSpecimen = false;
-        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()))
-            .Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen));
+        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()),
+                            s => s.Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen)));
 
         var pp = new PostprocessorWithRecursion(fixture, builderMock.Object, commandMock.Object);
 
@@ -40,8 +40,8 @@ internal class PostprocessorWithRecursion_Tests
 
         var commandMock = new AutoMock<ISpecimenCommand>();
         var hasSpecimen = false;
-        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()))
-            .Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen));
+        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()),
+                            s => s.Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen)));
 
         var pp = new PostprocessorWithRecursion(fixture, builderMock.Object,
                                     Mock.Of<ISpecimenCommand>(), null, commandMock.Object);
@@ -62,8 +62,8 @@ internal class PostprocessorWithRecursion_Tests
 
         var commandMock = new AutoMock<ISpecimenCommand>();
         var hasSpecimen = false;
-        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()))
-            .Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen));
+        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()),
+                            s => s.Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen)));
 
         var pp = new PostprocessorWithRecursion(fixture, builderMock.Object, commandMock.Object);
 
@@ -84,9 +84,9 @@ internal class PostprocessorWithRecursion_Tests
 
         var commandMock = new AutoMock<ISpecimenCommand>();
         var hasSpecimen = false;
-        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()))
-            .Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen))
-            .Throws(new Exception());
+        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()),
+                                s => s.Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen))
+                                    .Throws(new Exception()));
 
         var pp = new PostprocessorWithRecursion(fixture, builderMock.Object, commandMock.Object);
 

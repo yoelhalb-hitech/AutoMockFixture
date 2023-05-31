@@ -20,7 +20,7 @@ internal class SetupUtils<T> where T : class
 
     public ISetup<T> SetupActionInternal(Expression<Action<T>> expression, Times? times = null)
     {
-        var setup = AutoMock.Setup(expression);
+        var setup = ((Mock<T>)AutoMock).Setup(expression);
         if (times.HasValue) AutoMock.VerifyList.Add(new VerifyActionInfo<T>(expression, times.Value));
 
         return setup;
@@ -28,7 +28,9 @@ internal class SetupUtils<T> where T : class
 
     public ISetup<T, TResult> SetupInternal<TResult>(LambdaExpression originalExpression, Expression<Func<T, TResult>> expression, Times? times = null)
     {
-        var method = typeof(Delegate).IsAssignableFrom(typeof(T)) ? null : basicExpression.GetMethod(originalExpression);
+        var method = typeof(Delegate).IsAssignableFrom(typeof(T)) || originalExpression.Body.NodeType == ExpressionType.MemberAccess
+                        ? null
+                        : basicExpression.GetMethod(originalExpression);
         return SetupFuncInternal(method, expression, times);
     }
     public ISetup<T, TResult> SetupFuncFromLambda<TResult>(MethodInfo method, LambdaExpression expression, Times? times = null)
@@ -45,7 +47,7 @@ internal class SetupUtils<T> where T : class
             if (times.HasValue) AutoMock.VerifyList.Add(new VerifyGetInfo<T, TResult>(expression, times.Value));
         }
 
-        var setup = AutoMock.Setup(expression);
+        var setup = ((Mock<T>)AutoMock).Setup(expression);
         if (times.HasValue) AutoMock.VerifyList.Add(new VerifyFuncInfo<T, TResult>(expression, times.Value));
 
         return setup;
@@ -59,7 +61,7 @@ internal class SetupUtils<T> where T : class
             if (times.HasValue) AutoMock.VerifyList.Add(new VerifyGetInfo<T, TResult>(expression, times.Value));
         }
 
-        var setup = AutoMock.Setup(expression).Returns(result);
+        var setup = ((Mock<T>)AutoMock).Setup(expression).Returns(result);
         if (times.HasValue) AutoMock.VerifyList.Add(new VerifyFuncInfo<T, TResult>(expression, times.Value));
 
         return setup;
