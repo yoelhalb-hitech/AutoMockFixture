@@ -20,4 +20,7 @@ public abstract class UnitFixtureBase : AutoMockFixtureBase
 
     public override object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null)
         => CreateWithAutoMockDependencies(t, false, autoMockTypeControl);
+
+    public override object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => CreateWithAutoMockDependencies(t, callbase, autoMockTypeControl);
 }

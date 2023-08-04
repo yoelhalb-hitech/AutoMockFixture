@@ -11,6 +11,7 @@ public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixtureBase
     internal override IAutoMockHelpers AutoMockHelpers => new AutoMockHelpers();
 
     public override object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+    public override object Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
     public override T Freeze<T>()
     {
         try

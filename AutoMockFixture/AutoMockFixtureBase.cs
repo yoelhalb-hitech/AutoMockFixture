@@ -111,10 +111,19 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
         return Create<T>();
     }
 
+    public T? Create<T>() => (T?)Create(typeof(T), false, null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public object? Create(Type t) => Create(t, false, null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => (T?)Create(typeof(T), autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public abstract object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public abstract object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
@@ -129,12 +138,22 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
                 => (T?)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null)
-    {
-        var result = Execute(new NonAutoMockRequest(t, this), autoMockTypeControl);
+    public object? CreateNonAutoMock(Type t) => CreateNonAutoMock(t, false, null);
 
-        return result;
-    }
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null) => CreateNonAutoMock(t, false, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+                => Execute(new NonAutoMockRequest(t, this) { MockShouldCallbase = callbase }, autoMockTypeControl);
+
+    public T? CreateNonAutoMock<T>()
+            => (T?)CreateNonAutoMock(typeof(T), false, null);
+
+    public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+                => (T?)CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null)
                 => (T?)CreateNonAutoMock(typeof(T), autoMockTypeControl);
 
