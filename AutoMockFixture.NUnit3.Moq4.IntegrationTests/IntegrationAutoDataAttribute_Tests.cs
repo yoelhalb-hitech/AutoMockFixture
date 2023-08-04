@@ -58,4 +58,46 @@ internal class AutoDataIntegrationAttribute_Tests
         fixture1.Should().BeSameAs(fixture2);
         Assert.DoesNotThrow(() => fixture1.GetPaths(testClass.Object).Should().NotBeNull());
     }
+
+    [Test]
+    [IntegrationAutoData]
+    public void Test_IntegrationAutoDataAttribute_CallBase_WhenCallBaseAttributeTrue([CallBase(true)] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+                                                [CallBase(true)] WithCtorArgsTestClass dependencyTestClass,
+                                                IntegrationFixture fixture)
+    {
+        autoMockTestClass.CallBase.Should().BeTrue();
+        foreach (var path in fixture.GetPaths(dependencyTestClass))
+        {
+            if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeTrue();
+        }
+    }
+
+    [Test]
+    [IntegrationAutoData]
+    public void Test_IntegrationAutoDataAttribute_NotCallBaseForMain_ButCallsForChildren_WhenCallBaseAttributeFalse(
+                                                    [CallBase(false)] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+                                                    [CallBase(false)] WithCtorArgsTestClass dependencyTestClass,
+                                                    IntegrationFixture fixture)
+    {
+        autoMockTestClass.CallBase.Should().BeFalse();
+
+        foreach (var path in fixture.GetPaths(dependencyTestClass))
+        {
+            if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeTrue();
+        }
+    }
+
+    [Test]
+    [IntegrationAutoData]
+    public void Test_IntegrationAutoDataAttribute_NotCallBaseForMain_ButCallsForChildren_WhenNoCallBaseAttribute(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+                                                                                    WithCtorArgsTestClass dependencyTestClass,
+                                                                                    IntegrationFixture fixture)
+    {
+        autoMockTestClass.CallBase.Should().BeFalse();
+
+        foreach (var path in fixture.GetPaths(dependencyTestClass))
+        {
+            if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeTrue();
+        }
+    }
 }

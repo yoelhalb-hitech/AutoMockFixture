@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.NUnit3;
+using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Specifications;
 using NUnit.Framework.Interfaces;
@@ -31,9 +32,8 @@ internal class AutoMockData : AutoDataAttribute
         var parameters = method.GetParameters()
             .Select(parameter =>
             {
-                var customizeAttributes = parameter.GetCustomAttributes<Attribute>(false)
-            .OfType<IParameterCustomizationSource>()
-            .OrderBy(x => x, new CustomizeAttributeComparer());
+                var customizeAttributes = parameter.GetCustomAttributes<IParameterCustomizationSource>(false)
+                                                .OrderBy(x => x, new CustomizeAttributeComparer());
 
                 foreach (var ca in customizeAttributes)
                 {
@@ -45,17 +45,19 @@ internal class AutoMockData : AutoDataAttribute
                         this.Fixture.Customize(customization);
                 }
 
-                var autoMockType = parameter.GetCustomAttributes<Attribute>(false)
-                                    .OfType<AutoMockTypeAttribute>()
-                                    .FirstOrDefault();
+                var autoMockType = parameter.GetCustomAttributes<AutoMockTypeAttribute>(false).FirstOrDefault();
+                var callBase = parameter.GetCustomAttributes<CallBaseAttribute>(false).FirstOrDefault();
+                var autoMockTypeControl = parameter.GetCustomAttributes<AutoMockTypeControlAttribute>(false).FirstOrDefault();
 
-                return autoMockType?.AutoMockType switch
+                var func = autoMockType?.AutoMockType switch
                 {
-                    AutoMockTypes.AutoMock => Fixture.CreateAutoMock(parameter.ParameterType),
-                    AutoMockTypes.NonAutoMock => Fixture.CreateNonAutoMock(parameter.ParameterType),
-                    AutoMockTypes.AutoMockDependencies => Fixture.CreateWithAutoMockDependencies(parameter.ParameterType),
-                    _ => Fixture.Create(parameter.ParameterType),
+                    AutoMockTypes.AutoMock => (Func<Type, bool, AutoMockTypeControl?, object?>) Fixture.CreateAutoMock,
+                    AutoMockTypes.NonAutoMock => Fixture.CreateNonAutoMock,
+                    AutoMockTypes.AutoMockDependencies => Fixture.CreateWithAutoMockDependencies,
+                    _ => Fixture.Create,
                 };
+
+                return func(parameter.ParameterType, callBase?.CallBase ?? false, autoMockTypeControl?.AutoMockTypeControl);
             });
 
         var test = this.TestMethodBuilder.Build(method, suite, parameters, 0);
