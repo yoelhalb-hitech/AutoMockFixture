@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AutoMockFixture;
 
@@ -54,6 +55,25 @@ public static class AutoMockFixtureExtensions
         if (mock is null) throw new Exception($"Result object is not an `{nameof(IAutoMock)}`");
 
         return mock;
+    }
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public static bool TryGetAutoMock(this IAutoMockFixture fixture, object obj, string path, [NotNullWhen(true)] out IAutoMock? autoMock)
+    {
+        autoMock = null;
+
+       // try
+        {
+            var result = fixture.GetAt(obj, path).FirstOrDefault();
+            if (result is null) return false;
+
+            var mock = fixture.AutoMockHelpers.GetFromObj(result);
+            if (mock is null) return false;
+
+            autoMock = mock;
+        }
+       // catch { return false; }
+        return true;
     }
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
