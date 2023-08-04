@@ -20,7 +20,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 
         // generic type defintions are not conisdered assignable
         if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request)
-                    || (t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
+                    || (typeRequest.Request.IsGenericType && t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
 
         var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
 

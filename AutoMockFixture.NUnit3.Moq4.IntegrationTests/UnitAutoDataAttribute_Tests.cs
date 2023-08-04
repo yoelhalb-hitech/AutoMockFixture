@@ -48,4 +48,16 @@ internal class AutoDataUnitAttribute_Tests
         inner.TestCtorArgProp.Should().NotBeNull();
         AutoMock.IsAutoMock(inner.TestCtorArgProp).Should().BeTrue();
     }
+
+    [Test]
+    [UnitAutoData]
+    public void Test_UnitAutoDataAttribute_ReturnsSelf_WhenUnitFixture(UnitFixture fixture1, UnitFixture fixture2, AutoMock<WithCtorArgsTestClass> testClass)
+    {
+        fixture1.Should().NotBeNull();
+        fixture2.Should().NotBeNull();
+        testClass.Should().NotBeNull();
+
+        fixture1.Should().BeSameAs(fixture2);
+        Assert.DoesNotThrow(() => fixture1.GetPaths(testClass.Object).Should().NotBeNull());
+    }
 }
