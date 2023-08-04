@@ -42,12 +42,12 @@ public static class AutoMockFixtureExtensions
 
         return path;
     }
-    public static object? GetSingleAt(this IAutoMockFixture fixture, object obj, string path) => fixture.GetAt(obj, path).Single();
+    public static object? GetSingleAt(this IAutoMockFixture fixture, object obj, string path) => fixture.GetAt(obj, path).SingleOrDefault();
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static IAutoMock GetAutoMock(this IAutoMockFixture fixture, object obj, string path)
     {
-        var result = fixture.GetSingleAt(obj, path);
+        var result = fixture.GetAt(obj, path).FirstOrDefault();
         if (result is null) throw new Exception($"Result object is null (or possibly garbage collected) and not an `{nameof(IAutoMock)}`");
 
         var mock = fixture.AutoMockHelpers.GetFromObj(result);
