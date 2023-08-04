@@ -71,6 +71,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
                                 new FixedBuilder(this),
                                 new OrRequestSpecification(
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixtureBase)), AutoMockHelpers),
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IAutoMockFixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder)), AutoMockHelpers))));
