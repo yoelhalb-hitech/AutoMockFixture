@@ -32,12 +32,12 @@ internal class AutoMockDependenciesBuilder_Tests
     }
 
     [Test]
-    public void Test_Create_AsksForCallBase_WhenRequestIsAutoMock_EvenIfCallBaseIsFalse()
+    public void Test_Create_AsksForCallBase_WhenRequestIsAutoMock_BasedOnCallBase([Values(true, false)] bool callbase)
     {
         var fixture = new AbstractAutoMockFixture();
 
         var innerType = typeof(AutoMockDependenciesBuilder_Tests);
-        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture) { MockShouldCallbase = false };
+        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture) { MockShouldCallbase = callbase };
 
         var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
@@ -45,7 +45,7 @@ internal class AutoMockDependenciesBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallbase == true)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallbase == callbase)));
         contextMock.VerifyNoOtherCalls();
     }
 
