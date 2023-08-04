@@ -2,6 +2,7 @@
 using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Trace;
 
 namespace AutoMockFixture;
 
@@ -11,6 +12,8 @@ public interface IAutoMockFixture
     IAutoMockFixture Customize(ICustomization customization);
 
     AutoMockTypeControl AutoMockTypeControl { get; set; }
+
+    TraceInfo Trace();
 
     T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null);
     object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);

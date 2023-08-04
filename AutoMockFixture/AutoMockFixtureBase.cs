@@ -7,6 +7,7 @@ using AutoMockFixture.FixtureUtils.Postprocessors;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
+using AutoMockFixture.FixtureUtils.Trace;
 using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.ComponentModel;
@@ -93,6 +94,15 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     internal Cache Cache { get; } = new Cache();
 
     #region Create
+
+    public virtual TraceInfo Trace()
+    {
+        var info = new TraceInfo();
+        Behaviors.Add(new TraceBehavior(info));
+
+        return info;
+    }
+
     // Override to use our own
     public virtual T? Freeze<T>()
     {
