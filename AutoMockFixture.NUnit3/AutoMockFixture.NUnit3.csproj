@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netcoreapp2.1;netstandard2.0;net452;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp2.1;netstandard2.0;net452;net461;net47;net6.0;net7.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
 
 	<LangVersion>11.0</LangVersion>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
+    <PackageReference Include="AutoFixture.NUnit3" Version="[4.17.0,)" />
   </ItemGroup>
 
   <ItemGroup>

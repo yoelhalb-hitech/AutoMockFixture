@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netcoreapp2.1;netstandard2.0;net452;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp2.1;netstandard2.0;net452;net461;net47;net6.0;net7.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
 
 	<LangVersion>11.0</LangVersion>
@@ -36,7 +36,6 @@
     </None>
   </ItemGroup>
 
-
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>AutoMockFixture.TestUtils</_Parameter1>
@@ -50,13 +49,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
-    <PackageReference Include="Moq" Version="4.17.2" />
+    <PackageReference Include="AutoFixture.AutoMoq" Version="[4.17.0,)" />
+    <PackageReference Include="Moq" Version="[4.17.2,)" />
     <PackageReference Include="Moq.Analyzers" Version="0.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="3.0.0" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[3.0.2,)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,7 +65,7 @@
   <!--From https://github.com/NuGet/Home/issues/3891#issuecomment-377319939-->
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
-		<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))" />
+		<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
     </ItemGroup>
   </Target>
 </Project>
