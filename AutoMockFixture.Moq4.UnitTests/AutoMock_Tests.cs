@@ -1,4 +1,4 @@
-﻿using AutoMockFixture.Moq4.AutoMockUtils;
+﻿using AutoMockFixture.Moq4.AutoMockProxy;
 using Moq;
 using System.Reflection;
 

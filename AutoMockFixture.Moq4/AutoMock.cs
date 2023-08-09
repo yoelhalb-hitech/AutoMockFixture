@@ -1,9 +1,9 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.Moq4.AutoMockProxy;
 using AutoMockFixture.Moq4.AutoMockUtils;
 using AutoMockFixture.Moq4.VerifyInfo;
 using Castle.DynamicProxy;
 using DotNetPowerExtensions.Reflection;
-using Moq;
 
 namespace AutoMockFixture.Moq4;
 
@@ -87,7 +87,11 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
         // 2) For a custom setup if `As` has been called only after object creation
         // 3) When setting up via reflection
         var asMethod = typeof(Mock).GetMethod(nameof(Mock.As));
-        foreach (var iface in GetInnerType().GetInterfaces())
+        var detailInfo = GetInnerType().GetTypeDetailInfo();
+        var interfacesToFix = detailInfo.ExplicitMethodDetails.Select(m => m.ExplicitInterface)
+                                .Union(detailInfo.ExplicitPropertyDetails.Select(m => m.ExplicitInterface))
+                                .Union(detailInfo.ExplicitEventDetails.Select(e => e.ExplicitInterface));
+        foreach (var iface in interfacesToFix)
         {
             try
             {
