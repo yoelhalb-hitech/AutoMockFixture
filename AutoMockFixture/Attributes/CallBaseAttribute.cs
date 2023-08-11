@@ -6,6 +6,7 @@ public class CallBaseAttribute : Attribute
 {
     public CallBaseAttribute()
     {
+        CallBase = true;
     }
 
     public CallBaseAttribute(bool callBase)
