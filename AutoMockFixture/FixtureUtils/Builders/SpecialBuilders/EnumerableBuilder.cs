@@ -26,14 +26,14 @@ internal class EnumerableBuilder : NonConformingBuilder
         return base.GetRepeatedInnerSpecimens(originalRequest, context);
     }
 
-    public override object CreateResult(Type requestType, object[][] innerResults)
+    public override object? CreateResult(Type requestType, object[][] innerResults)
     {
         var genericType = GetInnerTypes(requestType).First();
 
         var data = innerResults.Select(x => x.First()); //Assuming that it is only one item per line
-        var typedData = (IEnumerable<object>)(typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))
-            .MakeGenericMethod(genericType)
-            .Invoke(null, new object[] { data }));
+        var typedData = (IEnumerable<object>?)(typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))?
+            .MakeGenericMethod(genericType)?
+            .Invoke(null, new object[] { data })) ?? new object[] { };
         var isNotEnumerable = requestType.GetInterfaces().All(x => x.IsGenericType && x.GetGenericTypeDefinition() != typeof(IEnumerable<>));
 
         var typeToMatch =
@@ -58,13 +58,13 @@ internal class EnumerableBuilder : NonConformingBuilder
         if (requestType.IsGenericType && requestType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             return typedData;
 
-        if (requestType.IsArray) return typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))
-            .MakeGenericMethod(genericType)
+        if (requestType.IsArray) return typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))?
+            .MakeGenericMethod(genericType)?
             .Invoke(null, new object[] { typedData });
 
         if (new[] {typeof(List<>), typeof(IList<>)}.Contains(requestType.GetGenericTypeDefinition()))
-            return typeof(Enumerable).GetMethod(nameof(Enumerable.ToList))
-            .MakeGenericMethod(genericType)
+            return typeof(Enumerable).GetMethod(nameof(Enumerable.ToList))?
+            .MakeGenericMethod(genericType)?
             .Invoke(null, new object[] { typedData });
 
         // TODO...probably better handle direct Dictionary ReadOnlyCollection HashSet and their interfaces etc, and everything in system.collections.generic.
@@ -92,7 +92,7 @@ internal class EnumerableBuilder : NonConformingBuilder
                         && isMatch(m.GetParameters()[0].ParameterType));
             if (enumerableMethod is not null)
             {
-                var obj = emptyCtor?.Invoke(new object[] { }) ?? intCtor.Invoke(new object[] { typedData.Count() });
+                var obj = emptyCtor?.Invoke(new object[] { }) ?? intCtor?.Invoke(new object[] { typedData.Count() });
                 enumerableMethod.Invoke(enumerableMethod.IsStatic ? null : obj, new object[] { typedData });
                 return obj;
             }
@@ -101,7 +101,7 @@ internal class EnumerableBuilder : NonConformingBuilder
                         && m.GetParameters()[0].ParameterType == genericType);
             if (singleItemMethod is not null)
             {
-                var obj = emptyCtor?.Invoke(new object[] { }) ?? intCtor.Invoke(new object[] { typedData.Count() });
+                var obj = emptyCtor?.Invoke(new object[] { }) ?? intCtor?.Invoke(new object[] { typedData.Count() });
                 foreach (var item in typedData)
                 {
                     singleItemMethod.Invoke(singleItemMethod.IsStatic ? null : obj, new object[] { item });

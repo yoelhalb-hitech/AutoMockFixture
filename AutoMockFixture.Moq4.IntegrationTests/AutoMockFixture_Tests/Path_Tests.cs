@@ -36,10 +36,12 @@ internal class Path_Tests
         var fixture = new AbstractAutoMockFixture();
 
         var obj = GetObj<InternalSimpleTestClass>(fixture, type);
-        var paths = fixture.GetPaths(obj);
+
+        obj.Should().NotBeNull();
+        var paths = fixture.GetPaths(obj!);
 
         paths.Should().Contain(".InternalTest");
-        fixture.GetAt(obj, ".InternalTest").First().Should().Be(obj.InternalTest);
+        fixture.GetAt(obj!, ".InternalTest").First().Should().Be(obj!.InternalTest);
     }
 
     [Test]
@@ -49,11 +51,13 @@ internal class Path_Tests
         var fixture = new AbstractAutoMockFixture();
 
         var obj = GetObj<InternalReadonlyPropertyClass>(fixture, type);
-        var f = obj.InternalTest; // We need first to invoke the property is it might be lazy
+        obj.Should().NotBeNull();
+
+        var f = obj!.InternalTest; // We need first to invoke the property is it might be lazy
         var paths = fixture.GetPaths(obj);
 
         paths.Should().Contain(".InternalTest");
-        fixture.GetAt(obj, ".InternalTest").First().Should().Be(obj.InternalTest);
+        fixture.GetAt(obj!, ".InternalTest").First().Should().Be(obj!.InternalTest);
     }
 
     [Test]
@@ -63,7 +67,9 @@ internal class Path_Tests
         var fixture = new AbstractAutoMockFixture();
 
         var obj = GetObj<InternalTestMethods>(fixture, type);
-        var f = obj.InternalTestMethod(); // We need first to invoke the property is it might be lazy
+        obj.Should().NotBeNull();
+
+        var f = obj!.InternalTestMethod(); // We need first to invoke the property is it might be lazy
         var paths = fixture.GetPaths(obj);
 
         paths.Should().Contain(".InternalTestMethod");
@@ -82,7 +88,9 @@ internal class Path_Tests
         fixture.MethodSetupType = MethodSetupTypes.LazySame;
 
         var obj = GetObj<TestDelegate>(fixture, type);
-        obj.Delegate.Should().NotBeNull();
+        obj.Should().NotBeNull();
+
+        obj!.Delegate.Should().NotBeNull();
         obj.Delegate!().Should().NotBeNull();
         obj.Delegate.Invoke().Should().NotBeNull();
 

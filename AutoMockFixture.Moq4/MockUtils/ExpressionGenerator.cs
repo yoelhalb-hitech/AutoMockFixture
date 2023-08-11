@@ -34,11 +34,13 @@ internal class ExpressionGenerator
         if (methodCallParams.Any(exp => exp == null))
             return null;
 
+        var parameters = methodCallParams.OfType<Expression>().ToList();
+
         Expression methodCall;
         if (delegateSpecification.IsSatisfiedBy(mockedType))
         {
             // e.g. "x(It.IsAny<string>(), out parameter)"
-            methodCall = Expression.Invoke(lambdaParam, methodCallParams);
+            methodCall = Expression.Invoke(lambdaParam, parameters);
         }
         else if (method.ContainsGenericParameters)
         {
@@ -46,12 +48,12 @@ internal class ExpressionGenerator
                 method.GetGenericArguments()
                         .Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray());
             // e.g. "x.Method(It.IsAny<string>(), out parameter)"
-            methodCall = Expression.Call(lambdaParam, genericMethod, methodCallParams.ToArray());
+            methodCall = Expression.Call(lambdaParam, genericMethod, parameters.ToArray());
         }
         else
         {
             // e.g. "x.Method(It.IsAny<string>(), out parameter)"
-            methodCall = Expression.Call(lambdaParam, method, methodCallParams);
+            methodCall = Expression.Call(lambdaParam, method, parameters);
         }
 
         // e.g. "x => x.Method(It.IsAny<string>(), out parameter)"
@@ -69,9 +71,9 @@ internal class ExpressionGenerator
         {
             // gets the type corresponding to this "byref" type
             // e.g., the underlying type of "System.String&" is "System.String"
-            var underlyingType = parameter.ParameterType.GetElementType();
+            var underlyingType = parameter.ParameterType.GetElementType()!;
 
-            Logger.LogInfo("Out underlying: " + underlyingType.ToString());
+            Logger.LogInfo("Out underlying: " + underlyingType!.ToString());
             // resolve the "out" param from the context
             var request = noMockDependencies
                             ? new OutParameterRequest(mockedType, method, parameter, underlyingType, tracker)
@@ -89,7 +91,7 @@ internal class ExpressionGenerator
         {
             // for any non-out parameter, invoke "It.IsAny<T>()"
             var type = MatcherGenerator.GetGenericMatcher(parameter);
-            var isAnyMethod = typeof(It).GetMethod(nameof(It.IsAny)).MakeGenericMethod(type);
+            var isAnyMethod = typeof(It).GetMethod(nameof(It.IsAny))!.MakeGenericMethod(type)!;
 
             return Expression.Call(isAnyMethod);
         }

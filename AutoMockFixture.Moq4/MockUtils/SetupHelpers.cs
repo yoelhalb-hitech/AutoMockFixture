@@ -6,7 +6,7 @@ internal static class SetupHelpers
     // TODO... maybe we can merge this with the AutoMock setup utils
 
     private static Mock GetMock(IAutoMock mock, Type mockedType)
-        => mock.GetInnerType() == mockedType ? (Mock)mock : (Mock)typeof(Mock).GetMethod(nameof(Mock.As)).MakeGenericMethod(mockedType).Invoke(mock, new Type[]{});
+        => mock.GetInnerType() == mockedType ? (Mock)mock : (Mock)typeof(Mock).GetMethod(nameof(Mock.As))!.MakeGenericMethod(mockedType)!.Invoke(mock, new Type[]{})!;
 
     public static void SetupCallbaseMethod(Type mockedType, Type returnType, IAutoMock mock, Expression methodInvocationLambda)
     {
@@ -57,7 +57,7 @@ internal static class SetupHelpers
     }
 
     private static MethodInfo GetMethod(string name) => typeof(SetupHelpers)
-            .GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
+            .GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static)!;
 
 
 #pragma warning disable CA1811 // AvoidUncalledPrivateCode

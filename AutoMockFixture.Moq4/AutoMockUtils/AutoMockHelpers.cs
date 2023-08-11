@@ -51,8 +51,8 @@ internal class AutoMockHelpers : IAutoMockHelpers
 #endif
 
                     // This way we cover all different Tuple types...
-                    || (t.Assembly == typeof(Tuple).Assembly) && t.FullName.StartsWith(typeof(Tuple).FullName)
-                    || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName.StartsWith(typeof(ValueTuple).FullName)
+                    || (t.Assembly == typeof(Tuple).Assembly) && t.FullName?.StartsWith(typeof(Tuple).FullName!) == true
+                    || (t.Assembly == typeof(ValueTuple).Assembly) && t.FullName?.StartsWith(typeof(ValueTuple).FullName!) == true
 
                     || t == typeof(IntPtr) || t == typeof(UIntPtr)
                     || typeof(global::Moq.Mock).IsAssignableFrom(t)

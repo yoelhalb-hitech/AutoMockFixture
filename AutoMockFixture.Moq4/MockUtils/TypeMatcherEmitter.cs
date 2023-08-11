@@ -10,16 +10,16 @@ namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class TypeMatcherEmitter
 {
-    private static ConstructorInfo ignoreAccessCtor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new Type[] { typeof(string) });
-    private static ConstructorInfo typeMatcherCtor = typeof(TypeMatcherAttribute).GetConstructor(new Type[] { });
+    private static ConstructorInfo ignoreAccessCtor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new Type[] { typeof(string) })!;
+    private static ConstructorInfo typeMatcherCtor = typeof(TypeMatcherAttribute).GetConstructor(new Type[] { })!;
 
     private MethodInfo[] methods;
     private Type[] interfaces;
     private readonly string name;
     private readonly Type? parent;
 
-    private string[] AssemblyNames => interfaces.Union(new[] { parent }).Where(t => t is not null)
-                                    .Select(t => t!.Assembly.FullName.Split(',').First())
+    private string[] AssemblyNames => interfaces.Union(new[] { parent }).OfType<Type>()
+                                    .Select(t => t!.Assembly.FullName?.Split(',').First()).OfType<string>()
                                     .Distinct().ToArray();
     public TypeMatcherEmitter(string name, Type? parent, Type[] interfaces)
     {
@@ -43,7 +43,7 @@ internal class TypeMatcherEmitter
             CreateEmptyMethod(tb, method);
         }
 
-        return tb.CreateTypeInfo();
+        return tb.CreateTypeInfo()!;
     }
 
     private AssemblyBuilder CreateAssemblyBuilder()
@@ -85,7 +85,7 @@ internal class TypeMatcherEmitter
         matchesIl.Emit(OpCodes.Ldc_I4_1);
         matchesIl.Emit(OpCodes.Ret);
 
-        tb.DefineMethodOverride(matchesMthdBldr, typeof(ITypeMatcher).GetMethod(nameof(ITypeMatcher.Matches)));
+        tb.DefineMethodOverride(matchesMthdBldr, typeof(ITypeMatcher).GetMethod(nameof(ITypeMatcher.Matches))!);
     }
 
     private void CreateEmptyMethod(TypeBuilder tb, MethodInfo method) //  We don't need an actual implementation
@@ -101,7 +101,7 @@ internal class TypeMatcherEmitter
             _ => MethodAttributes.Public,
         };
         if (method.IsStatic) accessMethod = accessMethod | MethodAttributes.Static;
-        if (method.DeclaringType.IsInterface) accessMethod = accessMethod | MethodAttributes.Virtual;
+        if (method.DeclaringType?.IsInterface == true) accessMethod = accessMethod | MethodAttributes.Virtual;
 
         var mthdBldr = tb.DefineMethod(method.Name, accessMethod | MethodAttributes.HideBySig, method.ReturnType, method.GetParameters().Select(p => p.ParameterType).ToArray());
 
@@ -110,6 +110,6 @@ internal class TypeMatcherEmitter
         il.Emit(OpCodes.Newobj, typeof(NotImplementedException));
         il.Emit(OpCodes.Throw);
 
-        if (method.DeclaringType.IsInterface) tb.DefineMethodOverride(mthdBldr, method);
+        if (method.DeclaringType?.IsInterface == true) tb.DefineMethodOverride(mthdBldr, method);
     }
 }

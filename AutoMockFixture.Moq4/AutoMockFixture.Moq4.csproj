@@ -50,12 +50,17 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture.AutoMoq" Version="[4.17.0,)" />
+    <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.6.0" />
     <PackageReference Include="Moq" Version="[4.17.2,)" />
     <PackageReference Include="Moq.Analyzers" Version="0.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[3.0.3,)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsAssemblyName Include="Moq" />
   </ItemGroup>
 
   <ItemGroup>

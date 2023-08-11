@@ -16,7 +16,7 @@ internal class NonAutoMock_Tests
         obj.Should().BeOfType<WithCtorArgsTestClass>();
         AutoMock.IsAutoMock(obj).Should().BeFalse();
 
-        obj.TestCtorArg.Should().NotBeNull();
+        obj!.TestCtorArg.Should().NotBeNull();
         obj.TestCtorArg!.InternalTest.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeFalse();
     }
@@ -31,7 +31,7 @@ internal class NonAutoMock_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<AutoMock<WithCtorArgsTestClass>>();
-        obj.GetMocked().Should().NotBeNull();
+        obj!.GetMocked().Should().NotBeNull();
     }
 
     [Test]
@@ -57,7 +57,7 @@ internal class NonAutoMock_Tests
         obj.Should().NotBeNull();
         AutoMock.IsAutoMock(obj).Should().BeTrue();
 
-        obj.TestProp.Should().NotBeNull();
+        obj!.TestProp.Should().NotBeNull();
         obj.TestMethod().Should().NotBeNull();
     }
 }

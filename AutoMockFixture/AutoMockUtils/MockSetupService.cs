@@ -62,7 +62,7 @@ internal class MockSetupService
         var detailType = mockedType.GetTypeDetailInfo();
 
         var explicitProperties = detailType.ExplicitPropertyDetails.ToArray();
-        foreach (var prop in explicitProperties.Where(p => p.SetMethod is null || p.ReflectionInfo.SetMethod.IsPrivate == true))
+        foreach (var prop in explicitProperties.Where(p => p.SetMethod is null || p.ReflectionInfo?.SetMethod?.IsPrivate == true))
         {
             SetupExplicitProperty(prop, mock);
         }
@@ -79,8 +79,9 @@ internal class MockSetupService
     {
         var trackingPath = ":" + propInfo.ExplicitInterface!.FullName + "." + propInfo.Name;
 
-        var method = propInfo.ReflectionInfo.GetMethod;
-        var underlying = propInfo.ExplicitInterface.GetProperty(propInfo.Name, BindingFlagsExtensions.AllBindings).GetMethod;
+        var method = propInfo.ReflectionInfo.GetMethod ?? propInfo.ReflectionInfo.SetMethod!;
+        var underlyingProp = propInfo.ExplicitInterface.GetProperty(propInfo.Name, BindingFlagsExtensions.AllBindings);
+        var underlying = underlyingProp?.GetMethod ?? underlyingProp?.SetMethod;
 
         Func<ISetupService> setupFunc = ()
                                 => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath, propInfo.ExplicitInterface, underlying);
@@ -106,7 +107,7 @@ internal class MockSetupService
     {
         try
         {
-            if (!autoMockHelpers.CanMock(method.DeclaringType))
+            if (!autoMockHelpers.CanMock(method.DeclaringType!))
             {
                 HandleCannotSetup(trackingPath, CannotSetupReason.TypeNotPublic);
                 return;
@@ -125,7 +126,7 @@ internal class MockSetupService
     private void Setup(MemberInfo member, Action action, string? trackingPath = null)
     {
         var prop = member as PropertyInfo;
-        var method = member as MethodInfo ?? prop!.GetMethod;
+        var method = member as MethodInfo ?? prop!.GetMethod ?? prop.SetMethod!;
 
         trackingPath ??= prop?.GetTrackingPath() ?? method!.GetTrackingPath();
 
@@ -202,7 +203,7 @@ internal class MockSetupService
     private IEnumerable<MethodInfo> GetMethods(bool includeNotOverridableCurrent, bool includeNotOverridableBase)
     {
         // If "type" is a delegate, return "Invoke" method only and skip the rest of the methods.
-        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new[] { mockedType.GetTypeInfo().GetMethod("Invoke") };
+        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new[] { mockedType.GetTypeInfo().GetMethod("Invoke") }.OfType<MethodInfo>();
 
         var detailType = mockedType.GetTypeDetailInfo();
 

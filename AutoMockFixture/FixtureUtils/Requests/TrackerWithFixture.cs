@@ -43,7 +43,7 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
 
         base.UpdateResult();
 
-        var childrensPaths = this.childrensPaths.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+        var childrensPaths = this.childrensPaths?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
                                 ?? new Dictionary<string, List<WeakReference?>>();
 
         // Assuming that all paths and mocks are add only

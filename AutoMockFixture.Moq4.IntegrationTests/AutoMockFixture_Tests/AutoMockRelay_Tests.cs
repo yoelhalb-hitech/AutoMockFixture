@@ -11,7 +11,7 @@ internal class AutoMockRelay_Tests
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>();
 
         obj.Should().NotBeNull();
-        obj.InternalTest.Should().NotBeNullOrWhiteSpace();
+        obj!.InternalTest.Should().NotBeNullOrWhiteSpace();
 
         obj.InternalTest.Should().StartWith(nameof(InternalSimpleTestClass.InternalTest));
 
@@ -35,7 +35,7 @@ internal class AutoMockRelay_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<TestRelayByAbstractProperty>();
 
-        obj.TestProp.Should().NotBeNull();
+        obj!.TestProp.Should().NotBeNull();
         var mock = AutoMock.Get(obj.TestProp);
         mock.Should().NotBeNull();
 

@@ -75,8 +75,8 @@ internal class SetupUtils<T> where T : class
     public AutoMock<T> AutoMock { get; }
 
     public MethodInfo GetSetupFuncInternal(Type type)
-        => GetType().GetMethod(nameof(SetupFuncFromLambda), BindingFlagsExtensions.AllBindings)
-        .MakeGenericMethod(type);
+        => GetType().GetMethod(nameof(SetupFuncFromLambda), BindingFlagsExtensions.AllBindings)!
+        .MakeGenericMethod(type)!;
 
     public MethodInfo GetCorrectMethod(MethodInfo method)
     {
@@ -84,16 +84,16 @@ internal class SetupUtils<T> where T : class
 
         // Moq bug workaround
         // Moq has an issue setting up the explicit method but no issue setting up the original method, so let's swap it
-        var typeDetailInfo = method.DeclaringType.GetTypeDetailInfo();
+        var typeDetailInfo = method.DeclaringType!.GetTypeDetailInfo();
         var explicitMethod = typeDetailInfo.ExplicitMethodDetails.FirstOrDefault(m => m.ReflectionInfo.IsEqual(method))
-                            ?? typeDetailInfo.ExplicitPropertyDetails.FirstOrDefault(m => m.GetMethod?.ReflectionInfo.IsEqual(method) == true).GetMethod
-                            ?? typeDetailInfo.ExplicitPropertyDetails.FirstOrDefault(m => m.SetMethod?.ReflectionInfo.IsEqual(method) == true).SetMethod
+                            ?? typeDetailInfo.ExplicitPropertyDetails.FirstOrDefault(m => m.GetMethod?.ReflectionInfo.IsEqual(method) == true)?.GetMethod
+                            ?? typeDetailInfo.ExplicitPropertyDetails.FirstOrDefault(m => m.SetMethod?.ReflectionInfo.IsEqual(method) == true)?.SetMethod
                             // No need to check base private since we are dealing with the method declaring type...
-                            ?? typeDetailInfo.ExplicitEventDetails.FirstOrDefault(m => m.AddMethod.ReflectionInfo.IsEqual(method) == true).AddMethod
-                            ?? typeDetailInfo.ExplicitEventDetails.FirstOrDefault(m => m.RemoveMethod.ReflectionInfo.IsEqual(method) == true).RemoveMethod;
+                            ?? typeDetailInfo.ExplicitEventDetails.FirstOrDefault(m => m.AddMethod.ReflectionInfo.IsEqual(method) == true)?.AddMethod
+                            ?? typeDetailInfo.ExplicitEventDetails.FirstOrDefault(m => m.RemoveMethod.ReflectionInfo.IsEqual(method) == true)?.RemoveMethod;
 
-        var iface = explicitMethod.ExplicitInterface!;
-        return iface.GetMethod(explicitMethod.Name, BindingFlagsExtensions.AllBindings);
+        var iface = explicitMethod!.ExplicitInterface!;
+        return iface.GetMethod(explicitMethod.Name, BindingFlagsExtensions.AllBindings)!;
     }
 
     // Doing this way it because of issues with overload resolution
@@ -122,8 +122,8 @@ internal class SetupUtils<T> where T : class
         }
         else
         {
-            var setup = GetSetupFuncInternal(method.ReturnType).Invoke(this, new object?[] { method, expr, times });
-            if (callbase) setup.GetType().GetMethod(nameof(global::Moq.Language.ICallBase.CallBase)).Invoke(setup, new object[] { });
+            var setup = GetSetupFuncInternal(method.ReturnType)!.Invoke(this, new object?[] { method, expr, times })!;
+            if (callbase) setup.GetType().GetMethod(nameof(global::Moq.Language.ICallBase.CallBase))!.Invoke(setup, new object[] { });
         }
     }
 }

@@ -41,7 +41,7 @@ public class MatcherGenerator
     {
         if (parameterType.IsArray)
         {
-            var recurse = GetMatcherForParameterInternal(parameterType.GetElementType());
+            var recurse = GetMatcherForParameterInternal(parameterType.GetElementType()!);
             if (recurse.Item2) return Tuple.Create(recurse.Item1.MakeArrayType(), true);
             return Tuple.Create(parameterType, false);
         }

@@ -83,9 +83,11 @@ internal class AutoMockInterface_Tests
         var fixture = new AbstractAutoMockFixture();
         var obj = fixture.CreateAutoMock<ITestWithDefault>(callBase: false);
 
-        AutoMock.Get(obj).Setup(m => m.TestReadOnly).CallBase();
-        AutoMock.Get(obj).Setup(m => m.TestReadWrite).CallBase();
-        AutoMock.Get(obj).Setup(m => m.TestMethod()).CallBase();
+        obj.Should().NotBeNull();
+        AutoMock.Get(obj!).Should().NotBeNull();
+        AutoMock.Get(obj)!.Setup(m => m.TestReadOnly).CallBase();
+        AutoMock.Get(obj)!.Setup(m => m.TestReadWrite).CallBase();
+        AutoMock.Get(obj)!.Setup(m => m.TestMethod()).CallBase();
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -101,9 +103,11 @@ internal class AutoMockInterface_Tests
         var fixture = new AbstractAutoMockFixture();
         var obj = fixture.CreateAutoMock<ITestWithDefault>(callBase: false);
 
-        AutoMock.Get(obj).As<ITest>().Setup(m => m.TestReadOnly).CallBase();
-        AutoMock.Get(obj).As<ITest>().Setup(m => m.TestReadWrite).CallBase();
-        AutoMock.Get(obj).As<ITest>().Setup(m => m.TestMethod()).CallBase();
+        obj.Should().NotBeNull();
+        AutoMock.Get(obj!).Should().NotBeNull();
+        AutoMock.Get(obj)!.As<ITest>().Setup(m => m.TestReadOnly).CallBase();
+        AutoMock.Get(obj)!.As<ITest>().Setup(m => m.TestReadWrite).CallBase();
+        AutoMock.Get(obj)!.As<ITest>().Setup(m => m.TestMethod()).CallBase();
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();

@@ -50,7 +50,7 @@ internal class NonConforming_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<Tuple<AutoMock<InternalAbstractMethodTestClass>, InternalSimpleTestClass, InternalAbstractSimpleTestClass>>();
-        obj.Item1.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
+        obj!.Item1.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
         obj.Item1.GetMocked().Should().NotBeNull();
         obj.Item1.GetMocked().InternalTest.Should().NotBeNull();
         obj.Item2.Should().BeOfType<InternalSimpleTestClass>();
@@ -69,7 +69,7 @@ internal class NonConforming_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<Tuple<AutoMock<InternalAbstractMethodTestClass>, InternalSimpleTestClass, InternalAbstractSimpleTestClass>>();
-        obj.Item1.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
+        obj!.Item1.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
         obj.Item1.GetMocked().Should().NotBeNull();
         obj.Item1.GetMocked().InternalTest.Should().NotBeNull();
         obj.Item2.Should().BeOfType<InternalSimpleTestClass>();
@@ -106,7 +106,7 @@ internal class NonConforming_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<InternalSimpleTestClass[]>();
-        obj.Length.Should().Be(3);
+        obj!.Length.Should().Be(3);
         obj.First().Should().BeOfType<InternalSimpleTestClass>();
     }
 
@@ -121,7 +121,7 @@ internal class NonConforming_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<InternalSimpleTestClass[]>();
-        obj.Length.Should().Be(3);
+        obj!.Length.Should().Be(3);
         obj.First().Should().BeOfType<InternalSimpleTestClass>();
     }
 
@@ -136,7 +136,7 @@ internal class NonConforming_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Task>();
 
-        obj.IsCompleted.Should().BeTrue();
+        obj!.IsCompleted.Should().BeTrue();
     }
 
     [Test]
@@ -150,7 +150,7 @@ internal class NonConforming_Tests
         obj.Should().NotBeNull();
         obj.Should().BeOfType<Task<InternalSimpleTestClass>>();
 
-        obj.IsCompleted.Should().BeTrue();
+        obj!.IsCompleted.Should().BeTrue();
         var inner = await obj;
         inner.InternalTest.Should().NotBeNull();
     }
@@ -166,7 +166,7 @@ internal class NonConforming_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Task>();
 
-        obj.IsCompleted.Should().BeTrue();
+        obj!.IsCompleted.Should().BeTrue();
     }
 
     [Test]
@@ -180,7 +180,7 @@ internal class NonConforming_Tests
         obj.Should().NotBeNull();
         obj.Should().BeOfType<Task<InternalSimpleTestClass>>();
 
-        obj.IsCompleted.Should().BeTrue();
+        obj!.IsCompleted.Should().BeTrue();
         var inner = await obj;
         inner.InternalTest.Should().NotBeNull();
     }

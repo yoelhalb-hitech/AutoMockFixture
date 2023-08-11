@@ -8,9 +8,9 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 {
     public abstract Type[] SupportedTypes { get; }
     public abstract int Repeat { get; }
-    public abstract object CreateResult(Type requestType, object[][] innerResults);
+    public abstract object? CreateResult(Type requestType, object[][] innerResults);
     public virtual Type[] GetInnerTypes(Type requestType)
-        => requestType.IsArray ? new [] { requestType.GetElementType() } : requestType.GenericTypeArguments;
+        => requestType.IsArray ? new Type[] { requestType.GetElementType()! } : requestType.GenericTypeArguments;
 
     public object? Create(object request, ISpecimenContext context)
     {

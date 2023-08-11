@@ -67,7 +67,7 @@ internal class AutoMockData : AutoDataAttribute
 
     internal class CustomizeAttributeComparer : Comparer<IParameterCustomizationSource>
     {
-        public override int Compare(IParameterCustomizationSource x, IParameterCustomizationSource y)
+        public override int Compare(IParameterCustomizationSource? x, IParameterCustomizationSource? y)
         {
             var xfrozen = x is FrozenAttribute;
             var yfrozen = y is FrozenAttribute;

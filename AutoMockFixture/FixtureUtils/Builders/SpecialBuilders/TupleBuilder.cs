@@ -23,9 +23,9 @@ internal class TupleBuilder : NonConformingBuilder
     protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
          => new TupleItemRequest(type, originalRequest, argIndex);
 
-    public override object CreateResult(Type requestType, object[][] innerResults)
+    public override object? CreateResult(Type requestType, object[][] innerResults)
     {
-        return requestType.GetConstructor(requestType.GenericTypeArguments)
+        return requestType.GetConstructor(requestType.GenericTypeArguments)?
                 .Invoke(innerResults.First());
     }
 }

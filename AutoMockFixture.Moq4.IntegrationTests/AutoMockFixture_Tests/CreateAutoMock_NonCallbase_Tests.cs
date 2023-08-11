@@ -73,7 +73,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         mock.Should().NotBeNull();
         mock.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();
 
-        obj.TestCtorArg.Should().BeNull();
+        obj!.TestCtorArg.Should().BeNull();
     }
 
     [Test]
@@ -85,7 +85,8 @@ internal class CreateAutoMock_NonCallbase_Tests
         var obj = fixture.CreateAutoMock<WithCtorNoArgsTestClass>(false);
 
         // Assert
-        obj.TestCtor.Should().NotBe(25);
+        obj.Should().NotBeNull();
+        obj!.TestCtor.Should().NotBe(25);
     }
 
     [Test]
@@ -95,10 +96,10 @@ internal class CreateAutoMock_NonCallbase_Tests
         var fixture = new AbstractAutoMockFixture();
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>(false);
-        var mock = AutoMock.Get(obj);
 
         // Assert
-        obj.TestClassPropGet.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.TestClassPropGet.Should().NotBeNull();
     }
 
     [Test]
@@ -110,7 +111,8 @@ internal class CreateAutoMock_NonCallbase_Tests
         var obj = fixture.CreateAutoMock<InternalReadOnlyTestInterface>(false);
 
         // Assert
-        obj.InternalTest.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -122,7 +124,8 @@ internal class CreateAutoMock_NonCallbase_Tests
         var obj = fixture.CreateAutoMock<InternalAbstractReadonlyPropertyClass>(false);
 
         // Assert
-        obj.InternalTest.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -140,7 +143,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         mock.Should().NotBeNull();
         mock.Should().BeOfType<AutoMock<InternalSimpleTestClass>>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -158,7 +161,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         mock.Should().NotBeNull();
         mock.Should().BeOfType<AutoMock<InternalTestFields>>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -170,7 +173,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         var obj = fixture.CreateAutoMock<InternalAbstractSimpleTestClass>(false);
 
         // Assert
-        obj.NonAbstractMethod().Should().NotBeNull();
+        obj!.NonAbstractMethod().Should().NotBeNull();
     }
 
     [Test]
@@ -182,7 +185,7 @@ internal class CreateAutoMock_NonCallbase_Tests
         var obj = fixture.CreateAutoMock<InternalTestMethods>(false);
 
         // Assert
-        obj.InternalTestMethod().Should().NotBeNull();
+        obj!.InternalTestMethod().Should().NotBeNull();
     }
 
     [Test]
@@ -200,6 +203,6 @@ internal class CreateAutoMock_NonCallbase_Tests
         mock.Should().NotBeNull();
         mock.Should().BeOfType<AutoMock<InternalAbstractSimpleTestClass>>();
 
-        obj.NonAbstractWithValueMethod().Should().NotBe(10);
+        obj!.NonAbstractWithValueMethod().Should().NotBe(10);
     }
 }

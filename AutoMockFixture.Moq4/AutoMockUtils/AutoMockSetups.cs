@@ -34,7 +34,7 @@ public partial class AutoMock<T>
         return this;
     }
 
-    private MethodInfo GetMethod(string methodName) => setupUtils.GetMethod(methodName);
+    private MethodInfo GetMethodInternal(string methodName) => setupUtils.GetMethod(methodName);
 
     #endregion
 
@@ -58,24 +58,24 @@ public partial class AutoMock<T>
 
     #region string
 
-    public AutoMock<T> Setup(string methodName) => SetupInternal(GetMethod(methodName), new { }, null);
-    public AutoMock<T> Setup(string methodName, Times times) => SetupInternal(GetMethod(methodName), new { }, times);
+    public AutoMock<T> Setup(string methodName) => SetupInternal(GetMethodInternal(methodName), new { }, null);
+    public AutoMock<T> Setup(string methodName, Times times) => SetupInternal(GetMethodInternal(methodName), new { }, times);
 
     // Doing TAnon : class to avoid overload resolution issues
     public AutoMock<T> Setup<TAnon>(string methodName, TAnon paramData) where TAnon : class
-        => SetupInternal(GetMethod(methodName), paramData, null);
+        => SetupInternal(GetMethodInternal(methodName), paramData, null);
 
     // Doing TAnon : class to avoid overload resolution issues
     public AutoMock<T> Setup<TAnon>(string methodName, TAnon paramData, Times times) where TAnon : class
-        => SetupInternal(GetMethod(methodName), paramData, times);
+        => SetupInternal(GetMethodInternal(methodName), paramData, times);
 
     // Doing TAnon : class to avoid overload resolution issues
 
 
     public AutoMock<T> Setup<TAnon, TResult>(string methodName, TAnon paramData, TResult result) where TAnon : class
-            => SetupInternal(GetMethod(methodName), paramData, result, null);
+            => SetupInternal(GetMethodInternal(methodName), paramData, result, null);
     public AutoMock<T> Setup<TAnon, TResult>(string methodName, TAnon paramData, TResult result, Times times) where TAnon : class
-            => SetupInternal(GetMethod(methodName), paramData, result, times);
+            => SetupInternal(GetMethodInternal(methodName), paramData, result, times);
 
     #endregion
 

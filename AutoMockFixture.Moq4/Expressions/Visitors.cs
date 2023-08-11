@@ -33,7 +33,7 @@ internal class Visitors
                 // Rememeber that for boxed structs we cannot use == only .Equals
                 if ((node.Value is null && defaultValue is null) || (node.Value is not null && defaultValue is not null && node.Value.Equals(defaultValue)))
                 {
-                    return Expression.Call(typeof(Moq.It).GetMethod(nameof(Moq.It.IsAny)).MakeGenericMethod(node.Type));
+                    return Expression.Call(typeof(Moq.It).GetMethod(nameof(Moq.It.IsAny))!.MakeGenericMethod(node.Type)!);
                 }
             }
             return base.VisitConstant(node);
@@ -43,7 +43,7 @@ internal class Visitors
         {
             if (args.Contains(node))
             {
-                return Expression.Call(typeof(Moq.It).GetMethod(nameof(Moq.It.IsAny)).MakeGenericMethod(node.Type));
+                return Expression.Call(typeof(Moq.It).GetMethod(nameof(Moq.It.IsAny))!.MakeGenericMethod(node.Type)!);
             }
             return base.VisitDefault(node);
         }

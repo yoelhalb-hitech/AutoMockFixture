@@ -17,12 +17,12 @@ internal class TraceWrapper : ISpecimenBuilderNode
     public int Depth { get; }
     public TraceGenerator TraceGenerator { get; }
 
-    private static MethodInfo ComposeIfMultipleMethod = typeof(CompositeSpecimenBuilder).GetMethod("ComposeIfMultiple", BindingFlags.NonPublic | BindingFlags.Static);
+    private static MethodInfo? ComposeIfMultipleMethod = typeof(CompositeSpecimenBuilder).GetMethod("ComposeIfMultiple", BindingFlags.NonPublic | BindingFlags.Static);
     public ISpecimenBuilderNode? Compose(IEnumerable<ISpecimenBuilder> builders)
     {
         var wrapped = builders.Select(b => b is TraceWrapper w ? w : new TraceWrapper(b, TraceInfo, Depth + 1));
 
-        var result = Builder is ISpecimenBuilderNode n ? n.Compose(wrapped) : ComposeIfMultipleMethod.Invoke(null, new object[] { wrapped }) as ISpecimenBuilder;
+        var result = Builder is ISpecimenBuilderNode n ? n.Compose(wrapped) : ComposeIfMultipleMethod?.Invoke(null, new object[] { wrapped }) as ISpecimenBuilder;
 
         if (result is null) return null;
         return new TraceWrapper(result, TraceInfo, Depth + 1);

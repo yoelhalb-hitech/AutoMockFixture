@@ -24,9 +24,9 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
 
     internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
-    private readonly static MethodInfo replaceNodeMethod;
-    private readonly static FieldInfo graphField;
-    private readonly static MethodInfo updateGraphAndSetupAdapterMethod;
+    private readonly static MethodInfo? replaceNodeMethod;
+    private readonly static FieldInfo? graphField;
+    private readonly static MethodInfo? updateGraphAndSetupAdapterMethod;
 
     static AutoMockFixtureBase()
     {
@@ -60,10 +60,10 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
                                         new AnyTypeSpecification(),
                                         new CacheCommand(this.Cache)));
 
-        var currentGraph = graphField.GetValue(this);
+        var currentGraph = graphField?.GetValue(this);
         Func<ISpecimenBuilderNode, bool> matcher = node => node is AutoPropertiesTarget;
-        var newGraph = replaceNodeMethod.Invoke(null, new[] { currentGraph, newAutoProperties, matcher }) as ISpecimenBuilderNode;
-        updateGraphAndSetupAdapterMethod.Invoke(this, new[] { newGraph });
+        var newGraph = replaceNodeMethod?.Invoke(null, new[] { currentGraph, newAutoProperties, matcher }) as ISpecimenBuilderNode;
+        updateGraphAndSetupAdapterMethod?.Invoke(this, new[] { newGraph });
 
         Customizations.Add(new CacheBuilder(Cache));
 
@@ -221,7 +221,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
             var key = (AutoMockHelpers.GetFromObj(result) ?? result).ToWeakReference();
             TrackerDict[key] = request;
 
-            PathsDict[key] = Task.Run(() => request.GetChildrensPaths()
+            PathsDict[key] = Task.Run(() => request.GetChildrensPaths()?
                         .ToDictionary(c => c.Key, c => c.Value)
                     ?? new Dictionary<string, List<WeakReference?>>());
 
@@ -261,7 +261,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
 
             return result;
         }
-        catch (ObjectCreationException ex)
+        catch (ObjectCreationException)
         {
             throw;
             // Only use the following if callbase is false, but specified to call the base constructors, so far we don't support that

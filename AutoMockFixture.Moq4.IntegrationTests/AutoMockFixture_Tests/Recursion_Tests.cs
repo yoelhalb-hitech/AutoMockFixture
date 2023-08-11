@@ -21,10 +21,11 @@ internal class Recursion_Tests
         var fixture = new AbstractAutoMockFixture();
         var mock = fixture.CreateAutoMock<AutoMock<Test1>>();
 
+        mock.Should().NotBeNull();
         AutoMock.IsAutoMock(mock).Should().BeTrue();
 
         Test1? obj = null;
-        Assert.DoesNotThrow(() => obj = mock.GetMocked());
+        Assert.DoesNotThrow(() => obj = mock!.GetMocked());
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<Test1>();

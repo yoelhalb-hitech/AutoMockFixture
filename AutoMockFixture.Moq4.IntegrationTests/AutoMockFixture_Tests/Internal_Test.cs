@@ -14,7 +14,7 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeOfType<InternalSimpleTestClass>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -28,7 +28,7 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalSimpleTestClass>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
     [Test]
     public void Test_SetInternalProperties_AutoMockDependencies()
@@ -41,7 +41,7 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeOfType<InternalSimpleTestClass>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -55,7 +55,7 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeOfType<InternalTestFields>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -69,7 +69,7 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalTestFields>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -83,7 +83,7 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeOfType<InternalTestFields>();
 
-        obj.InternalTest.Should().NotBeNull();
+        obj!.InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -97,6 +97,6 @@ internal class Internal_Test
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalTestMethods>();
 
-        obj.InternalTestMethod().Should().NotBeNull();
+        obj!.InternalTestMethod().Should().NotBeNull();
     }
 }

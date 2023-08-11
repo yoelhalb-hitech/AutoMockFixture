@@ -31,7 +31,7 @@ internal class AutoMockStubAllPropertiesCommand : ISpecimenCommand
                 // Stub properties
                 // Note that this will not setup explicit/default interface implementations, but they have to be setup on creation anyway so they will be setup in the init command
                 mock.GetType()
-                    .GetMethod(nameof(Mock<object>.SetupAllProperties))
+                    .GetMethod(nameof(Mock<object>.SetupAllProperties))!
                     .Invoke(mock, new object[0]);
             }
             else

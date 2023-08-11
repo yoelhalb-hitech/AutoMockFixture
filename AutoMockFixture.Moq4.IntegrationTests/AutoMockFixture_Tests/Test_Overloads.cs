@@ -18,14 +18,15 @@ internal class Test_Overloads
         // Act
         var o = fixture.CreateWithAutoMockDependencies<Overloads>();
         // Assert
-        Assert.DoesNotThrow(() => o.Overload());
-        Assert.DoesNotThrow(() => o.Overload());
-        Assert.DoesNotThrow(() => o.Overload("Test"));
-        Assert.DoesNotThrow(() => o.Overload("Test"));
-        Assert.DoesNotThrow(() => o.Overload("Test1"));
-        Assert.DoesNotThrow(() => o.Overload(23));
-        Assert.DoesNotThrow(() => o.Overload(23));
-        Assert.DoesNotThrow(() => o.Overload(24));
+        o.Should().NotBeNull();
+        Assert.DoesNotThrow(() => o!.Overload());
+        Assert.DoesNotThrow(() => o!.Overload());
+        Assert.DoesNotThrow(() => o!.Overload("Test"));
+        Assert.DoesNotThrow(() => o!.Overload("Test"));
+        Assert.DoesNotThrow(() => o!.Overload("Test1"));
+        Assert.DoesNotThrow(() => o!.Overload(23));
+        Assert.DoesNotThrow(() => o!.Overload(23));
+        Assert.DoesNotThrow(() => o!.Overload(24));
     }
 
     [Test]
@@ -35,15 +36,17 @@ internal class Test_Overloads
         var fixture = new AbstractAutoMockFixture();
         // Act
         var o = fixture.CreateAutoMock<Overloads>();
+
         // Assert
-        Assert.DoesNotThrow(() => o.Overload());
-        Assert.DoesNotThrow(() => o.Overload());
-        Assert.DoesNotThrow(() => o.Overload("Test"));
-        Assert.DoesNotThrow(() => o.Overload("Test"));
-        Assert.DoesNotThrow(() => o.Overload("Test1"));
-        Assert.DoesNotThrow(() => o.Overload(23));
-        Assert.DoesNotThrow(() => o.Overload(23));
-        Assert.DoesNotThrow(() => o.Overload(24));
+        o.Should().NotBeNull();
+        Assert.DoesNotThrow(() => o!.Overload());
+        Assert.DoesNotThrow(() => o!.Overload());
+        Assert.DoesNotThrow(() => o!.Overload("Test"));
+        Assert.DoesNotThrow(() => o!.Overload("Test"));
+        Assert.DoesNotThrow(() => o!.Overload("Test1"));
+        Assert.DoesNotThrow(() => o!.Overload(23));
+        Assert.DoesNotThrow(() => o!.Overload(23));
+        Assert.DoesNotThrow(() => o!.Overload(24));
     }
 
     [Test]
@@ -54,13 +57,14 @@ internal class Test_Overloads
         // Act
         var o = fixture.CreateNonAutoMock<Overloads>();
         // Assert
-        Assert.DoesNotThrow(() => o.Overload());
-        Assert.DoesNotThrow(() => o.Overload());
-        Assert.DoesNotThrow(() => o.Overload("Test"));
-        Assert.DoesNotThrow(() => o.Overload("Test"));
-        Assert.DoesNotThrow(() => o.Overload("Test1"));
-        Assert.DoesNotThrow(() => o.Overload(23));
-        Assert.DoesNotThrow(() => o.Overload(23));
-        Assert.DoesNotThrow(() => o.Overload(24));
+        o.Should().NotBeNull();
+        Assert.DoesNotThrow(() => o!.Overload());
+        Assert.DoesNotThrow(() => o!.Overload());
+        Assert.DoesNotThrow(() => o!.Overload("Test"));
+        Assert.DoesNotThrow(() => o!.Overload("Test"));
+        Assert.DoesNotThrow(() => o!.Overload("Test1"));
+        Assert.DoesNotThrow(() => o!.Overload(23));
+        Assert.DoesNotThrow(() => o!.Overload(23));
+        Assert.DoesNotThrow(() => o!.Overload(24));
     }
 }

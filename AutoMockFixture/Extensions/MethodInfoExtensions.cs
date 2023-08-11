@@ -13,14 +13,14 @@ internal static class MethodInfoExtensions
                      .Any(p => p.ParameterType.IsByRef && !p.IsOut);
 
     internal static bool HasOverloads(this MethodInfo method)
-        => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name && m != method
-                        && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m));
+        => method.DeclaringType?.GetAllMethods().Any(m => m.Name == method.Name && m != method
+                        && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m)) ?? false;
 
     internal static bool HasOverloadSameCount(this MethodInfo method)
-        => method.DeclaringType.GetAllMethods().Any(m => m.Name == method.Name
+        => method.DeclaringType?.GetAllMethods().Any(m => m.Name == method.Name
                                                     && m.GetParameters().Length == method.GetParameters().Length
                                                     && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m)
-                                                    && m != method);
+                                                    && m != method) ?? false;
 
 
     internal static string GetTrackingPath(this MethodInfo method)

@@ -13,7 +13,7 @@ internal class AutoMock_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
-        obj.GetMocked().InternalTest.Should().NotBeNull();
+        obj!.GetMocked().InternalTest.Should().NotBeNull();
     }
 
     [Test]
@@ -48,7 +48,8 @@ internal class AutoMock_Tests
         // Act
         var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>();
 
-        var first = obj.TestClassPropGet;
+        obj.Should().NotBeNull();
+        var first = obj!.TestClassPropGet;
         var second = obj.TestClassPropGet;
 
         // Assert
@@ -67,7 +68,8 @@ internal class AutoMock_Tests
         // Act
         var obj = fixture.CreateAutoMock<InternalTestMethods>();
 
-        var first = obj.InternalTestMethod();
+        obj.Should().NotBeNull();
+        var first = obj!.InternalTestMethod();
         var second = obj.InternalTestMethod();
 
         // Assert
@@ -85,8 +87,9 @@ internal class AutoMock_Tests
 
         // Act
         var obj = fixture.CreateAutoMock<InternalTestMethods>();
+        obj.Should().NotBeNull();
 
-        var first = obj.InternalTestMethod();
+        var first = obj!.InternalTestMethod();
         var second = obj.InternalTestMethod();
 
         // Assert
@@ -104,8 +107,9 @@ internal class AutoMock_Tests
 
         // Act
         var obj = fixture.CreateAutoMock<InternalTestMethods>();
+        obj.Should().NotBeNull();
 
-        var first = obj.InternalTestMethod();
+        var first = obj!.InternalTestMethod();
         var second = obj.InternalTestMethod();
 
         // Assert
@@ -123,8 +127,9 @@ internal class AutoMock_Tests
 
         // Act
         var obj = fixture.CreateAutoMock<InternalSimpleTestClass>();
+        obj.Should().NotBeNull();
 
-        var first = obj.InternalTest;
+        var first = obj!.InternalTest;
         var second = obj.InternalTest;
 
         // Assert
@@ -147,7 +152,7 @@ internal class AutoMock_Tests
         var mock = AutoMock.Get(obj);
         mock.Should().NotBeNull();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg.InternalTest.Should().NotBeNull();
@@ -182,7 +187,7 @@ internal class AutoMock_Tests
         obj.Should().NotBeNull();
         obj.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestClassProp.Should().NotBeNull();
         inner.TestClassProp!.InternalTest.Should().NotBeNull();
@@ -231,11 +236,11 @@ internal class AutoMock_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        InternalAbstractSimpleTestClass obj = (InternalAbstractSimpleTestClass)fixture.CreateAutoMock(typeof(InternalAbstractSimpleTestClass));
+        InternalAbstractSimpleTestClass? obj = (InternalAbstractSimpleTestClass?)fixture.CreateAutoMock(typeof(InternalAbstractSimpleTestClass));
 
         // Assert
         obj.Should().NotBeNull();
-        AutoMock.IsAutoMock(obj).Should().BeTrue();
+        AutoMock.IsAutoMock(obj!).Should().BeTrue();
     }
 
     [Test]
@@ -262,7 +267,7 @@ internal class AutoMock_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg!.InternalTest.Should().NotBeNull();
@@ -292,7 +297,7 @@ internal class AutoMock_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestClassProp.Should().NotBeNull();
         inner.TestClassProp!.InternalTest.Should().NotBeNull();

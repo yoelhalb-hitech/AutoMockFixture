@@ -13,7 +13,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
-        obj.GetMocked().InternalTest.Should().BeNull();
+        obj!.GetMocked().InternalTest.Should().BeNull();
     }
 
     [Test]
@@ -30,7 +30,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         var mock = AutoMock.Get(obj);
         mock.Should().NotBeNull();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg.InternalTest.Should().BeNull();
@@ -58,7 +58,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         obj.Should().NotBeNull();
         obj.Should().BeOfType<AutoMock<WithCtorArgsTestClass>>();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestClassProp.Should().BeNull();
         inner.TestClassPropWithPrivateSet.Should().BeNull();
@@ -74,7 +74,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture(true);
         // Act
-        InternalAbstractSimpleTestClass obj = (InternalAbstractSimpleTestClass)fixture.CreateAutoMock(typeof(InternalAbstractSimpleTestClass));
+        InternalAbstractSimpleTestClass? obj = (InternalAbstractSimpleTestClass?)fixture.CreateAutoMock(typeof(InternalAbstractSimpleTestClass));
 
         // Assert
         obj.Should().NotBeNull();
@@ -104,7 +104,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestCtorArg.Should().NotBeNull();
         inner.TestCtorArg!.InternalTest.Should().BeNull();
@@ -125,7 +125,7 @@ internal class AutoMock_NoConfigureMembers_Tests
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<WithCtorArgsTestClass>();
 
-        var inner = (WithCtorArgsTestClass)obj;
+        var inner = (WithCtorArgsTestClass)obj!;
 
         inner.TestClassProp.Should().BeNull();
         inner.TestClassPropGet.Should().BeNull();

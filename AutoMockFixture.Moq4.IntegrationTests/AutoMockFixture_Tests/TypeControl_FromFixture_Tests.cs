@@ -154,9 +154,10 @@ internal class TypeControl_FromFixture_Tests
         fixture.AutoMockTypeControl = GetMockTypeControl();
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(false);
 
+        obj.Should().NotBeNull();
         AutoMock.IsAutoMock(obj).Should().BeFalse();
 
-        AutoMock.IsAutoMock(obj.TestCtorArg).Should().BeTrue();
+        AutoMock.IsAutoMock(obj!.TestCtorArg).Should().BeTrue();
         AutoMock.IsAutoMock(obj!.TestClassProp!).Should().BeTrue();
     }
 }

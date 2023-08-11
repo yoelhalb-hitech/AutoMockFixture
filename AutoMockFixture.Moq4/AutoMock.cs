@@ -24,19 +24,13 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; }
                                         = new Dictionary<string, CannotSetupMethodException>();
 
-    private static object castleProxyFactoryInstance;
     private static FieldInfo generatorFieldInfo;
     private static ProxyGenerator originalProxyGenerator;
     static AutoMock()
     {
-        var moqAssembly = typeof(Mock).Assembly;
-
-        var proxyFactoryType = moqAssembly.GetType("Moq.ProxyFactory");
-        castleProxyFactoryInstance = proxyFactoryType.GetProperty("Instance").GetValue(null);
-
-        var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
-        generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
-        originalProxyGenerator = (ProxyGenerator)generatorFieldInfo.GetValue(castleProxyFactoryInstance);
+        var castleProxyFactoryType = typeof(Moq.CastleProxyFactory);
+        generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        originalProxyGenerator = (ProxyGenerator)generatorFieldInfo.GetValue(Moq.ProxyFactory.Instance)!;
 
         ResetGenerator();
     }
@@ -52,9 +46,9 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     void ISetCallBase.ForceSetCallbase(bool value) => base.CallBase = value;
 
     private void SetupGenerator()
-        => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator(target, this.CallBase));
+        => generatorFieldInfo.SetValue(Moq.ProxyFactory.Instance, new AutoMockProxyGenerator(target, this.CallBase));
     private static void ResetGenerator()
-        => generatorFieldInfo.SetValue(castleProxyFactoryInstance, new AutoMockProxyGenerator());
+        => generatorFieldInfo.SetValue(Moq.ProxyFactory.Instance, originalProxyGenerator);
     private T? target;
     public bool TrySetTarget(T target)
     {
@@ -73,8 +67,6 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 
     private T? mocked;
     public Type GetInnerType() => typeof(T);
-    private static PropertyInfo additionalInterfaceProp = typeof(Mock)
-                            .GetProperty("AdditionalInterfaces", BindingFlags.Instance | BindingFlags.NonPublic);
     private static Type iautoMockedType = typeof(IAutoMocked);
     public void EnsureMocked()
     {
@@ -86,12 +78,12 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
         // 1) For non callbase without a setup
         // 2) For a custom setup if `As` has been called only after object creation
         // 3) When setting up via reflection
-        var asMethod = typeof(Mock).GetMethod(nameof(Mock.As));
+        var asMethod = typeof(Mock).GetMethod(nameof(Mock.As))!;
         var detailInfo = GetInnerType().GetTypeDetailInfo();
         var interfacesToFix = detailInfo.ExplicitMethodDetails.Select(m => m.ExplicitInterface)
                                 .Union(detailInfo.ExplicitPropertyDetails.Select(m => m.ExplicitInterface))
                                 .Union(detailInfo.ExplicitEventDetails.Select(e => e.ExplicitInterface));
-        foreach (var iface in interfacesToFix)
+        foreach (var iface in interfacesToFix.OfType<Type>())
         {
             try
             {
@@ -102,17 +94,16 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
             catch { } // TODO...
         }
 
-        var additionalInterfaces = (List<Type>)additionalInterfaceProp.GetValue(this);
         // The generator is static so we have to reduce it to the minimum
         // CAUTION: While it would have been a good idea to lock here we can't do it as this call is called recursively
         //      (since we mock the Type object in the generator) and we would end up with a deadlock
         try
         {
             SetupGenerator();
-            additionalInterfaces.Add(iautoMockedType);
+            this.AdditionalInterfaces.Add(iautoMockedType);
             mocked = base.Object;
             if (this.target is not null && this.CallBase) SetupTargetMethods();
-            additionalInterfaces.Remove(iautoMockedType);
+            this.AdditionalInterfaces.Remove(iautoMockedType);
         }
         finally
         {

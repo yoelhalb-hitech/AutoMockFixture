@@ -2,7 +2,6 @@
 
 namespace AutoMockFixture.Moq4.AutoMockProxy;
 
-#nullable disable
 internal class MethodWrapper : MethodInfo
 {
     private readonly MethodInfo original;
@@ -36,16 +35,16 @@ internal class MethodWrapper : MethodInfo
     public override Module Module => original.Module;
     public override ParameterInfo ReturnParameter => original.ReturnParameter;
     public override Delegate CreateDelegate(Type delegateType) => original.CreateDelegate(delegateType);
-    public override Delegate CreateDelegate(Type delegateType, object target) => original.CreateDelegate(delegateType, target);
+    public override Delegate CreateDelegate(Type delegateType, object? target) => original.CreateDelegate(delegateType, target);
     public override IList<CustomAttributeData> GetCustomAttributesData() => original.GetCustomAttributesData();
     public override Type[] GetGenericArguments() => original.GetGenericArguments();
     public override MethodInfo GetGenericMethodDefinition() => original.GetGenericMethodDefinition();
-    public override MethodBody GetMethodBody() => original.GetMethodBody();
+    public override MethodBody? GetMethodBody() => original.GetMethodBody();
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
     public override bool HasSameMetadataDefinitionAs(MemberInfo other) => original.HasSameMetadataDefinitionAs(other);
 #endif
     public override MethodInfo MakeGenericMethod(params Type[] typeArguments) => original.MakeGenericMethod(typeArguments);
-    public override string ToString() => original.ToString();
+    public override string? ToString() => original.ToString();
 
     public override ICustomAttributeProvider ReturnTypeCustomAttributes => original.ReturnTypeCustomAttributes;
 
@@ -54,13 +53,13 @@ internal class MethodWrapper : MethodInfo
 
     public override RuntimeMethodHandle MethodHandle => original.MethodHandle;
 
-    public Type ParentType { get; set; }
-    public override Type DeclaringType => ParentType;
+    public Type? ParentType { get; set; }
+    public override Type? DeclaringType => ParentType;
 
     public string MethodName { get; set; }
     public override string Name => MethodName;
 
-    public override Type ReflectedType => original.ReflectedType;
+    public override Type? ReflectedType => original.ReflectedType;
 
     public override MethodInfo GetBaseDefinition() => original.GetBaseDefinition();
 
@@ -70,12 +69,12 @@ internal class MethodWrapper : MethodInfo
 
     public override MethodImplAttributes GetMethodImplementationFlags() => original.GetMethodImplementationFlags();
     public override ParameterInfo[] GetParameters() => original.GetParameters();
-    public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+    public override object? Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
         => original.Invoke(obj, invokeAttr, binder, parameters, culture);
 
     public override bool IsDefined(Type attributeType, bool inherit)  => original.IsDefined(attributeType, inherit);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not null && ReferenceEquals(obj, original)) return true;
 
@@ -84,4 +83,3 @@ internal class MethodWrapper : MethodInfo
 
     public override int GetHashCode() => original.GetHashCode();
 }
-#nullable enable

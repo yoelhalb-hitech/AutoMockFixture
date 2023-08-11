@@ -7,7 +7,7 @@
 namespace System.Runtime.CompilerServices
 {
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    public class IgnoresAccessChecksToAttribute : Attribute
+    internal class IgnoresAccessChecksToAttribute : Attribute
     {
         public IgnoresAccessChecksToAttribute(string assemblyName)
         {

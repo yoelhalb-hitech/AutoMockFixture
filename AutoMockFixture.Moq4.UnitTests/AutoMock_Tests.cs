@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.Moq4.AutoMockProxy;
+using Castle.DynamicProxy;
 using Moq;
 using System.Reflection;
 
@@ -9,23 +10,20 @@ public class AutoMock_Tests
     [Test]
     public void Test_ResetGenerator()
     {
-        var moqAssembly = typeof(Mock).Assembly;
-
-        var proxyFactoryType = moqAssembly.GetType("Moq.ProxyFactory");
-        var castleProxyFactoryInstance = proxyFactoryType!.GetProperty("Instance")!.GetValue(null);
-
-        var castleProxyFactoryType = moqAssembly.GetType("Moq.CastleProxyFactory");
-        var generatorFieldInfo = castleProxyFactoryType!.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
+        var generatorFieldInfo = typeof(Moq.CastleProxyFactory)!.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance);
 
         var mock = new AutoMock<WithCtorArgsTestClass>();
         var obj = mock.Object;
 
-        var currentValue = generatorFieldInfo!.GetValue(castleProxyFactoryInstance);
+        var currentValue = generatorFieldInfo!.GetValue(Moq.ProxyFactory.Instance);
 
-        currentValue.Should().BeOfType<AutoMockProxyGenerator>();
+        currentValue.Should().BeAssignableTo<ProxyGenerator>();
 
-        (currentValue as AutoMockProxyGenerator)!.Target.Should().BeNull();
-        (currentValue as AutoMockProxyGenerator)!.Callbase.Should().BeNull();
+        if(currentValue is AutoMockProxyGenerator automockGenerator)
+        {
+            automockGenerator.Target.Should().BeNull();
+            automockGenerator.Callbase.Should().BeNull();
+        }
     }
 
     [Test]

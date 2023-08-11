@@ -90,12 +90,12 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
     {
         Logger.LogInfo("In base prop");
 
-        return context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));
+        return context.Resolve(new PropertyRequest(pi.DeclaringType!, pi, tracker));
     }
 
     protected virtual void HandleField(object specimen, ISpecimenContext context, FieldInfo fi, ITracker tracker)
     {
-        var fieldValue = context.Resolve(new FieldRequest(fi.DeclaringType, fi, tracker));
+        var fieldValue = context.Resolve(new FieldRequest(fi.DeclaringType!, fi, tracker));
 
         if (fieldValue is not NoSpecimen && fieldValue is not OmitSpecimen)
             fi.SetValue(specimen, fieldValue);
@@ -141,12 +141,12 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
         var detailInfo = type.GetTypeDetailInfo();
 
         // Remember that type might be a mock and that mock usually has added interfaces, so we go in that case by the interfaces on the base type
-        var validInterfaces = type.GetInterface(typeof(IAutoMock).FullName) != typeof(IAutoMock) ? type.GetInterfaces() : type.BaseType.GetInterfaces();
+        var validInterfaces = type.GetInterface(typeof(IAutoMock).FullName!) != typeof(IAutoMock) ? type.GetInterfaces() : type.BaseType?.GetInterfaces();
 
         return from pi in detailInfo.PropertyDetails
                         .Concat(detailInfo.BasePrivatePropertyDetails.Where(_ => IncludePrivateSetters))
                         .Concat(detailInfo.ShadowedPropertyDetails)
-                        .Concat(detailInfo.ExplicitPropertyDetails.Where(d => validInterfaces.Contains(d.ExplicitInterface)))
+                        .Concat(detailInfo.ExplicitPropertyDetails.Where(d => validInterfaces?.Contains(d.ExplicitInterface) ?? false))
                      where pi.SetMethod is not null || pi.BasePrivateSetMethod is not null
                      where IncludePrivateSetters || pi.SetMethod?.ReflectionInfo.IsPublicOrInternal() == true
                      where IncludePrivateOrMissingGetter || pi.GetMethod?.ReflectionInfo.IsPublicOrInternal() == true

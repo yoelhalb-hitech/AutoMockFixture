@@ -67,7 +67,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         // Note: It can happen by a generic method that hasn't been called yet and so the result is not yet set up
         var childrenWithResult = Children.Where(c => c.IsCompleted).ToList();
 
-        allMocks = childrenWithResult.SelectMany(c => c.GetAllMocks()).ToList();
+        allMocks = childrenWithResult.SelectMany(c => c.GetAllMocks() ?? new List<WeakReference<IAutoMock>>()).OfType<WeakReference<IAutoMock>>().ToList();
         if (result is not null && StartTracker.Fixture.AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock.ToWeakReference());
 
         // Probably not worth to do Distinct here (as the caller will do it), unless it is the last one
@@ -78,12 +78,12 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
                 && Children.Count == 1 && Children[0].InstancePath == "") result = Children[0].Result;
 
         //if (result is null) throw new Exception("Expected result but there isn't"); can actually be null...
-        Logger.LogInfo(ToString());
+        Logger.LogInfo(ToString()!);
         Logger.LogInfo(Path);
 
         try
         {
-            childrensPaths = childrenWithResult.SelectMany(c => c.GetChildrensPaths())
+            childrensPaths = childrenWithResult!.SelectMany(c => c.GetChildrensPaths() ?? new Dictionary<string, List<WeakReference?>>())
                         .GroupBy(c => c.Key) // We don't need null and it can cause duplicates (for example in factory method calling multiple times a constructor with different values)
                         .ToDictionary(c => c.Key, c => c.SelectMany(x => x.Value).Distinct().ToList());
             if (InstancePath != "" && !childrensPaths.ContainsKey(Path)) childrensPaths.Add(Path, new List<WeakReference?> { result });
@@ -93,7 +93,7 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
         {
             Logger.LogInfo("Error of type: " + ex.GetType().FullName + " - Has Inner: " + (ex.InnerException is not null).ToString());
             Logger.LogInfo(ex.Message);
-            Logger.LogInfo(ToString());
+            Logger.LogInfo(ToString()!);
             Logger.LogInfo(Path);
         }
 
@@ -115,14 +115,14 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     public virtual bool IsRequestEquals(ITracker other)
         => StartTracker.IsStartTrackerEquals(other.StartTracker);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
         => obj is BaseTracker other ? Equals(other) : base.Equals(obj);
 
     public override int GetHashCode() => HashCode.Combine(BasePath, StartTracker != this ? StartTracker : (ITracker?)null,
             StartTracker == this ? "StartTracker".GetHashCode() * 34526 : (int?)null, Parent, Children);
 
     // AutoFixture uses this to determine recursion
-    public virtual bool Equals(BaseTracker other) => other is not null
+    public virtual bool Equals(BaseTracker? other) => other is not null
             && other.StartTracker == StartTracker
             && IsRequestEquals(other);
 

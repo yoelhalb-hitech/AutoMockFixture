@@ -52,7 +52,8 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
-        obj.TestClassProp.Should().BeNull();
+        obj.Should().NotBeNull();
+        obj!.TestClassProp.Should().BeNull();
     }
 
     [Test]
@@ -65,7 +66,8 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callbase);
         // Assert
-        obj.TestClassPropWithPrivateSet.Should().BeNull();
+        obj.Should().NotBeNull();
+        obj!.TestClassPropWithPrivateSet.Should().BeNull();
         obj.TestClassPrivateNonVirtualProp.Should().BeNull();
     }
 
@@ -77,6 +79,7 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
         // Act
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>();
         // Assert
-        obj.TestClassField.Should().BeNull();
+        obj.Should().NotBeNull();
+        obj!.TestClassField.Should().BeNull();
     }
 }

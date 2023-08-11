@@ -30,7 +30,7 @@ internal class InvocationWrapper : Castle.DynamicProxy.IInvocation
 
     public object Proxy => original.Proxy;
 
-    public object ReturnValue { get => original.ReturnValue; set => original.ReturnValue = value; }
+    public object? ReturnValue { get => original.ReturnValue; set => original.ReturnValue = value; }
 
     public Type TargetType => original.TargetType;
 
