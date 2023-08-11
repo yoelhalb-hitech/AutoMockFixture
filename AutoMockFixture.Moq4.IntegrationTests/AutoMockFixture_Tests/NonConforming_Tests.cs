@@ -4,6 +4,24 @@ namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 internal class NonConforming_Tests
 {
     [Test]
+    public void Test_Array()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+
+        // Act
+        // We cannot use CreateAutoMock as it is not valid for arrays
+        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass[]>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeAssignableTo<InternalAbstractMethodTestClass[]>();
+        obj!.Length.Should().Be(3);
+        obj.First().Should().BeAssignableTo<InternalAbstractMethodTestClass>();
+        obj.First().Should().NotBeNull();
+        obj.First().InternalTest.Should().NotBeNull();
+    }
+
+    [Test]
     public void Test_AutoMock_Array()
     {
         // Arrange
@@ -15,7 +33,7 @@ internal class NonConforming_Tests
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>[]>();
-        obj.Length.Should().Be(3);
+        obj!.Length.Should().Be(3);
         obj.First().Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
         obj.First().GetMocked().Should().NotBeNull();
         obj.First().GetMocked().InternalTest.Should().NotBeNull();

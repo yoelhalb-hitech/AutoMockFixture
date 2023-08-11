@@ -14,19 +14,19 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 
     public object? Create(object request, ISpecimenContext context)
     {
-        if (request is not IRequestWithType typeRequest) return new NoSpecimen();
+        if (request is not IRequestWithType typeRequest || typeRequest.Request is not Type type) return new NoSpecimen();
 
-        var genericDefinitions = typeRequest.Request.GetAllGenericDefinitions();
+        var genericDefinitions = type.GetAllGenericDefinitions();
 
         // generic type defintions are not conisdered assignable
-        if (!SupportedTypes.Any(t => t.IsAssignableFrom(typeRequest.Request)
-                    || (typeRequest.Request.IsGenericType && t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
+        if (!SupportedTypes.Any(t => t.IsAssignableFrom(type)
+                    || ((type.IsGenericType || type.IsArray) && t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
 
         var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
 
         if (innerResult is NoSpecimen) return innerResult;
 
-        var finalResult = CreateResult(typeRequest.Request, (object[][])innerResult);
+        var finalResult = CreateResult(type, (object[][])innerResult);
         typeRequest.SetResult(finalResult, this);
 
         return finalResult;
