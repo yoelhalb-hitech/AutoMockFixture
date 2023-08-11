@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.NUnit3;
+using Moq;
 
 namespace AutoMockFixture.Moq4.IntegrationTests.AutoMockProxy;
 
@@ -89,15 +90,52 @@ public class DefaultInterfaceForInterface_Tests
         mock.As<IWithDefault>().SetupGet(i => i.TestProp).Returns(60);
 
         int propVal = 0;
-        //mock.As<IWithDefault>().SetupSet(i => propVal = i.TestProp); // TODO...
-        //mock.As<IWithDefault>().SetupAdd(i => propVal = i.TestProp); // TODO...
-        //mock.As<IWithDefault>().SetupARemove(i => propVal = i.TestProp); // TODO...
+        mock.As<IWithDefault>()
+            .SetupSet(i => i.TestProp = It.IsAny<int>())
+            .Callback<int>(i => propVal = i);
 
         var obj = mock.Object as IWithDefault;
         obj.TestMethod().Should().Be(50);
         obj.TestProp.Should().Be(60);
 
-        //Assert.DoesNotThrow(() => obj.TestProp = 70);
-        //propVal.Should().Be(70);
+        Assert.DoesNotThrow(() => obj.TestProp = 70);
+        propVal.Should().Be(70);
+
+        mock.As<IWithDefault>().Verify(m => m.TestMethod());
+        mock.As<IWithDefault>().VerifyGet(m => m.TestProp);
+        mock.As<IWithDefault>().VerifySet(m => m.TestProp = 70);
+    }
+
+    [Test]
+    [TestCase<IWithDefault>]
+    [TestCase<IWithDefaultSub>]
+    [TestCase<IWithReimplmentedDefault>]
+    [TestCase<IWithReimplmentedDefaultSub>]
+    // Moq has a bug that it calls base on .Callback for events (unlike properties and methods) so we have to test it only on non callbase
+    public void Test_TypeWithDefaultImplementation_SetsUpEventsCorrectly_ForNonCallBase<T>() where T : class, IWithDefault
+    {
+        var mock = new AutoMock<T>() { CallBase = false };
+
+        EventHandler? evt = null;
+        mock.As<IWithDefault>()
+            .SetupAdd(i => i.TestEvent += It.IsAny<EventHandler>())
+            .Callback<EventHandler>(e => evt = e);
+
+        mock.As<IWithDefault>()
+            .SetupRemove(i => i.TestEvent -= It.IsAny<EventHandler>())
+            .Callback<EventHandler>(e => evt = null);
+
+        var obj = mock.Object as IWithDefault;
+
+        var handler = (EventHandler)((obj, e) => { });
+        Assert.DoesNotThrow(() => obj.TestEvent += handler);
+        evt.Should().NotBeNull();
+        evt.Should().Be(handler);
+
+        Assert.DoesNotThrow(() => obj.TestEvent -= handler);
+        evt.Should().BeNull();
+
+        mock.As<IWithDefault>().VerifyAdd(m => m.TestEvent += handler);
+        mock.As<IWithDefault>().VerifyRemove(m => m.TestEvent -= handler);
     }
 }

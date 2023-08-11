@@ -86,8 +86,8 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
     [TestCase<IWithDefault>(false)]
     [TestCase<IWithDefaultSub>(true)]
     [TestCase<IWithDefaultSub>(false)]
-    [TestCase<IWithReimplmentedDefaultSub>(true)]
-    [TestCase<IWithReimplmentedDefaultSub>(false)]
+    [TestCase<IWithReimplmentedDefault>(true)]
+    [TestCase<IWithReimplmentedDefault>(false)]
     [TestCase<IWithReimplmentedDefaultSub>(true)]
     [TestCase<IWithReimplmentedDefaultSub>(false)]
     public void Test_TypeWithDefaultImplementation_SetsUpCorrectly<T>(bool callbase) where T : class, IWithDefaultBase
@@ -101,18 +101,6 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
             .SetupSet(i => i.TestProp = It.IsAny<int>())
             .Callback<int>(i => propVal = i);
 
-        EventHandler? evt = null;
-        if (!callbase) // Moq has a bug that it calls base on .Callback for events (unlike properties and methods)
-        {
-            mock.As<IWithDefaultBase>()
-                .SetupAdd(i => i.TestEvent += It.IsAny<EventHandler>())
-                .Callback<EventHandler>(e => evt = e);
-
-            mock.As<IWithDefaultBase>()
-                .SetupRemove(i => i.TestEvent -= It.IsAny<EventHandler>())
-                .Callback<EventHandler>(e => evt = null);
-        }
-
         var obj = mock.Object as IWithDefaultBase;
         obj.TestMethod().Should().Be(50);
         obj.TestProp.Should().Be(60);
@@ -120,24 +108,41 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
         Assert.DoesNotThrow(() => obj.TestProp = 70);
         propVal.Should().Be(70);
 
-        var handler = (EventHandler)((obj, e) => { });
-        if (!callbase)
-        {
-            Assert.DoesNotThrow(() => obj.TestEvent += handler);
-            evt.Should().NotBeNull();
-            evt.Should().Be(handler);
-
-            Assert.DoesNotThrow(() => obj.TestEvent -= handler);
-            evt.Should().BeNull();
-        }
-
         mock.As<IWithDefaultBase>().Verify(m => m.TestMethod());
         mock.As<IWithDefaultBase>().VerifyGet(m => m.TestProp);
         mock.As<IWithDefaultBase>().VerifySet(m => m.TestProp = 70);
-        if (!callbase)
-        {
-            mock.As<IWithDefaultBase>().VerifyAdd(m => m.TestEvent += handler);
-            mock.As<IWithDefaultBase>().VerifyRemove(m => m.TestEvent -= handler);
-        }
+    }
+
+    [Test]
+    [TestCase<IWithDefault>]
+    [TestCase<IWithDefaultSub>]
+    [TestCase<IWithReimplmentedDefault>]
+    [TestCase<IWithReimplmentedDefaultSub>]
+    // Moq has a bug that it calls base on .Callback for events (unlike properties and methods) so we have to test it only on non callbase
+    public void Test_TypeWithDefaultImplementation_SetsUpEventsCorrectly_ForNonCallBase<T>() where T : class, IWithDefaultBase
+    {
+        var mock = new AutoMock<T>() { CallBase = false };
+
+        EventHandler? evt = null;
+        mock.As<IWithDefaultBase>()
+            .SetupAdd(i => i.TestEvent += It.IsAny<EventHandler>())
+            .Callback<EventHandler>(e => evt = e);
+
+        mock.As<IWithDefaultBase>()
+            .SetupRemove(i => i.TestEvent -= It.IsAny<EventHandler>())
+            .Callback<EventHandler>(e => evt = null);
+
+        var obj = mock.Object as IWithDefaultBase;
+
+        var handler = (EventHandler)((obj, e) => { });
+        Assert.DoesNotThrow(() => obj.TestEvent += handler);
+        evt.Should().NotBeNull();
+        evt.Should().Be(handler);
+
+        Assert.DoesNotThrow(() => obj.TestEvent -= handler);
+        evt.Should().BeNull();
+
+        mock.As<IWithDefaultBase>().VerifyAdd(m => m.TestEvent += handler);
+        mock.As<IWithDefaultBase>().VerifyRemove(m => m.TestEvent -= handler);
     }
 }

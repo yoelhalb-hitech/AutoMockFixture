@@ -107,18 +107,6 @@ public class ExplicitInterfaceForClass_Tests
             .SetupSet(i => i.TestProp = It.IsAny<int>())
             .Callback<int>(i => propVal = i);
 
-        EventHandler? evt = null;
-        if (!callbase) // Moq has a bug that it calls base on .Callback for events (unlike properties and methods)
-        {
-            mock.As<IWithNoDefault>()
-                .SetupAdd(i => i.TestEvent += It.IsAny<EventHandler>())
-                .Callback<EventHandler>(e => evt = e);
-
-            mock.As<IWithNoDefault>()
-                .SetupRemove(i => i.TestEvent -= It.IsAny<EventHandler>())
-                .Callback<EventHandler>(e => evt = null);
-        }
-
         var obj = mock.Object as IWithNoDefault;
         obj.TestMethod().Should().Be(50);
         obj.TestProp.Should().Be(60);
@@ -126,24 +114,41 @@ public class ExplicitInterfaceForClass_Tests
         Assert.DoesNotThrow(() => obj.TestProp = 70);
         propVal.Should().Be(70);
 
-        var handler = (EventHandler)((obj, e) => { });
-        if (!callbase)
-        {
-            Assert.DoesNotThrow(() => obj.TestEvent += handler);
-            evt.Should().NotBeNull();
-            evt.Should().Be(handler);
-
-            Assert.DoesNotThrow(() => obj.TestEvent -= handler);
-            evt.Should().BeNull();
-        }
-
         mock.As<IWithNoDefault>().Verify(m => m.TestMethod());
         mock.As<IWithNoDefault>().VerifyGet(m => m.TestProp);
         mock.As<IWithNoDefault>().VerifySet(m => m.TestProp = 70);
-        if (!callbase)
-        {
-            mock.As<IWithNoDefault>().VerifyAdd(m => m.TestEvent += handler);
-            mock.As<IWithNoDefault>().VerifyRemove(m => m.TestEvent -= handler);
-        }
+    }
+
+    [Test]
+    [TestCase<TypeWithExplicit>]
+    [TestCase<TypeWithExplicitSub>]
+    [TestCase<TypeWithReimplmented>]
+    [TestCase<TypeWithReimplmentedSub>]
+    // Moq has a bug that it calls base on .Callback for events (unlike properties and methods) so we have to test it only on non callbase
+    public void Test_TypeWithDefaultImplementation_SetsUpEventsCorrectly_ForNonCallBase<T>() where T : class, IWithNoDefault
+    {
+        var mock = new AutoMock<T>() { CallBase = false };
+
+        EventHandler? evt = null;
+        mock.As<IWithNoDefault>()
+            .SetupAdd(i => i.TestEvent += It.IsAny<EventHandler>())
+            .Callback<EventHandler>(e => evt = e);
+
+        mock.As<IWithNoDefault>()
+            .SetupRemove(i => i.TestEvent -= It.IsAny<EventHandler>())
+            .Callback<EventHandler>(e => evt = null);
+
+        var obj = mock.Object as IWithNoDefault;
+
+        var handler = (EventHandler)((obj, e) => { });
+        Assert.DoesNotThrow(() => obj.TestEvent += handler);
+        evt.Should().NotBeNull();
+        evt.Should().Be(handler);
+
+        Assert.DoesNotThrow(() => obj.TestEvent -= handler);
+        evt.Should().BeNull();
+
+        mock.As<IWithNoDefault>().VerifyAdd(m => m.TestEvent += handler);
+        mock.As<IWithNoDefault>().VerifyRemove(m => m.TestEvent -= handler);
     }
 }
