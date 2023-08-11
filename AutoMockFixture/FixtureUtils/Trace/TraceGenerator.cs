@@ -1,4 +1,5 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection;
+
 namespace AutoMockFixture.FixtureUtils.Trace;
 
 internal class TraceGenerator
@@ -9,7 +10,13 @@ internal class TraceGenerator
         TraceInfo = traceInfo ?? throw new ArgumentNullException(nameof(traceInfo));
         Depth = depth;
 
-        var properties = builder.GetType().GetAllProperties(true);
+        var typeDetail = builder.GetType().GetTypeDetailInfo();
+        var properties = typeDetail.PropertyDetails
+                                            .Union(typeDetail.BasePrivatePropertyDetails)
+                                            .Union(typeDetail.ShadowedPropertyDetails)
+                                            .Union(typeDetail.ExplicitPropertyDetails)
+                                        .Select(pd => pd.ReflectionInfo)
+                                        .ToList();
         SingleProps = properties.Where(p =>
             (typeof(ISpecimenBuilder) == p.PropertyType || typeof(ISpecimenBuilderNode) == p.PropertyType)
             && p.SetMethod is not null).ToArray();
@@ -17,7 +24,11 @@ internal class TraceGenerator
         EnumerableProps = properties.Where(p => typeof(IList<ISpecimenBuilder>).IsAssignableFrom(p.PropertyType)
                                 || typeof(IList<ISpecimenBuilderNode>).IsAssignableFrom(p.PropertyType)).ToArray();
 
-        var fields = builder.GetType().GetAllFields(true);
+        var fields = typeDetail.FieldDetails
+                                    .Union(typeDetail.BasePrivateFieldDetails)
+                                    .Union(typeDetail.ShadowedFieldDetails)
+                                .Select(fd => fd.ReflectionInfo)
+                                .ToList();
         SingleFields = fields.Where(f => (typeof(ISpecimenBuilder) == f.FieldType
                                                 || typeof(ISpecimenBuilderNode) == f.FieldType)).ToArray();
 
