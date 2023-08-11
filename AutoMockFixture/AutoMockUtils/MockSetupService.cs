@@ -49,7 +49,7 @@ internal class MockSetupService
         var allProperties = GetProperties(includeNotOverridableCurrent, includeNotOverridableBase);
 
         // Properties with set will be handled in the command for it
-        // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects
+        // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects, but maybe this might cause it to stop having property behavier
         // Remeber that `private` setters in the base will have no setter in the proxy
         var singleMethodProperties = allProperties.Where(p => p.SetMethod is null || p.SetMethod.IsPrivate == true);
         foreach (var prop in singleMethodProperties)

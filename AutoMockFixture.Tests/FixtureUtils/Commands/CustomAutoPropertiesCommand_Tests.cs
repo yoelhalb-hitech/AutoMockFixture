@@ -20,7 +20,7 @@ file class CustomAutoPropertiesCommandSub : CustomAutoPropertiesCommand
     {
         var specimen = new T();
 
-        return GetPropertiesWithSet(specimen);
+        return GetPropertiesWithSet(specimen).Select(pi => pi.ReflectionInfo);
     }
 }
 

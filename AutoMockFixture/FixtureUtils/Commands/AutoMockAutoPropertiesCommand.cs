@@ -19,7 +19,7 @@ internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
         return base.NeedsSetup(specimen, pi);
     }
 
-    protected override void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)
+    protected override object? GetPropertyValue(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)
     {
         try
         {
@@ -29,18 +29,14 @@ internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
 
             Logger.LogInfo("Resolved property: " + propertyValue.GetType().Name);
 
-            if (propertyValue is NoSpecimen || propertyValue is OmitSpecimen) { return; }
-            else if (propertyValue is null || propertyValue is not IAutoMock mock)
-            {
-                pi.SetValue(specimen, propertyValue, null);
-                return;
-            }
-            else if (mock.GetInnerType() == pi.PropertyType) pi.SetValue(specimen, mock.GetMocked(), null);
+            if (propertyValue is IAutoMock mock && mock.GetInnerType() == pi.PropertyType) return mock.GetMocked();
+
+             return propertyValue;
         }
         catch
         {
             Logger.LogInfo("In catch");
-            base.HandleProperty(specimen, context, pi, tracker);
+            return base.GetPropertyValue(specimen, context, pi, tracker);
         }
     }
 

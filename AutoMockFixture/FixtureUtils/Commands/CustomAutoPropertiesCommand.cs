@@ -3,7 +3,6 @@ using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using DotNetPowerExtensions.Reflection;
 using DotNetPowerExtensions.Reflection.Models;
-using System.Linq;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 
@@ -46,15 +45,15 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
 
         var tracker = existingTracker ?? new NonAutoMockRequest(specimen.GetType(), Fixture);
 
-        foreach (var pi in GetPropertiesWithSet(specimen))
+        foreach (var pd in GetPropertiesWithSet(specimen))
         {
-            Logger.LogInfo("Property: " + pi.Name);
+            Logger.LogInfo("Property: " + pd.Name);
             try
             {
                 // If it is already set (possibly by the constructor or if it's static) then no need to set again
-                if (!NeedsSetup(specimen, pi)) continue;
+                if (!NeedsSetup(specimen, pd.ReflectionInfo)) continue;
 
-                HandleProperty(specimen, context, pi, tracker);
+                HandleProperty(specimen, context, pd, tracker);
             }
             catch { }
         }
@@ -75,14 +74,23 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
         if (existingTracker is null) tracker.SetCompleted(this);
     }
 
-    protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)
+    protected virtual bool NeedsSetup(object specimen, PropertyInfo pi) => pi.GetValue(specimen) == pi.PropertyType.GetDefault();
+
+    protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyDetail pd, ITracker tracker)
+    {
+        var propertyValue = GetPropertyValue(specimen, context, pd.ReflectionInfo, tracker);
+
+        if (propertyValue is NoSpecimen || propertyValue is OmitSpecimen) return;
+
+        if (pd.ReflectionInfo.SetMethod is not null) pd.ReflectionInfo.SetValue(specimen, propertyValue, null);
+        else if (pd.BasePrivateSetMethod is not null) pd.BasePrivateSetMethod!.ReflectionInfo.Invoke(specimen, new object?[] { propertyValue });
+    }
+
+    protected virtual object? GetPropertyValue(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)
     {
         Logger.LogInfo("In base prop");
 
-        var propertyValue = context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));
-
-        if (propertyValue is not NoSpecimen && propertyValue is not OmitSpecimen)
-            pi.SetValue(specimen, propertyValue, null);
+        return context.Resolve(new PropertyRequest(pi.DeclaringType, pi, tracker));
     }
 
     protected virtual void HandleField(object specimen, ISpecimenContext context, FieldInfo fi, ITracker tracker)
@@ -126,7 +134,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
                                select fi;
     }
 
-    protected IEnumerable<PropertyInfo> GetPropertiesWithSet(object specimen)
+    protected IEnumerable<PropertyDetail> GetPropertiesWithSet(object specimen)
     {
         var type = GetSpecimenType(specimen);
 
@@ -143,6 +151,6 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
                      where IncludePrivateSetters || pi.SetMethod?.ReflectionInfo.IsPublicOrInternal() == true
                      where IncludePrivateOrMissingGetter || pi.GetMethod?.ReflectionInfo.IsPublicOrInternal() == true
                      where pi.ReflectionInfo.GetIndexParameters().Length == 0 && Specification?.IsSatisfiedBy(pi.ReflectionInfo) != false
-                     select pi.ReflectionInfo;
+                     select pi;
     }
 }

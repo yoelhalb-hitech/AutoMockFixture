@@ -263,7 +263,7 @@ internal class AutoMockDependencies_Tests
         obj!.Object.TestClassPropWithPrivateSet.Should().NotBeNull();
         obj!.Object.TestClassPropGet.Should().NotBeNull();
 
-        obj!.Object.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj!.Object.TestClassPrivateNonVirtualProp.Should().NotBeNull();
     }
 
     [Test]
