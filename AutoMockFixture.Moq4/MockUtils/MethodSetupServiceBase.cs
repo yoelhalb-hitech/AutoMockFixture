@@ -9,6 +9,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
 {
     protected readonly IAutoMock mock;
     protected readonly Type mockedType;
+    private readonly MethodInfo? underlying;
     protected readonly MethodInfo method;
     protected readonly ISpecimenContext context;
     protected readonly ITracker? tracker;
@@ -16,7 +17,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
     protected readonly bool noMockDependencies;
 
     public MethodSetupServiceBase(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-                                                                        string? customTrackingPath = null, Type? mockedType = null)
+                                                                        string? customTrackingPath = null, Type? mockedType = null, MethodInfo? underlying = null)
     {
         this.mock = mock;
         this.method = method;
@@ -25,6 +26,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
         this.mockedType = mockedType ?? mock.GetInnerType();
+        this.underlying = underlying;
         this.tracker = mock.Tracker;
 
         this.noMockDependencies = !mock.Tracker?.StartTracker.MockDependencies ?? false;
@@ -33,7 +35,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
     public void Setup()
     {
         var returnType = method.ReturnType;
-        var methodInvocationLambda = new ExpressionGenerator(mockedType, method, context, tracker)
+        var methodInvocationLambda = new ExpressionGenerator(mockedType, underlying ?? method, context, tracker)
                                                     .MakeMethodInvocationLambda();
 
         if (methodInvocationLambda is null) return;

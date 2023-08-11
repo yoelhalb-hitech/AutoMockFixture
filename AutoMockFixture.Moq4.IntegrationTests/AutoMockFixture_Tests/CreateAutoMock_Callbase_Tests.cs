@@ -134,15 +134,15 @@ internal class CreateAutoMock_Callbase_Tests
     }
 
     [Test]
-    public void Test_AutoMock_WithCallBase_SetsUp_ReadOnlyProps_WhenInterface()
+    public void Test_AutoMock_WithCallBase_SetsUp_NonDefaultReadOnlyProps_WhenInterface()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateAutoMock<InternalReadOnlyTestInterface>(true);
+        var obj = fixture.CreateAutoMock<ITestInterface>(true);
 
         // Assert
-        obj.InternalTest.Should().NotBeNull();
+        obj.TestProp.Should().NotBeNull();
     }
 
     [Test]

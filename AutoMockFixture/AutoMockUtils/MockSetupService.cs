@@ -80,8 +80,10 @@ internal class MockSetupService
         var trackingPath = ":" + propInfo.ExplicitInterface!.FullName + "." + propInfo.Name;
 
         var method = propInfo.ReflectionInfo.GetMethod;
+        var underlying = propInfo.ExplicitInterface.GetProperty(propInfo.Name, BindingFlagsExtensions.AllBindings).GetMethod;
+
         Func<ISetupService> setupFunc = ()
-                                => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath, propInfo.ExplicitInterface);
+                                => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath, propInfo.ExplicitInterface, underlying);
 
         SetupExplicitMember(method, mock, propInfo.ReflectionInfo, trackingPath, setupFunc);
     }
@@ -91,8 +93,10 @@ internal class MockSetupService
         var trackingPath = ":" + methodInfo.ExplicitInterface!.FullName + "." + methodInfo.Name; // Do not use DeclaringType as it might be an override
 
         var method = methodInfo.ReflectionInfo;
+        var underlying = methodInfo.ExplicitInterface.GetMethod(methodInfo.Name, BindingFlagsExtensions.AllBindings);
+
         Func<ISetupService> setupFunc = ()
-                                => setupServiceFactory.GetMethodSetup(mock, method, context, trackingPath, methodInfo.ExplicitInterface);
+                                => setupServiceFactory.GetMethodSetup(mock, method, context, trackingPath, methodInfo.ExplicitInterface, underlying);
 
         SetupExplicitMember(method, mock, method, trackingPath, setupFunc);
     }

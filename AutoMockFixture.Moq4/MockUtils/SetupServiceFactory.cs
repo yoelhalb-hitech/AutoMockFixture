@@ -9,16 +9,16 @@ internal class SetupServiceFactory : SetupServiceFactoryBase
         => new AutoPropertySetupService(mockedType, propertyType, mock, prop, propValue);
 
     protected override ISetupService GetService(MethodSetupTypes setupType,
-        IAutoMock mock, MethodInfo method, ISpecimenContext context, string? customTrackingPath, Type? mockType = null)
+        IAutoMock mock, MethodInfo method, ISpecimenContext context, string? customTrackingPath, Type? mockType = null, MethodInfo? underlying = null)
     {
         switch (setupType)
         {
             case MethodSetupTypes.Eager:
-                return new MethodEagerSetupService(mock, method, context, customTrackingPath, mockType);
+                return new MethodEagerSetupService(mock, method, context, customTrackingPath, mockType, underlying);
             case MethodSetupTypes.LazySame:
-                return new MethodSetupServiceWithSameResult(mock, method, context, customTrackingPath, mockType);
+                return new MethodSetupServiceWithSameResult(mock, method, context, customTrackingPath, mockType, underlying);
             case MethodSetupTypes.LazyDifferent:
-                return new MethodSetupServiceWithDifferentResult(mock, method, context, customTrackingPath, mockType);
+                return new MethodSetupServiceWithDifferentResult(mock, method, context, customTrackingPath, mockType, underlying);
             default:
                 throw new InvalidEnumArgumentException();
 }
