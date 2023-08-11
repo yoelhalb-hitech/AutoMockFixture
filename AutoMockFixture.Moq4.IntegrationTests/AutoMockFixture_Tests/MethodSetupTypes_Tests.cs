@@ -161,14 +161,16 @@ internal class MethodSetupTypes_Tests
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<InternalPrivateSetterPropertyClass>();
+        var obj = fixture.CreateAutoMock<WithCtorArgsTestClass>();
 
-        fixture.GetTracker(obj!)!.GetChildrensPaths()!.Keys.Should().NotContain("." + nameof(InternalPrivateSetterPropertyClass.InternalTest));
+        // It only works so far on readonly properties as read write are not being setup
+        const string lazyPropPath = "." + nameof(WithCtorArgsTestClass.TestClassPropGet) + "." + nameof(InternalSimpleTestClass.InternalTest);
 
-        var prop = obj!.InternalTest;
+        fixture.GetTracker(obj!)!.GetChildrensPaths()!.Keys.Should().NotContain(lazyPropPath);
+
+        var prop = obj!.TestClassPropGet!.InternalTest;
         prop.Should().NotBeNullOrWhiteSpace();
-        fixture.GetTracker(obj!)!.GetChildrensPaths()!.Keys.Should().Contain("." + nameof(InternalPrivateSetterPropertyClass.InternalTest));
-
+        fixture.GetTracker(obj!)!.GetChildrensPaths()!.Keys.Should().Contain(lazyPropPath);
     }
 
     // A private setter doesn't have setter in the actual object which is a subclass so we treat it as a readonly

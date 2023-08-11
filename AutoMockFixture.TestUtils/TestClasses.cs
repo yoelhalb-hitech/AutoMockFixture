@@ -66,7 +66,7 @@ internal abstract class InternalAbstractMethodTestClass
 
 internal class WithCtorArgsTestClass
 {
-    public readonly InternalSimpleTestClass TestCtorArg;
+    public InternalSimpleTestClass TestCtorArg { get; } // non virtual readonly so it will only be set by the ctor
     public InternalSimpleTestClass TestCtorArgProp { get; set; }
     public InternalSimpleTestClass TestCtorArgPrivateProp { get; private set; }
     public virtual InternalSimpleTestClass TestCtorArgVirtualProp { get; set; }

@@ -52,7 +52,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
             try
             {
                 // If it is already set (possibly by the constructor or if it's static) then no need to set again
-                if (pi.GetValue(specimen) != pi.PropertyType.GetDefault()) continue;
+                if (!NeedsSetup(specimen, pi)) continue;
 
                 HandleProperty(specimen, context, pi, tracker);
             }
