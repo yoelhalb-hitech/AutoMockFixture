@@ -63,12 +63,21 @@ internal class InterceptorWithFixInterfaces : Castle.DynamicProxy.IInterceptor
 
         if (evtMethod is null || evtMethod.ReflectionInfo == invocation.Method) return null;
 
-        var invocationMoq = new AutoMock<Castle.DynamicProxy.IInvocation>() { CallBase = true };
-        invocationMoq.SetTarget(invocation);
-        invocationMoq.Setup(m => m.Method).Returns(evtMethod.ReflectionInfo);
+        //return new InvocationWrapper(invocation, new MethodWrapper(evtMethod.ReflectionInfo) );
 
-        return invocationMoq.Object;
+        var t = new AutoMock<TypeInfo>() { CallBase = true };
+        t.SetTarget(invocation.Method.DeclaringType!.GetTypeInfo());
+        t.Protected().Setup<TypeAttributes>("GetAttributeFlagsImpl").Returns(0); // If it is an interface then Moq tries to match the interface map method to ours which won't work, so fake it
+
+        var originalMethod = invocation.Method;
+
+        var md = new MethodWrapper(originalMethod);
+        md.MethodAttributes = invocation.Method.Attributes & ~MethodAttributes.Abstract; // Since the original declaration method should never be callable we don't have to worry faking it as non abstract...
+        md.ParentType = t.Object;
+
+        return new InvocationWrapper(invocation, md, evtMethod.ReflectionInfo);
     }
+
     private Castle.DynamicProxy.IInvocation? GetFixedInvocationForOriginalBaseAbstract(Castle.DynamicProxy.IInvocation invocation)
     {
         var detailInfo = originalType?.GetTypeDetailInfo();
@@ -83,29 +92,12 @@ internal class InterceptorWithFixInterfaces : Castle.DynamicProxy.IInterceptor
         t.Protected().Setup<TypeAttributes>("GetAttributeFlagsImpl").Returns(0); // If it is an interface then Moq tries to match the interface map method to ours which won't work, so fake it
 
         var originalMethod = invocation.Method;
-        var md = new AutoMock<MethodInfo>() { CallBase = true };
-        md.SetTarget(invocation.Method);
-        md.Setup(m => m.Equals(It.Is<object>(o => (o as MethodInfo) == originalMethod))).Returns(true); // Trick moq into thinking it is the original method...
-        md.Setup(m => m.Attributes).Returns(invocation.Method.Attributes & ~MethodAttributes.Abstract); // Since the original declaration method should never be callable we don't have to worry faking it as non abstract...
-        md.Setup(m => m.DeclaringType).Returns(t.Object);
 
-        var invocationMoq = new AutoMock<Castle.DynamicProxy.IInvocation>() { CallBase = true };
-        invocationMoq.SetTarget(invocation);
-        invocationMoq.Setup(m => m.Method).Returns(md.Object);
-        invocationMoq.Setup(m => m.Proceed()).Callback(() => // There are situations where we cannot trick moq into calling the correct one and it will resort to call the base
-        {
-            try
-            {
-                var met = methodToUse.ReflectionInfo.IsGenericMethodDefinition ? methodToUse.ReflectionInfo.MakeGenericMethod(invocation.GenericArguments) : methodToUse.ReflectionInfo;
-                invocationMoq.Object.ReturnValue = met.Invoke(invocation.Proxy, invocation.Arguments);
-            }
-            catch (TargetInvocationException ex) // Reflection rethrows any errors as `TargetInvocationException` so get the inner exception
-            {
-                throw ex.InnerException ?? ex;
-            }
-        });
+        var md = new MethodWrapper(originalMethod);
+        md.MethodAttributes = invocation.Method.Attributes & ~MethodAttributes.Abstract; // Since the original declaration method should never be callable we don't have to worry faking it as non abstract...
+        md.ParentType = t.Object;
 
-        return invocationMoq.Object;
+        return new InvocationWrapper(invocation, md, methodToUse.ReflectionInfo);
     }
     private Castle.DynamicProxy.IInvocation GetFixedInvocationForDefaultImplmentation(Castle.DynamicProxy.IInvocation invocation)
     {

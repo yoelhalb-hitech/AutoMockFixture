@@ -59,12 +59,11 @@ internal class AutoMockProxyGenerator : ProxyGenerator
         if (typeof(Type) == classToProxy ||
             (Callbase != false && imockedType is not null && additionalInterfacesToProxy.Contains(imockedType)))
         {
-            // Moq has an issue with SetupSet/SetupAdd/SetupRemove that it throws for any explicit implmentation
-            // Moq also has an issue with default interface implementation (when not overriden) in that it always calls base even when explictly setup
+            // Moq has an issue with default interface implementation (when not overriden) in that it always calls base even when explictly setup
             var typeDetail = classToProxy.GetTypeDetailInfo();
             if (typeDetail.ExplicitMethodDetails.All(m => m.ReflectionInfo.DeclaringType?.IsInterface != true || m.DeclarationType != DeclarationTypes.Decleration)
                 && typeDetail.ExplicitPropertyDetails.All(p => p.ReflectionInfo.DeclaringType?.IsInterface != true || p.DeclarationType != DeclarationTypes.Decleration)
-                && !typeDetail.ExplicitEventDetails.All(e => e.ReflectionInfo.DeclaringType?.IsInterface != true || e.DeclarationType != DeclarationTypes.Decleration))
+                && typeDetail.ExplicitEventDetails.All(e => e.ReflectionInfo.DeclaringType?.IsInterface != true || e.DeclarationType != DeclarationTypes.Decleration))
             {
                 return originalProxyGenerator.CreateClassProxy(classToProxy, additionalInterfacesToProxy,
                     options, constructorArguments, interceptors);

@@ -1,5 +1,4 @@
-﻿
-using AutoFixture.AutoMoq;
+﻿using AutoFixture.AutoMoq;
 using DotNetPowerExtensions.Reflection.Models;
 using DotNetPowerExtensions.Reflection;
 using System.Linq;
@@ -20,7 +19,7 @@ internal class DefaultInterfaceForClassSetupHandler : IProxyTypeSetupHandler
 
     private static PropertyDetail[] GetDefaultProperties(Type classToProxy)
         => classToProxy.GetTypeDetailInfo().ExplicitPropertyDetails
-                // The issue is only by default interface properties not reimplemented OR by PropertySet
+                // The issue is only by default interface properties not reimplemented
                 .Where(p => p.ReflectionInfo.DeclaringType?.IsInterface == true && p.DeclarationType == DeclarationTypes.Decleration)
                 .ToArray();
     private static EventDetail[] GetDefaultEvents(Type classToProxy)

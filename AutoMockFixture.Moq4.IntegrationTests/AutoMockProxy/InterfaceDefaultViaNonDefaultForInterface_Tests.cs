@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.NUnit3;
+using Moq;
 
 namespace AutoMockFixture.Moq4.IntegrationTests.AutoMockProxy;
 
@@ -13,8 +14,8 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
     public interface IWithDefault : IWithDefaultBase
     {
         int IWithDefaultBase.TestMethod() => 10;
-        int IWithDefaultBase.TestProp { get => 20; set => throw new InvalidOperationException(); }
-        event EventHandler IWithDefaultBase.TestEvent { add => throw new InvalidOperationException(); remove => throw new InvalidOperationException(); }
+        int IWithDefaultBase.TestProp { get => 20; set => throw new InvalidOperationException("Test Exception"); }
+        event EventHandler IWithDefaultBase.TestEvent { add => throw new InvalidOperationException("Test Exception"); remove => throw new InvalidOperationException("Test Exception"); }
     }
 
     public interface IWithDefaultSub : IWithDefault { }
@@ -22,8 +23,8 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
     public interface IWithReimplmentedDefault : IWithDefault
     {
         int IWithDefaultBase.TestMethod() => 20;
-        int IWithDefaultBase.TestProp { get => 30; set => throw new ArgumentOutOfRangeException(); }
-        event EventHandler IWithDefaultBase.TestEvent { add => throw new ArgumentOutOfRangeException(); remove => throw new ArgumentOutOfRangeException(); }
+        int IWithDefaultBase.TestProp { get => 30; set => throw new ArgumentOutOfRangeException("Test Exception"); }
+        event EventHandler IWithDefaultBase.TestEvent { add => throw new ArgumentOutOfRangeException("Test Exception"); remove => throw new ArgumentOutOfRangeException("Test Exception"); }
     }
 
     public interface IWithReimplmentedDefaultSub : IWithReimplmentedDefault { }
@@ -58,9 +59,9 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
         obj.TestMethod().Should().Be(10);
         obj.TestProp.Should().Be(20);
 
-        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70);
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
     [Test]
@@ -74,9 +75,9 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
         obj.TestMethod().Should().Be(20);
         obj.TestProp.Should().Be(30);
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70);
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
 
@@ -96,13 +97,47 @@ public class InterfaceDefaultViaNonDefaultForInterface_Tests
         mock.As<IWithDefaultBase>().SetupGet(i => i.TestProp).Returns(60);
 
         int propVal = 0;
-        //mock.As<IWithDefault>().SetupSet(i => propVal = i.TestProp);
+        mock.As<IWithDefaultBase>()
+            .SetupSet(i => i.TestProp = It.IsAny<int>())
+            .Callback<int>(i => propVal = i);
 
-        var obj = mock.Object as IWithDefault;
+        EventHandler? evt = null;
+        if (!callbase) // Moq has a bug that it calls base on .Callback for events (unlike properties and methods)
+        {
+            mock.As<IWithDefaultBase>()
+                .SetupAdd(i => i.TestEvent += It.IsAny<EventHandler>())
+                .Callback<EventHandler>(e => evt = e);
+
+            mock.As<IWithDefaultBase>()
+                .SetupRemove(i => i.TestEvent -= It.IsAny<EventHandler>())
+                .Callback<EventHandler>(e => evt = null);
+        }
+
+        var obj = mock.Object as IWithDefaultBase;
         obj.TestMethod().Should().Be(50);
-        //obj.TestProp.Should().Be(60);
+        obj.TestProp.Should().Be(60);
 
-        //Assert.DoesNotThrow(() => obj.TestProp = 70);
-        //propVal.Should().Be(70);
+        Assert.DoesNotThrow(() => obj.TestProp = 70);
+        propVal.Should().Be(70);
+
+        var handler = (EventHandler)((obj, e) => { });
+        if (!callbase)
+        {
+            Assert.DoesNotThrow(() => obj.TestEvent += handler);
+            evt.Should().NotBeNull();
+            evt.Should().Be(handler);
+
+            Assert.DoesNotThrow(() => obj.TestEvent -= handler);
+            evt.Should().BeNull();
+        }
+
+        mock.As<IWithDefaultBase>().Verify(m => m.TestMethod());
+        mock.As<IWithDefaultBase>().VerifyGet(m => m.TestProp);
+        mock.As<IWithDefaultBase>().VerifySet(m => m.TestProp = 70);
+        if (!callbase)
+        {
+            mock.As<IWithDefaultBase>().VerifyAdd(m => m.TestEvent += handler);
+            mock.As<IWithDefaultBase>().VerifyRemove(m => m.TestEvent -= handler);
+        }
     }
 }

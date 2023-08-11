@@ -14,8 +14,8 @@ internal class NonExplicitInterfaceForClass_Tests
     public class TypeWithNonExplicit : IWithNoDefault
     {
         public int TestMethod() => 10;
-        public int TestProp { get => 20; set => throw new InvalidOperationException(); }
-        public event EventHandler TestEvent { add => throw new InvalidOperationException(); remove => throw new InvalidOperationException(); }
+        public int TestProp { get => 20; set => throw new InvalidOperationException("Test Exception"); }
+        public event EventHandler TestEvent { add => throw new InvalidOperationException("Test Exception"); remove => throw new InvalidOperationException("Test Exception"); }
     }
 
     public class TypeWithNonExplicitSub : TypeWithNonExplicit
@@ -25,8 +25,8 @@ internal class NonExplicitInterfaceForClass_Tests
     public class TypeWithReimplmented : TypeWithNonExplicit, IWithNoDefault
     {
         public new int TestMethod() => 30;
-        public new int TestProp { get => 40; set => throw new ArgumentOutOfRangeException(); }
-        public new event EventHandler TestEvent { add => throw new ArgumentOutOfRangeException(); remove => throw new ArgumentOutOfRangeException(); }
+        public new int TestProp { get => 40; set => throw new ArgumentOutOfRangeException("Test Exception"); }
+        public new event EventHandler TestEvent { add => throw new ArgumentOutOfRangeException("Test Exception"); remove => throw new ArgumentOutOfRangeException("Test Exception"); }
     }
 
     public class TypeWithReimplmentedSub : TypeWithReimplmented
@@ -47,9 +47,9 @@ internal class NonExplicitInterfaceForClass_Tests
         obj.TestMethod().Should().Be(10);
         obj.TestProp.Should().Be(20);
 
-        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70);
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
     [Test]
@@ -66,9 +66,9 @@ internal class NonExplicitInterfaceForClass_Tests
         obj.TestMethod().Should().Be(30);
         obj.TestProp.Should().Be(40);
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70);
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
     [Test]
@@ -85,9 +85,9 @@ internal class NonExplicitInterfaceForClass_Tests
         obj.TestMethod().Should().Be(10);
         obj.TestProp.Should().Be(20);
 
-        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70);
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
     [Test]
@@ -105,8 +105,8 @@ internal class NonExplicitInterfaceForClass_Tests
         obj.TestMethod().Should().Be(30);
         obj.TestProp.Should().Be(40);
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70);
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 }

@@ -7,8 +7,8 @@ public class DefaultInterfaceForInterface_Tests
     public interface IWithDefault
     {
         public int TestMethod() => 10;
-        public int TestProp { get => 20; set => throw new InvalidOperationException(); }
-        public event EventHandler TestEvent { add => throw new InvalidOperationException(); remove => throw new InvalidOperationException(); }
+        public int TestProp { get => 20; set => throw new InvalidOperationException("Test Exception"); }
+        public event EventHandler TestEvent { add => throw new InvalidOperationException("Test Exception"); remove => throw new InvalidOperationException("Test Exception"); }
     }
 
     public interface IWithDefaultSub : IWithDefault { }
@@ -16,8 +16,8 @@ public class DefaultInterfaceForInterface_Tests
     public interface IWithReimplmentedDefault : IWithDefault
     {
         int IWithDefault.TestMethod() => 20;
-        int IWithDefault.TestProp { get => 30; set => throw new ArgumentOutOfRangeException(); }
-        event EventHandler IWithDefault.TestEvent { add => throw new ArgumentOutOfRangeException(); remove => throw new ArgumentOutOfRangeException(); }
+        int IWithDefault.TestProp { get => 30; set => throw new ArgumentOutOfRangeException("Test Exception"); }
+        event EventHandler IWithDefault.TestEvent { add => throw new ArgumentOutOfRangeException("Test Exception"); remove => throw new ArgumentOutOfRangeException("Test Exception"); }
     }
 
     public interface IWithReimplmentedDefaultSub : IWithReimplmentedDefault { }
@@ -51,9 +51,9 @@ public class DefaultInterfaceForInterface_Tests
         obj.TestMethod().Should().Be(10);
         obj.TestProp.Should().Be(20);
 
-        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70);
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<InvalidOperationException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
     [Test]
@@ -67,9 +67,9 @@ public class DefaultInterfaceForInterface_Tests
         obj.TestMethod().Should().Be(20);
         obj.TestProp.Should().Be(30);
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70);
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { });
-        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { });
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent += (o, e) => { }, "Test Exception");
+        Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestEvent -= (o, e) => { }, "Test Exception");
     }
 
 
