@@ -110,7 +110,7 @@ Assert.Equals(bar.Object.InternalProp, null); // AutoFixture ignores internal pr
 In AutoMockFixture:
 
 ```cs
-var fixture = new UnitFixture();
+var fixture = new UnitFixture(); // Unit fixture is better suited for unit testing by automatically mocking all ctor args and property/field value
 
 var foo = fixture.Create<Foo>();
 
@@ -185,7 +185,7 @@ fixture.GetAutoMocks<Address>().Verify(a => a.SetZip("11111")); // To verify for
 Or:
 
 ```cs
-var fixture = new IntegrationFixture();
+var fixture = new IntegrationFixture(); // IntegrationFixture is better suited for integration testing as it won't mock anything unless specified via the AutoMockTypeControl setting or the class is abstarct/interface
 fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(Address));
 
 var order1 = fixture.Create<Order>();
@@ -194,11 +194,26 @@ var order2 = fixture.Create<Order>();
 // Verify as above
 ```
 
+Or in attribute form (currently supporting NUnit but you need to install the corresponding nuget package)
+
+```cs
+[NUnit.Framework.Test]
+[UnitAutoData] // [UnitAutoData] uses the UnitFixture, while [IntegrationAutoData] uses the IntegrationFixture
+public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMockFixture fixture)
+{
+	// Verify as above
+}
+```
+
 ## Features
 
 #### On Moq
 - **Minimal setup**: You can setup methods without providing all arguments, just the ones you specifically want
 - **Setup verification times**: Setup verification times along with the method setup (currently Moq only suuports to setup that it has to be called using `Verifiable`)
+- **Default Interface Implmentation - no callbase**: Moq is currently using default interface implmenetations when mocking a class that has a default interface implementation and `callbase` is false (in which case it shouldn't)
+- **Default Interface Implmentation - events**: Moq is currently not working correctly with default interface implementations of events
+- **Default Interface Implmentation - abstract base**: Moq is currently not working correctly when the original interface is abstract and the default implementation is in an inherited interface
+- **Interface ReImplmentation - with late binding**: When a class implements an interface then in Moq when creating the `Mock` via late binding (such as generic on the interface) and also calling `As<that interface>` it will not call the original implementation even if the base is not virtual 
 - **Generic constrains**: Provide matchers for generics with constraints
 - **Ignore ctor**: When `Callbase = false` it does not call any constructors on the object
 - **No casting**: An `AutoMock` has an implicit cast to the mocked object, in many cases there is no need to call `.Object` on it
@@ -301,6 +316,9 @@ The main components in Autofixture are as follows:
 
 #### AutoMockFixture
 
+##### Fixtures
+- *UnitFixture*: A fixture better suitbale for unit testing, it will by default (when generating the object calling `Create()`) will try to generate the object and mock all dependencies (such as ctor arguments and property/field values)
+- *IntgerationFixture*: A fixture better suitbale for unit testing, it will by default (when generating the object calling `Create()`) will not mock any dependencies (such as ctor arguments and property/field values) unless explictly specified or it is impossible to generatere another way (i.e. interfaces/abstract classes)
 ##### Tracking
 - There are a few types of requests that can be started with, namely `AutoMockRequest`/`AutoMockDirectRequest`/`AutoMockDependenciesRequest`/`NonAutoMockRequest`
 - The first requests will then generate other requests based on the depednecies needed or when setting up properties/methods/fields
