@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.NUnit3.Moq4</PackageId>
-    <PackageVersion>1.1.1</PackageVersion>
+    <PackageVersion>1.1.2</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
@@ -25,7 +25,15 @@
     <PackageTags>Moq;TDD;Mock;Mocking;Mocks;AutoMocking;Agile;Testing;UnitTest;UnitTesting;IntegrationTest;IntegrationTesting;AutoFixture;AutoMockFixture</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
 	<Company>SequelPay</Company>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
