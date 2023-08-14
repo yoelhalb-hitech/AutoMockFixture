@@ -41,7 +41,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
             object? autoMock = AutoMockHelpers.GetFromObj(result);
             if (autoMock is null && isMock) autoMock = new NoSpecimen();
 
-            var retValue = isMock ? autoMock : result;
+            var retValue = isMock ? autoMock : result is IAutoMock mock ? mock.GetMocked() : result;
             nonMockRequest.SetResult(retValue, this);
             return retValue;
         }

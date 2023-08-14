@@ -40,7 +40,7 @@ internal class LastResortBuilder : ISpecimenBuilder
         var specimen = context.Resolve(newRequest);
 
         // A specimen can only be the same as the request if the specimen is also a type
-        // otheriwse the recursion handler got stuck
+        // otherwise the recursion handler got stuck
         if (object.ReferenceEquals(specimen, newRequest) && newRequest is not Type)
             throw new Exception("Unable to create object");
 

@@ -34,7 +34,8 @@ internal class InterceptorWithFixInterfaces : Castle.DynamicProxy.IInterceptor
         }
 
         var m = invocation.TargetType?.GetMethod(invocation.Method.Name, BindingFlagsExtensions.AllBindings);
-        if (m is null || (m.IsVirtual && !m.IsFinal) || proxyType.GetMethod(invocation.Method.Name, BindingFlagsExtensions.AllBindings)?.IsEqual(m) == true)
+        // .GetMethod might end up with an ambiguas match if two methods have the same name, while .GetMethods can return also base shadowed methods so we have to do it this way
+        if (m is null || (m.IsVirtual && !m.IsFinal) || proxyType.GetMethods(BindingFlagsExtensions.AllBindings).All(me => me.IsEqual(m) || !me.IsSignatureEqual(m)))
         {
             if(m is null) invocation = GetFixedInvocationForDefaultImplmentation(invocation);
             originalinterceptor.Intercept(invocation);

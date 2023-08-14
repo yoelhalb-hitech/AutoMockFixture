@@ -1,6 +1,9 @@
-﻿using AutoMockFixture.FixtureUtils.Requests;
+﻿using AutoMockFixture.AutoMockUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 using DotNetPowerExtensions.Reflection;
+using System.Collections;
 
 namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
@@ -14,6 +17,13 @@ internal class EnumerableBuilder : NonConformingBuilder
 #endif
     };
 
+    public EnumerableBuilder(IAutoMockHelpers autoMockHelpers)
+    {
+        AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
+    }
+
+    public IAutoMockHelpers AutoMockHelpers { get; }
+
     public override int Repeat => 3;
 
     protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
@@ -26,14 +36,19 @@ internal class EnumerableBuilder : NonConformingBuilder
         return base.GetRepeatedInnerSpecimens(originalRequest, context);
     }
 
-    public override object? CreateResult(Type requestType, object[][] innerResults)
+    public override object? CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
     {
+        var count = innerResults.Length;
         var genericType = GetInnerTypes(requestType).First();
 
         var data = innerResults.Select(x => x.First()); //Assuming that it is only one item per line
-        var typedData = (IEnumerable<object>?)(typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))?
+        var casted = (IEnumerable?)(typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))?
             .MakeGenericMethod(genericType)?
-            .Invoke(null, new object[] { data })) ?? new object[] { };
+            .Invoke(null, new object[] { data }));
+
+        var typedData = casted ?? new object[] { };
+        if (casted is null) count = 0;
+
         var isNotEnumerable = requestType.GetInterfaces().All(x => x.IsGenericType && x.GetGenericTypeDefinition() != typeof(IEnumerable<>));
 
         var typeToMatch =
@@ -69,13 +84,33 @@ internal class EnumerableBuilder : NonConformingBuilder
 
         // TODO...probably better handle direct Dictionary ReadOnlyCollection HashSet and their interfaces etc, and everything in system.collections.generic.
 
-
-        return CreateType(requestType, genericType, typedData, isMatch) ?? new NoSpecimen();
+        return CreateType(requestType, genericType, typedData, isMatch, count, typeRequest, context) ?? new NoSpecimen();
     }
 
     private object? CreateType(Type requestType, Type genericType,
-                                    IEnumerable<object> typedData, Func<Type, bool> isMatch)
+                                    IEnumerable typedData, Func<Type, bool> isMatch, int count, IRequestWithType typeRequest, ISpecimenContext context)
     {
+        IAutoMock mock = null;
+        object mocked = null;
+        if (requestType.IsAbstract)
+        {
+            var directRequest =  new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
+            {
+                MockShouldCallbase = false,
+                NoConfigureMemebrs = true,
+            };
+
+            var specimen = context.Resolve(directRequest);
+            if (specimen is null || specimen is NoSpecimen || specimen is OmitSpecimen)
+            {
+                typeRequest.SetResult(specimen, this);
+                return specimen;
+            }
+
+            mock = AutoMockHelpers.GetFromObj(specimen)!;
+            mocked = mock.GetMocked();
+        }
+
         // TODO... interfaces
         var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings);
         var singleCtors = ctors.Where(x => x.GetParameters().Length == 1);
@@ -92,8 +127,11 @@ internal class EnumerableBuilder : NonConformingBuilder
                         && isMatch(m.GetParameters()[0].ParameterType));
             if (enumerableMethod is not null)
             {
-                var obj = emptyCtor?.Invoke(new object[] { }) ?? intCtor?.Invoke(new object[] { typedData.Count() });
-                enumerableMethod.Invoke(enumerableMethod.IsStatic ? null : obj, new object[] { typedData });
+                var obj = emptyCtor?.Invoke(mocked, new object[] { }) ?? intCtor?.Invoke(mocked, new object[] { count });
+                obj = obj ?? mocked;
+                enumerableMethod.Invoke(enumerableMethod.IsStatic ? null : (obj ?? mocked), new object[] { typedData });
+
+                if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
                 return obj;
             }
 
@@ -101,12 +139,14 @@ internal class EnumerableBuilder : NonConformingBuilder
                         && m.GetParameters()[0].ParameterType == genericType);
             if (singleItemMethod is not null)
             {
-                var obj = emptyCtor?.Invoke(new object[] { }) ?? intCtor?.Invoke(new object[] { typedData.Count() });
+                var obj = emptyCtor?.Invoke(mocked, new object[] { }) ?? intCtor?.Invoke(mocked, new object[] { count });
+                obj = obj ?? mocked;
                 foreach (var item in typedData)
                 {
                     singleItemMethod.Invoke(singleItemMethod.IsStatic ? null : obj, new object[] { item });
                 }
 
+                if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
                 return obj;
             }
         }
@@ -116,7 +156,9 @@ internal class EnumerableBuilder : NonConformingBuilder
         //var otherCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1 && typeToBaseOf.IsAssignableFrom(x.GetParameters()[0].ParameterType));
         //if (otherCtor is not null)
         //{
-        //    var obj = otherCtor.Invoke(new object[] { typedData });
+        //    var obj = otherCtor.Invoke(mocked, new object[] { typedData });
+        //    obj = obj ?? mocked;
+        //    if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
         //    return obj;
         //}
 

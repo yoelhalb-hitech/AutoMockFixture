@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 using DotNetPowerExtensions.Reflection;
 
@@ -8,13 +9,14 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 {
     public abstract Type[] SupportedTypes { get; }
     public abstract int Repeat { get; }
-    public abstract object? CreateResult(Type requestType, object[][] innerResults);
+    public abstract object? CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context);
     public virtual Type[] GetInnerTypes(Type requestType)
         => requestType.IsArray ? new Type[] { requestType.GetElementType()! } : requestType.GenericTypeArguments;
 
     public object? Create(object request, ISpecimenContext context)
     {
         if (request is not IRequestWithType typeRequest || typeRequest.Request is not Type type) return new NoSpecimen();
+        if(request is AutoMockDirectRequest || (type.GetInterfaces().Any(t => t == typeof(IAutoMock)))) return new NoSpecimen();
 
         var genericDefinitions = type.GetAllGenericDefinitions();
 
@@ -26,7 +28,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
 
         if (innerResult is NoSpecimen) return innerResult;
 
-        var finalResult = CreateResult(type, (object[][])innerResult);
+        var finalResult = CreateResult(type, (object[][])innerResult, typeRequest, context);
         typeRequest.SetResult(finalResult, this);
 
         return finalResult;

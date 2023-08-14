@@ -104,9 +104,11 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
         Logger.LogInfo("In generate result - Is generic definition: " + method.IsGenericMethodDefinition);
 
-        if (mock.MethodsNotSetup.ContainsKey(trackingPath))
-                throw mock.MethodsNotSetup[trackingPath].Exception
-                ?? new Exception("Method not setup but without an exception, shouldn't arrive here");
+        // Can actually happen if this is an explicit interface implementation while there is another method on the class with the same signature
+        // In this case the mock will register the method setup with the explicit name but here (when called via explicit) will arrive with the non explicit name
+        //if (mock.MethodsNotSetup.ContainsKey(trackingPath))
+        //        throw mock.MethodsNotSetup[trackingPath].Exception
+        //        ?? new Exception("Method not setup but without an exception, shouldn't arrive here");
 
         Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
 

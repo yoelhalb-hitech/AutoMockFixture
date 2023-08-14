@@ -1,4 +1,6 @@
 ﻿
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+
 namespace AutoMockFixture.FixtureUtils.Commands;
 
 internal class AutoMockVirtualMethodsCommand : ISpecimenCommand
@@ -20,6 +22,8 @@ internal class AutoMockVirtualMethodsCommand : ISpecimenCommand
         {
             var mock = autoMockHelpers.GetFromObj(specimen);
             if (mock is null) return;
+
+            if (mock.Tracker is AutoMockDirectRequest request && request.NoConfigureMemebrs) return;
 
             var setupService = new MockSetupService(mock, context, setupServiceFactory, autoMockHelpers);
             setupService.Setup();

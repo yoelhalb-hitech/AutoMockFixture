@@ -17,7 +17,7 @@ internal class TaskBuilder : NonConformingBuilder
     protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
         => new InnerRequest(type, originalRequest);
 
-    public override object? CreateResult(Type requestType, object[][] innerResults)
+    public override object? CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
     {
         var nonGenericType = requestType.IsGenericType ? requestType.BaseType : requestType;
 

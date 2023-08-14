@@ -44,7 +44,7 @@ internal class AutoMockHelpers : IAutoMockHelpers
         if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType
                     || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
                     || t == typeof(Array)
-                    || typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
+                    //|| typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
 
 #if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
                     || t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))
