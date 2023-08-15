@@ -21,6 +21,12 @@ internal class EnumerableBuilder_Tests
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => list.GetEnumerator();
     }
 
+    public class WithNonAbstractEnumerableProperty
+    {
+        public NonAbstractList<string>? NonAbstractListProp { get; set; }
+    }
+    public class NonAbstractList<T> : AbstractList<T> { }
+
     [Test]
     public void Test_HandlesCorrectlyAbstractClass()
     {
@@ -46,7 +52,37 @@ internal class EnumerableBuilder_Tests
 
         var result = fixture.CreateNonAutoMock<WithAbstractEnumerableProperty>();
         result.Should().NotBeNull();
-        result.AbstractListProp.Should().NotBeNull();
-        result.AbstractListProp.Count().Should().Be(3);
+        result!.AbstractListProp.Should().NotBeNull();
+        result.AbstractListProp!.Count().Should().Be(3);
+    }
+
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClass()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateNonAutoMock<NonAbstractList<string>>();
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClass_ValueType()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateNonAutoMock<NonAbstractList<int>>();
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClassProp()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateNonAutoMock<WithNonAbstractEnumerableProperty>();
+        result.Should().NotBeNull();
+        result!.NonAbstractListProp.Should().NotBeNull();
+        result.NonAbstractListProp!.Count().Should().Be(3);
     }
 }

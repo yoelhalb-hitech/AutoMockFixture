@@ -121,15 +121,18 @@ internal class EnumerableBuilder : NonConformingBuilder
         var intCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1
                                                 && x.GetParameters().First().ParameterType ==  typeof(int));
         var methods = requestType.GetAllMethods();
+        Func<object?> ctorInvoke = () => (mocked is not null
+                                                        ? emptyCtor?.Invoke(mocked, new object[] { }) ?? intCtor?.Invoke(mocked, new object[] { count })
+                                                        : emptyCtor?.Invoke(new object[] { }) ?? intCtor?.Invoke(new object[] { count })) // If mocked is null we need to call this overload
+                                        ?? mocked; // The overload with an object retruns null so return mocked
         if (emptyCtor is not null || intCtor is not null)
         {
             var enumerableMethod = methods.FirstOrDefault(m => m.GetParameters().Length == 1
                         && isMatch(m.GetParameters()[0].ParameterType));
             if (enumerableMethod is not null)
             {
-                var obj = emptyCtor?.Invoke(mocked, new object[] { }) ?? intCtor?.Invoke(mocked, new object[] { count });
-                obj = obj ?? mocked;
-                enumerableMethod.Invoke(enumerableMethod.IsStatic ? null : (obj ?? mocked), new object[] { typedData });
+                var obj = ctorInvoke(); // Since if mocked i
+                enumerableMethod.Invoke(enumerableMethod.IsStatic ? null : obj, new object[] { typedData });
 
                 if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
                 return obj;
@@ -139,8 +142,7 @@ internal class EnumerableBuilder : NonConformingBuilder
                         && m.GetParameters()[0].ParameterType == genericType);
             if (singleItemMethod is not null)
             {
-                var obj = emptyCtor?.Invoke(mocked, new object[] { }) ?? intCtor?.Invoke(mocked, new object[] { count });
-                obj = obj ?? mocked;
+                var obj = ctorInvoke();
                 foreach (var item in typedData)
                 {
                     singleItemMethod.Invoke(singleItemMethod.IsStatic ? null : obj, new object[] { item });
@@ -156,7 +158,7 @@ internal class EnumerableBuilder : NonConformingBuilder
         //var otherCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1 && typeToBaseOf.IsAssignableFrom(x.GetParameters()[0].ParameterType));
         //if (otherCtor is not null)
         //{
-        //    var obj = otherCtor.Invoke(mocked, new object[] { typedData });
+        //    var obj = mocked is not null ? otherCtor.Invoke(mocked, new object[] { typedData }) : otherCtor.Invoke(new object[] { typedData });
         //    obj = obj ?? mocked;
         //    if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
         //    return obj;
