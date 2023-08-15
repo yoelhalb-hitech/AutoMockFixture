@@ -229,15 +229,19 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
 #### On AutoFixture
 - **Recursive ctor**: Can create recursive object graphs (i.e. if the ctor of `Foo` requires a `Bar` that in turn requires `Foo`), in this case all of them will use the same object
 - **Freeze by attribute on class**: Freeze if the type has the `Singleton` or `Scoped` DI attribute from [our DotNetPowerExtensions framework](https://github.com/yoelhalb-hitech/DotNetPowerExtensions), note that any frozen object will not be garabage collected while the fixture is in scope
-- Provide the option of injecting a particular constructor argument by type or by name, and also to remove the customization, (this way multiple calls to `Create` can have different constructor arguments)
+- **Provide ctor arguments manually**: Can inject a particular constructor argument by type or by name via the `ConstructorArgumentCustomization` customization, and also providing the ability to remove the customization via `RemoveCustomization()`, (this way multiple calls to `Create` can have different constructor arguments)
 - **Trace builder**: Can use `TraceBehavior` to trace the builders use to create the objects as well as all builders that have been attempted
+- **Can register a derived class to replace the original request**: Either replace a concrete class with a subclass (via `SubClassCustomization` or `SubClassTransformCustomization`) or an open generic class (via `SubClassOpenGenericCustomization` or `SubClassTransformCustomization`), can be useful to replace for example `DbSet<>` with a dervied class for any concrete instance of `DbSet<>`
+    
+	*NOTE*: For `SubClassOpenGenericCustomization` you should use any generic parameter and it will be ignored
+	
 - **Access object in graph**: Provide the ability to access any objects and mocks down the object graph by type (for mocks) or by path, it alos provides the list of paths if needed
     
     *CAUTION*: Since return values of method calls and some property access might be created lazily then if the path/mock doesn't exist it won't show up
     
     *WORKAROUND*: For mocks we can freeze the type and then create it directly from the fixture and use it, also `GetAutoMocks` and `GetAutoMock` have an overload that does it automatically, as well as `For` and `Object`
         
-     *CAUTION*: `Freeze` won't freeze existing objects, so if writing this workaround directly it should NOT be used if it is already in the mock
+    *CAUTION*: `Freeze` won't freeze existing objects, so if writing this workaround directly it should NOT be used if it is already in the mock
 
 #### On AutoFixture.AutoMoq
 - **Attributes for Moq fixtures**: Use the `UnitAutoData` or `IntegrationAutoData` attribtues on the method to get passed in a `UnitFixture` or `IntegrationFixture` respectively (currently only available for NUnit)
@@ -252,6 +256,8 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
 - **Eager vs Lazy**: For mocks by default the return value for methods is created when first time called (to optimize the generation of the mock), this can be changed by passing in `MethodSetupTypes.Eager` to the fixture
 - **Verify fixture**: Verify all mocks in the fixture at once
 - **Explicit interface implementation**: Sets up explictly implemented interface members when `Callbase` is false
+- **Can register a derived class to replace the original request**: Either replace a concrete class with a subclass (via `SubClassCustomization` or `SubClassTransformCustomization`) or an open generic class (via `SubClassOpenGenericCustomization` or `SubClassTransformCustomization`), can be useful to replace for example `DbSet<>` with a dervied class for any concrete instance of `DbSet<>`
+
 - Sets up `GetHashCode` and `.Equals` to work correctly even when `Callbase` is false
 - Defaults to `Callbase = false` however for Relay obejcts it sets `Callbase = true`, but there is an option to pass in the `Createxxx` calls to change the default for non relays
 - When `Callbase = true` it does not setup implemented methods (i.e. not in an interface and the method is not abstract)

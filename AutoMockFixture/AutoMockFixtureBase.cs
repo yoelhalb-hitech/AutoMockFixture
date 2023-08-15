@@ -11,6 +11,8 @@ using AutoMockFixture.FixtureUtils.Trace;
 using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.ComponentModel;
+using System.Linq;
+using static AutoMockFixture.FixtureUtils.Customizations.SubClassTransformCustomization;
 
 namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)
 
@@ -118,7 +120,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     public object? Create(Type t) => Create(t, false, null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => (T?)Create(typeof(T), autoMockTypeControl);
+    public T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => CreateAndCast<T>(Create(typeof(T), autoMockTypeControl));
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public abstract object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
@@ -136,7 +138,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
         return result;
     }
     public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-                => (T?)CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl);
+                => CreateAndCast<T>(CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl));
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public object? CreateNonAutoMock(Type t) => CreateNonAutoMock(t, false, null);
@@ -148,15 +150,35 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     public object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
                 => Execute(new NonAutoMockRequest(t, this) { MockShouldCallbase = callbase }, autoMockTypeControl);
 
-    public T? CreateNonAutoMock<T>()
-            => (T?)CreateNonAutoMock(typeof(T), false, null);
+    public T? CreateNonAutoMock<T>() => CreateAndCast<T>(CreateNonAutoMock(typeof(T), false, null));
+
+    private T? CreateAndCast<T>(object? result)
+    {
+        try
+        {
+            return (T?)result;
+        }
+        catch (InvalidCastException ex) when (AutoMockHelpers.IsAutoMock(typeof(T)))
+        {
+            var innerType = AutoMockHelpers.GetMockedType(typeof(T))!;
+            var genericDefinition = innerType.IsGenericType ? innerType.GetGenericTypeDefinition() : null;
+
+            var cust = this.Customizations
+                    .OfType<SubClassTransformBuilder>()
+                    .FirstOrDefault(c => c.OriginalType.IsGenericType && c.OriginalType.IsGenericTypeDefinition ? c.OriginalType == genericDefinition : c.OriginalType == innerType);
+            if (cust is null) throw;
+
+            throw new InvalidCastException($"Requested type {typeof(T).ToGenericTypeString()} has been modified to {(result?.GetType() ?? AutoMockHelpers.GetMockedType(cust.SubclassType))!.ToGenericTypeString()}", ex);
+        }
+
+    }
 
     public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-                => (T?)CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl);
+                => CreateAndCast<T>(CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl));
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null)
-                => (T?)CreateNonAutoMock(typeof(T), autoMockTypeControl);
+                => CreateAndCast<T>(CreateNonAutoMock(typeof(T), autoMockTypeControl));
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
@@ -176,7 +198,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
         return type != t ? AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
     }
     public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-                => (T?)CreateAutoMock(typeof(T), callBase, autoMockTypeControl);
+                => CreateAndCast<T>(CreateAutoMock(typeof(T), callBase, autoMockTypeControl));
 
     #endregion
 

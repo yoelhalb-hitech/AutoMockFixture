@@ -2,7 +2,7 @@
 
 namespace AutoMockFixture.FixtureUtils.Customizations;
 
-internal class FreezeCustomization : ICustomization
+public class FreezeCustomization : ICustomization
 {
     public FreezeCustomization(IRequestSpecification specification)
     {
