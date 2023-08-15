@@ -24,7 +24,7 @@ public static class AutoMockFixtureExtensions
 
     public static IEnumerable<AutoMock<T>> GetAutoMocks<T>(this IAutoMockFixture fixture, bool freezeAndCreate = false) where T : class
     {
-        var existing = fixture.TrackerDict.Keys.SelectMany(k => fixture.GetAutoMocks(k, typeof(T)).OfType<AutoMock<T>>());
+        var existing = fixture.TrackerDict.Keys.Where(k => k.IsAlive && k.Target is not null).SelectMany(k => fixture.GetAutoMocks(k.Target, typeof(T)).OfType<AutoMock<T>>());
         if (!existing.Any() && freezeAndCreate)
         {
             fixture.Freeze<T>();
@@ -58,7 +58,7 @@ public static class AutoMockFixtureExtensions
 
     public static void Verify(this IAutoMockFixture fixture)
     {
-        fixture.TrackerDict.Keys.ToList().ForEach(k => fixture.Verify(k));
+        fixture.TrackerDict.Keys.Where(k => k.IsAlive && k.Target is not null).ToList().ForEach(k => fixture.Verify(k.Target));
     }
 
     public static void VerifyNoOtherCalls(this IAutoMockFixture fixture, object obj)
@@ -71,7 +71,7 @@ public static class AutoMockFixtureExtensions
 
     public static void VerifyNoOtherCalls(this IAutoMockFixture fixture)
     {
-        fixture.TrackerDict.Keys.ToList().ForEach(k => fixture.VerifyNoOtherCalls(k));
+        fixture.TrackerDict.Keys.Where(k => k.IsAlive && k.Target is not null).ToList().ForEach(k => fixture.VerifyNoOtherCalls(k.Target));
     }
 
     #endregion

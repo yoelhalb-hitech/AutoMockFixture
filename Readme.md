@@ -240,6 +240,8 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
      *CAUTION*: `Freeze` won't freeze existing objects, so if writing this workaround directly it should NOT be used if it is already in the mock
 
 #### On AutoFixture.AutoMoq
+- **Attributes for Moq fixtures**: Use the `UnitAutoData` or `IntegrationAutoData` attribtues on the method to get passed in a `UnitFixture` or `IntegrationFixture` respectively (currently only available for NUnit)
+- **Attribute support for fixture customization**: Use the `UnitAutoData` or `IntegrationAutoData` attribtues also have a generic version that supports passing in an ICustomization to customize the fixture, requires the customization to have a defualt ctor (currently only available for NUnit)
 - **SUT with mock dependecies**: Can automatically mock all dependencies including mockable property and field values (as well as all dependencies for non mockable) via the `CreateWithAutoMockDependecies` call or use `UnitFixture` (or via attributes when using AutoData to inject the arguments in the test method)
 - **Force Mock**: Can specifically demend that an object should be a mock via the `CreateAutoMock` call (or via attributes when using AutoData to inject the arguments in the test method)
 - **Force Mock by Type**: Can specifically demend that an object should be always mocked or not mocked via the `AutoMockTypeControl` on the fixture or the `Create` call

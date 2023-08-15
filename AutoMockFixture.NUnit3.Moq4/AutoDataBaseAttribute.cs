@@ -1,0 +1,54 @@
+﻿using AutoFixture;
+using AutoMockFixture.FixtureUtils;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+
+namespace AutoMockFixture.NUnit3.Moq4;
+
+// TODO... add injections
+// Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
+[AttributeUsage(AttributeTargets.Method)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder
+{
+    protected readonly bool noConfigureMembers;
+    protected readonly bool generateDelegates;
+    protected readonly MethodSetupTypes? methodSetupType;
+
+    // Attributes can only deal with non nullable enums
+    public AutoDataBaseAttribute(bool noConfigureMembers = false, bool generateDelegates = false)
+    {
+        this.noConfigureMembers = noConfigureMembers;
+        this.generateDelegates = generateDelegates;
+    }
+
+    // Cannot have defualt value or the calls might be ambiguous
+    public AutoDataBaseAttribute(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes methodSetupType)
+        : this(noConfigureMembers, generateDelegates)
+    {
+
+        this.methodSetupType = methodSetupType;
+    }
+
+    protected virtual List<ICustomization> Customizations => new List<ICustomization>();
+
+    public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
+    {
+        // We need a fixture per method and per exectution, otherwise we can run in problems...
+        var builder = new AutoMockData(GetFixture);
+        return builder.BuildFrom(method, suite);
+    }
+
+    protected virtual AutoMockFixtureBase GetFixture()
+    {
+        var fixture = CreateFixture();
+        Customizations.ForEach(c => fixture.Customize(c));
+
+        return fixture;
+    }
+
+    protected abstract AutoMockFixtureBase CreateFixture();
+}

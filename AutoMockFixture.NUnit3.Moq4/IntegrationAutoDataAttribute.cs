@@ -1,6 +1,6 @@
-﻿using AutoMockFixture.Moq4;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
+﻿using AutoFixture;
+using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.Moq4;
 using System;
 using System.Collections.Generic;
 
@@ -9,30 +9,52 @@ namespace AutoMockFixture.NUnit3.Moq4;
 // TODO... add injections
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
 [AttributeUsage(AttributeTargets.Method)]
-public class IntegrationAutoDataAttribute : Attribute, ITestBuilder
+public class IntegrationAutoDataAttribute : AutoDataBaseAttribute
 {
-    private readonly bool noConfigureMembers;
-    private readonly bool generateDelegates;
-    private readonly MethodSetupTypes? methodSetupType = null;
-
-    // Attributes can only deal with non nullable enums
-    public IntegrationAutoDataAttribute(bool noConfigureMembers = false, bool generateDelegates = false)
+    public IntegrationAutoDataAttribute(bool noConfigureMembers = false, bool generateDelegates = false) : base(noConfigureMembers, generateDelegates)
     {
-        this.noConfigureMembers = noConfigureMembers;
-        this.generateDelegates = generateDelegates;
+
     }
 
     // Cannot have defualt value or the calls might be ambiguous
     public IntegrationAutoDataAttribute(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes methodSetupType)
-        : this(noConfigureMembers, generateDelegates)
+        : base(noConfigureMembers, generateDelegates, methodSetupType)
     {
-        this.methodSetupType = methodSetupType;
     }
 
-    public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
-    {
-        // We need a fixture per method and per exectution, otherwise we can run in problems...
-        var builder = new AutoMockData(() => new IntegrationFixture(noConfigureMembers, generateDelegates, methodSetupType));
-        return builder.BuildFrom(method, suite);
-    }
+
+    protected override AutoMockFixtureBase CreateFixture() => new IntegrationFixture(noConfigureMembers, generateDelegates, methodSetupType);
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class IntegrationAutoDataAttribute<TCustomization> : IntegrationAutoDataAttribute where TCustomization : ICustomization, new()
+{
+    protected override List<ICustomization> Customizations => new List<ICustomization> { new TCustomization() };
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class IntegrationAutoDataAttribute<TCustomization1, TCustomization2> : IntegrationAutoDataAttribute
+    where TCustomization1 : ICustomization, new()
+    where TCustomization2 : ICustomization, new()
+{
+    protected override List<ICustomization> Customizations => new List<ICustomization> { new TCustomization1(), new TCustomization2() };
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class IntegrationAutoDataAttribute<TCustomization1, TCustomization2, TCustomization3> : IntegrationAutoDataAttribute
+    where TCustomization1 : ICustomization, new()
+    where TCustomization2 : ICustomization, new()
+    where TCustomization3 : ICustomization, new()
+{
+    protected override List<ICustomization> Customizations => new List<ICustomization> { new TCustomization1(), new TCustomization2(), new TCustomization3() };
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class IntegrationAutoDataAttribute<TCustomization1, TCustomization2, TCustomization3, TCustomization4> : IntegrationAutoDataAttribute
+    where TCustomization1 : ICustomization, new()
+    where TCustomization2 : ICustomization, new()
+    where TCustomization3 : ICustomization, new()
+    where TCustomization4 : ICustomization, new()
+{
+    protected override List<ICustomization> Customizations => new List<ICustomization> { new TCustomization1(), new TCustomization2(), new TCustomization3(), new TCustomization4() };
 }

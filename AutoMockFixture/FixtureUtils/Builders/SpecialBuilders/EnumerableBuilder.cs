@@ -90,8 +90,8 @@ internal class EnumerableBuilder : NonConformingBuilder
     private object? CreateType(Type requestType, Type genericType,
                                     IEnumerable typedData, Func<Type, bool> isMatch, int count, IRequestWithType typeRequest, ISpecimenContext context)
     {
-        IAutoMock mock = null;
-        object mocked = null;
+        IAutoMock? mock = null;
+        object? mocked = null;
         if (requestType.IsAbstract)
         {
             var directRequest =  new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
