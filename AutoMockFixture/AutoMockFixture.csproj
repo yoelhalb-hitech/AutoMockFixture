@@ -47,6 +47,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="PolySharp" Version="1.13.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="[3.0.0,)" />
     <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>

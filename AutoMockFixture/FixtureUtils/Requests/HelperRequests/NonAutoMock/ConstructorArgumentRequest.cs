@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
-internal class ConstructorArgumentRequest : BaseTracker
+internal record ConstructorArgumentRequest : BaseTracker
 {
     public ConstructorArgumentRequest(Type declaringType, ParameterInfo parameterInfo, ITracker? tracker)
         : base(tracker)
@@ -15,7 +15,6 @@ internal class ConstructorArgumentRequest : BaseTracker
 
     public override string InstancePath => "->" + ParameterInfo.Name;
 
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, ParameterInfo);
 
     public override bool IsRequestEquals(ITracker other)
         => other is ConstructorArgumentRequest argumentRequest

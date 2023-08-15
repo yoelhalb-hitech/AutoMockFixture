@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 
-internal class ListItemRequest : OneOfMultipleRequest
+internal record ListItemRequest : OneOfMultipleRequest
 {
     public ListItemRequest(Type request, IRequestWithType outerRequest, int index) : base(request, outerRequest, index)
     {

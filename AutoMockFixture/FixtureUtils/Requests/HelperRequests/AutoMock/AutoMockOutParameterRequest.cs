@@ -2,7 +2,7 @@
 
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 
-internal class AutoMockOutParameterRequest : OutParameterRequest, IAutoMockRequest
+internal record AutoMockOutParameterRequest : OutParameterRequest, IAutoMockRequest
 {
     public AutoMockOutParameterRequest(Type declaringType, MethodInfo methodInfo,
             ParameterInfo parameterInfo, Type parameterType, ITracker? tracker)

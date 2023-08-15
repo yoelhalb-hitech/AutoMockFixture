@@ -5,7 +5,7 @@ namespace AutoMockFixture.FixtureUtils.Requests;
 /// <summary>
 /// For use with objects that don't have a start tracker, and as a base for IFixtureTracker
 /// </summary>
-internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
+internal abstract record TrackerWithFixture : BaseTracker, IFixtureTracker
 {
     public TrackerWithFixture(IAutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
     {
@@ -25,7 +25,7 @@ internal abstract class TrackerWithFixture : BaseTracker, IFixtureTracker
                 && other is TrackerWithFixture tracker
                 && IsFixtureTrackerEquals(tracker);
 
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Fixture, MockShouldCallbase, MockDependencies);
+    //public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Fixture, MockShouldCallbase, MockDependencies);
 
     public virtual bool IsStartTrackerEquals(IFixtureTracker other) => IsFixtureTrackerEquals(other);
 

@@ -42,7 +42,7 @@
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
 	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-	<PackageReference Include="Moq" Version="4.17.2" />
+	<PackageReference Include="Moq" Version="4.18.4" /><!--We need this version minimum in order not to run into the issues when mocking records-->
 	<PackageReference Include="Moq.Analyzers" Version="0.0.9">
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

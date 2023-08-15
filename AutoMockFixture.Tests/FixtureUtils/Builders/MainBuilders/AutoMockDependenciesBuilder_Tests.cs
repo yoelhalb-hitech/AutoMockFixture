@@ -25,7 +25,7 @@ internal class AutoMockDependenciesBuilder_Tests
         result.Should().Be(expectedResult);
 
         contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == innerType
-                                                            && r.Parent == requestMock.Object)));
+                                                            && Object.ReferenceEquals(r.Parent, requestMock.Object))));
         contextMock.VerifyNoOtherCalls();
 
         requestMock.Verify(r => r.SetResult(expectedResult, builder));
@@ -107,8 +107,11 @@ internal class AutoMockDependenciesBuilder_Tests
         var result = builder.Create(requestMock.Object, contextMock.Object);
         result.Should().Be(expectedResult);
 
+#pragma warning disable CS0252 // Possible unintended reference comparison; left hand side needs cast
         contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == innerType
                                                             && r.Parent == requestMock.Object)));
+#pragma warning restore CS0252 // Possible unintended reference comparison; left hand side needs cast
+
         contextMock.VerifyNoOtherCalls();
 
         requestMock.Verify(r => r.SetResult(expectedResult, builder));
@@ -133,7 +136,7 @@ internal class AutoMockDependenciesBuilder_Tests
         var result = builder.Create(requestMock.Object, contextMock.Object);
         result.Should().Be(expectedResult.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == type && r.Parent == requestMock.Object)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == type && Object.ReferenceEquals(r.Parent, requestMock.Object))));
         contextMock.VerifyNoOtherCalls();
 
         requestMock.Verify(r => r.SetResult(expectedResult.Object, builder));
@@ -222,7 +225,7 @@ internal class AutoMockDependenciesBuilder_Tests
         result.Should().Be(expectedResult.Object);
 
         contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.Request == type
-                                                            && r.Parent == requestMock.Object)));
+                                                            && Object.ReferenceEquals(r.Parent, requestMock.Object))));
         contextMock.VerifyNoOtherCalls();
 
         requestMock.Verify(r => r.SetResult(expectedResult.Object, builder));

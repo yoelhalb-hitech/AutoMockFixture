@@ -2,7 +2,7 @@
 
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 
-internal class AutoMockFieldRequest : FieldRequest, IAutoMockRequest
+internal record AutoMockFieldRequest : FieldRequest, IAutoMockRequest
 {
     public AutoMockFieldRequest(Type declaringType, FieldInfo fieldInfo, ITracker? tracker)
         : base(declaringType, fieldInfo, tracker)

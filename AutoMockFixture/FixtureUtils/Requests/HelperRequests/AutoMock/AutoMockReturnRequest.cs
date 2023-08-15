@@ -2,7 +2,7 @@
 
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 
-internal class AutoMockReturnRequest : ReturnRequest, IAutoMockRequest
+internal record AutoMockReturnRequest : ReturnRequest, IAutoMockRequest
 {
     public AutoMockReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType,
                 ITracker? tracker, string? customTrackingPath = null)

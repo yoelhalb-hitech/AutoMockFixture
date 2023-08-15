@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
-internal class OutParameterRequest : BaseTracker
+internal record OutParameterRequest : BaseTracker
 {
     public OutParameterRequest(Type declaringType, MethodInfo methodInfo,
         ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) : base(tracker)
@@ -19,8 +19,6 @@ internal class OutParameterRequest : BaseTracker
 
     public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo;
 
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType,
-                                                            MethodInfo, ParameterInfo, ParameterType);
 
     public override bool IsRequestEquals(ITracker other)
         => base.IsRequestEquals(other)

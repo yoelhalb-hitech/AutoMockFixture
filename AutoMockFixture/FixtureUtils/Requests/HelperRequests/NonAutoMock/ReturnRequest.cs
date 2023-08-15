@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
-internal class ReturnRequest : BaseTracker
+internal record ReturnRequest : BaseTracker
 {
     public ReturnRequest(Type declaringType, MethodInfo methodInfo, Type returnType, ITracker? tracker)
         : base(tracker)
@@ -17,7 +17,6 @@ internal class ReturnRequest : BaseTracker
 
     public override string InstancePath => "." + MethodInfo.GetTrackingPath();
 
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), DeclaringType, MethodInfo, ReturnType);
 
     public override bool IsRequestEquals(ITracker other)
         => base.IsRequestEquals(other)

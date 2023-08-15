@@ -20,7 +20,7 @@ internal class LastResortBuilder_Tests
         builder.Create(request, context);
 
         Mock.Get(context).Verify(c =>
-            c.Resolve(It.Is<AutoMockDependenciesRequest>(r => r.Request == request.Request && r.Parent == request)),
+            c.Resolve(It.Is<AutoMockDependenciesRequest>(r => r.Request == request.Request && Object.ReferenceEquals(r.Parent, request))),
                 Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
@@ -36,7 +36,7 @@ internal class LastResortBuilder_Tests
         var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
-        Mock.Get(context).Verify(c => c.Resolve(It.Is<NonAutoMockRequest>(r => r.Request == request.Request && r.Parent == request)), Times.Once());
+        Mock.Get(context).Verify(c => c.Resolve(It.Is<NonAutoMockRequest>(r => r.Request == request.Request && Object.ReferenceEquals(r.Parent, request))), Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 
@@ -99,7 +99,7 @@ internal class LastResortBuilder_Tests
         var builder = new LastResortBuilder(fixture.AutoMockHelpers);
         builder.Create(request, context);
 
-        Mock.Get(context).Verify(c => c.Resolve(It.Is<NonAutoMockRequest>(r => r.Request == request.Request && r.Parent == request)), Times.Once());
+        Mock.Get(context).Verify(c => c.Resolve(It.Is<NonAutoMockRequest>(r => r.Request == request.Request && Object.ReferenceEquals(r.Parent, request))), Times.Once());
         Mock.Get(context).VerifyNoOtherCalls();
     }
 

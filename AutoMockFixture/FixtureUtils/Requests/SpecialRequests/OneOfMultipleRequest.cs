@@ -1,6 +1,6 @@
 ﻿
 namespace AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
-internal abstract class OneOfMultipleRequest : InnerRequest
+internal abstract record OneOfMultipleRequest : InnerRequest
 {
     public OneOfMultipleRequest(Type request, IRequestWithType outerRequest, int index) : base(request, outerRequest)
     {
@@ -9,7 +9,6 @@ internal abstract class OneOfMultipleRequest : InnerRequest
 
     public int Index { get; }
 
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Index);
     public override bool IsRequestEquals(ITracker other)
         => base.IsRequestEquals(other) && other is OneOfMultipleRequest otherRequest && otherRequest.Index == Index;
 }

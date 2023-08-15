@@ -1,8 +1,14 @@
 ﻿
 namespace AutoMockFixture.FixtureUtils.Requests;
 
-internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
+internal abstract record BaseTracker : ITracker, IEquatable<BaseTracker>
 {
+    public BaseTracker(BaseTracker tracker)
+    {
+        SetParent(tracker);
+        children = new List<ITracker>(); // Looks like a copy ctor doesn't intialize the fields by default
+    }
+
     public BaseTracker(ITracker? tracker)
     {
         SetParent(tracker);
@@ -115,15 +121,15 @@ internal abstract class BaseTracker : ITracker, IEquatable<BaseTracker>
     public virtual bool IsRequestEquals(ITracker other)
         => StartTracker.IsStartTrackerEquals(other.StartTracker);
 
-    public override bool Equals(object? obj)
-        => obj is BaseTracker other ? Equals(other) : base.Equals(obj);
-
-    public override int GetHashCode() => HashCode.Combine(BasePath, StartTracker != this ? StartTracker : (ITracker?)null,
-            StartTracker == this ? "StartTracker".GetHashCode() * 34526 : (int?)null, Parent, Children);
-
-    // AutoFixture uses this to determine recursion
+    //AutoFixture uses this to determine recursion
+#pragma warning disable CS8851 // Record defines 'Equals' but not 'GetHashCode'.
     public virtual bool Equals(BaseTracker? other) => other is not null
             && other.StartTracker == StartTracker
             && IsRequestEquals(other);
+#pragma warning restore CS8851 // Record defines 'Equals' but not 'GetHashCode'.
 
+    public sealed override string? ToString() // Otherwise we can run in a stack overflow see an exmaple in https://stackoverflow.com/questions/67285095/c-sharp-record-tostring-causes-stack-overflow-and-stops-debugging-session-with
+    {
+        return base.ToString();
+    }
 }

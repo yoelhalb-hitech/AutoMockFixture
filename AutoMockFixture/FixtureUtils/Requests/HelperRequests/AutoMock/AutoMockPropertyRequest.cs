@@ -2,7 +2,7 @@
 
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 
-internal class AutoMockPropertyRequest : PropertyRequest, IAutoMockRequest
+internal record AutoMockPropertyRequest : PropertyRequest, IAutoMockRequest
 {
     public AutoMockPropertyRequest(Type declaringType, PropertyInfo propertyInfo, ITracker? tracker)
         : base(declaringType, propertyInfo, tracker)

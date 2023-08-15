@@ -6,7 +6,7 @@ namespace AutoMockFixture.Tests.FixtureUtils.Requests;
 
 internal class TrackerWithFixture_Tests
 {
-    class TrackerWithFixtureNonAbstract : TrackerWithFixture
+    record TrackerWithFixtureNonAbstract : TrackerWithFixture
     {
         public TrackerWithFixtureNonAbstract(IAutoMockFixture fixture, ITracker? tracker = null) : base(fixture, tracker)
         {
