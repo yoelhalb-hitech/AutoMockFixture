@@ -1,3 +1,10 @@
+## [1.1.7] - 2023-08-16
+
+### Fixed
+- Fix to respect the NonAutoMock/IntegrationFixture request to not mock dependencies
+- Fix `fixture.Freeze()` to not automatically also freeze subclasses
+- Fix `fixture.Freeze()` to work correctly requests
+
 ## [1.1.6] - 2023-08-15
 
 ### Added
