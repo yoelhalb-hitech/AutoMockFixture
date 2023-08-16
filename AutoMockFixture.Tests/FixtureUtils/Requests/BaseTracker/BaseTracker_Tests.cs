@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using Moq;
 
@@ -29,5 +30,24 @@ internal class BaseTracker_Tests
     {
         var request = new AutoMockRequest(typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker), new AbstractAutoMockFixture());
         Assert.DoesNotThrow(() => request.GetHashCode());
+    }
+
+    [Test]
+    public void Test_SetResult_SetsWhenPath_EvenIfNotInstancePath_BugRepro()
+    {
+        var type = typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker);
+        var prop = type.GetProperties().First();
+
+        var startRequest = new AutoMockRequest(typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker), new AbstractAutoMockFixture());
+        var propRequest = new AutoMockPropertyRequest(type, prop, startRequest);
+
+        var request1 = new AutoMockRequest(typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker), propRequest);
+        var request2 = new AutoMockRequest(typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker), request1);
+        var request3 = new AutoMockRequest(typeof(global::AutoMockFixture.FixtureUtils.Requests.BaseTracker), request2);
+
+        var result = new object();
+        request3.SetResult(result, null);
+        request1.Result.Should().NotBeNull();
+        request1.Result!.Target.Should().Be(result);
     }
 }

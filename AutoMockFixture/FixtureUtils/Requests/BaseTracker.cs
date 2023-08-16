@@ -80,7 +80,7 @@ internal abstract record BaseTracker : ITracker, IEquatable<BaseTracker>
         if (Parent is null) allMocks = allMocks.Distinct().ToList();
 
         // Many trackers are just wrappers
-        if (result is null && InstancePath != "" // Remember that we don't keep a reference to the main object for GC purposes
+        if (result is null && Path != "" // Remember that we don't keep a reference to the main object for GC purposes
                 && Children.Count == 1 && Children[0].InstancePath == "") result = Children[0].Result;
 
         //if (result is null) throw new Exception("Expected result but there isn't"); can actually be null...
