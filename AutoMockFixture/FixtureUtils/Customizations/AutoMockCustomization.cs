@@ -51,7 +51,7 @@ public class AutoMockCustomization : ICustomization
                                         new PostprocessorWithRecursion(
                                             mockFixture,
                                             new AutoMockDependenciesBuilder(
-                                                new DependencyInjectionMethodInvoker(
+                                                new MethodInvokerWithRecursion(
                                                     new CustomModestConstructorQuery(mockFixture.AutoMockHelpers)),
                                                 mockFixture.AutoMockHelpers),
                                             ConfigureMembers ? new AutoMockDependenciesAutoPropertiesHandlerCommand(mockFixture) : new EmptyCommand()),

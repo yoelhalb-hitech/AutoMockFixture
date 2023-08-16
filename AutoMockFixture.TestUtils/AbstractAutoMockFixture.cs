@@ -1,5 +1,7 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.Moq4.AutoMockUtils;
 
 namespace AutoMockFixture.TestUtils;
@@ -23,4 +25,7 @@ public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixtureBase
         return default;
 #pragma warning restore CS8603 // Possible null reference return.
     }
+
+    // Essentially this will make it behave like the UnitFixture for the CreateAutoMock which is what the tests in general expect
+    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new AutoMockRequest(type, this) { MockShouldCallbase = callBase };
 }

@@ -20,7 +20,7 @@ internal record AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracke
     public required virtual Type Request { get; init; }
 
     public override string InstancePath => "";
-    public override bool MockDependencies => true;
+    public override bool MockDependencies => StartTracker is null || StartTracker is AutoMockDependenciesRequest ? true : StartTracker.MockDependencies; // Avoid stack overflow
 
     public override bool IsRequestEquals(ITracker other)
         => other is AutoMockDependenciesRequest request

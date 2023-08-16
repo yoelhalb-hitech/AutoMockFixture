@@ -123,7 +123,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
     protected virtual object ResolveParamater(AutoMockDirectRequest mockRequest, ParameterInfo pi, ISpecimenContext context)
     {
-        var argsRequest = !mockRequest.MockDependencies
+        var argsRequest = !mockRequest.StartTracker.MockDependencies
                 ? new ConstructorArgumentRequest(mockRequest.Request, pi, mockRequest)
                 : new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);
 

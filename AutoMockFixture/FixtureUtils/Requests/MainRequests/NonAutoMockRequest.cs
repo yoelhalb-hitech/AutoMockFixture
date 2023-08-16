@@ -18,7 +18,7 @@ internal record NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixt
     }
 
     public override string InstancePath => "";
-    public override bool MockDependencies => false;
+    public override bool MockDependencies => StartTracker is null || StartTracker is NonAutoMockRequest ? false : StartTracker.MockDependencies; // Avoid stack overflow
     public required virtual Type Request { get; init;  }
 
     public override bool IsRequestEquals(ITracker other)

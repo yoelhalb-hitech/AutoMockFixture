@@ -181,11 +181,12 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
         if(!AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
-        var result = Execute(new AutoMockRequest(type, this) { MockShouldCallbase = callBase }, autoMockTypeControl);
+        var result = Execute(new AutoMockRequest(type, GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallbase = callBase }, autoMockTypeControl);
 
         return type != t ? AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
     }
 
+    internal abstract TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase);
 
     #endregion
 

@@ -22,7 +22,7 @@ internal record AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IF
 
     public override string InstancePath => "";
 
-    public override bool MockDependencies => true;
+    public override bool MockDependencies => StartTracker is null || StartTracker is AutoMockDirectRequest ? true : StartTracker.MockDependencies; // Avoid stack overflow
 
     public override bool IsRequestEquals(ITracker other)
         => other is AutoMockDirectRequest request

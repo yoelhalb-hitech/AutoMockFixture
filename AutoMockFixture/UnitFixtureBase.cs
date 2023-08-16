@@ -1,4 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
 using System.ComponentModel;
 
@@ -23,4 +25,6 @@ public abstract class UnitFixtureBase : AutoMockFixtureBase
 
     public override object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
         => CreateWithAutoMockDependencies(t, callbase, autoMockTypeControl);
+
+    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new AutoMockDependenciesRequest(type, this) { MockShouldCallbase = callBase };
 }

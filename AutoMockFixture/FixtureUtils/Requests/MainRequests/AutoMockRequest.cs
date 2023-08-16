@@ -22,7 +22,7 @@ internal record AutoMockRequest : TrackerWithFixture, IAutoMockRequest, IDisposa
     public virtual bool BypassChecks { get; set; }
 
     public override string InstancePath => "";
-    public override bool MockDependencies => true;
+    public override bool MockDependencies => StartTracker is null || StartTracker is AutoMockRequest ? true : StartTracker.MockDependencies; // Avoid stack overflow
 
     public override bool IsRequestEquals(ITracker other)
         => other is AutoMockRequest request

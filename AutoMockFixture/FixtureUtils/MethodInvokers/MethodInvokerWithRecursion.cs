@@ -1,5 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.MethodQueries;
 using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
@@ -76,14 +77,13 @@ public class MethodInvokerWithRecursion : ISpecimenBuilder
     protected virtual object ResolveParamater(object request, Type declaringType,
                                                 ParameterInfo pi, ISpecimenContext context)
     {
-        var tracker = request as ITracker;
-        var recursionContext = context as RecursionContext;
-
-        object argRequest = tracker is not null
-                            ? new ConstructorArgumentRequest(declaringType, pi, tracker)
-                            : recursionContext is not null
-                                ? new NonAutoMockRequest(pi.ParameterType, recursionContext.Fixture)
-                                : pi;
+        object argRequest = (request, context) switch
+        {
+            (ITracker { StartTracker.MockDependencies: true } tracker, _) => new AutoMockConstructorArgumentRequest(declaringType, pi, tracker),
+            (ITracker tracker, _) => new ConstructorArgumentRequest(declaringType, pi, tracker),
+            (_, RecursionContext recursionContext) => new NonAutoMockRequest(pi.ParameterType, recursionContext.Fixture),
+            (_,_) => pi,
+        };
 
         return context.Resolve(argRequest);
     }
