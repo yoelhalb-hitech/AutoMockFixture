@@ -186,9 +186,13 @@ internal class SubclassCustomization_Tests
 
 
         var result = fixture.Freeze<TOriginal>();
+        var result2 = fixture.Create<TOriginal>();
 
         result.Should().NotBeNull();
-        result.Should().BeAssignableTo<TSubClass>(); ;
+        result.Should().BeAssignableTo<TSubClass>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
     }
 
     [Test]
@@ -202,10 +206,29 @@ internal class SubclassCustomization_Tests
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
 
-
-        var result = fixture.Freeze<AutoMock<TOriginal>>();
+        var result = fixture.Freeze(typeof(AutoMock<TOriginal>));
+        var result2 = fixture.Create(typeof(AutoMock<TOriginal>));
 
         result.Should().NotBeNull();
-        result.Should().BeAssignableTo<AutoMock<TSubClass>>(); ;
+        result.Should().BeAssignableTo<AutoMock<TSubClass>>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface, BaseTestType>]
+    [TestCase<ITestIface, SubTestType>]
+    [TestCase<ISubTestIface, SubTestType>]
+    [TestCase<BaseTestType, SubTestType>]
+    [TestCase<ITestIface, ISubTestIface>]
+    public void Test_ThrowsCorretly_ForAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+
+        Assert.Throws<InvalidCastException>(() => fixture.Freeze<AutoMock<TOriginal>>(),
+                                                   $"Requested type AutoMock<{typeof(TOriginal).Name}> has been modified to AutoMock<{typeof(TSubClass).Name}>");
     }
 }

@@ -107,11 +107,13 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
     }
 
     // Override to use our own
-    public virtual T? Freeze<T>()
-    {
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(typeof(T)), AutoMockHelpers)));
+    public virtual T? Freeze<T>() => Cast<T>(Freeze(typeof(T)));
 
-        return Create<T>();
+    public virtual object? Freeze(Type type)
+    {
+        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(type), AutoMockHelpers)));
+
+        return Create(type);
     }
 
     public T? Create<T>() => Cast<T>(Create(typeof(T), false, null));

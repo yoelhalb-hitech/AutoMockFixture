@@ -260,4 +260,104 @@ internal class SubclassOpenGenericCustomization_Tests
                                             $"Requested type AutoMock<{typeof(TOriginal).Name}> has been modified to AutoMock<{typeof(TSubClass).Name}>");
     }
 
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_FreezesCorrectly<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());
+
+
+        var result = fixture.Freeze<TOriginal>();
+        var result2 = fixture.Create<TOriginal>();
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<TSubClass>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_FreezesCorrectly_WithDifferent<TOriginal, TSubClass>()
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());
+
+        var result = fixture.Freeze(typeof(TOriginal).GetGenericTypeDefinition().MakeGenericType(typeof(int)));
+        var result2 = fixture.Create(typeof(TOriginal).GetGenericTypeDefinition().MakeGenericType(typeof(int)));
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo(typeof(TSubClass).GetGenericTypeDefinition().MakeGenericType(typeof(int)));
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_FreezesCorrectly_ForAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        var result = fixture.Freeze(typeof(AutoMock<TOriginal>));
+        var result2 = fixture.Create(typeof(AutoMock<TOriginal>));
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<AutoMock<TSubClass>>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_FreezesCorrectly_ForAutoMock_WithDifferent<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());
+
+        var result = fixture.Freeze(typeof(AutoMock<>).MakeGenericType(typeof(TOriginal).GetGenericTypeDefinition().MakeGenericType(typeof(int))));
+        var result2 = fixture.Create(typeof(AutoMock<>).MakeGenericType(typeof(TOriginal).GetGenericTypeDefinition().MakeGenericType(typeof(int))));
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo(typeof(AutoMock<>).MakeGenericType(typeof(TSubClass).GetGenericTypeDefinition().MakeGenericType(typeof(int))));
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_ThrowsCorretly_ForAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());
+
+
+        Assert.Throws<InvalidCastException>(() => fixture.Freeze<AutoMock<TOriginal>>(),
+                                                   $"Requested type AutoMock<{typeof(TOriginal).Name}> has been modified to AutoMock<{typeof(TSubClass).Name}>");
+    }
 }
