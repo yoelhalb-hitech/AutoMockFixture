@@ -120,6 +120,48 @@ internal class Freeze_Tests
     #region Freeze
 
     [Test]
+    public void Test_Works_UnitFixture_WithCreateAutoMock()
+    {
+        var fixture = new UnitFixture();
+        var obj1 = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
+        var obj2 = fixture.CreateAutoMock<NonSingletonClass>();
+        var obj3 = fixture.CreateWithAutoMockDependencies<AutoMock<NonSingletonClass>>()!.Object;
+
+        obj1.Should().NotBeNull();
+        obj2.Should().NotBeNull();
+        obj3.Should().NotBeNull();
+        obj1.Should().BeSameAs(obj2);
+        obj1.Should().BeSameAs(obj3);
+    }
+
+    public class Test { }
+    public class SubTest : Test { }
+    [Test]
+    public void Test_DoesNotFreezeSubclass()
+    {
+        var fixture = new AbstractAutoMockFixture();
+        fixture.Freeze<Test>();
+        var t1 = fixture.CreateNonAutoMock<SubTest>();
+        var t2 = fixture.CreateNonAutoMock(typeof(Test));
+        t1.Should().NotBeSameAs(t2);
+    }
+
+    [Test]
+    public void Test_Works_IntegrationFixture_WithCreateAutoMock()
+    {
+        var fixture = new IntegrationFixture();
+        var obj1 = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
+        var obj2 = fixture.CreateAutoMock<NonSingletonClass>();
+        var obj3 = fixture.CreateNonAutoMock<AutoMock<NonSingletonClass>>()!.Object;
+
+        obj1.Should().NotBeNull();
+        obj2.Should().NotBeNull();
+        obj3.Should().NotBeNull();
+        obj1.Should().BeSameAs(obj2);
+        obj1.Should().BeSameAs(obj3);
+    }
+
+    [Test]
     public void Test_Freeze_IsFrozen_WhenAutoMock_AndCallBase()
     {
         var fixture = new AbstractAutoMockFixture();

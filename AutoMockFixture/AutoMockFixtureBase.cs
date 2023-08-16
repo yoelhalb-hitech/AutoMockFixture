@@ -20,7 +20,7 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 /// CAUTION: the methods are not thread safe
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
+public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, IAutoMockFixture
 {
     MethodSetupTypes IAutoMockFixture.MethodSetupType => MethodSetupType;
     IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
@@ -67,8 +67,6 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
         var newGraph = replaceNodeMethod?.Invoke(null, new[] { currentGraph, newAutoProperties, matcher }) as ISpecimenBuilderNode;
         updateGraphAndSetupAdapterMethod?.Invoke(this, new[] { newGraph });
 
-        Customizations.Add(new CacheBuilder(Cache));
-
         Customizations.Add(new FilteringSpecimenBuilder(
                                 new FixedBuilder(this),
                                 new OrRequestSpecification(
@@ -95,6 +93,17 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
 
     Cache IAutoMockFixture.Cache => Cache;
     internal Cache Cache { get; } = new Cache();
+    CacheBuilder? cacheBuilder;
+
+    object? ISpecimenBuilder.Create(object request, AutoFixture.Kernel.ISpecimenContext context)
+    {
+        if(cacheBuilder is null) cacheBuilder = new CacheBuilder(Cache);
+
+        var result = cacheBuilder.Create(request, context); // We do it here so to ensure that it will always run the first thing
+        if (result is not NoSpecimen) return result;
+
+        return base.Create(request, context);
+    }
 
     #region Create
 
@@ -110,7 +119,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, IAutoMockFixture
 
     public virtual object? Freeze(Type type)
     {
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(type), AutoMockHelpers)));
+        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new ExactTypeSpecification(type), AutoMockHelpers)));
 
         return Create(type);
     }

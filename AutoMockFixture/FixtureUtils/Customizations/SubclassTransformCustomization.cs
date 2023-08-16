@@ -89,9 +89,13 @@ public class SubclassTransformCustomization : ICustomization
                 _ => null // TODO... should not happen
             };
 
-            if (newRequest is not null) return context.Resolve(newRequest);
+            if (newRequest is null) return new NoSpecimen();
 
-            return new NoSpecimen();
+            var result = context.Resolve(newRequest);
+            (request as ITracker)?.SetResult(result, this);
+
+            return result;
+
         }
     }
 }

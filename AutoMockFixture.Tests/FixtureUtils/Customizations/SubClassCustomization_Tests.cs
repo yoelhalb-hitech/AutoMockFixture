@@ -184,7 +184,6 @@ internal class SubclassCustomization_Tests
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
 
-
         var result = fixture.Freeze<TOriginal>();
         var result2 = fixture.Create<TOriginal>();
 
