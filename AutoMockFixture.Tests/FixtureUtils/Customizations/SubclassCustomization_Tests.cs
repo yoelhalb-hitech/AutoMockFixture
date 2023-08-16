@@ -158,4 +158,19 @@ internal class SubclassCustomization_Tests
                                             $"Requested type AutoMock<{typeof(TOriginal).Name}> has been modified to AutoMock<{typeof(TSubClass).Name}>");
     }
 
+    [Test]
+    [TestCase<ITestIface, BaseTestType>]
+    [TestCase<ITestIface, SubTestType>]
+    [TestCase<ISubTestIface, SubTestType>]
+    [TestCase<BaseTestType, SubTestType>]
+    [TestCase<ITestIface, ISubTestIface>]
+    public void Test_ThrowsCorretly_WithCreate_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        Assert.Throws<InvalidCastException>(() => fixture.CreateWithAutoMockDependencies<AutoMock<TOriginal>>(),
+                                            $"Requested type AutoMock<{typeof(TOriginal).Name}> has been modified to AutoMock<{typeof(TSubClass).Name}>");
+    }
+
 }
