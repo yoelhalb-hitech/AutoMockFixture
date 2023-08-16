@@ -67,12 +67,53 @@ internal class EnumerableBuilder_Tests
     }
 
     [Test]
+    public void Test_HandlesCorrectlyNonAbstractClass_AutoMockRequest()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateAutoMock<NonAbstractList<string>>();
+        result.Should().NotBeNull();
+        AutoMock.Get(result).Should().NotBeNull();
+        result!.Count().Should().Be(3);
+    }
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClass_AutoMockType()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateNonAutoMock<AutoMock<NonAbstractList<string>>>();
+        result.Should().NotBeNull();
+        result!.Object.Count().Should().Be(3);
+    }
+
+    [Test]
     public void Test_HandlesCorrectlyNonAbstractClass_ValueType()
     {
         var fixture = new AbstractAutoMockFixture();
 
         var result = fixture.CreateNonAutoMock<NonAbstractList<int>>();
         result.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClass_ValueType_AutoMockRequest()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateAutoMock<NonAbstractList<int>>();
+        result.Should().NotBeNull();
+        AutoMock.Get(result).Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClass_ValueType_AutoMockType()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateNonAutoMock<AutoMock<NonAbstractList<int>>>();
+        result.Should().NotBeNull();
+        result!.Object!.Count().Should().Be(3);
     }
 
     [Test]
@@ -83,6 +124,20 @@ internal class EnumerableBuilder_Tests
         var result = fixture.CreateNonAutoMock<WithNonAbstractEnumerableProperty>();
         result.Should().NotBeNull();
         result!.NonAbstractListProp.Should().NotBeNull();
+        result.NonAbstractListProp!.Count().Should().Be(3);
+    }
+
+    [Test]
+    public void Test_HandlesCorrectlyNonAbstractClassProp_AutoMockRequest()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateAutoMock<WithNonAbstractEnumerableProperty>();
+
+        result.Should().NotBeNull();
+        result!.NonAbstractListProp.Should().NotBeNull();
+
+        AutoMock.Get(result.NonAbstractListProp).Should().NotBeNull();
         result.NonAbstractListProp!.Count().Should().Be(3);
     }
 }

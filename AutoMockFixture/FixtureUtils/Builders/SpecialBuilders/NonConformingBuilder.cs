@@ -16,7 +16,7 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
     public object? Create(object request, ISpecimenContext context)
     {
         if (request is not IRequestWithType typeRequest || typeRequest.Request is not Type type) return new NoSpecimen();
-        if(request is AutoMockDirectRequest || (type.GetInterfaces().Any(t => t == typeof(IAutoMock)))) return new NoSpecimen();
+        if(request is AutoMockDirectRequest) return new NoSpecimen();
 
         var genericDefinitions = type.GetAllGenericDefinitions();
 

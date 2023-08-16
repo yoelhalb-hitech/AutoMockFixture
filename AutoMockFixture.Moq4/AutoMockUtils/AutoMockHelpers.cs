@@ -16,6 +16,8 @@ internal class AutoMockHelpers : IAutoMockHelpers
     public static AutoMock<T>? GetAutoMock<T>(T? mocked) where T : class
     {
         if (mocked is null) return null;
+        if(mocked is AutoMock<T> mock) return mock;
+        if(mocked is IAutoMock) throw new ArgumentException("Object is already an AutoMock", nameof(mocked));
 
         try
         {

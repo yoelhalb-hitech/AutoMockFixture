@@ -92,7 +92,7 @@ internal class EnumerableBuilder : NonConformingBuilder
     {
         IAutoMock? mock = null;
         object? mocked = null;
-        if (requestType.IsAbstract)
+        if (requestType.IsAbstract || typeRequest is AutoMockRequest)
         {
             var directRequest =  new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
             {
