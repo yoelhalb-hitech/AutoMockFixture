@@ -6,9 +6,9 @@ using DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Customizations;
 
-public class SubClassTransformCustomization : ICustomization
+public class SubclassTransformCustomization : ICustomization
 {
-    public SubClassTransformCustomization(Type originalType, Type subclassType)
+    public SubclassTransformCustomization(Type originalType, Type subclassType)
     {
         if (originalType.IsGenericType && originalType.GenericTypeArguments.Any(a => a.IsGenericParameter)) throw new ArgumentException("Type has a stub parmater which is not allowed", nameof(originalType));
 

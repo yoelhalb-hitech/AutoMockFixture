@@ -6,9 +6,9 @@ using DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Customizations;
 
-public class SubClassCustomization<TOriginal, TSubClass> : SubClassTransformCustomization
+public class SubclassCustomization<TOriginal, TSubclass> : SubclassTransformCustomization
 {
-    public SubClassCustomization() : base(typeof(TOriginal), typeof(TSubClass))
+    public SubclassCustomization() : base(typeof(TOriginal), typeof(TSubclass))
     {
     }
 }
