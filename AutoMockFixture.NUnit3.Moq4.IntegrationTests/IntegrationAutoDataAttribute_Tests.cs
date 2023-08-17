@@ -74,6 +74,19 @@ internal class AutoDataIntegrationAttribute_Tests
 
     [Test]
     [IntegrationAutoData]
+    public void Test_IntegrationAutoDataAttribute_CallBase_WhenCallBaseAttributeEmpty([CallBase] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+                                            [CallBase] WithCtorArgsTestClass dependencyTestClass,
+                                            IntegrationFixture fixture)
+    {
+        autoMockTestClass.CallBase.Should().BeTrue();
+        foreach (var path in fixture.GetPaths(dependencyTestClass))
+        {
+            if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeTrue();
+        }
+    }
+
+    [Test]
+    [IntegrationAutoData]
     public void Test_IntegrationAutoDataAttribute_NotCallBaseForMain_ButCallsForChildren_WhenCallBaseAttributeFalse(
                                                     [CallBase(false)] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
                                                     [CallBase(false)] WithCtorArgsTestClass dependencyTestClass,

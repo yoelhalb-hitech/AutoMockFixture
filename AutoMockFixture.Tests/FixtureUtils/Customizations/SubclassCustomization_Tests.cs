@@ -10,13 +10,15 @@ internal class SubclassCustomization_Tests
     internal interface ISubTestIface : ITestIface { }
     internal class BaseTestType : ITestIface { }
     internal class SubTestType : BaseTestType, ISubTestIface { }
-
+    internal interface IGenericIface<T> { }
+    internal class GenericImplementation : IGenericIface<BaseTestType> { }
     [Test]
     [TestCase<ITestIface, BaseTestType>]
     [TestCase<ITestIface, SubTestType>]
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_WorksWithNonAutoMock<TOriginal, TSubClass>()
     {
         var fixture = new AbstractAutoMockFixture();
@@ -34,6 +36,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_WorksWithNonAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -51,6 +54,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_ThrowsCorretly_WithNonAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -66,6 +70,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_WorksWithAutoMockRequest<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -83,6 +88,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_WorksWithAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -100,6 +106,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_ThrowsCorretly_WithAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -115,6 +122,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_WorksWithAutoMockDependencies<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -132,6 +140,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_WorksWithAutoMockDependencies_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -149,6 +158,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_ThrowsCorretly_WithAutoMockDependencies_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new AbstractAutoMockFixture();
@@ -164,6 +174,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_ThrowsCorretly_WithCreate_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new UnitFixture();
@@ -179,6 +190,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_FreezesCorrectly<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new UnitFixture();
@@ -200,6 +212,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_FreezesCorrectly_ForAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new UnitFixture();
@@ -221,6 +234,7 @@ internal class SubclassCustomization_Tests
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_ThrowsCorretly_ForAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new UnitFixture();
