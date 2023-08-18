@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.NUnit3.Moq4</PackageId>
-    <PackageVersion>1.1.7</PackageVersion>
+    <PackageVersion>1.1.8</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
