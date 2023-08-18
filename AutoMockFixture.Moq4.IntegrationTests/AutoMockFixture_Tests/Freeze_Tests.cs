@@ -162,6 +162,75 @@ internal class Freeze_Tests
     }
 
     [Test]
+    public void Test_Works_UnitFixture_When_AlwaysAutoMock()
+    {
+        var fixture = new UnitFixture();
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(NonSingletonClass));
+
+        var frozen = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
+        var obj = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
+
+        frozen.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.Class1.Should().Be(frozen);
+        obj!.Class2.Should().Be(frozen);
+        obj!.NonSingletonProp.Should().Be(frozen);
+        obj!.NonSingletonField.Should().Be(frozen);
+    }
+
+    [Test]
+    public void Test_Works_UnitFixture_When_NeverAutoMock()
+    {
+        var fixture = new UnitFixture();
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(NonSingletonClass));
+
+        var frozen = fixture.Freeze<NonSingletonClass>();
+        var obj = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
+
+        frozen.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.Class1.Should().Be(frozen);
+        obj!.Class2.Should().Be(frozen);
+        obj!.NonSingletonProp.Should().Be(frozen);
+        obj!.NonSingletonField.Should().Be(frozen);
+    }
+
+    [Test]
+    public void Test_Works_IntegrationFixture_When_AlwaysAutoMock()
+    {
+        var fixture = new IntegrationFixture();
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(NonSingletonClass));
+
+        var frozen = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
+        var obj = fixture.CreateNonAutoMock<NonSingletonUserClass>();
+
+        frozen.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.Class1.Should().Be(frozen);
+        obj!.Class2.Should().Be(frozen);
+        obj!.NonSingletonProp.Should().Be(frozen);
+        obj!.NonSingletonField.Should().Be(frozen);
+    }
+
+    [Test]
+    public void Test_Works_IntegrationFixture_When_NeverAutoMock()
+    {
+        var fixture = new IntegrationFixture();
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(NonSingletonClass));
+
+        var frozen = fixture.Freeze<NonSingletonClass>();
+        var obj = fixture.CreateNonAutoMock<NonSingletonUserClass>();
+
+        frozen.Should().NotBeNull();
+        obj.Should().NotBeNull();
+        obj!.Class1.Should().Be(frozen);
+        obj!.Class2.Should().Be(frozen);
+        obj!.NonSingletonProp.Should().Be(frozen);
+        obj!.NonSingletonField.Should().Be(frozen);
+    }
+
+
+    [Test]
     public void Test_Freeze_IsFrozen_WhenAutoMock_AndCallBase()
     {
         var fixture = new AbstractAutoMockFixture();

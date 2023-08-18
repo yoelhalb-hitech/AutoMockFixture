@@ -213,6 +213,60 @@ internal class SubclassCustomization_Tests
     [TestCase<BaseTestType, SubTestType>]
     [TestCase<ITestIface, ISubTestIface>]
     [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
+    public void Test_FreezesCorrectly_When_ForceAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(TOriginal));
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(TSubClass));
+
+        var result = fixture.Freeze(typeof(TOriginal));
+        var result2 = fixture.CreateAutoMock<TOriginal>();
+        var result3 = fixture.CreateWithAutoMockDependencies<TOriginal>();
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<TSubClass>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+
+        result3.Should().NotBeNull();
+        result3.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface, BaseTestType>]
+    [TestCase<ITestIface, SubTestType>]
+    [TestCase<ISubTestIface, SubTestType>]
+    [TestCase<BaseTestType, SubTestType>]
+    [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
+    public void Test_FreezesCorrectly_When_NeverAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TOriginal));
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TSubClass));
+
+        var result = fixture.Freeze<TOriginal>();
+        var result2 = fixture.CreateAutoMock<TOriginal>();
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<TSubClass>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface, BaseTestType>]
+    [TestCase<ITestIface, SubTestType>]
+    [TestCase<ISubTestIface, SubTestType>]
+    [TestCase<BaseTestType, SubTestType>]
+    [TestCase<ITestIface, ISubTestIface>]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_FreezesCorrectly_ForAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
         var fixture = new UnitFixture();

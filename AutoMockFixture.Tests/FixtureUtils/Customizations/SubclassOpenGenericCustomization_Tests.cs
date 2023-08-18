@@ -1,6 +1,7 @@
 ﻿using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.NUnit3;
+using static AutoMockFixture.Tests.FixtureUtils.Customizations.SubclassCustomization_Tests;
 
 namespace AutoMockFixture.Tests.FixtureUtils.Customizations;
 
@@ -280,6 +281,58 @@ internal class SubclassOpenGenericCustomization_Tests
 
         result2.Should().NotBeNull();
         result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_FreezesCorrectly_When_NeverAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TOriginal));
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TSubClass));
+
+        var result = fixture.Freeze<TOriginal>();
+        var result2 = fixture.CreateAutoMock<TOriginal>();
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<TSubClass>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+    }
+
+    [Test]
+    [TestCase<ITestIface<string>, BaseTestType<string>>]
+    [TestCase<ITestIface<string>, SubTestType<string>>]
+    [TestCase<ISubTestIface<string>, SubTestType<string>>]
+    [TestCase<BaseTestType<string>, SubTestType<string>>]
+    [TestCase<ITestIface<string>, ISubTestIface<string>>]
+    public void Test_FreezesCorrectly_When_ForceAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(TOriginal));
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(TSubClass));
+
+        var result = fixture.Freeze(typeof(TOriginal));
+        var result2 = fixture.CreateAutoMock<TOriginal>();
+        var result3 = fixture.CreateWithAutoMockDependencies<TOriginal>();
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<TSubClass>();
+
+        result2.Should().NotBeNull();
+        result2.Should().BeSameAs(result);
+
+        result3.Should().NotBeNull();
+        result3.Should().BeSameAs(result);
     }
 
     [Test]

@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
+using AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 using AutoMockFixture.FixtureUtils.Commands;
 using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Postprocessors;
@@ -94,12 +95,20 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     Cache IAutoMockFixture.Cache => Cache;
     internal Cache Cache { get; } = new Cache();
     CacheBuilder? cacheBuilder;
+    AutoMockTypeControlBuilder? autoMockTypeControlBuilder;
 
     private List<WeakReference> disposables = new List<WeakReference>();
 
     object? ISpecimenBuilder.Create(object request, AutoFixture.Kernel.ISpecimenContext context)
     {
-        if(cacheBuilder is null) cacheBuilder = new CacheBuilder(Cache);
+        if (autoMockTypeControlBuilder is null) autoMockTypeControlBuilder = new AutoMockTypeControlBuilder();
+        if (cacheBuilder is null) cacheBuilder = new CacheBuilder(Cache);
+
+        var result = autoMockTypeControlBuilder.Create(request, context); // We do it here so to ensure that it will always run the first thing
+
+        if (result is NoSpecimen) result = cacheBuilder.Create(request, context); // Same
+
+        if (result is NoSpecimen) result = base.Create(request, context);
 
         if(result?.GetType().GetInterfaces().Contains(typeof(IDisposable)) == true) disposables.Add(new WeakReference(result));
 
