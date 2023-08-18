@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fix issue with `fixture.Freeze()` when using `AutoMockTypeControl` together with `SubClassTransformCustomization`
+- Fix the `AutoMockTypeControlAttribute` to actually be usable
 
 ## [1.1.7] - 2023-08-16
 

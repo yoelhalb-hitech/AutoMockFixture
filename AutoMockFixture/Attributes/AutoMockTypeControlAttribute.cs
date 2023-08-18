@@ -6,10 +6,18 @@ namespace AutoMockFixture;
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
 public class AutoMockTypeControlAttribute : Attribute
 {
-	public AutoMockTypeControlAttribute(AutoMockTypeControl autoMockTypeControl)
+	public AutoMockTypeControlAttribute(Type[] alwaysMockTypes, Type[] neverMockTypes)
 	{
-        AutoMockTypeControl = autoMockTypeControl;
+        AlwaysMockTypes = alwaysMockTypes;
+        NeverMockTypes = neverMockTypes;
     }
 
-    public AutoMockTypeControl AutoMockTypeControl { get; set; }
+    public AutoMockTypeControl AutoMockTypeControl => new AutoMockTypeControl
+    {
+        AlwaysAutoMockTypes = AlwaysMockTypes.ToList(),
+        NeverAutoMockTypes = NeverMockTypes.ToList(),
+    };
+
+    public Type[] AlwaysMockTypes { get; set; }
+    public Type[] NeverMockTypes { get; set; }
 }
