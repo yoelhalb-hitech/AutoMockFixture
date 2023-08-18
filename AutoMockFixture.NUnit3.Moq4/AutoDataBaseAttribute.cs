@@ -2,6 +2,7 @@
 using AutoMockFixture.FixtureUtils;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using NUnit.Framework.Internal.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +13,7 @@ namespace AutoMockFixture.NUnit3.Moq4;
 // Based on https://docs.educationsmediagroup.com/unit-testing-csharp/autofixture/combining-autofixture-with-nunit-and-moq
 [AttributeUsage(AttributeTargets.Method)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder
+public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetUpTearDown
 {
     protected readonly bool noConfigureMembers;
     protected readonly bool generateDelegates;
@@ -44,11 +45,18 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder
 
     protected virtual AutoMockFixtureBase GetFixture()
     {
-        var fixture = CreateFixture();
+        fixture = CreateFixture();
         Customizations.ForEach(c => fixture.Customize(c));
 
         return fixture;
     }
 
     protected abstract AutoMockFixtureBase CreateFixture();
+    protected AutoMockFixtureBase? fixture;
+
+    TestCommand? ICommandWrapper.Wrap(TestCommand command)
+    {
+        return fixture is not null ? new DisposeFixtureCommand(command, fixture) : command;
+    }
+
 }

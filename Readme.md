@@ -231,6 +231,7 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
 - **Freeze by attribute on class**: Freeze if the type has the `Singleton` or `Scoped` DI attribute from [our DotNetPowerExtensions framework](https://github.com/yoelhalb-hitech/DotNetPowerExtensions), note that any frozen object will not be garabage collected while the fixture is in scope
 - **Provide ctor arguments manually**: Can inject a particular constructor argument by type or by name via the `ConstructorArgumentCustomization` customization, and also providing the ability to remove the customization via `RemoveCustomization()`, (this way multiple calls to `Create` can have different constructor arguments)
 - **Trace builder**: Can use `TraceBehavior` to trace the builders use to create the objects as well as all builders that have been attempted
+- **Dispose**: Can use `.Dispose()` to automatically to dispose all disposable created objects and disposable customizations
 - **Can register a derived class to replace the original request**: Either replace a concrete class with a subclass (via `SubClassCustomization` or `SubClassTransformCustomization`) or an open generic class (via `SubClassOpenGenericCustomization` or `SubClassTransformCustomization`), can be useful to replace for example `DbSet<>` with a dervied class for any concrete instance of `DbSet<>`
     
 	*NOTE*: For `SubClassOpenGenericCustomization` you should use any generic parameter and it will be ignored
@@ -244,7 +245,7 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
     *CAUTION*: `Freeze` won't freeze existing objects, so if writing this workaround directly it should NOT be used if it is already in the mock
 
 #### On AutoFixture.AutoMoq
-- **Attributes for Moq fixtures**: Use the `UnitAutoData` or `IntegrationAutoData` attribtues on the method to get passed in a `UnitFixture` or `IntegrationFixture` respectively (currently only available for NUnit)
+- **Attributes for Moq fixtures**: Use the `UnitAutoData` or `IntegrationAutoData` attribtues on the method to get passed in a `UnitFixture` or `IntegrationFixture` respectively (currently only available for NUnit), will also dispose of the fixture after the test run
 - **Attribute support for fixture customization**: Use the `UnitAutoData` or `IntegrationAutoData` attribtues also have a generic version that supports passing in an ICustomization to customize the fixture, requires the customization to have a defualt ctor (currently only available for NUnit)
 - **SUT with mock dependecies**: Can automatically mock all dependencies including mockable property and field values (as well as all dependencies for non mockable) via the `CreateWithAutoMockDependecies` call or use `UnitFixture` (or via attributes when using AutoData to inject the arguments in the test method)
 - **Force Mock**: Can specifically demend that an object should be a mock via the `CreateAutoMock` call (or via attributes when using AutoData to inject the arguments in the test method)

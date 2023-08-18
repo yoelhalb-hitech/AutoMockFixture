@@ -1,3 +1,7 @@
+### Added
+- Add `fixture.Dispose()` to dispose all generated results and all disposable customizations
+- Add that the `UnitAutoData` or `IntegrationAutoData` should automatically dispose after test run
+
 ## [1.1.7] - 2023-08-16
 
 ### Fixed

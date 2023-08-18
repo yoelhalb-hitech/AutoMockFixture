@@ -20,7 +20,7 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 /// CAUTION: the methods are not thread safe
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, IAutoMockFixture
+public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, IAutoMockFixture, IDisposable
 {
     MethodSetupTypes IAutoMockFixture.MethodSetupType => MethodSetupType;
     IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
@@ -95,14 +95,28 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     internal Cache Cache { get; } = new Cache();
     CacheBuilder? cacheBuilder;
 
+    private List<WeakReference> disposables = new List<WeakReference>();
+
     object? ISpecimenBuilder.Create(object request, AutoFixture.Kernel.ISpecimenContext context)
     {
         if(cacheBuilder is null) cacheBuilder = new CacheBuilder(Cache);
 
-        var result = cacheBuilder.Create(request, context); // We do it here so to ensure that it will always run the first thing
-        if (result is not NoSpecimen) return result;
+        if(result?.GetType().GetInterfaces().Contains(typeof(IDisposable)) == true) disposables.Add(new WeakReference(result));
 
-        return base.Create(request, context);
+        return result;
+    }
+
+    public void Dispose()
+    {
+        foreach (var disposableRef in disposables.Where(d => d.IsAlive))
+        {
+            try { (disposableRef?.Target as IDisposable)?.Dispose(); } catch { }
+        }
+
+        foreach (var customization in Customizations.Where(c => c?.GetType().GetInterfaces().Contains(typeof(IDisposable)) == true))
+        {
+            try { (customization as IDisposable)?.Dispose(); } catch { }
+        }
     }
 
     #region Create
