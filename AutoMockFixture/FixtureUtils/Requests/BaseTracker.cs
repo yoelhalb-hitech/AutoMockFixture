@@ -74,7 +74,7 @@ internal abstract record BaseTracker : ITracker, IEquatable<BaseTracker>
         var childrenWithResult = Children.Where(c => c.IsCompleted).ToList();
 
         allMocks = childrenWithResult.SelectMany(c => c.GetAllMocks() ?? new List<WeakReference<IAutoMock>>()).OfType<WeakReference<IAutoMock>>().ToList();
-        if (result is not null && StartTracker.Fixture.AutoMockHelpers.GetFromObj(result) is IAutoMock mock) allMocks.Add(mock.ToWeakReference());
+        if (result?.Target is not null && StartTracker.Fixture.AutoMockHelpers.GetFromObj(result.Target) is IAutoMock mock) allMocks.Add(mock.ToWeakReference());
 
         // Probably not worth to do Distinct here (as the caller will do it), unless it is the last one
         if (Parent is null) allMocks = allMocks.Distinct().ToList();
@@ -110,7 +110,7 @@ internal abstract record BaseTracker : ITracker, IEquatable<BaseTracker>
     {
         if (completed) return;
 
-        // We don't want a reference to the main result to avoid memory leaks
+        // For the main path we will track it in the fixture instead
         if (Path != String.Empty) this.result = result.ToWeakReference();
 
         StartTracker.Fixture.Cache.AddIfNeeded(this, result);

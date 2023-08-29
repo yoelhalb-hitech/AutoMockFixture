@@ -1,3 +1,8 @@
+### Fixed
+- Fix issue with fixture mock tracking and retrieving
+
+## [1.1.8] - 2023-08-17
+
 ### Added
 - Add `fixture.Dispose()` to dispose all generated results and all disposable customizations
 - Add that the `UnitAutoData` or `IntegrationAutoData` should automatically dispose after test run

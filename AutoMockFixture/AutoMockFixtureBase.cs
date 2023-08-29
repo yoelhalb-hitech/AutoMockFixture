@@ -11,6 +11,7 @@ using AutoMockFixture.FixtureUtils.Trace;
 using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.ComponentModel;
+using System.Linq;
 using static AutoMockFixture.FixtureUtils.Customizations.SubclassTransformCustomization;
 
 namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)
@@ -295,29 +296,55 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                 });
             });
 
-            MocksDict[key] = Task.Run(() => request.GetAllMocks() ?? new List<WeakReference<IAutoMock>>());
-            MocksDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) =>
+            MocksDict[key] = Task.Run(() => request.GetAllMocks()
+                                                    .Select(w => w.GetTarget()).OfType<IAutoMock>()
+                                                    .Distinct() // Remember that for wrappers we resuse the child result
+                                                    .Select(m => m.ToWeakReference()).ToList() ?? new List<WeakReference<IAutoMock>>());
+            MocksDict[key].ContinueWith(_ =>
             {
-                MocksDict[key].Result.AddRange(d.AutoMocks);
+                var obj = new object();
+                request.StartTracker.DataUpdated += (_, d) =>
+                {
+                    var mocks = d.AutoMocks.Select(w => w.GetTarget()).OfType<IAutoMock>().Distinct();  // Remember that for wrappers we resuse the child result
+                    lock (obj)
+                    {
+                        var existing = MocksDict[key].Result.Select(r => r.GetTarget()).OfType<IAutoMock>().ToList();
+                        MocksDict[key].Result.AddRange(mocks.Where(m => !existing.Contains(m)).Select(m => m.ToWeakReference()));
+                    }
+                };
             });
 
             MocksByTypeDict[key] = Task.Run(() => MocksDict[key].Result
                                             .GroupBy(m => m.GetTarget()?.GetInnerType())
                                             .Where(g => g.Key is not null)
                                             .ToDictionary(d => d.Key!, d => d.ToList()));
-
-            MocksDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) =>
+            MocksByTypeDict[key].Wait();
+            MocksByTypeDict[key].ContinueWith(_ =>
             {
-                d.AutoMocks.ForEach(m =>
+                var obj = new object();
+                request.StartTracker.DataUpdated += (_, d) =>
                 {
-                    var t = m.GetTarget()?.GetInnerType();
-                    if (t is null) return;
+                    lock(obj)
+                    {
+                        var dict = new Dictionary<Type, List<IAutoMock>>();
+                        d.AutoMocks.ForEach(m =>
+                        {
+                            var target = m.GetTarget(); // This way it will at least live till after the block so it won't be GC'ed
+                            var t = target?.GetInnerType();
+                            if (target is null || t is null) return;
 
-                    if(!MocksByTypeDict[key].Result.ContainsKey(t))
-                        MocksByTypeDict[key].Result[t] = new List<WeakReference<IAutoMock>>();
+                            if (!MocksByTypeDict[key].Result.ContainsKey(t))
+                                MocksByTypeDict[key].Result[t] = new List<WeakReference<IAutoMock>>();
 
-                    MocksByTypeDict[key].Result[t].Add(m);
-                });
+                            if (!dict.ContainsKey(t)) dict[t] = MocksByTypeDict[key].Result[t].Select(r => r.GetTarget()).OfType<IAutoMock>().ToList();
+
+                            if (dict[t].Contains(target)) return;
+
+                            dict[t].Add(target);
+                            MocksByTypeDict[key].Result[t].Add(m);
+                        });
+                    }
+                };
             });
 
             return result;
