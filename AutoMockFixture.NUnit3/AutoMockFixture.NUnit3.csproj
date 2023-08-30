@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netcoreapp2.1;netstandard2.0;net452;net461;net47;net6.0;net7.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
 
 	<LangVersion>11.0</LangVersion>
 	<Nullable>enable</Nullable>
@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.NUnit3</PackageId>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.2.1</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
