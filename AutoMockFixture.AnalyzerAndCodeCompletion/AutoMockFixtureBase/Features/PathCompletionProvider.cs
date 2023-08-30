@@ -1,6 +1,7 @@
 ﻿extern alias Features;
 extern alias Workspaces;
 
+using AutoMockFixture.Moq4;
 using DotNetPowerExtensions.RoslynExtensions;
 using Features::Microsoft.CodeAnalysis.Completion;
 using Features::Microsoft.CodeAnalysis.Completion.Providers;
@@ -71,7 +72,9 @@ public class PathCompletionProvider : CommonCompletionProvider
             while (innerOperation is IConversionOperation conversion && conversion?.Operand is not null) innerOperation = conversion.Operand;
 
             var typeSymbol = innerOperation.Type;
-            if(typeSymbol is null) return;
+            var autoMockType = semanticModel.Compilation.GetTypeSymbol(typeof(AutoMock<>));
+            if(autoMockType is not null && typeSymbol?.OriginalDefinition.IsEqualTo(autoMockType) == true) typeSymbol = typeSymbol.GetTypeArguments().FirstOrDefault();
+            if (typeSymbol is null) return;
 
             // Not using .Last() since for .TryGetAutoMock() it is not the last
             var currentValue = invocationOperation.Arguments.Skip(2).First().Value.ConstantValue.Value?.ToString()?.Trim();
