@@ -6,6 +6,7 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>AutoMockFixture.AnalyzerAndCodeCompletion.Vsix</RootNamespace>
     <AssemblyName>AutoMockFixture.AnalyzerAndCodeCompletion.Vsix</AssemblyName>
+	<IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
