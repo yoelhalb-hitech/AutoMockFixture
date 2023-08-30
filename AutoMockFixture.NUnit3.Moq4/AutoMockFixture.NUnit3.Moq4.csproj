@@ -8,13 +8,11 @@
 	<Nullable>enable</Nullable>
 
     <Platforms>AnyCPU</Platforms>
-
-	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.NUnit3.Moq4</PackageId>
-    <PackageVersion>1.1.9</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
@@ -56,11 +54,4 @@
     <ProjectReference Include="..\AutoMockFixture.NUnit3\AutoMockFixture.NUnit3.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" PrivateAssets="All" ReferenceOutputAssembly="false" /><!-- AutoMockFixture.Moq4 is already referencing it -->
   </ItemGroup>
-
-  <!--From https://github.com/NuGet/Home/issues/3891#issuecomment-377319939-->
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
-    <ItemGroup>
-		<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
-    </ItemGroup>
-  </Target>
 </Project>

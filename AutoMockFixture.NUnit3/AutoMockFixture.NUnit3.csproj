@@ -17,6 +17,37 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <PropertyGroup>
+    <PackageId>AutoMockFixture.NUnit3</PackageId>
+    <PackageVersion>1.2.0</PackageVersion>
+    <Authors>Yoel</Authors>
+    <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Extensions for AutoFixture and Moq</Description>
+    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <Copyright>Copyright HiTech $([System.DateTime]::UtcNow.ToString("yyyy"))</Copyright>
+    <PackageTags>Moq;TDD;Mock;Mocking;Mocks;AutoMocking;Agile;Testing;UnitTest;UnitTesting;IntegrationTest;IntegrationTesting;AutoFixture;AutoMockFixture</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+	<Company>SequelPay</Company>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoFixture.NUnit3" Version="[4.17.0,)" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
