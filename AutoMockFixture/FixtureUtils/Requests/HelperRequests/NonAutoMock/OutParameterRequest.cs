@@ -17,7 +17,7 @@ internal record OutParameterRequest : BaseTracker
     public virtual ParameterInfo ParameterInfo { get; }
     public virtual Type ParameterType { get; }
 
-    public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo;
+    public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo.Name;
 
 
     public override bool IsRequestEquals(ITracker other)

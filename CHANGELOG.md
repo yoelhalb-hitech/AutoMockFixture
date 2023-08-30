@@ -1,4 +1,10 @@
+## [1.1.9] - 2023-08-17
+
+### Added
+- Add analyzer for code completion
+
 ### Fixed
+- Fix tracking path for out argument
 - Fix issue with fixture mock tracking and retrieving
 
 ## [1.1.8] - 2023-08-17

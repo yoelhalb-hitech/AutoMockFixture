@@ -21,6 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.Moq4.UnitTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMockFixture.TestUtils", "AutoMockFixture.TestUtils\AutoMockFixture.TestUtils.csproj", "{05DB9990-B4E0-4E88-9150-8B6E4539539B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.AnalyzerAndCodeCompletion", "AutoMockFixture.AnalyzerAndCodeCompletion\AutoMockFixture.AnalyzerAndCodeCompletion.csproj", "{D6515DAF-3C56-4D95-BC66-B05F2838ECE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.AnalyzerAndCodeCompletion.Test", "AutoMockFixture.AnalyzerAndCodeCompletion.Test\AutoMockFixture.AnalyzerAndCodeCompletion.Test.csproj", "{DEF45917-E4B7-41EB-89B7-A8FBA2F8469F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.AnalyzerAndCodeCompletion.Vsix", "AutoMockFixture.AnalyzerAndCodeCompletion.Vsix\AutoMockFixture.AnalyzerAndCodeCompletion.Vsix.csproj", "{277FC7F1-BC43-4C3F-85DF-9269207B3F81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +69,18 @@ Global
 		{05DB9990-B4E0-4E88-9150-8B6E4539539B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05DB9990-B4E0-4E88-9150-8B6E4539539B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05DB9990-B4E0-4E88-9150-8B6E4539539B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6515DAF-3C56-4D95-BC66-B05F2838ECE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6515DAF-3C56-4D95-BC66-B05F2838ECE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6515DAF-3C56-4D95-BC66-B05F2838ECE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6515DAF-3C56-4D95-BC66-B05F2838ECE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEF45917-E4B7-41EB-89B7-A8FBA2F8469F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEF45917-E4B7-41EB-89B7-A8FBA2F8469F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEF45917-E4B7-41EB-89B7-A8FBA2F8469F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEF45917-E4B7-41EB-89B7-A8FBA2F8469F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{277FC7F1-BC43-4C3F-85DF-9269207B3F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{277FC7F1-BC43-4C3F-85DF-9269207B3F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{277FC7F1-BC43-4C3F-85DF-9269207B3F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{277FC7F1-BC43-4C3F-85DF-9269207B3F81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

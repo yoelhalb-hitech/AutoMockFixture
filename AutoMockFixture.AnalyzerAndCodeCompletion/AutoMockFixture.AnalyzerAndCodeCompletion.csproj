@@ -1,0 +1,104 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>recommended</AnalysisMode>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>11.0</LangVersion>
+    <IncludeBuildOutput>false</IncludeBuildOutput><!-- Needed for .net 4.5 to be able to referene this -->
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Nullable>enable</Nullable>
+
+    <!-- Avoid ID conflicts with the package project. -->
+    <PackageId>*$(MSBuildProjectFile)*</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>AutoMockFixture.AnalyzerAndCodeCompletion</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Yoel</Authors>
+    <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Extensions for AutoFixture and Moq</Description>
+    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <Copyright>Copyright HiTech $([System.DateTime]::UtcNow.ToString("yyyy"))</Copyright>
+    <PackageTags>Moq;TDD;Mock;Mocking;Mocks;AutoMocking;Agile;Testing;UnitTest;UnitTesting;IntegrationTest;IntegrationTesting;AutoFixture;AutoMockFixture</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+	<Company>SequelPay</Company>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.6.0" />
+	<!-- CAUTION: we need Microsoft.CodeAnalysis.CSharp and Microsoft.CodeAnalysis.CSharp.Workspaces to be the same as Features -->
+	<!--<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="3.11.0" PrivateAssets="all" />--><!-- For VS 2019 -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.4.0" /><!-- Needs to match the version of VS -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[3.0.3,)" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.RoslynExtensions" Version="3.0.5" />
+  </ItemGroup>
+
+<ItemGroup>
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.CSharp" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.Features" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.CSharp.Features" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.Scripting" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.Workspaces" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <InternalsAssemblyName Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" />
+  </ItemGroup>
+
+  <!-- Since we do InternalsAssemblyName we have to do it after IgnoresAccessChecksToGenerator -->
+  <Target Name="AddCustomAliases" AfterTargets="IgnoresAccessChecksToGenerator">
+	<ItemGroup>
+		<ReferencePath Condition="'%(FileName)' == 'Microsoft.CodeAnalysis.Features'">
+			<Aliases>Features</Aliases>
+		</ReferencePath>
+		<ReferencePath Condition="'%(FileName)' == 'Microsoft.CodeAnalysis.Workspaces'">
+			<Aliases>Workspaces</Aliases>
+		</ReferencePath>
+	</ItemGroup>
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.AnalyzerAndCodeCompletion.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>
