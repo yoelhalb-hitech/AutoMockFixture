@@ -1,4 +1,6 @@
 ﻿
+using AutoMockFixture.FixtureUtils.Requests;
+
 namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 
 internal class CacheBuilder : ISpecimenBuilder
@@ -13,7 +15,12 @@ internal class CacheBuilder : ISpecimenBuilder
     public object? Create(object request, ISpecimenContext context)
     {
         var existing = Cache.Get(request);
-        if(existing.HasValue) return existing.Value;
+        if (existing.HasValue)
+        {
+            if (request is ITracker tracker) tracker.SetResult(existing.Value, this);
+
+            return existing.Value;
+        }
 
         return new NoSpecimen();
     }

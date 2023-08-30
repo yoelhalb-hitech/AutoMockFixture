@@ -283,11 +283,13 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
             var key = (AutoMockHelpers.GetFromObj(result) ?? result).ToWeakReference();
             TrackerDict[key] = request;
 
+            if (PathsDict.Any(m => m.Key.Target == key.Target)) return result; // Probably from cache, CAUTION: referencing directly the object in the expression prevents if from GC, only when referencing via the wekreference target
+
             PathsDict[key] = Task.Run(() => request.GetChildrensPaths()?
                         .ToDictionary(c => c.Key, c => c.Value)
                     ?? new Dictionary<string, List<WeakReference?>>());
 
-            PathsDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) =>
+            PathsDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) => // For any lazy children
             {
                 d.Paths.ToList().ForEach(i =>
                 {
@@ -296,11 +298,12 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                 });
             });
 
+
             MocksDict[key] = Task.Run(() => request.GetAllMocks()
                                                     .Select(w => w.GetTarget()).OfType<IAutoMock>()
                                                     .Distinct() // Remember that for wrappers we resuse the child result
                                                     .Select(m => m.ToWeakReference()).ToList() ?? new List<WeakReference<IAutoMock>>());
-            MocksDict[key].ContinueWith(_ =>
+            MocksDict[key].ContinueWith(_ =>  // For any lazy children
             {
                 var obj = new object();
                 request.StartTracker.DataUpdated += (_, d) =>
@@ -318,8 +321,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                                             .GroupBy(m => m.GetTarget()?.GetInnerType())
                                             .Where(g => g.Key is not null)
                                             .ToDictionary(d => d.Key!, d => d.ToList()));
-            MocksByTypeDict[key].Wait();
-            MocksByTypeDict[key].ContinueWith(_ =>
+            MocksByTypeDict[key].ContinueWith(_ => // For any lazy children
             {
                 var obj = new object();
                 request.StartTracker.DataUpdated += (_, d) =>
@@ -346,6 +348,8 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                     }
                 };
             });
+
+            MocksByTypeDict[key].Wait();
 
             return result;
         }
