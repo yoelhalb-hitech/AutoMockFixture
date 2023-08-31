@@ -1,7 +1,18 @@
+## [2.0.1] - 2023-08-31
+
+### Changed
+- Change that AutoMockFixture should never mock a Type object as it causes issues (although AutoMock can do it)
+
+### Fixed
+- Fix issues with null in the fixture
+- Fix completion display and insertion
+- Fix completion should also work inside the existing string (not just at the comma)
+- Fix completion should only work on the correct arg
+
 ## [2.0.0] - 2023-08-30
 
 ### Changed
-- Change that AutoMockFixture and AutoMockFixture.NUnit should be sepaarte projects
+- Change that AutoMockFixture and AutoMockFixture.NUnit should be separate projects
 
 ### Fixed
 - Fix package reference issues
