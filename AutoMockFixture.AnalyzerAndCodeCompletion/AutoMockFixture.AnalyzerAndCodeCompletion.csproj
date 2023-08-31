@@ -60,8 +60,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[3.0.3,)" />
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.RoslynExtensions" Version="3.0.5" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="3.0.5" PrivateAssets="All" GeneratePathProperty="true" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="3.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.RoslynExtensions" Version="3.0.5" PrivateAssets="All" GeneratePathProperty="true" />
   </ItemGroup>
 
 <ItemGroup>
@@ -99,9 +103,8 @@
   <Target Name="_AddAnalyzersToOutput">
     <ItemGroup>
       <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.AnalyzerAndCodeCompletion.dll" PackagePath="analyzers/dotnet/cs" />
-      <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.dll" PackagePath="analyzers/dotnet/cs" />
-      <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.Moq4.dll" PackagePath="analyzers/dotnet/cs" />
-    </ItemGroup>
+	  <TfmSpecificPackageFile Include="$(PkgSequelPay_DotNetPowerExtensions)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" />
+	  <TfmSpecificPackageFile Include="$(PkgSequelPay_DotNetPowerExtensions_RoslynExtensions)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" />
+	</ItemGroup>
   </Target>
-
 </Project>

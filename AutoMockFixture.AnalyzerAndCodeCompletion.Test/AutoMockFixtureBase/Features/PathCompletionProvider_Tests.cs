@@ -39,9 +39,6 @@ internal class PathCompletionProvider_Tests
            .WithAnalyzerReferences(new AnalyzerReference[]
            {
                new AnalyzerFileReference(analyzerPath, loader),
-               new AnalyzerFileReference(Path.Combine(Path.GetDirectoryName(analyzerPath)!, "DotNetPowerExtensions.RoslynExtensions.dll"), loader),
-               new AnalyzerFileReference(Path.Combine(Path.GetDirectoryName(analyzerPath)!, "AutoMockFixture.dll"), loader),
-               new AnalyzerFileReference(Path.Combine(Path.GetDirectoryName(analyzerPath)!, "AutoMockFixture.Moq4.dll"), loader)
                new AnalyzerFileReference(typeof(SequelPay.DotNetPowerExtensions.MustInitializeAttribute).Assembly.Location, loader),
                new AnalyzerFileReference(typeof(SequelPay.DotNetPowerExtensions.RoslynExtensions.SymbolExtensions).Assembly.Location, loader),
            });

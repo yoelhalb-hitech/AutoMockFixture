@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 using SequelPay.DotNetPowerExtensions;
 using SequelPay.DotNetPowerExtensions.RoslynExtensions;
+using System;
 using System.Collections.Immutable;
 using Workspaces::Microsoft.CodeAnalysis.Host;
 using Workspaces::Microsoft.CodeAnalysis.Options;
@@ -56,9 +57,9 @@ public class PathCompletionProvider : CommonCompletionProvider
 
             if (invocation?.Expression is not MemberAccessExpressionSyntax m || (!Methods.Contains(m.Name.Identifier.Text) && !AutoMockMethods.Contains(m.Name.Identifier.Text))) return;
 
-            // TODO... should we also support calling it directly as a static method
-            var fixtureTypeSymbol = semanticModel.Compilation.GetTypeSymbol(typeof(IAutoMockFixture));
-            var extensionsTypeSymbol = semanticModel.Compilation.GetTypeSymbol(typeof(AutoMockFixtureExtensions));
+            // CAUTION: do not reference directly the assmeblies of the follwoing types as it creeats issues at runtime because it needs the dependencies
+            var fixtureTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.IAutoMockFixture", "AutoMockFixture");
+            var extensionsTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.AutoMockFixtureExtensions", "AutoMockFixture");
 
             if (fixtureTypeSymbol is null
                    || semanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol is not IMethodSymbol methodSymbol
@@ -309,13 +310,13 @@ public class PathCompletionProvider : CommonCompletionProvider
 
     private static string[] Methods =
     {
-        nameof(AutoMockFixtureExtensions.GetAt),
-        nameof(AutoMockFixtureExtensions.GetSingleAt),
+        "GetAt",
+        "GetSingleAt",
     };
     private static string[] AutoMockMethods =
     {
-        nameof(AutoMockFixtureExtensions.GetAutoMock),
-        nameof(AutoMockFixtureExtensions.TryGetAutoMock),
+        "GetAutoMock",
+        "TryGetAutoMock",
     };
 
 
