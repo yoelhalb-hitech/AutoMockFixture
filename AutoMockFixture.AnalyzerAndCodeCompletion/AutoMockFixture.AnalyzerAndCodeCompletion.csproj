@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.AnalyzerAndCodeCompletion</PackageId>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageVersion>2.0.0.1</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
@@ -99,6 +99,8 @@
   <Target Name="_AddAnalyzersToOutput">
     <ItemGroup>
       <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.AnalyzerAndCodeCompletion.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.Moq4.dll" PackagePath="analyzers/dotnet/cs" />
     </ItemGroup>
   </Target>
 

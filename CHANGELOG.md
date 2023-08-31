@@ -1,4 +1,4 @@
-## [2.0.0] - 2023-08-17
+## [2.0.0] - 2023-08-30
 
 ### Changed
 - Change that AutoMockFixture and AutoMockFixture.NUnit should be sepaarte projects
@@ -6,7 +6,7 @@
 ### Fixed
 - Fix package reference issues
 
-## [1.1.9] - 2023-08-17
+## [1.1.9] - 2023-08-30
 
 ### Added
 - Add analyzer for code completion
