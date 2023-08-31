@@ -13,6 +13,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            package:
+                - AutoMockFixture
+                - AutoMockFixture.Moq4
+                - AutoMockFixture.NUnit3
+                - AutoMockFixture.NUnit3.Moq4
+                - AutoMockFixture.AnalyzerAndCodeCompletion
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -29,10 +37,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration Release /p:Version=${VERSION}
+      run: dotnet build ${{ matrix.package }}/${{ matrix.package }}.csproj --no-restore --configuration Release /p:Version=${VERSION}
     - name: Test
       run: dotnet test --verbosity normal --configuration Release /p:Version=${VERSION} 
     - name: Pack
-      run: dotnet pack --configuration Release /p:Version=${VERSION} --output .      
+      run: dotnet pack ${{ matrix.package }}/${{ matrix.package }}.csproj --configuration Release /p:Version=${VERSION} --output .      
     - name: Push Package to NuGet.org
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
