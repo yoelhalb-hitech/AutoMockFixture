@@ -90,10 +90,30 @@ internal class PostprocessorWithRecursion_Tests
 
         var pp = new PostprocessorWithRecursion(fixture, builderMock.Object, commandMock.Object);
 
-        Assert.Throws<Exception>(() => pp.Create(Mock.Of<ITracker>(), null!));
+        pp.Create(Mock.Of<ITracker>(), null!);
 
         hasSpecimen.Should().BeTrue();
         fixture.ProcessingTrackerDict.ContainsKey(specimen).Should().BeFalse();
+    }
+
+    [Test]
+    public void Test_DoesNotThrow_WhenCommandThrows()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var specimen = new object();
+
+        var builderMock = new AutoMock<ISpecimenBuilder>().Setup(nameof(ISpecimenBuilder.Create), new { }, specimen);
+
+        var commandMock = new AutoMock<ISpecimenCommand>();
+        var hasSpecimen = false;
+        commandMock.Setup(c => c.Execute(It.IsAny<object>(), It.IsAny<ISpecimenContext>()),
+                                s => s.Callback(() => hasSpecimen = fixture.ProcessingTrackerDict.ContainsKey(specimen))
+                                    .Throws(new Exception()));
+
+        var pp = new PostprocessorWithRecursion(fixture, builderMock.Object, commandMock.Object);
+
+        Assert.DoesNotThrow(() => pp.Create(Mock.Of<ITracker>(), null!));
     }
 
     [Test]

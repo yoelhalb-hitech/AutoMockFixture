@@ -14,6 +14,8 @@ internal class AutoMockDependenciesAutoPropertiesHandlerCommand : ISpecimenComma
     {
         if (context is null) throw new ArgumentNullException(nameof(context));
 
+        if (specimen is null) return;
+
         Fixture.ProcessingTrackerDict.TryGetValue(specimen, out var existingTracker);
 
         var command = new AutoMockAutoPropertiesCommand(Fixture)

@@ -15,7 +15,7 @@ internal interface IAutoMockHelpers
     IAutoMock? GetFromObj(object? obj);
     Type GetAutoMockType(Type inner);
 
-    bool IsAutoMockAllowed(Type t);
+    bool IsAutoMockAllowed(Type t, bool force = false);
 
     SetupServiceFactoryBase GetSetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc);
 

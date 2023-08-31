@@ -36,17 +36,11 @@ internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder, IS
     object? ISpecimenBuilder.Create(object request, ISpecimenContext context)
     {
         var specimen = this.Builder.Create(request, context);
-        if (specimen is null) return specimen;
+
+        if (specimen is null || specimen is NoSpecimen || specimen is OmitSpecimen || !this.Specification.IsSatisfiedBy(request)) return specimen;
 
         try
         {
-            var ns = specimen as NoSpecimen;
-            if (ns != null)
-                return ns;
-
-            if (!this.Specification.IsSatisfiedBy(request))
-                return specimen;
-
             var type = request as Type ?? (request as IRequestWithType)?.Request;
             if (type is not null && context is RecursionContext recursionContext
                     && recursionContext.BuilderCache.ContainsKey(type)
@@ -59,6 +53,11 @@ internal class PostprocessorWithRecursion  : Postprocessor, ISpecimenBuilder, IS
 
             this.Command.Execute(specimen, context);
 
+            return specimen;
+        }
+        catch(Exception ex)
+        {
+            Logger.LogInfo(ex.Message);
             return specimen;
         }
         finally

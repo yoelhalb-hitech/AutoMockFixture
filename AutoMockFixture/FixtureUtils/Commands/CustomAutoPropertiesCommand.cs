@@ -32,10 +32,9 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
     public virtual new void Execute(object specimen, ISpecimenContext context)
     {
         Logger.LogInfo("In auto properties");
-        if (specimen == null) throw new ArgumentNullException(nameof(specimen));
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (context is null) throw new ArgumentNullException(nameof(context));
 
-        if (specimen is IAutoMock || delegateSpecification.IsSatisfiedBy(specimen)) return;
+        if (specimen is null || specimen is IAutoMock || delegateSpecification.IsSatisfiedBy(specimen)) return;
 
         // TODO... if we want to have `Create on demend` we have to cache here the original tracker
 

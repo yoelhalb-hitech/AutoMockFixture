@@ -41,9 +41,14 @@ internal class AutoMockHelpers : IAutoMockHelpers
     public IAutoMock? GetFromObj(object? obj) => obj is IAutoMock m ? m : (obj as global::Moq.IMocked ?? (obj as Delegate)?.Target as global::Moq.IMocked)?.Mock as IAutoMock;
     public Type GetAutoMockType(Type inner) => typeof(AutoMock<>).MakeGenericType(inner);
 
-    public bool IsAutoMockAllowed(Type t)
+    public bool IsAutoMockAllowed(Type t, bool force = false)
     {
-        if (t is null || t.IsPrimitive || t == typeof(string) || t == typeof(object) || t.IsValueType
+        // We cannot afford to mock Type objects in the fixture as it might mess up things, although AutoMock itself allows it, and we actually use it
+        // As a matter of fact there is no point to it either, as code using a type via a property or method etc. usually expects a specific type anyway
+        if (t is null || t.IsValueType || !Moq.Extensions.IsMockable(t) || typeof(Type).IsAssignableFrom(t)) return false;
+        if(force) return true;
+
+        if (t.IsPrimitive || t == typeof(string) || t == typeof(object)
                     || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
                     || t == typeof(Array)
                     //|| typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)

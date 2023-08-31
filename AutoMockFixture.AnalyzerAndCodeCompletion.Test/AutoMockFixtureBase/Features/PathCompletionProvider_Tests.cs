@@ -63,7 +63,7 @@ internal class PathCompletionProvider_Tests
         return document;
     }
 
-    private static async Task<CompletionList> GetCompletionList(string call, string arg, string objectArg, string trailing = "")
+    private static async Task<CompletionList> GetCompletionList(string call, string arg, string objectArg, string trailing = "", int offset = 0)
     {
         var code = $$"""
         using AutoMockFixture;
@@ -95,7 +95,7 @@ internal class PathCompletionProvider_Tests
 
         var document = GetInitializedDocument(code);
 
-        var position = code.LastIndexOf(objectArg + ",", StringComparison.Ordinal) + (objectArg + ",").Length;
+        var position = code.LastIndexOf(objectArg + ",", StringComparison.Ordinal) + (objectArg + ",").Length + offset;
 
         var text = await document.GetTextAsync().ConfigureAwait(false);
         var insertionTrigger = CompletionTrigger.CreateInsertionTrigger(text[position]);
@@ -120,6 +120,42 @@ internal class PathCompletionProvider_Tests
     public async Task Test(string call, string objectArg)
     {
         var results = await GetCompletionList(call, "", objectArg).ConfigureAwait(false);
+
+        results.ItemsList.Should().NotBeNullOrEmpty();
+
+        var expected = new[]
+        {
+            "->firstArg",
+            "->secondArg",
+            ".TestProp",
+            ".TestPropGetVirtual",
+            ".TestNonVoidVirtualMethod",
+            ".MethodWithDifferentArgs(`1)",
+            ".MethodWithDifferentArgs(`2)",
+            ".MethodWithSameArgs(Int32,String)",
+            ".MethodWithSameArgs(String,Int32)",
+            ".TestField",
+        };
+        results.ItemsList.Count.Should().Be(expected.Length);
+        results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    [TestCase("fixture.GetAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetSingleAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new Task<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new Task<TestClass>()")]
+    public async Task Test_WorksInsideString(string call, string objectArg)
+    {
+        var results = await GetCompletionList(call, "  ", objectArg, "", 2).ConfigureAwait(false);
 
         results.ItemsList.Should().NotBeNullOrEmpty();
 
