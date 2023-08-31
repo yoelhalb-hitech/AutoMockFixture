@@ -17,7 +17,7 @@ internal record OutParameterRequest : BaseTracker
     public virtual ParameterInfo ParameterInfo { get; }
     public virtual Type ParameterType { get; }
 
-    public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo.Name;
+    public override string InstancePath => "." + MethodInfo.GetTrackingPath() + "->" + ParameterInfo.Name;  // TODO... There might be a conflict if the out argument name is the same as the ctor arg name of the return type
 
 
     public override bool IsRequestEquals(ITracker other)

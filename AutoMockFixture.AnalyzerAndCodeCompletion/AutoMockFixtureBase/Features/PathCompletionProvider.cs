@@ -72,8 +72,6 @@ public class PathCompletionProvider : CommonCompletionProvider
             while (innerOperation is IConversionOperation conversion && conversion?.Operand is not null) innerOperation = conversion.Operand;
 
             var typeSymbol = innerOperation.Type;
-            var autoMockType = semanticModel.Compilation.GetTypeSymbol(typeof(AutoMock<>));
-            if(autoMockType is not null && typeSymbol?.OriginalDefinition.IsEqualTo(autoMockType) == true) typeSymbol = typeSymbol.GetTypeArguments().FirstOrDefault();
             if (typeSymbol is null) return;
 
             // Not using .Last() since for .TryGetAutoMock() it is not the last
@@ -103,10 +101,20 @@ public class PathCompletionProvider : CommonCompletionProvider
                             IParameterSymbol p => p.Type,
                             IPropertySymbol prop => prop.Type,
                             IFieldSymbol f => f.Type,
+                            ITypeSymbol t => t,
                             _ => throw new Exception("Should not arrive here"),
                         };
 
-                        members = GetMembers(newType, isAutoMock);
+                        var newMembers = new List<Info>();
+                        if(current.Symbol is IMethodSymbol method)
+                        {
+                            newMembers.AddRange(method.Parameters.Where(p => p.RefKind == RefKind.Out)
+                                                    .Select(p => new Info { TrackingPath = "->" + p.Name, Symbol = p, RequiresEagerLoading = true }));
+                        }
+
+                        newMembers.AddRange(GetMembers(newType, isAutoMock));
+
+                        members = newMembers;
                         path += current.TrackingPath;
                     }
                 } while (!candidates.Any() && path != currentValue);
@@ -151,6 +159,35 @@ public class PathCompletionProvider : CommonCompletionProvider
 
     private IEnumerable<Info> GetMembers(ITypeSymbol typeSymbol, bool ignorePrimitive)
     {
+        // TODO... add tests
+        if (typeSymbol.GetTypeArguments().Any()
+            && ((typeSymbol.MetadataName == "AutoMock`1" && typeSymbol.ContainingAssembly.Name == "AutoMockFixture.Moq4")
+                || (typeSymbol.MetadataName == "Task`1" && typeSymbol.GetFullName() == "System.Threading.Tasks.Task`1")))
+        {
+            var inner = typeSymbol.GetTypeArguments().First();
+            foreach (var m in GetMembers(inner, ignorePrimitive)) yield return m;
+            yield break;
+        }
+
+        if (typeSymbol.GetTypeArguments().Any() && typeSymbol.Name == "ValueTuple" && typeSymbol.ContainingNamespace.Name == "System")
+        {
+            var args = typeSymbol.GetTypeArguments();
+            foreach (var arg in args) yield return new Info { TrackingPath = $"({"".PadLeft(args.IndexOf(arg), ',')})", Symbol = arg, RequiresEagerLoading = false };
+            yield break;
+        }
+
+        if (typeSymbol.IsArrayType())
+        {
+            var arraySymbol = typeSymbol as IArrayTypeSymbol;
+            if (arraySymbol is null) yield break;
+
+            for (int i = 0; i < 3; i++)
+            {
+                yield return new Info { TrackingPath = $"[{i}]", Symbol = arraySymbol.ElementType, RequiresEagerLoading = false };
+            }
+            yield break;
+        }
+
         var members = typeSymbol.GetMembers().Where(me => !me.IsStatic && me.DeclaredAccessibility != Accessibility.Private);
 
         var props = members.OfType<IPropertySymbol>().Where(p => p.GetMethod is not null && (p.SetMethod is not null || p.IsVirtual));
@@ -172,11 +209,23 @@ public class PathCompletionProvider : CommonCompletionProvider
         var groupedMethods = methods.GroupBy(m => m.Name).ToDictionary(g => g.Key, g => g.GroupBy(v => v.Parameters.Length).ToDictionary(x => x.Key, x => x.ToList()));
 
         var singleMethodGroups = groupedMethods.Where(g => g.Value.Count == 1 && g.Value.First().Value.Count == 1).ToArray();
+
+        Func<IMethodSymbol, string> methodGeneric = m => m switch
+            {
+                { IsGenericMethod: false } => "",
+                { OriginalDefinition: var original } when !original.IsEqualTo(m) => $"<`{m.TypeArguments.Length}>",
+                _ => $"<{m.TypeArguments.Select(t => t.Name).Join(",")}>"
+            };
         foreach (var memberGroup in singleMethodGroups)
         {
-            // TODO... handle generic
-            yield return new Info { TrackingPath = "." + memberGroup.Key.EscapeIdentifier(), Symbol = memberGroup.Value.First().Value.First(),
-                                                                                                                            RequiresEagerLoading = true };
+            var method = memberGroup.Value.First().Value.First() as IMethodSymbol;
+            if (method is null) continue;
+            yield return new Info
+            {
+                TrackingPath = "." + methodGeneric(method) + memberGroup.Key.EscapeIdentifier(),
+                Symbol = method,
+                RequiresEagerLoading = true
+            };
         }
 
         foreach (var memberGroup in groupedMethods.Except(singleMethodGroups))
@@ -185,9 +234,12 @@ public class PathCompletionProvider : CommonCompletionProvider
             {
                 if (overloadSet.Value.Count == 1)
                 {
+                    var method = overloadSet.Value.First() as IMethodSymbol;
+                    if (method is null) continue;
+
                     yield return new Info
                     {
-                        TrackingPath = $".{memberGroup.Key.EscapeIdentifier()}(`{overloadSet.Key})",
+                        TrackingPath = $".{methodGeneric(method) + memberGroup.Key.EscapeIdentifier()}(`{overloadSet.Key})",
                         Symbol = overloadSet.Value.First(),
                         RequiresEagerLoading = true
                     };
@@ -200,7 +252,7 @@ public class PathCompletionProvider : CommonCompletionProvider
                 {
                     yield return new Info
                     {
-                        TrackingPath = $".{memberGroup.Key.EscapeIdentifier()}({method.Parameters.Select(p => p.Type.Name).Join(",")})",
+                        TrackingPath = $".{methodGeneric(method) + memberGroup.Key.EscapeIdentifier()}({method.Parameters.Select(p => p.Type.Name).Join(",")})",
                         Symbol = method,
                         RequiresEagerLoading = true
                     };
@@ -240,8 +292,8 @@ public class PathCompletionProvider : CommonCompletionProvider
 
     private class Info
     {
-        public string TrackingPath { get; set; }
-        public ISymbol Symbol { get; set; }
+        [MustInitialize] public string TrackingPath { get; set; }
+        [MustInitialize] public ISymbol Symbol { get; set; }
         public bool RequiresEagerLoading { get; set; }
     }
 
