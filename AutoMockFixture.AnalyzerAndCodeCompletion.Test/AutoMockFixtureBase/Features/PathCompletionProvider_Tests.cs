@@ -177,6 +177,18 @@ internal class PathCompletionProvider_Tests
     }
 
     [Test]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass{}", "", -14)]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}", "", - 14)]
+    [TestCase("fixture.TryGetAutoMock(", "new Task<TestClass>()", ", out _", 5)]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.TryGetAutoMock(fixture,", "new Task<TestClass>()", ", out _", 5)]
+    public async Task Test_DoesNotWorksOutsideArgument(string call, string objectArg, string trailing, int offset)
+    {
+        var results = await GetCompletionList(call, "", objectArg, trailing, offset).ConfigureAwait(false);
+
+        results.ItemsList.Should().BeEmpty();
+    }
+
+    [Test]
     [TestCase("fixture.GetAt(", "new TestClass[]")]
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass[]")]
     [TestCase("fixture.GetSingleAt(", "new TestClass[]")]

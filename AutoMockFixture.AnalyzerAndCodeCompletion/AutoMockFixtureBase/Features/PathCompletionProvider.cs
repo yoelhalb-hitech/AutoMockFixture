@@ -46,7 +46,7 @@ public class PathCompletionProvider : CommonCompletionProvider
 
             var tree = semanticModel.SyntaxTree;
 
-            if (tree.IsInNonUserCode(position, cancellationToken)) return;
+            if (tree.IsInNonUserCode(position, cancellationToken) && !tree.IsEntirelyWithinStringOrCharLiteral(position, cancellationToken)) return;
 
             var token = tree.FindTokenOnLeftOfPosition(position, cancellationToken);
             token = token.GetPreviousTokenIfTouchingWord(position);
@@ -68,7 +68,12 @@ public class PathCompletionProvider : CommonCompletionProvider
                    || (!Methods.Contains(methodSymbol.Name) && !AutoMockMethods.Contains(methodSymbol.Name))
                    || semanticModel.GetOperation(invocation, cancellationToken) is not IInvocationOperation invocationOperation) return;
 
+            var currentArgument = invocationOperation.Arguments.Skip(2).FirstOrDefault();
+            if(currentArgument.Syntax?.Span.Start < token.SpanStart) return; // We are already by the next arg
+
             var objArg = invocationOperation.Arguments.Skip(1).First(); // The operation does include the `this` as an argument
+            if (objArg.Syntax?.Span.Start > token.SpanStart) return; // We are not by the correct arg
+
             var innerOperation = objArg.Value;
             while (innerOperation is IConversionOperation conversion && conversion?.Operand is not null) innerOperation = conversion.Operand;
 
@@ -76,7 +81,7 @@ public class PathCompletionProvider : CommonCompletionProvider
             if (typeSymbol is null) return;
 
             // Not using .Last() since for .TryGetAutoMock() it is not the last
-            var currentValue = invocationOperation.Arguments.Skip(2).First().Value.ConstantValue.Value?.ToString()?.Trim();
+            var currentValue = currentArgument?.Value.ConstantValue.Value?.ToString()?.Trim();
             var isAutoMock = AutoMockMethods.Contains(methodSymbol.Name);
 
             var members = GetMembers(typeSymbol, isAutoMock);
@@ -127,11 +132,11 @@ public class PathCompletionProvider : CommonCompletionProvider
             foreach (var member in candidates)
             {
                 context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
-                            displayText: candidateStartPath + member.TrackingPath,
+                            displayText: '"' + candidateStartPath + member.TrackingPath + '"',
                             displayTextSuffix: "",
-                            insertionText: '"' + candidateStartPath + member.TrackingPath + '+',
+                            insertionText: null,
                             symbols: ImmutableArray.Create(member.Symbol),
-                            contextPosition: position,
+                            contextPosition: token.IsKind(SyntaxKind.StringLiteralToken) ? token.SpanStart : position,
                             inlineDescription: member.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
                             rules: CompletionItemRules.Create(enterKeyRule: EnterKeyRule.Never)));
             }
@@ -139,11 +144,11 @@ public class PathCompletionProvider : CommonCompletionProvider
             foreach (var member in members)
             {
                 context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
-                            displayText: currentValue + member.TrackingPath,
+                            displayText: '"' + candidateStartPath + member.TrackingPath + '"',
                             displayTextSuffix: "",
-                            insertionText: '"' + currentValue + member.TrackingPath + '+',
+                            insertionText: null,
                             symbols: ImmutableArray.Create(member.Symbol),
-                            contextPosition: position,
+                            contextPosition: token.IsKind(SyntaxKind.StringLiteralToken) ? token.SpanStart : position,
                             inlineDescription: member.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
                             rules: CompletionItemRules.Create(enterKeyRule: EnterKeyRule.Never)));
             }
