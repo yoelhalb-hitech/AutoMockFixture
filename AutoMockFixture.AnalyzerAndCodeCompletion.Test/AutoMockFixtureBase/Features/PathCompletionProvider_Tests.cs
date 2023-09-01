@@ -28,12 +28,12 @@ internal class PathCompletionProvider_Tests
            WithMetadataReferences(new[]
            {
                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-               MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Collections.dll")),
+               MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "System.Collections.dll")),
                MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
                MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
                MetadataReference.CreateFromFile(typeof(AutoMockFixture.AutoMockFixtureExtensions).Assembly.Location),
                MetadataReference.CreateFromFile(typeof(AutoMockFixture.Moq4.UnitFixture).Assembly.Location),
-               MetadataReference.CreateFromFile(typeof(AutoMockFixture.Moq4.UnitFixture).BaseType.BaseType.BaseType.Assembly.Location)
+               MetadataReference.CreateFromFile(typeof(AutoMockFixture.Moq4.UnitFixture).BaseType!.BaseType!.BaseType!.Assembly.Location)
            })
            .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
            .WithAnalyzerReferences(new AnalyzerReference[]

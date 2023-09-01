@@ -1,7 +1,6 @@
 ﻿extern alias Features;
 extern alias Workspaces;
 
-using AutoMockFixture.Moq4;
 using DotNetPowerExtensions.RoslynExtensions;
 using Features::Microsoft.CodeAnalysis.Completion;
 using Features::Microsoft.CodeAnalysis.Completion.Providers;
@@ -148,8 +147,8 @@ public class PathCompletionProvider : CommonCompletionProvider
         }
         catch (Exception ex)
         {
-            Logger.LogInfo(ex.Message);
-            return;
+           Console.WriteLine(ex.Message);
+           return;
         }
     }
 

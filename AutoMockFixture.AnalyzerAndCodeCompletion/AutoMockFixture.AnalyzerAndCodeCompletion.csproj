@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.AnalyzerAndCodeCompletion</PackageId>
-    <PackageVersion>2.0.1</PackageVersion>
+    <PackageVersion>2.0.1.1</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
@@ -91,10 +91,6 @@
 		</ReferencePath>
 	</ItemGroup>
   </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\AutoMockFixture.Moq4\AutoMockFixture.Moq4.csproj" />
-    <ProjectReference Include="..\AutoMockFixture\AutoMockFixture.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
