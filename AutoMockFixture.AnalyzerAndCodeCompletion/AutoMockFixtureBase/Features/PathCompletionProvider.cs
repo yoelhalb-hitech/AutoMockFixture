@@ -18,6 +18,7 @@ using SequelPay.DotNetPowerExtensions;
 using SequelPay.DotNetPowerExtensions.RoslynExtensions;
 using System;
 using System.Collections.Immutable;
+using System.IO;
 using Workspaces::Microsoft.CodeAnalysis.Host;
 using Workspaces::Microsoft.CodeAnalysis.Options;
 using Workspaces::Microsoft.CodeAnalysis.Shared.Extensions;
@@ -128,28 +129,20 @@ public class PathCompletionProvider : CommonCompletionProvider
 
             if (members.Any() || candidates.Any()) context.IsExclusive = true;
 
+            var completions = candidates.Select(c => new Info { TrackingPath = candidateStartPath + c.TrackingPath, Symbol = c.Symbol, RequiresEagerLoading = c.RequiresEagerLoading })
+                                .Concat(members.Select(m => new Info { TrackingPath = currentValue + m.TrackingPath, Symbol = m.Symbol, RequiresEagerLoading = m.RequiresEagerLoading }));
 
-            foreach (var member in candidates)
+            if (completions.Any()) context.IsExclusive = true;
+
+            foreach (var completion in completions)
             {
                 context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
-                            displayText: '"' + candidateStartPath + member.TrackingPath + '"',
+                            displayText: '"' + completion.TrackingPath + '"',
                             displayTextSuffix: "",
                             insertionText: null,
-                            symbols: ImmutableArray.Create(member.Symbol),
+                            symbols: ImmutableArray.Create(completion.Symbol),
                             contextPosition: token.IsKind(SyntaxKind.StringLiteralToken) ? token.SpanStart : position,
-                            inlineDescription: member.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
-                            rules: CompletionItemRules.Create(enterKeyRule: EnterKeyRule.Never)));
-            }
-
-            foreach (var member in members)
-            {
-                context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
-                            displayText: '"' + candidateStartPath + member.TrackingPath + '"',
-                            displayTextSuffix: "",
-                            insertionText: null,
-                            symbols: ImmutableArray.Create(member.Symbol),
-                            contextPosition: token.IsKind(SyntaxKind.StringLiteralToken) ? token.SpanStart : position,
-                            inlineDescription: member.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
+                            inlineDescription: completion.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
                             rules: CompletionItemRules.Create(enterKeyRule: EnterKeyRule.Never)));
             }
         }
