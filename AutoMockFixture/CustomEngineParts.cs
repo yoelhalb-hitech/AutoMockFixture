@@ -20,8 +20,7 @@ internal class CustomEngineParts : DefaultEngineParts
         {
             if (be.Current is MethodInvoker)
             {
-                yield return new MethodInvokerWithRecursion(
-                                    new CustomModestConstructorQuery(AutoMockHelpers));
+                yield return new MethodInvokerWithRecursion(new CustomModestConstructorQuery(AutoMockHelpers), AutoMockHelpers);
             }
             else yield return be.Current;
         }

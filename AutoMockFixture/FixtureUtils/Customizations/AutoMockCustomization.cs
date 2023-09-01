@@ -52,7 +52,7 @@ public class AutoMockCustomization : ICustomization
                                             mockFixture,
                                             new AutoMockDependenciesBuilder(
                                                 new MethodInvokerWithRecursion(
-                                                    new CustomModestConstructorQuery(mockFixture.AutoMockHelpers)),
+                                                    new CustomModestConstructorQuery(mockFixture.AutoMockHelpers), mockFixture.AutoMockHelpers),
                                                 mockFixture.AutoMockHelpers),
                                             ConfigureMembers ? new AutoMockDependenciesAutoPropertiesHandlerCommand(mockFixture) : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(AutoMockDependenciesRequest))));
@@ -62,7 +62,7 @@ public class AutoMockCustomization : ICustomization
                                             mockFixture,
                                             new NonAutoMockBuilder(
                                                 new MethodInvokerWithRecursion(
-                                                    new CustomModestConstructorQuery(mockFixture.AutoMockHelpers)),
+                                                    new CustomModestConstructorQuery(mockFixture.AutoMockHelpers), mockFixture.AutoMockHelpers),
                                                 mockFixture.AutoMockHelpers),
                                             ConfigureMembers ? new CustomAutoPropertiesCommand(mockFixture) : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(NonAutoMockRequest))));

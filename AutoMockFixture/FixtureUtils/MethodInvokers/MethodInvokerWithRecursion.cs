@@ -6,14 +6,16 @@ using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 
 namespace AutoMockFixture.FixtureUtils.MethodInvokers;
 
-public class MethodInvokerWithRecursion : ISpecimenBuilder
+internal class MethodInvokerWithRecursion : ISpecimenBuilder
 {
-    public MethodInvokerWithRecursion(IMethodQuery query)
+    public MethodInvokerWithRecursion(IMethodQuery query, IAutoMockHelpers autoMockHelpers)
     {
         this.Query = query ?? throw new ArgumentNullException(nameof(query));
+        this.AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
     }
 
     public IMethodQuery Query { get; }
+    internal IAutoMockHelpers AutoMockHelpers { get; }
 
     public object Create(object request, ISpecimenContext context)
     {
@@ -21,7 +23,7 @@ public class MethodInvokerWithRecursion : ISpecimenBuilder
 
         var requestedType = GetRequestedType(request);
         if(requestedType is null || requestedType.IsInterface
-                || requestedType.IsAbstract || requestedType.IsGenericTypeDefinition) return new NoSpecimen();
+                || requestedType.IsAbstract || requestedType.IsGenericTypeDefinition || AutoMockHelpers.IsAutoMock(requestedType)) return new NoSpecimen();
 
         var methods = Query.SelectMethods(requestedType);
 
