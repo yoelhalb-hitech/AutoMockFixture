@@ -18,6 +18,8 @@ using SequelPay.DotNetPowerExtensions.RoslynExtensions;
 using System;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Workspaces::Microsoft.CodeAnalysis.Host;
 using Workspaces::Microsoft.CodeAnalysis.Options;
 using Workspaces::Microsoft.CodeAnalysis.Shared.Extensions;
@@ -61,18 +63,17 @@ public class PathCompletionProvider : CommonCompletionProvider
             var fixtureTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.IAutoMockFixture", "AutoMockFixture");
             var extensionsTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.AutoMockFixtureExtensions", "AutoMockFixture");
 
-            if (fixtureTypeSymbol is null
-                   || semanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol is not IMethodSymbol methodSymbol
-                   || methodSymbol.ReceiverType is not INamedTypeSymbol classType // Even though it is an extension method it is consider the `this` as the type
-                   || (!classType.IsEqualTo(fixtureTypeSymbol) && !classType.IsEqualTo(extensionsTypeSymbol))
-                   || (!Methods.Contains(methodSymbol.Name) && !AutoMockMethods.Contains(methodSymbol.Name))
-                   || semanticModel.GetOperation(invocation, cancellationToken) is not IInvocationOperation invocationOperation) return;
+            if (fixtureTypeSymbol is null && extensionsTypeSymbol is null) return;
+
+            var roslynInfo = new RoslynUtils().GetRoslynInfos(invocation, semanticModel, position, cancellationToken);
+            var (invocationOperation, startPosition) = roslynInfo.FirstOrDefault(i => IsValidMethod(i.Item1.TargetMethod, fixtureTypeSymbol, extensionsTypeSymbol));
+            if (invocationOperation is null) return;
 
             var currentArgument = invocationOperation.Arguments.Skip(2).FirstOrDefault();
-            if(currentArgument.Syntax?.Span.Start < token.SpanStart) return; // We are already by the next arg
+            if(startPosition + currentArgument.Syntax?.Span.Start < token.SpanStart) return; // We are already by the next arg
 
             var objArg = invocationOperation.Arguments.Skip(1).First(); // The operation does include the `this` as an argument
-            if (objArg.Syntax?.Span.Start > token.SpanStart) return; // We are not by the correct arg
+            if (startPosition + objArg.Syntax?.Span.Start > token.SpanStart) return; // We are not by the correct arg
 
             var innerOperation = objArg.Value;
             while (innerOperation is IConversionOperation conversion && conversion?.Operand is not null) innerOperation = conversion.Operand;
@@ -82,7 +83,7 @@ public class PathCompletionProvider : CommonCompletionProvider
 
             // Not using .Last() since for .TryGetAutoMock() it is not the last
             var currentValue = currentArgument?.Value.ConstantValue.Value?.ToString()?.Trim();
-            var isAutoMock = AutoMockMethods.Contains(methodSymbol.Name);
+            var isAutoMock = AutoMockMethods.Contains(invocationOperation.TargetMethod.Name);
 
             var members = GetMembers(typeSymbol, isAutoMock);
             var candidateStartPath = "";
@@ -151,6 +152,12 @@ public class PathCompletionProvider : CommonCompletionProvider
            return;
         }
     }
+
+    private bool IsValidMethod(IMethodSymbol methodSymbol, ITypeSymbol? fixtureTypeSymbol, ITypeSymbol? extensionsTypeSymbol)
+        => methodSymbol.ReceiverType is INamedTypeSymbol classType // Even though it is an extension method it is consider the `this` as the type
+                   && ((fixtureTypeSymbol is not null && classType.IsEqualTo(fixtureTypeSymbol))
+                                || (extensionsTypeSymbol is not null && classType.IsEqualTo(extensionsTypeSymbol)))
+                   && (Methods.Contains(methodSymbol.Name) || AutoMockMethods.Contains(methodSymbol.Name));
 
     private bool IsSpecial(ITypeSymbol type)
         => type.IsSpecialType() || (type.Name == "String" && type.GetFullName() == "System.String");
