@@ -1,3 +1,14 @@
+## [3.0.0] - 2023-09-04
+
+### Changed
+- Avoid loophole of being able to create an `AutoMock` via `MethodInvokerWithRecursion`
+- Change a constructor argment path should include the ctor as `..ctor`, the rationale is to avoid a conflict with method out argument when trying to access a ctor arg in the return type that is the same as the out arg
+
+### Fixed
+- Fix stackoveflow bug in the `LastResortBuilder` that was caused by AutoMock type requests being able to pass through
+- Fix completion in analyzer when arguments are missing
+- Handle better quotations in the completion analyzer
+
 ## [2.0.1] - 2023-08-31
 
 ### Changed
