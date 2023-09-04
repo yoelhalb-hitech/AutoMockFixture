@@ -63,7 +63,7 @@ internal class PathCompletionProvider_Tests
         return document;
     }
 
-    private static async Task<CompletionList> GetCompletionList(string call, string arg, string objectArg, string trailing = "", int offset = 0)
+    private static async Task<CompletionList> GetCompletionList(string call, string arg, string objectArg, string trailing = "", int offset = 0, bool noComma = false)
     {
         var code = $$"""
         using AutoMockFixture;
@@ -88,17 +88,19 @@ internal class PathCompletionProvider_Tests
         	public static void Test()
         	{
                 var fixture = new UnitFixture();
-        		var result = {{call}}{{objectArg}},{{arg}}{{trailing}});
+        		var result = {{call}}{{objectArg}}{{( noComma ? "" : ",")}}{{arg}}{{trailing}});
         	}
         }
         """;
 
         var document = GetInitializedDocument(code);
 
-        var position = code.LastIndexOf(objectArg + ",", StringComparison.Ordinal) + (objectArg + ",").Length + offset;
+        var textForSearch = objectArg + (noComma ? "" : ",");
+        var position = code.LastIndexOf(textForSearch, StringComparison.Ordinal) + textForSearch.Length + offset;
 
         var text = await document.GetTextAsync().ConfigureAwait(false);
-        var insertionTrigger = CompletionTrigger.CreateInsertionTrigger(text[position]);
+
+        var insertionTrigger = CompletionTrigger.CreateInsertionTrigger(noComma ? ',' : text[position]);
 
         var completionService = CompletionService.GetService(document)!;
         return await completionService.GetCompletionsAsync(document, position, insertionTrigger).ConfigureAwait(false);
@@ -153,9 +155,81 @@ internal class PathCompletionProvider_Tests
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new Task<TestClass>()")]
     [TestCase("fixture.GetSingleAt(", "new Task<TestClass>()")]
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new Task<TestClass>()")]
+    public async Task Test_WithStartingDot(string call, string objectArg)
+    {
+        var results = await GetCompletionList(call, "\".\"", objectArg).ConfigureAwait(false);
+
+        results.ItemsList.Should().NotBeNullOrEmpty();
+
+        var expected = new[]
+        {
+            "..ctor->firstArg",
+            "..ctor->secondArg",
+            ".TestProp",
+            ".TestPropGetVirtual",
+            ".TestNonVoidVirtualMethod",
+            ".MethodWithDifferentArgs(`1)",
+            ".MethodWithDifferentArgs(`2)",
+            ".MethodWithSameArgs(Int32,String)",
+            ".MethodWithSameArgs(String,Int32)",
+            ".TestField",
+        };
+        results.ItemsList.Count.Should().Be(expected.Length);
+        results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    [TestCase("fixture.GetAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetSingleAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new Task<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new Task<TestClass>()")]
     public async Task Test_WithMissingArg(string call, string objectArg)
     {
         var results = await GetCompletionList(call, "", objectArg).ConfigureAwait(false);
+
+        results.ItemsList.Should().NotBeNullOrEmpty();
+
+        var expected = new[]
+        {
+            "\"..ctor->firstArg\"",
+            "\"..ctor->secondArg\"",
+            "\".TestProp\"",
+            "\".TestPropGetVirtual\"",
+            "\".TestNonVoidVirtualMethod\"",
+            "\".MethodWithDifferentArgs(`1)\"",
+            "\".MethodWithDifferentArgs(`2)\"",
+            "\".MethodWithSameArgs(Int32,String)\"",
+            "\".MethodWithSameArgs(String,Int32)\"",
+            "\".TestField\"",
+        };
+        results.ItemsList.Count.Should().Be(expected.Length);
+        results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    [TestCase("fixture.GetAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetSingleAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new Task<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new Task<TestClass>()")]
+    public async Task Test_WithNoInitialComma(string call, string objectArg)
+    {
+        var results = await GetCompletionList(call, "", objectArg, noComma: true).ConfigureAwait(false);
 
         results.ItemsList.Should().NotBeNullOrEmpty();
 
@@ -439,6 +513,42 @@ internal class PathCompletionProvider_Tests
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
     }
+    [Test]
+    [TestCase("fixture.GetAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetSingleAt(", "new TestClass{}")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}")]
+    [TestCase("fixture.GetAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new AutoMock<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new AutoMock<TestClass>()")]
+    [TestCase("fixture.GetAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new Task<TestClass>()")]
+    [TestCase("fixture.GetSingleAt(", "new Task<TestClass>()")]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new Task<TestClass>()")]
+    public async Task TestInner_WithStartingDot(string call, string objectArg)
+    {
+        var results = await GetCompletionList(call, "\".TestProp.\"", objectArg).ConfigureAwait(false);
+
+        results.ItemsList.Should().NotBeNullOrEmpty();
+
+        var expected = new[]
+        {
+            ".TestProp..ctor->firstArg",
+            ".TestProp..ctor->secondArg",
+            ".TestProp.TestProp",
+            ".TestProp.TestPropGetVirtual",
+            ".TestProp.TestNonVoidVirtualMethod",
+            ".TestProp.MethodWithDifferentArgs(`1)",
+            ".TestProp.MethodWithDifferentArgs(`2)",
+            ".TestProp.MethodWithSameArgs(Int32,String)",
+            ".TestProp.MethodWithSameArgs(String,Int32)",
+            ".TestProp.TestField",
+        };
+        results.ItemsList.Count.Should().Be(expected.Length);
+        results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
+    }
+
 
     [Test]
     [TestCase("fixture.GetAt(", "new TestClass{}")]

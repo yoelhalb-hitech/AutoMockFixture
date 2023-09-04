@@ -50,105 +50,126 @@ public class PathCompletionProvider : CommonCompletionProvider
 
             if (tree.IsInNonUserCode(position, cancellationToken) && !tree.IsEntirelyWithinStringOrCharLiteral(position, cancellationToken)) return;
 
-            var token = tree.FindTokenOnLeftOfPosition(position, cancellationToken);
-            token = token.GetPreviousTokenIfTouchingWord(position);
+            var tokenLeft = tree.FindTokenOnLeftOfPosition(position, cancellationToken);
+            tokenLeft = tokenLeft.GetPreviousTokenIfTouchingWord(position);
+
+            var tokenRight = tree.FindTokenOnRightOfPosition(position, cancellationToken);
+            tokenRight = tokenRight.GetPreviousTokenIfTouchingWord(position);
+
+            var token = tokenRight.IsKind(SyntaxKind.StringLiteralToken) ? tokenRight : tokenLeft;
+            var isCommanInsertion = context.Trigger.Kind == CompletionTriggerKind.Insertion && context.Trigger.Character == ',';
+            if (!token.IsKind(SyntaxKind.CommaToken) && !token.IsKind(SyntaxKind.StringLiteralToken) && !isCommanInsertion) return;
+
+            var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
+            // If text[position] == ',' && isCommanInsertion then the user hjust enters a comma on the same place as it was
+            if (token.IsKind(SyntaxKind.CommaToken) && text[position] != ',' && isCommanInsertion) return; // We are already by the next arg or the obj arg is empty, either way it's not interesting
 
             // Note the following will also filter out if there is a more complicated expression such as parenthesis or a combination of expressions such as + or invocation or variable etc.
-            var argumentList = token.IsKind(SyntaxKind.CommaToken) ? token.Parent as ArgumentListSyntax : token.IsKind(SyntaxKind.StringLiteralToken) ? token.Parent?.Parent?.Parent as ArgumentListSyntax : null;
-            var invocation = argumentList?.Parent as InvocationExpressionSyntax;
+            var argumentLists = token.GetAncestors<ArgumentListSyntax>(); // There might be many if the current arg is a method or ctor call and it is a comm insertion
+            if (argumentLists.Count() > 1 && !isCommanInsertion) return;
 
-            if (invocation?.Expression is not MemberAccessExpressionSyntax m || (!Methods.Contains(m.Name.Identifier.Text) && !AutoMockMethods.Contains(m.Name.Identifier.Text))) return;
-
-            // CAUTION: do not reference directly the assmeblies of the follwoing types as it creeats issues at runtime because it needs the dependencies
-            var fixtureTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.IAutoMockFixture", "AutoMockFixture");
-            var extensionsTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.AutoMockFixtureExtensions", "AutoMockFixture");
-
-            if (fixtureTypeSymbol is null && extensionsTypeSymbol is null) return;
-
-            var roslynInfo = new RoslynUtils().GetRoslynInfos(invocation, semanticModel, position, cancellationToken);
-            var (invocationOperation, startPosition) = roslynInfo.FirstOrDefault(i => IsValidMethod(i.Item1.TargetMethod, fixtureTypeSymbol, extensionsTypeSymbol));
-            if (invocationOperation is null) return;
-
-            var currentArgument = invocationOperation.Arguments.Skip(2).FirstOrDefault();
-            if(startPosition + currentArgument.Syntax?.Span.Start < token.SpanStart) return; // We are already by the next arg
-
-            var objArg = invocationOperation.Arguments.Skip(1).First(); // The operation does include the `this` as an argument
-            if (startPosition + objArg.Syntax?.Span.Start > token.SpanStart) return; // We are not by the correct arg
-
-            var innerOperation = objArg.Value;
-            while (innerOperation is IConversionOperation conversion && conversion?.Operand is not null) innerOperation = conversion.Operand;
-
-            var typeSymbol = innerOperation.Type;
-            if (typeSymbol is null) return;
-
-            // Not using .Last() since for .TryGetAutoMock() it is not the last
-            var currentValue = currentArgument?.Value.ConstantValue.Value?.ToString()?.Trim();
-            var isAutoMock = AutoMockMethods.Contains(invocationOperation.TargetMethod.Name);
-
-            var members = GetMembers(typeSymbol, isAutoMock);
-            var candidateStartPath = "";
-            var candidates = new List<Info>();
-            if (currentValue.HasValue())
+            foreach (var argumentList in argumentLists)
             {
-                var path = "";
-                do
+                var invocation = argumentList?.Parent as InvocationExpressionSyntax;
+
+                if (invocation?.Expression is not MemberAccessExpressionSyntax m || (!Methods.Contains(m.Name.Identifier.Text) && !AutoMockMethods.Contains(m.Name.Identifier.Text))) continue;
+
+                // CAUTION: do not reference directly the assmeblies of the follwoing types as it creeats issues at runtime because it needs the dependencies
+                var fixtureTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.IAutoMockFixture", "AutoMockFixture");
+                var extensionsTypeSymbol = semanticModel.Compilation.GetTypeSymbol("AutoMockFixture.AutoMockFixtureExtensions", "AutoMockFixture");
+
+                if (fixtureTypeSymbol is null && extensionsTypeSymbol is null) continue;
+
+                var roslynInfo = new RoslynUtils().GetRoslynInfos(invocation, semanticModel, position, cancellationToken);
+                var (invocationOperation, startPosition) = roslynInfo.FirstOrDefault(i => IsValidMethod(i.Item1.TargetMethod, fixtureTypeSymbol, extensionsTypeSymbol));
+                if (invocationOperation is null) continue;
+
+                var isStaticInvocation = (invocationOperation.Syntax as InvocationExpressionSyntax)!.ArgumentList.Arguments.Count == invocationOperation.Arguments.Length;
+                var argIndex = isStaticInvocation ? 3 : 2;
+                var hasArgument = invocation.ArgumentList.Arguments.Count >= argIndex && !invocation.ArgumentList.Arguments[argIndex - 1].IsMissing; // TODO... it might still be a `null` expression
+                if (hasArgument && isCommanInsertion) continue; // We are already by the next arg
+
+                var currentArgument = invocationOperation.Arguments.Skip(2).FirstOrDefault();
+                if (startPosition + currentArgument.Syntax?.Span.Start < token.SpanStart) continue; // We are already by the next arg
+
+                var objArg = invocationOperation.Arguments.Skip(1).First(); // The operation does include the `this` as an argument
+                if (!isCommanInsertion && startPosition + objArg.Syntax?.Span.Start > token.SpanStart) continue; // We are not by the correct arg
+
+                var innerOperation = objArg.Value;
+                while (innerOperation is IConversionOperation conversion && conversion?.Operand is not null) innerOperation = conversion.Operand;
+
+                var typeSymbol = innerOperation.Type;
+                if (typeSymbol is null) continue;
+
+                // Not using .Last() since for .TryGetAutoMock() it is not the last
+                var currentValue = currentArgument?.Value.ConstantValue.Value?.ToString()?.Trim();
+                var isAutoMock = AutoMockMethods.Contains(invocationOperation.TargetMethod.Name);
+
+                var members = GetMembers(typeSymbol, isAutoMock);
+                var candidateStartPath = "";
+                var candidates = new List<Info>();
+                if (currentValue.HasValue())
                 {
-                    candidates.AddRange(members.Where(m => path + m.TrackingPath != currentValue && (path + m.TrackingPath).StartsWith(currentValue)));
-
-                    // TODO we need to handle arrays and tuples and tasks and delegates
-                    var current = members.FirstOrDefault(m => path + m.TrackingPath == currentValue || currentValue.StartsWith(path + m.TrackingPath + ".") || currentValue.StartsWith(path + m.TrackingPath + "->"));
-                    if (current is null && !candidates.Any()) return;
-
-                    if (candidates.Any()) candidateStartPath = path;
-                    if (current is not null)
+                    var path = "";
+                    do
                     {
-                        var newType = current.Symbol switch
-                        {
-                            IMethodSymbol me => me.ReturnType, //TODO... we need to handle out parameters
-                            IParameterSymbol p => p.Type,
-                            IPropertySymbol prop => prop.Type,
-                            IFieldSymbol f => f.Type,
-                            ITypeSymbol t => t,
-                            _ => throw new Exception("Should not arrive here"),
-                        };
+                        candidates.AddRange(members.Where(m => path + m.TrackingPath != currentValue && (path + m.TrackingPath).StartsWith(currentValue)));
 
-                        var newMembers = new List<Info>();
-                        if(current.Symbol is IMethodSymbol method)
+                        // TODO we need to handle arrays and tuples and tasks and delegates
+                        var current = members.FirstOrDefault(m => path + m.TrackingPath == currentValue || currentValue.StartsWith(path + m.TrackingPath + ".") || currentValue.StartsWith(path + m.TrackingPath + "->"));
+                        if (current is null && !candidates.Any()) break;
+
+                        if (candidates.Any()) candidateStartPath = path;
+                        if (current is not null)
                         {
-                            newMembers.AddRange(method.Parameters.Where(p => p.RefKind == RefKind.Out)
-                                                    .Select(p => new Info { TrackingPath = "->" + p.Name, Symbol = p, RequiresEagerLoading = true }));
+                            var newType = current.Symbol switch
+                            {
+                                IMethodSymbol me => me.ReturnType, //TODO... we need to handle out parameters
+                                IParameterSymbol p => p.Type,
+                                IPropertySymbol prop => prop.Type,
+                                IFieldSymbol f => f.Type,
+                                ITypeSymbol t => t,
+                                _ => throw new Exception("Should not arrive here"),
+                            };
+
+                            var newMembers = new List<Info>();
+                            if (current.Symbol is IMethodSymbol method)
+                            {
+                                newMembers.AddRange(method.Parameters.Where(p => p.RefKind == RefKind.Out)
+                                                        .Select(p => new Info { TrackingPath = "->" + p.Name, Symbol = p, RequiresEagerLoading = true }));
+                            }
+
+                            newMembers.AddRange(GetMembers(newType, isAutoMock));
+
+                            members = newMembers;
+                            path += current.TrackingPath;
                         }
+                        else members = new List<Info>();
+                    } while (!candidates.Any() && path != currentValue);
+                }
 
-                        newMembers.AddRange(GetMembers(newType, isAutoMock));
+                if (members.Any() || candidates.Any()) context.IsExclusive = true;
 
-                        members = newMembers;
-                        path += current.TrackingPath;
-                    }
-                } while (!candidates.Any() && path != currentValue);
-            }
+                var completions = candidates.Select(c => new Info { TrackingPath = candidateStartPath + c.TrackingPath, Symbol = c.Symbol, RequiresEagerLoading = c.RequiresEagerLoading })
+                                    .Concat(members.Select(m => new Info { TrackingPath = currentValue + m.TrackingPath, Symbol = m.Symbol, RequiresEagerLoading = m.RequiresEagerLoading }));
 
-            if (members.Any() || candidates.Any()) context.IsExclusive = true;
+                if (completions.Any()) context.IsExclusive = true;
 
-            var completions = candidates.Select(c => new Info { TrackingPath = candidateStartPath + c.TrackingPath, Symbol = c.Symbol, RequiresEagerLoading = c.RequiresEagerLoading })
-                                .Concat(members.Select(m => new Info { TrackingPath = currentValue + m.TrackingPath, Symbol = m.Symbol, RequiresEagerLoading = m.RequiresEagerLoading }));
+                var quotes = !hasArgument ? "\"" : ""; // If it's a string it will put it inside the quotes so no need for extra
+                foreach (var completion in completions)
+                {
 
-            if (completions.Any()) context.IsExclusive = true;
+                    context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
+                                displayText: quotes + completion.TrackingPath + quotes,
+                                displayTextSuffix: "",
+                                insertionText: null,
+                                symbols: ImmutableArray.Create(completion.Symbol),
+                                contextPosition: token.IsKind(SyntaxKind.StringLiteralToken) ? token.SpanStart : position,
+                                inlineDescription: completion.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
+                                rules: CompletionItemRules.Create(enterKeyRule: EnterKeyRule.Never)));
+                }
 
-            var isStaticInvocation = (invocationOperation.Syntax as InvocationExpressionSyntax)!.ArgumentList.Arguments.Count == invocationOperation.Arguments.Length;
-            var argIndex = isStaticInvocation ? 3 : 2;
-            var hasArgument = invocation.ArgumentList.Arguments.Count >= argIndex  && !invocation.ArgumentList.Arguments[argIndex - 1].IsMissing; // TODO... it might still be a `null` expression
-            var quotes = !hasArgument ? "\"" : ""; // If it's a string it will put it inside the quotes so no need for extra
-            foreach (var completion in completions)
-            {
-
-                context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
-                            displayText: quotes + completion.TrackingPath + quotes,
-                            displayTextSuffix: "",
-                            insertionText: null,
-                            symbols: ImmutableArray.Create(completion.Symbol),
-                            contextPosition: token.IsKind(SyntaxKind.StringLiteralToken) ? token.SpanStart : position,
-                            inlineDescription: completion.RequiresEagerLoading ? "Requires Eager Loading or explicit access" : null,
-                            rules: CompletionItemRules.Create(enterKeyRule: EnterKeyRule.Never)));
+                if(completions.Any()) return;
             }
         }
         catch (Exception ex)

@@ -40,7 +40,7 @@ internal class RoslynUtils
     public InvocationExpressionSyntax? GetSpeculativeInvocation(InvocationExpressionSyntax invocation, IMethodSymbol methodSymbol)
     {
 
-        if (!invocation.ArgumentList.Arguments.Any(a => a.IsMissing)) return null;
+        if (methodSymbol.GetParameters().Length == invocation.ArgumentList.Arguments.Count && !invocation.ArgumentList.Arguments.Any(a => a.IsMissing)) return null;
 
         var fixedArguments = methodSymbol.GetParameters().Select((p, i) =>
         {
