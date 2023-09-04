@@ -131,4 +131,15 @@ internal class LastResortBuilder_Tests
         Assert.DoesNotThrow(() => result = builder.Create(request, context));
         result.Should().Be(request);
     }
+
+    [Test]
+    public void Test_DoesNotAllow_AutoMock()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var builder = new LastResortBuilder(fixture.AutoMockHelpers);
+        var result = builder.Create(typeof(AutoMock<string>), AutoMock.Of<ISpecimenContext>());
+
+        result.Should().BeAssignableTo<NoSpecimen>();
+    }
 }

@@ -37,6 +37,8 @@ internal class LastResortBuilder : ISpecimenBuilder
             }
         }
 
+        if (newRequest is Type type && AutoMockHelpers.IsAutoMock(type)) return new NoSpecimen(); // AutoMock should not be handled as a type only as one of the dedicated requests
+
         var specimen = context.Resolve(newRequest);
 
         // A specimen can only be the same as the request if the specimen is also a type
