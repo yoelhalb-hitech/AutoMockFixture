@@ -125,16 +125,16 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\"->firstArg\"",
-            "\"->secondArg\"",
-            "\".TestProp\"",
-            "\".TestPropGetVirtual\"",
-            "\".TestNonVoidVirtualMethod\"",
-            "\".MethodWithDifferentArgs(`1)\"",
-            "\".MethodWithDifferentArgs(`2)\"",
-            "\".MethodWithSameArgs(Int32,String)\"",
-            "\".MethodWithSameArgs(String,Int32)\"",
-            "\".TestField\"",
+            "->firstArg",
+            "->secondArg",
+            ".TestProp",
+            ".TestPropGetVirtual",
+            ".TestNonVoidVirtualMethod",
+            ".MethodWithDifferentArgs(`1)",
+            ".MethodWithDifferentArgs(`2)",
+            ".MethodWithSameArgs(Int32,String)",
+            ".MethodWithSameArgs(String,Int32)",
+            ".TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -234,10 +234,10 @@ internal class PathCompletionProvider_Tests
 
     [Test]
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetAt(fixture,", "new TestClass{}", "", -14)]
-    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}", "", - 14)]
+    [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "new TestClass{}", "", -14)]
     [TestCase("fixture.TryGetAutoMock(", "new Task<TestClass>()", ", out _", 5)]
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.TryGetAutoMock(fixture,", "new Task<TestClass>()", ", out _", 5)]
-    public async Task Test_DoesNotWorksOutsideArgument(string call, string objectArg, string trailing, int offset)
+    public async Task Test_DoesNotWorkOutsideArgument(string call, string objectArg, string trailing, int offset)
     {
         var results = await GetCompletionList(call, "\"\"", objectArg, trailing, offset).ConfigureAwait(false);
 
@@ -265,9 +265,9 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\"[0]\"",
-            "\"[1]\"",
-            "\"[2]\"",
+            "[0]",
+            "[1]",
+            "[2]",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -288,13 +288,14 @@ internal class PathCompletionProvider_Tests
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.GetSingleAt(fixture,", "(new Task<TestClass>(),3)")]
     public async Task TestTuple(string call, string objectArg)
     {
+        var results = await GetCompletionList(call, "\"\"", objectArg).ConfigureAwait(false);
 
         results.ItemsList.Should().NotBeNullOrEmpty();
 
         var expected = new[]
         {
-            "\"()\"",
-            "\"(,)\"",
+            "()",
+            "(,)",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -321,16 +322,16 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\"[0]->firstArg\"",
-            "\"[0]->secondArg\"",
-            "\"[0].TestProp\"",
-            "\"[0].TestPropGetVirtual\"",
-            "\"[0].TestNonVoidVirtualMethod\"",
-            "\"[0].MethodWithDifferentArgs(`1)\"",
-            "\"[0].MethodWithDifferentArgs(`2)\"",
-            "\"[0].MethodWithSameArgs(Int32,String)\"",
-            "\"[0].MethodWithSameArgs(String,Int32)\"",
-            "\"[0].TestField\"",
+            "[0]->firstArg",
+            "[0]->secondArg",
+            "[0].TestProp",
+            "[0].TestPropGetVirtual",
+            "[0].TestNonVoidVirtualMethod",
+            "[0].MethodWithDifferentArgs(`1)",
+            "[0].MethodWithDifferentArgs(`2)",
+            "[0].MethodWithSameArgs(Int32,String)",
+            "[0].MethodWithSameArgs(String,Int32)",
+            "[0].TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -357,16 +358,16 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\"()->firstArg\"",
-            "\"()->secondArg\"",
-            "\"().TestProp\"",
-            "\"().TestPropGetVirtual\"",
-            "\"().TestNonVoidVirtualMethod\"",
-            "\"().MethodWithDifferentArgs(`1)\"",
-            "\"().MethodWithDifferentArgs(`2)\"",
-            "\"().MethodWithSameArgs(Int32,String)\"",
-            "\"().MethodWithSameArgs(String,Int32)\"",
-            "\"().TestField\"",
+            "()->firstArg",
+            "()->secondArg",
+            "().TestProp",
+            "().TestPropGetVirtual",
+            "().TestNonVoidVirtualMethod",
+            "().MethodWithDifferentArgs(`1)",
+            "().MethodWithDifferentArgs(`2)",
+            "().MethodWithSameArgs(Int32,String)",
+            "().MethodWithSameArgs(String,Int32)",
+            "().TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -423,17 +424,17 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\".TestPropGetVirtual\"", // Possible completion
-            "\".TestProp->firstArg\"",
-            "\".TestProp->secondArg\"",
-            "\".TestProp.TestProp\"",
-            "\".TestProp.TestPropGetVirtual\"",
-            "\".TestProp.TestNonVoidVirtualMethod\"",
-            "\".TestProp.MethodWithDifferentArgs(`1)\"",
-            "\".TestProp.MethodWithDifferentArgs(`2)\"",
-            "\".TestProp.MethodWithSameArgs(Int32,String)\"",
-            "\".TestProp.MethodWithSameArgs(String,Int32)\"",
-            "\".TestProp.TestField\"",
+            ".TestPropGetVirtual", // Possible completion
+            ".TestProp->firstArg",
+            ".TestProp->secondArg",
+            ".TestProp.TestProp",
+            ".TestProp.TestPropGetVirtual",
+            ".TestProp.TestNonVoidVirtualMethod",
+            ".TestProp.MethodWithDifferentArgs(`1)",
+            ".TestProp.MethodWithDifferentArgs(`2)",
+            ".TestProp.MethodWithSameArgs(Int32,String)",
+            ".TestProp.MethodWithSameArgs(String,Int32)",
+            ".TestProp.TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -460,17 +461,17 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\".MethodWithDifferentArgs(`1)->i\"",
-            "\".MethodWithDifferentArgs(`1)->firstArg\"",
-            "\".MethodWithDifferentArgs(`1)->secondArg\"",
-            "\".MethodWithDifferentArgs(`1).TestProp\"",
-            "\".MethodWithDifferentArgs(`1).TestPropGetVirtual\"",
-            "\".MethodWithDifferentArgs(`1).TestNonVoidVirtualMethod\"",
-            "\".MethodWithDifferentArgs(`1).MethodWithDifferentArgs(`1)\"",
-            "\".MethodWithDifferentArgs(`1).MethodWithDifferentArgs(`2)\"",
-            "\".MethodWithDifferentArgs(`1).MethodWithSameArgs(Int32,String)\"",
-            "\".MethodWithDifferentArgs(`1).MethodWithSameArgs(String,Int32)\"",
-            "\".MethodWithDifferentArgs(`1).TestField\"",
+            ".MethodWithDifferentArgs(`1)->i",
+            ".MethodWithDifferentArgs(`1)->firstArg",
+            ".MethodWithDifferentArgs(`1)->secondArg",
+            ".MethodWithDifferentArgs(`1).TestProp",
+            ".MethodWithDifferentArgs(`1).TestPropGetVirtual",
+            ".MethodWithDifferentArgs(`1).TestNonVoidVirtualMethod",
+            ".MethodWithDifferentArgs(`1).MethodWithDifferentArgs(`1)",
+            ".MethodWithDifferentArgs(`1).MethodWithDifferentArgs(`2)",
+            ".MethodWithDifferentArgs(`1).MethodWithSameArgs(Int32,String)",
+            ".MethodWithDifferentArgs(`1).MethodWithSameArgs(String,Int32)",
+            ".MethodWithDifferentArgs(`1).TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -497,16 +498,16 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\".MethodWithDifferentArgs(`1)->i->firstArg\"",
-            "\".MethodWithDifferentArgs(`1)->i->secondArg\"",
-            "\".MethodWithDifferentArgs(`1)->i.TestProp\"",
-            "\".MethodWithDifferentArgs(`1)->i.TestPropGetVirtual\"",
-            "\".MethodWithDifferentArgs(`1)->i.TestNonVoidVirtualMethod\"",
-            "\".MethodWithDifferentArgs(`1)->i.MethodWithDifferentArgs(`1)\"",
-            "\".MethodWithDifferentArgs(`1)->i.MethodWithDifferentArgs(`2)\"",
-            "\".MethodWithDifferentArgs(`1)->i.MethodWithSameArgs(Int32,String)\"",
-            "\".MethodWithDifferentArgs(`1)->i.MethodWithSameArgs(String,Int32)\"",
-            "\".MethodWithDifferentArgs(`1)->i.TestField\"",
+            ".MethodWithDifferentArgs(`1)->i->firstArg",
+            ".MethodWithDifferentArgs(`1)->i->secondArg",
+            ".MethodWithDifferentArgs(`1)->i.TestProp",
+            ".MethodWithDifferentArgs(`1)->i.TestPropGetVirtual",
+            ".MethodWithDifferentArgs(`1)->i.TestNonVoidVirtualMethod",
+            ".MethodWithDifferentArgs(`1)->i.MethodWithDifferentArgs(`1)",
+            ".MethodWithDifferentArgs(`1)->i.MethodWithDifferentArgs(`2)",
+            ".MethodWithDifferentArgs(`1)->i.MethodWithSameArgs(Int32,String)",
+            ".MethodWithDifferentArgs(`1)->i.MethodWithSameArgs(String,Int32)",
+            ".MethodWithDifferentArgs(`1)->i.TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -527,16 +528,16 @@ internal class PathCompletionProvider_Tests
     [TestCase("AutoMockFixture.AutoMockFixtureExtensions.TryGetAutoMock(fixture,", "new Task<TestClass>()", ", out _")]
     public async Task Test_AutoMock_Inner(string call, string objectArg, string trailing)
     {
-        var results = await GetCompletionList(call, ".TestProp", objectArg, trailing).ConfigureAwait(false);
+        var results = await GetCompletionList(call, "\".TestProp\"", objectArg, trailing).ConfigureAwait(false);
 
         results.ItemsList.Should().NotBeNullOrEmpty();
 
         var expected = new[]
         {
-            "\".TestProp.TestProp\"",
-            "\".TestProp.TestNonVoidVirtualMethod\"",
-            "\".TestProp.MethodWithDifferentArgs\"",
-            "\".TestProp.TestField\"",
+            ".TestProp.TestProp",
+            ".TestProp.TestNonVoidVirtualMethod",
+            ".TestProp.MethodWithDifferentArgs",
+            ".TestProp.TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -562,17 +563,17 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\".TestProp.TestPropGetVirtual\"", // Possible completion
-            "\".TestProp.TestProp->firstArg\"",
-            "\".TestProp.TestProp->secondArg\"",
-            "\".TestProp.TestProp.TestProp\"",
-            "\".TestProp.TestProp.TestPropGetVirtual\"",
-            "\".TestProp.TestProp.TestNonVoidVirtualMethod\"",
-            "\".TestProp.TestProp.MethodWithDifferentArgs(`1)\"",
-            "\".TestProp.TestProp.MethodWithDifferentArgs(`2)\"",
-            "\".TestProp.TestProp.MethodWithSameArgs(Int32,String)\"",
-            "\".TestProp.TestProp.MethodWithSameArgs(String,Int32)\"",
-            "\".TestProp.TestProp.TestField\"",
+            ".TestProp.TestPropGetVirtual", // Possible completion
+            ".TestProp.TestProp->firstArg",
+            ".TestProp.TestProp->secondArg",
+            ".TestProp.TestProp.TestProp",
+            ".TestProp.TestProp.TestPropGetVirtual",
+            ".TestProp.TestProp.TestNonVoidVirtualMethod",
+            ".TestProp.TestProp.MethodWithDifferentArgs(`1)",
+            ".TestProp.TestProp.MethodWithDifferentArgs(`2)",
+            ".TestProp.TestProp.MethodWithSameArgs(Int32,String)",
+            ".TestProp.TestProp.MethodWithSameArgs(String,Int32)",
+            ".TestProp.TestProp.TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);
@@ -599,10 +600,10 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\".TestProp.TestProp.TestProp\"",
-            "\".TestProp.TestProp.TestNonVoidVirtualMethod\"",
-            "\".TestProp.TestProp.MethodWithDifferentArgs\"",
-            "\".TestProp.TestProp.TestField\"",
+            ".TestProp.TestProp.TestProp",
+            ".TestProp.TestProp.TestNonVoidVirtualMethod",
+            ".TestProp.TestProp.MethodWithDifferentArgs",
+            ".TestProp.TestProp.TestField",
         };
         results.ItemsList.Count.Should().Be(expected.Length);
         results.ItemsList.Select(i => i.DisplayText).Should().BeEquivalentTo(expected);

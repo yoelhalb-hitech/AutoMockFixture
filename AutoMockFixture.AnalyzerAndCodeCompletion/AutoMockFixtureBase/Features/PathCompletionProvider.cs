@@ -134,10 +134,15 @@ public class PathCompletionProvider : CommonCompletionProvider
 
             if (completions.Any()) context.IsExclusive = true;
 
+            var isStaticInvocation = (invocationOperation.Syntax as InvocationExpressionSyntax)!.ArgumentList.Arguments.Count == invocationOperation.Arguments.Length;
+            var argIndex = isStaticInvocation ? 3 : 2;
+            var hasArgument = invocation.ArgumentList.Arguments.Count >= argIndex  && !invocation.ArgumentList.Arguments[argIndex - 1].IsMissing; // TODO... it might still be a `null` expression
+            var quotes = !hasArgument ? "\"" : ""; // If it's a string it will put it inside the quotes so no need for extra
             foreach (var completion in completions)
             {
+
                 context.AddItem(SymbolCompletionItem.CreateWithSymbolId(
-                            displayText: '"' + completion.TrackingPath + '"',
+                            displayText: quotes + completion.TrackingPath + quotes,
                             displayTextSuffix: "",
                             insertionText: null,
                             symbols: ImmutableArray.Create(completion.Symbol),
