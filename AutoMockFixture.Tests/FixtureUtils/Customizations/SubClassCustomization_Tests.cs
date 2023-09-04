@@ -235,11 +235,42 @@ internal class SubclassCustomization_Tests
     }
 
     [Test]
+    [TestCase<ITestIface, ISubTestIface>]
+    public void Test_FailsCorrectly_When_NeverAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TOriginal));
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TSubClass));
+
+        Assert.Catch<AutoFixture.ObjectCreationException>(() => fixture.Create<TOriginal>());
+    }
+
+    [Test]
+    [TestCase<ITestIface, ISubTestIface>]
+    public void Test_DoesNotFail_When_NeverAutoMock_OnlyOriginal<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    {
+        var fixture = new UnitFixture();
+        fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
+
+        fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(TOriginal));
+
+        object? result = null;
+        Assert.DoesNotThrow(() => result = fixture.Create<TOriginal>());
+
+        result.Should().NotBeNull();
+        result.Should().BeAssignableTo<IAutoMocked>();
+        result.Should().BeAssignableTo<TSubClass>();
+
+        AutoMock.Get((TSubClass)result!).Should().NotBeNull();
+    }
+
+    [Test]
     [TestCase<ITestIface, BaseTestType>]
     [TestCase<ITestIface, SubTestType>]
     [TestCase<ISubTestIface, SubTestType>]
     [TestCase<BaseTestType, SubTestType>]
-    [TestCase<ITestIface, ISubTestIface>]
     [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
     public void Test_FreezesCorrectly_When_NeverAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
     {
