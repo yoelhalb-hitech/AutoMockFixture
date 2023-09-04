@@ -279,7 +279,7 @@ public class PathCompletionProvider : CommonCompletionProvider
 
                 yield return new Info
                 {
-                    TrackingPath = "->" + p.Name.EscapeIdentifier(),
+                    TrackingPath = "..ctor->" + p.Name.EscapeIdentifier(),
                     Symbol = p,
                     RequiresEagerLoading = false
                 };

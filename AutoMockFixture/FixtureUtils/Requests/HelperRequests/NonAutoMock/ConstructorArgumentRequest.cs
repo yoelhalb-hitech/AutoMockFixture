@@ -13,7 +13,7 @@ internal record ConstructorArgumentRequest : BaseTracker
     public virtual Type DeclaringType { get; }
     public virtual ParameterInfo ParameterInfo { get; }
 
-    public override string InstancePath => "->" + ParameterInfo.Name;
+    public override string InstancePath => "..ctor->" + ParameterInfo.Name;
 
 
     public override bool IsRequestEquals(ITracker other)

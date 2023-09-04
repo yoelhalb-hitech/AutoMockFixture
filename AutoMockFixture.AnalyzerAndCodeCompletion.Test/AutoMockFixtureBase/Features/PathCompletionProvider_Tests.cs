@@ -125,8 +125,8 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "->firstArg",
-            "->secondArg",
+            "..ctor->firstArg",
+            "..ctor->secondArg",
             ".TestProp",
             ".TestPropGetVirtual",
             ".TestNonVoidVirtualMethod",
@@ -161,8 +161,8 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\"->firstArg\"",
-            "\"->secondArg\"",
+            "\"..ctor->firstArg\"",
+            "\"..ctor->secondArg\"",
             "\".TestProp\"",
             "\".TestPropGetVirtual\"",
             "\".TestNonVoidVirtualMethod\"",
@@ -217,8 +217,8 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "\"->firstArg\"",
-            "\"->secondArg\"",
+            "\"..ctor->firstArg\"",
+            "\"..ctor->secondArg\"",
             "\".TestProp\"",
             "\".TestPropGetVirtual\"",
             "\".TestNonVoidVirtualMethod\"",
@@ -322,8 +322,8 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "[0]->firstArg",
-            "[0]->secondArg",
+            "[0]..ctor->firstArg",
+            "[0]..ctor->secondArg",
             "[0].TestProp",
             "[0].TestPropGetVirtual",
             "[0].TestNonVoidVirtualMethod",
@@ -358,8 +358,8 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            "()->firstArg",
-            "()->secondArg",
+            "()..ctor->firstArg",
+            "()..ctor->secondArg",
             "().TestProp",
             "().TestPropGetVirtual",
             "().TestNonVoidVirtualMethod",
@@ -425,8 +425,8 @@ internal class PathCompletionProvider_Tests
         var expected = new[]
         {
             ".TestPropGetVirtual", // Possible completion
-            ".TestProp->firstArg",
-            ".TestProp->secondArg",
+            ".TestProp..ctor->firstArg",
+            ".TestProp..ctor->secondArg",
             ".TestProp.TestProp",
             ".TestProp.TestPropGetVirtual",
             ".TestProp.TestNonVoidVirtualMethod",
@@ -462,8 +462,8 @@ internal class PathCompletionProvider_Tests
         var expected = new[]
         {
             ".MethodWithDifferentArgs(`1)->i",
-            ".MethodWithDifferentArgs(`1)->firstArg",
-            ".MethodWithDifferentArgs(`1)->secondArg",
+            ".MethodWithDifferentArgs(`1)..ctor->firstArg",
+            ".MethodWithDifferentArgs(`1)..ctor->secondArg",
             ".MethodWithDifferentArgs(`1).TestProp",
             ".MethodWithDifferentArgs(`1).TestPropGetVirtual",
             ".MethodWithDifferentArgs(`1).TestNonVoidVirtualMethod",
@@ -498,8 +498,8 @@ internal class PathCompletionProvider_Tests
 
         var expected = new[]
         {
-            ".MethodWithDifferentArgs(`1)->i->firstArg",
-            ".MethodWithDifferentArgs(`1)->i->secondArg",
+            ".MethodWithDifferentArgs(`1)->i..ctor->firstArg",
+            ".MethodWithDifferentArgs(`1)->i..ctor->secondArg",
             ".MethodWithDifferentArgs(`1)->i.TestProp",
             ".MethodWithDifferentArgs(`1)->i.TestPropGetVirtual",
             ".MethodWithDifferentArgs(`1)->i.TestNonVoidVirtualMethod",
@@ -564,8 +564,8 @@ internal class PathCompletionProvider_Tests
         var expected = new[]
         {
             ".TestProp.TestPropGetVirtual", // Possible completion
-            ".TestProp.TestProp->firstArg",
-            ".TestProp.TestProp->secondArg",
+            ".TestProp.TestProp..ctor->firstArg",
+            ".TestProp.TestProp..ctor->secondArg",
             ".TestProp.TestProp.TestProp",
             ".TestProp.TestProp.TestPropGetVirtual",
             ".TestProp.TestProp.TestNonVoidVirtualMethod",

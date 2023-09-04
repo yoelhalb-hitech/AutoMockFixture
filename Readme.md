@@ -169,7 +169,7 @@ class Order
 
 Now we want to create two orders and ensure that the second order has called the `SetZip()` method on the customer BillingAddress.
 
-Here is one way to do it:
+Here is one way to do it, (NOTE: For help with the path you can use the `AutoMockFixture.AnalyzerAndCodeCompletion` analyzer package):
 
 ```cs
 var fixture = new UnitFixture();
@@ -177,7 +177,7 @@ var fixture = new UnitFixture();
 var order1 = fixture.CreateWithAutoMockDependencies<Order>(callBase = true); // If not callbase it won't call the ctor
 var order2 = fixture.CreateWithAutoMockDependencies<Order>(callBase = true); // If not callbase it won't call the ctor
 
-fixture.GetAutoMock<Address>(order2, "->customer->billingAddress").Verify(a => a.SetZip("11111")); // If you want only want for order2 and billing
+fixture.GetAutoMock<Address>(order2, "..ctor->customer..ctor->billingAddress").Verify(a => a.SetZip("11111")); // If you want only want for order2 and billing
 fixture.GetAutoMocks<Address>(order2).Verify(a => a.SetZip("11111")); // To verify for all addresses for order 2
 fixture.GetAutoMocks<Address>().Verify(a => a.SetZip("11111")); // To verify for all orders and all addresses
 ```
