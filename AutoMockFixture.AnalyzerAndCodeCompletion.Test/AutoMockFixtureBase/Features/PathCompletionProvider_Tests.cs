@@ -13,9 +13,8 @@ using System.Reflection;
 
 namespace AutoMockFixture.AnalyzerAndCodeCompletion.Test.AutoMockFixtureBase.Features;
 
-internal class PathCompletionProvider_Tests
+public class PathCompletionProvider_Tests
 {
-
     private static AdhocWorkspace GetWorkspace()
     {
         var host = MefHostServices.Create(MefHostServices.DefaultAssemblies);
