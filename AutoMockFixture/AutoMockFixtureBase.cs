@@ -274,6 +274,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         try
         {
             var result = new RecursionContext(this, this) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
+            if (result == this) return result;
 
             // TODO... we might have a problem if there is duplicates (for example for primitive typs or strings)
 
@@ -299,7 +300,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
             });
 
 
-            MocksDict[key] = Task.Run(() => request.GetAllMocks()
+            MocksDict[key] = Task.Run(() => request.GetAllMocks()?
                                                     .Select(w => w.GetTarget()).OfType<IAutoMock>()
                                                     .Distinct() // Remember that for wrappers we resuse the child result
                                                     .Select(m => m.ToWeakReference()).ToList() ?? new List<WeakReference<IAutoMock>>());
