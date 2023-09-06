@@ -8,6 +8,7 @@ public class ExplicitInterfaceForClass_Tests
     public interface IWithNoDefault
     {
         public int TestMethod();
+        public int TestMethod(int i);
         public int TestProp { get; set; }
         public event EventHandler TestEvent;
     }
@@ -15,6 +16,7 @@ public class ExplicitInterfaceForClass_Tests
     public class TypeWithExplicit : IWithNoDefault
     {
         int IWithNoDefault.TestMethod() => 10;
+        int IWithNoDefault.TestMethod(int i) => 15;
         int IWithNoDefault.TestProp { get => 20; set => throw new InvalidOperationException("Test Exception"); }
         event EventHandler IWithNoDefault.TestEvent { add => throw new InvalidOperationException("Test Exception"); remove => throw new InvalidOperationException("Test Exception"); }
     }
@@ -26,6 +28,7 @@ public class ExplicitInterfaceForClass_Tests
     public class TypeWithReimplmented : TypeWithExplicit, IWithNoDefault
     {
         int IWithNoDefault.TestMethod() => 30;
+        int IWithNoDefault.TestMethod(int i) => 35;
         int IWithNoDefault.TestProp { get => 40; set => throw new ArgumentOutOfRangeException("Test Exception"); }
         event EventHandler IWithNoDefault.TestEvent { add => throw new ArgumentOutOfRangeException("Test Exception"); remove => throw new ArgumentOutOfRangeException("Test Exception"); }
     }
@@ -47,6 +50,7 @@ public class ExplicitInterfaceForClass_Tests
 
         var obj = mock.Object as IWithNoDefault;
         obj.TestMethod().Should().NotBe(10);
+        obj.TestMethod(0).Should().NotBe(15);
         obj.TestProp.Should().NotBe(20);
 
         Assert.DoesNotThrow(() => obj.TestProp = 70);
@@ -59,11 +63,12 @@ public class ExplicitInterfaceForClass_Tests
     [TestCase<TypeWithExplicitSub>]
     public void Test_TypeWithExplicitImplementation_Callsbase_OnCallbase<T>() where T : class, IWithNoDefault
     {
-        var mock = new Moq.Mock<T>() { CallBase = true };
+        var mock = new AutoMock<T>() { CallBase = true };
         mock.As<IWithNoDefault>();
         var obj = mock.Object;
 
         obj.TestMethod().Should().Be(10);
+        obj.TestMethod(0).Should().Be(15);
         obj.TestProp.Should().Be(20);
 
         Assert.Throws<InvalidOperationException>(() => obj.TestProp = 70, "Test Exception");
@@ -80,6 +85,7 @@ public class ExplicitInterfaceForClass_Tests
         var obj = mock.Object;
 
         obj.TestMethod().Should().Be(30);
+        obj.TestMethod(0).Should().Be(35);
         obj.TestProp.Should().Be(40);
 
         Assert.Throws<ArgumentOutOfRangeException>(() => obj.TestProp = 70, "Test Exception");
