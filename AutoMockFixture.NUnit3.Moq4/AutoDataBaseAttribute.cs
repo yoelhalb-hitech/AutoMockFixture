@@ -58,5 +58,4 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
     {
         return fixture is not null ? new DisposeFixtureCommand(command, fixture) : command;
     }
-
 }
