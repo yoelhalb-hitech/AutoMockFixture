@@ -5,14 +5,11 @@ using AutoMockFixture.FixtureUtils.Commands;
 using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Postprocessors;
 using AutoMockFixture.FixtureUtils.Requests;
-using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
 using AutoMockFixture.FixtureUtils.Trace;
 using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.ComponentModel;
-using System.Linq;
-using static AutoMockFixture.FixtureUtils.Customizations.SubclassTransformCustomization;
 
 namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)
 
@@ -22,14 +19,6 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, IAutoMockFixture, IDisposable
 {
-    MethodSetupTypes IAutoMockFixture.MethodSetupType => MethodSetupType;
-    IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
-
-    internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
-    private readonly static MethodInfo? replaceNodeMethod;
-    private readonly static FieldInfo? graphField;
-    private readonly static MethodInfo? updateGraphAndSetupAdapterMethod;
-
     static AutoMockFixtureBase()
     {
         replaceNodeMethod = typeof(SpecimenBuilderNode)
@@ -87,16 +76,153 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         Behaviors.Add(new FreezeRecursionBehavior());
 
         if (methodSetupType is not null) MethodSetupType = methodSetupType.Value;
+
+        AutoMockEngine = new AutoMockFixtureEngine(this);
     }
 
     public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();
+    internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
 
-    Cache IAutoMockFixture.Cache => Cache;
+    #region Freeze
+
+    protected virtual void FreezeInternal(Type type)
+            => Customize(new FreezeCustomization(new TypeOrRequestSpecification(new ExactTypeSpecification(type), AutoMockHelpers)));
+
+    public virtual T? Freeze<T>()
+    {
+        FreezeInternal(typeof(T));
+
+        return Create<T>();
+    }
+
+    public virtual object? Freeze(Type type)
+    {
+        FreezeInternal(type);
+
+        return Create(type);
+    }
+
+    public virtual async Task<T?> FreezeAsync<T>()
+    {
+        FreezeInternal(typeof(T));
+
+        return await CreateAsync<T>().ConfigureAwait(false);
+    }
+
+    public virtual async Task<object?> FreezeAsync(Type type)
+    {
+        FreezeInternal(type);
+
+        return await CreateAsync(type).ConfigureAwait(false);
+    }
+
+    #endregion
+
+    #region Create
+
+    public T? Create<T>() => Create<T>(false, null);
+    public Task<T?> CreateAsync<T>() => CreateAsync<T>(false, null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public abstract T? Create<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public abstract Task<T?> CreateAsync<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public abstract object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public abstract Task<object?> CreateAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
+
+    #endregion
+
+    #region AutoMockDependencies
+
+    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+            => AutoMockEngine.CreateWithAutoMockDependencies<T>(callBase, autoMockTypeControl);
+
+    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependencies(t, callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callBase, autoMockTypeControl);
+
+    #endregion
+
+    #region NonAutoMock
+
+    public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateNonAutoMock<T>(callbase, autoMockTypeControl);
+
+    public Task<T?> CreateNonAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateNonAutoMockAsync<T>(callbase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+                => AutoMockEngine.CreateNonAutoMock(t, callbase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateNonAutoMockAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+            => AutoMockEngine.CreateNonAutoMockAsync(t, callbase, autoMockTypeControl);
+
+    #endregion
+
+    #region AutoMock
+
+    public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+            => AutoMockEngine.CreateAutoMock<T>(callBase, autoMockTypeControl);
+
+    public Task<T?> CreateAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+            => AutoMockEngine.CreateAutoMockAsync<T>(callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMock(t, callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMockAsync(t, callBase, autoMockTypeControl);
+
+    #endregion
+
+    #region Utils
+
+    private readonly static MethodInfo? replaceNodeMethod;
+    private readonly static FieldInfo? graphField;
+    private readonly static MethodInfo? updateGraphAndSetupAdapterMethod;
+
+
+    private protected AutoMockFixtureEngine AutoMockEngine;
+
+    internal abstract TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase);
+
+    internal abstract IAutoMockHelpers AutoMockHelpers { get; }
+
+    internal List<ConstructorArgumentValue> ConstructorArgumentValues = new();
+
+    internal ITracker? GetTracker(object obj) => AutoMockEngine.TrackerDict
+                    .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
+                    .Value;
+
     internal Cache Cache { get; } = new Cache();
     CacheBuilder? cacheBuilder;
     AutoMockTypeControlBuilder? autoMockTypeControlBuilder;
 
     private List<WeakReference> disposables = new List<WeakReference>();
+
+    #endregion
+
+    #region InterfaceImplementations
+
+    MethodSetupTypes IAutoMockFixture.MethodSetupType => MethodSetupType;
+    Cache IAutoMockFixture.Cache => Cache;
+    IAutoMockFixture IAutoMockFixture.Customize(AutoFixture.ICustomization customization) => (IAutoMockFixture)Customize(customization);
 
     object? ISpecimenBuilder.Create(object request, AutoFixture.Kernel.ISpecimenContext context)
     {
@@ -109,7 +235,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
         if (result is NoSpecimen) result = base.Create(request, context);
 
-        if(result?.GetType().GetInterfaces().Contains(typeof(IDisposable)) == true) disposables.Add(new WeakReference(result));
+        if (result?.GetType().GetInterfaces().Contains(typeof(IDisposable)) == true) disposables.Add(new WeakReference(result));
 
         return result;
     }
@@ -127,8 +253,6 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         }
     }
 
-    #region Create
-
     public virtual TraceInfo Trace()
     {
         var info = new TraceInfo();
@@ -137,233 +261,16 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         return info;
     }
 
-    public virtual T? Freeze<T>() => Cast<T>(Freeze(typeof(T)));
-
-    public virtual object? Freeze(Type type)
-    {
-        Customize(new FreezeCustomization(new TypeOrRequestSpecification(new ExactTypeSpecification(type), AutoMockHelpers)));
-
-        return Create(type);
-    }
-
-
-    public T? Create<T>() => Cast<T>(Create(typeof(T), false, null));
-
-    public T? Create<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null) => Cast<T>(Create(typeof(T), callbase, autoMockTypeControl));
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null) => Cast<T>(Create(typeof(T), autoMockTypeControl));
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? Create(Type t) => Create(t, false, null);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
-
-    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-            => Cast<T>(CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl));
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-    {
-        if (t.IsValueType) return new SpecimenContext(this).Resolve(new SeededRequest(t, t.GetDefault()));
-
-        var result = Execute(new AutoMockDependenciesRequest(t, this) { MockShouldCallbase = callBase }, autoMockTypeControl);
-
-        return result;
-    }
-
-
-    public T? CreateNonAutoMock<T>() => Cast<T>(CreateNonAutoMock(typeof(T), false, null));
-
-    public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-                => Cast<T>(CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl));
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null)
-                => Cast<T>(CreateNonAutoMock(typeof(T), autoMockTypeControl));
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t) => CreateNonAutoMock(t, false, null);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null) => CreateNonAutoMock(t, false, autoMockTypeControl);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-                => Execute(new NonAutoMockRequest(t, this) { MockShouldCallbase = callbase }, autoMockTypeControl);
-
-    public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-            => Cast<T>(CreateAutoMock(typeof(T), callBase, autoMockTypeControl));
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-    {
-        if (t.IsValueType) throw new InvalidOperationException("Type must be a reference type");
-
-        var type = AutoMockHelpers.IsAutoMock(t)
-                    ? AutoMockHelpers.GetMockedType(t)!
-                    : !AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(t)
-                        ? t
-                        : t.IsGenericType ? t.GenericTypeArguments.First(): typeof(object);
-        if(!AutoMockHelpers.IsAutoMockAllowed(type))
-            throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
-
-        var result = Execute(new AutoMockRequest(type, GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallbase = callBase }, autoMockTypeControl);
-
-        return type != t ? AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
-    }
-
-    internal abstract TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase);
-
-    #endregion
-
-    #region Utils
-
-    private T? Cast<T>(object? result)
-    {
-        try
-        {
-            return (T?)result;
-        }
-        catch (InvalidCastException ex) when (AutoMockHelpers.IsAutoMock(typeof(T)))
-        {
-            var innerType = AutoMockHelpers.GetMockedType(typeof(T))!;
-            var genericDefinition = innerType.IsGenericType ? innerType.GetGenericTypeDefinition() : null;
-
-            var cust = this.Customizations
-                    .OfType<SubClassTransformBuilder>()
-                    .FirstOrDefault(c => c.OriginalType.IsGenericType && c.OriginalType.IsGenericTypeDefinition ? c.OriginalType == genericDefinition : c.OriginalType == innerType);
-            if (cust is null) throw;
-
-            throw new InvalidCastException($"Requested type {typeof(T).ToGenericTypeString()} has been modified to {(result?.GetType() ?? AutoMockHelpers.GetMockedType(cust.SubclassType))!.ToGenericTypeString()}\nYou can use instead the non generic overload or you can try the `CreateAutoMock()` method instead", ex);
-        }
-
-    }
-
-    internal abstract IAutoMockHelpers AutoMockHelpers { get; }
     IAutoMockHelpers IAutoMockFixture.AutoMockHelpers => AutoMockHelpers;
 
     List<ConstructorArgumentValue> IAutoMockFixture.ConstructorArgumentValues => ConstructorArgumentValues;
-    internal List<ConstructorArgumentValue> ConstructorArgumentValues = new();
 
-    internal ITracker? GetTracker(object obj) => TrackerDict
-                    .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
-                    .Value;
+    Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> IAutoMockFixture.PathsDict => AutoMockEngine.PathsDict;
 
-    Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> IAutoMockFixture.PathsDict => PathsDict;
-
-    internal Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> PathsDict = new();
-
-    Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> IAutoMockFixture.MocksDict => MocksDict;
-    internal Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> MocksDict = new();
-    Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> IAutoMockFixture.MocksByTypeDict => MocksByTypeDict;
-    internal Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> MocksByTypeDict = new();
-
-    Dictionary<WeakReference, ITracker> IAutoMockFixture.TrackerDict => TrackerDict;
-    internal Dictionary<WeakReference, ITracker> TrackerDict = new();
-
-    Dictionary<object, ITracker> IAutoMockFixture.ProcessingTrackerDict => ProcessingTrackerDict;
-    internal Dictionary<object, ITracker> ProcessingTrackerDict = new(); // To track while processing
-
-    private object? Execute(ITracker request, AutoMockTypeControl? autoMockTypeControl = null)
-    {
-        try
-        {
-            var result = new RecursionContext(this, this) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
-            if (result == this) return result;
-
-            // TODO... we might have a problem if there is duplicates (for example for primitive typs or strings)
-
-            // We will rather deal with the underlying mock for consistancy
-            // but also to avoid having to call .Equals on the object which it can then later report as called in the verify process
-            // WeakReference won't block Garbage Collection, and also avoids the issue of duplicates
-            var key = (AutoMockHelpers.GetFromObj(result) ?? result).ToWeakReference();
-            TrackerDict[key] = request;
-
-            if (PathsDict.Any(m => m.Key.Target == key.Target)) return result; // Probably from cache, CAUTION: referencing directly the object in the expression prevents if from GC, only when referencing via the wekreference target
-
-            PathsDict[key] = Task.Run(() => request.GetChildrensPaths()?
-                        .ToDictionary(c => c.Key, c => c.Value)
-                    ?? new Dictionary<string, List<WeakReference?>>());
-
-            PathsDict[key].ContinueWith(_ => request.StartTracker.DataUpdated += (_, d) => // For any lazy children
-            {
-                d.Paths.ToList().ForEach(i =>
-                {
-                    if (PathsDict[key].Result?.ContainsKey(i.Key) == true) PathsDict[key]!.Result[i.Key].AddRange(i.Value);
-                    else PathsDict[key]!.Result[i.Key] = i.Value;
-                });
-            });
-
-
-            MocksDict[key] = Task.Run(() => request.GetAllMocks()?
-                                                    .Select(w => w.GetTarget()).OfType<IAutoMock>()
-                                                    .Distinct() // Remember that for wrappers we resuse the child result
-                                                    .Select(m => m.ToWeakReference()).ToList() ?? new List<WeakReference<IAutoMock>>());
-            MocksDict[key].ContinueWith(_ =>  // For any lazy children
-            {
-                var obj = new object();
-                request.StartTracker.DataUpdated += (_, d) =>
-                {
-                    var mocks = d.AutoMocks.Select(w => w.GetTarget()).OfType<IAutoMock>().Distinct();  // Remember that for wrappers we resuse the child result
-                    lock (obj)
-                    {
-                        var existing = MocksDict[key].Result.Select(r => r.GetTarget()).OfType<IAutoMock>().ToList();
-                        MocksDict[key].Result.AddRange(mocks.Where(m => !existing.Contains(m)).Select(m => m.ToWeakReference()));
-                    }
-                };
-            });
-
-            MocksByTypeDict[key] = Task.Run(() => MocksDict[key].Result
-                                            .GroupBy(m => m.GetTarget()?.GetInnerType())
-                                            .Where(g => g.Key is not null)
-                                            .ToDictionary(d => d.Key!, d => d.ToList()));
-            MocksByTypeDict[key].ContinueWith(_ => // For any lazy children
-            {
-                var obj = new object();
-                request.StartTracker.DataUpdated += (_, d) =>
-                {
-                    lock(obj)
-                    {
-                        var dict = new Dictionary<Type, List<IAutoMock>>();
-                        d.AutoMocks.ForEach(m =>
-                        {
-                            var target = m.GetTarget(); // This way it will at least live till after the block so it won't be GC'ed
-                            var t = target?.GetInnerType();
-                            if (target is null || t is null) return;
-
-                            if (!MocksByTypeDict[key].Result.ContainsKey(t))
-                                MocksByTypeDict[key].Result[t] = new List<WeakReference<IAutoMock>>();
-
-                            if (!dict.ContainsKey(t)) dict[t] = MocksByTypeDict[key].Result[t].Select(r => r.GetTarget()).OfType<IAutoMock>().ToList();
-
-                            if (dict[t].Contains(target)) return;
-
-                            dict[t].Add(target);
-                            MocksByTypeDict[key].Result[t].Add(m);
-                        });
-                    }
-                };
-            });
-
-            MocksByTypeDict[key].Wait();
-
-            return result;
-        }
-        catch (ObjectCreationException)
-        {
-            throw;
-            // Only use the following if callbase is false, but specified to call the base constructors, so far we don't support that
-//                throw new Exception(@"Unable to create object, please check inner exception for details
-//This can happen if the object (or a dependendent object) constructor calls a method or property that has not been setup corretly.
-//You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.
-//You can also try to move out the call in a separate method and call it from your constuctor (will only work if CallBase is false)", ex);
-        }
-    }
+    Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> IAutoMockFixture.MocksDict => AutoMockEngine.MocksDict;
+    Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> IAutoMockFixture.MocksByTypeDict => AutoMockEngine.MocksByTypeDict;
+    Dictionary<WeakReference, ITracker> IAutoMockFixture.TrackerDict => AutoMockEngine.TrackerDict;
+    Dictionary<object, ITracker> IAutoMockFixture.ProcessingTrackerDict => AutoMockEngine.ProcessingTrackerDict;
 
     #endregion
 }

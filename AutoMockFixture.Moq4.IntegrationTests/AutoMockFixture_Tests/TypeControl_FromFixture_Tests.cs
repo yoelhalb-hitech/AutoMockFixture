@@ -26,7 +26,7 @@ internal class TypeControl_FromFixture_Tests
 
     private bool IsCallbase<T>(T obj) where T : class => AutoMock.Get(obj)?.CallBase == true;
 
-    T CreateNonAutoMock<T>(AutoMockTypeControl typeControl) => fixture.CreateNonAutoMock<T>(typeControl)!;
+    T CreateNonAutoMock<T>(AutoMockTypeControl typeControl) => fixture.CreateNonAutoMock<T>(autoMockTypeControl: typeControl)!;
 
     [Test]
     public void Test_AlwaysAutoMockTypes_WillAutoMock_WhenNonAutoMock_FromFixture_ObjectItself()

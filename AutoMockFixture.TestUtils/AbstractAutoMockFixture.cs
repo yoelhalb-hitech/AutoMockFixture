@@ -10,10 +10,14 @@ public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixtureBase
 {
     public AbstractAutoMockFixture(bool noConfigureMembers = false) : base(noConfigureMembers) { }
 
-    internal override IAutoMockHelpers AutoMockHelpers => new AutoMockHelpers();
+    public Dictionary<WeakReference, ITracker> TrackerDict => (this as IAutoMockFixture)!.TrackerDict;
+    public Dictionary<object, ITracker> ProcessingTrackerDict => (this as IAutoMockFixture)!.ProcessingTrackerDict;
 
-    public override object Create(Type t, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
-    public override object Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+    internal override IAutoMockHelpers AutoMockHelpers => new AutoMockHelpers();
+    public override T? Create<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default => throw new NotSupportedException();
+    public override Task<T?> CreateAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default => throw new NotSupportedException();
+    public override object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+    public override Task<object?> CreateAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
     public override T Freeze<T>()
     {
         try

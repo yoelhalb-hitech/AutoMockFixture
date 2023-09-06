@@ -20,11 +20,21 @@ public abstract class IntegrationFixtureBase : AutoMockFixtureBase
                             new TypeOrRequestSpecification(new TypeSpecification(typeof(IntegrationFixtureBase)), AutoMockHelpers)));
     }
 
-    public override object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null)
-        => CreateNonAutoMock(t, autoMockTypeControl);
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public override T? Create<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
+        => CreateNonAutoMock<T>(false, autoMockTypeControl);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public override Task<T?> CreateAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
+        => CreateNonAutoMockAsync<T>(false, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public override object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
         => CreateNonAutoMock(t, callbase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public override Task<object?> CreateAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => CreateNonAutoMockAsync(t, callbase, autoMockTypeControl);
 
     internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new NonAutoMockRequest(type, this) { MockShouldCallbase = callBase };
 }

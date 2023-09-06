@@ -9,64 +9,81 @@ namespace AutoMockFixture;
 
 public interface IAutoMockFixture
 {
-    T? Freeze<T>();
-    object? Freeze(Type type);
-
     IAutoMockFixture Customize(ICustomization customization);
 
     AutoMockTypeControl AutoMockTypeControl { get; set; }
 
     TraceInfo Trace();
 
+    #region Freeze
+
+    T? Freeze<T>();
+    Task<T?> FreezeAsync<T>();
+    object? Freeze(Type type);
+    Task<object?> FreezeAsync(Type type);
+
+    #endregion
+
+    #region Create
 
     T? Create<T>();
+    Task<T?> CreateAsync<T>();
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     T? Create<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    T? Create<T>(AutoMockTypeControl? autoMockTypeControl = null);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? Create(Type t);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? Create(Type t, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<T?> CreateAsync<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    Task<object?> CreateAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
+    #endregion
+
+    #region AutoMockDependencies
+
+    T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
+    #endregion
 
-    T? CreateNonAutoMock<T>();
+    #region NonAutoMock
 
     T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    T? CreateNonAutoMock<T>(AutoMockTypeControl? autoMockTypeControl = null);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? CreateNonAutoMock(Type t);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? CreateNonAutoMock(Type t, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<T?> CreateNonAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    Task<object?> CreateNonAutoMockAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
+
+    #endregion
+
+    #region AutoMock
 
     T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class;
+
+    Task<T?> CreateAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class;
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    Task<object?> CreateAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
-    internal abstract IAutoMockHelpers AutoMockHelpers { get; }
+    #endregion
+
+    internal IAutoMockHelpers AutoMockHelpers { get; }
     internal Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> PathsDict { get; }
     internal Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> MocksByTypeDict { get; }
     internal Dictionary<WeakReference, ITracker> TrackerDict { get; }
