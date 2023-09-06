@@ -34,7 +34,7 @@ internal class AutoMockBuilder_Tests
         var type = autoMock.GetType();
         var fixture = new AbstractAutoMockFixture();
 
-        var requestMock = new Mock<AutoMockDirectRequest>(type, fixture);
+        var requestMock = new AutoMock<AutoMockDirectRequest>(type, fixture);
         requestMock.CallBase = true;
         requestMock.SetupGet(r => r.Request).Returns(type);
         requestMock.SetupGet(r => r.Fixture).Returns(fixture);
