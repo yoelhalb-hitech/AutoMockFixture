@@ -1,3 +1,18 @@
+## [4.0.0] - 2023-09-06
+
+### Added
+- Added async support in the fixture
+
+### Removed
+- Remove some overloads of Fixture that are unneeded as the other overloads aready cover them
+
+### Changed
+- Change the `UnitAutoData` and `IntegrationAutoData` to be async based internally
+
+### Fixed
+- Fix bug when requesting an `IAutoMockFixture` from the fixture
+- Fix completion in analyzer
+
 ## [3.0.0] - 2023-09-04
 
 ### Changed
