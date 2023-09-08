@@ -54,7 +54,7 @@ internal class RoslynUtils
             // Also note that for type names we have to use the C# type name, maybe better the full name (since there is no guarantee that the `using` statement for the namespace has been set)
             //***********************************
 
-            if (p.Type.Name == nameof(System.String)) return SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression,
+            if (p.Type.SpecialType == SpecialType.System_String) return SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression,
                                                                                                                             SyntaxFactory.ParseToken("\"\"")));
             if (p.RefKind == RefKind.Out) return SyntaxFactory.Argument(null, SyntaxFactory.Token(SyntaxKind.OutKeyword),
                     SyntaxFactory.DeclarationExpression(SyntaxFactory.IdentifierName(p.Type.Name),

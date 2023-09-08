@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.AnalyzerAndCodeCompletion</PackageId>
-    <PackageVersion>4.0.0</PackageVersion>
+    <PackageVersion>5.0.0</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
@@ -60,12 +60,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="3.0.5" PrivateAssets="All" GeneratePathProperty="true" />
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="3.0.5">
+    <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="[4.0.0,)" PrivateAssets="All" GeneratePathProperty="true" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="4.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.RoslynExtensions" Version="3.0.5" PrivateAssets="All" GeneratePathProperty="true" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.RoslynExtensions" Version="[4.0.0,)" PrivateAssets="All" GeneratePathProperty="true" />
   </ItemGroup>
 
 <ItemGroup>

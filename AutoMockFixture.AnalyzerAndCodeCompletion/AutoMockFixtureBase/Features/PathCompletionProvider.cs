@@ -1,7 +1,8 @@
 ﻿extern alias Features;
 extern alias Workspaces;
 
-using DotNetPowerExtensions.RoslynExtensions;
+using SequelPay.DotNetPowerExtensions;
+using SequelPay.DotNetPowerExtensions.RoslynExtensions;
 using Features::Microsoft.CodeAnalysis.Completion;
 using Features::Microsoft.CodeAnalysis.Completion.Providers;
 using Features::Microsoft.CodeAnalysis.Features.RQName.Nodes;
@@ -13,13 +14,7 @@ using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
-using SequelPay.DotNetPowerExtensions;
-using SequelPay.DotNetPowerExtensions.RoslynExtensions;
-using System;
 using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using Workspaces::Microsoft.CodeAnalysis.Host;
 using Workspaces::Microsoft.CodeAnalysis.Options;
 using Workspaces::Microsoft.CodeAnalysis.Shared.Extensions;

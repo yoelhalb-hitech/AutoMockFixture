@@ -1,3 +1,8 @@
+## [5.0.0] - 2023-09-07
+
+### Changed
+- Update the `SequelPay.DotNetPowerExtensions` to version 4.0.0 which is a breaking change as the DLL names are changed
+
 ## [4.0.0] - 2023-09-06
 
 ### Added

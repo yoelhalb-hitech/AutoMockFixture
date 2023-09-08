@@ -50,8 +50,8 @@
 	<PackageReference Include="NUnit" Version="3.13.3" />
 	<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
 	<PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
-	<PackageReference Include="SequelPay.DotNetPowerExtensions" Version="3.0.0" />
-	<PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="3.0.0">
+	<PackageReference Include="SequelPay.DotNetPowerExtensions" Version="4.0.0" />
+	<PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="4.0.0">
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
