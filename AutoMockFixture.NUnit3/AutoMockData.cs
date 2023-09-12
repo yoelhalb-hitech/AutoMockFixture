@@ -20,7 +20,7 @@ internal class AutoMockData : AutoDataAttribute
 
     public AutoMockData(Func<FixtureUtils.AutoMockFixtureBase> fixtureFactory) : base(fixtureFactory)
     {
-        if (fixtureFactory == null) throw new ArgumentNullException(nameof(fixtureFactory));
+        if (fixtureFactory is null) throw new ArgumentNullException(nameof(fixtureFactory));
 
         this.fixtureLazy = new Lazy<FixtureUtils.AutoMockFixtureBase>(fixtureFactory, LazyThreadSafetyMode.PublicationOnly);
     }

@@ -22,7 +22,7 @@ internal class AutoMockRelay : ISpecimenBuilder
 
     public object? Create(object request, ISpecimenContext context)
     {
-        if (context == null) throw new ArgumentNullException(nameof(context));
+        if (context is null) throw new ArgumentNullException(nameof(context));
 
         var t = request as Type ?? (request as SeededRequest)?.Request as Type;
         if (t is null)

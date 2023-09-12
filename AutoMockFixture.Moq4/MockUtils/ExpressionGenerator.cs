@@ -31,7 +31,7 @@ internal class ExpressionGenerator
                         .Select(param => MakeParameterExpression(param))
                         .ToList();
 
-        if (methodCallParams.Any(exp => exp == null))
+        if (methodCallParams.Any(exp => exp is null))
             return null;
 
         var parameters = methodCallParams.OfType<Expression>().ToList();

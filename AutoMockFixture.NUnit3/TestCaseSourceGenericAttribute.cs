@@ -21,7 +21,7 @@ public class TestCaseSourceGenericAttribute : TestCaseSourceAttribute, ITestBuil
         if (!method.IsGenericMethodDefinition)
             return base.BuildFrom(method, suite);
 
-        if (TypeArguments == null || TypeArguments.Length != method.GetGenericArguments().Length)
+        if (TypeArguments is null || TypeArguments.Length != method.GetGenericArguments().Length)
         {
             var parms = new TestCaseParameters { RunState = RunState.NotRunnable };
             parms.Properties.Set(PropertyNames.SkipReason, $"{nameof(TypeArguments)} should have {method.GetGenericArguments().Length} elements");

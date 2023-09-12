@@ -29,7 +29,7 @@ internal class Cache
         if (!CacheSpecifications.Any(s => s.IsSatisfiedBy(request))) return;
 
         var existing = Get(request);
-        if(existing.HasValue && existing.Value == specimen) return;
+        if(existing.HasValue && object.Equals(existing.Value, specimen)) return;
 
         if(existing.HasValue) throw new Exception("A different object is already in cache");
 

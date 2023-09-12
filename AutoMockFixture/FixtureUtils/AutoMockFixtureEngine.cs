@@ -155,7 +155,7 @@ internal class AutoMockFixtureEngine
     #region Executer
 
     internal ITracker? GetTracker(object obj) => TrackerDict
-                    .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (fixture.AutoMockHelpers.GetFromObj(obj) ?? obj))
+                    .SingleOrDefault(t => t.Key.IsAlive && object.Equals(t.Key.Target, (fixture.AutoMockHelpers.GetFromObj(obj) ?? obj)))
                     .Value;
 
     internal Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> PathsDict = new();
@@ -200,7 +200,7 @@ internal class AutoMockFixtureEngine
             var key = (fixture.AutoMockHelpers.GetFromObj(result) ?? result).ToWeakReference();
             TrackerDict[key] = request;
 
-            if (PathsDict.Any(m => m.Key.Target == key.Target)) return (result, null); // Probably from cache, CAUTION: referencing directly the object in the expression prevents if from GC, only when referencing via the wekreference target
+            if (PathsDict.Any(m => object.Equals(m.Key.Target, key.Target))) return (result, null); // Probably from cache, CAUTION: referencing directly the object in the expression prevents if from GC, only when referencing via the wekreference target
 
             PathsDict[key] = Task.Run(() => request.GetChildrensPaths()?
                         .ToDictionary(c => c.Key, c => c.Value)

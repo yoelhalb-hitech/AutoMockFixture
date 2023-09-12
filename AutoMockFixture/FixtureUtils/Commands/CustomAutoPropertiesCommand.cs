@@ -73,7 +73,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
         if (existingTracker is null) tracker.SetCompleted(this);
     }
 
-    protected virtual bool NeedsSetup(object specimen, PropertyInfo pi) => pi.GetValue(specimen) == pi.PropertyType.GetDefault();
+    protected virtual bool NeedsSetup(object specimen, PropertyInfo pi) => object.Equals(pi.GetValue(specimen), pi.PropertyType.GetDefault()); // Use object.Equals because of primitive types
 
     protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyDetail pd, ITracker tracker)
     {
@@ -102,7 +102,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
 
     protected override Type GetSpecimenType(object specimen)
     {
-        if (specimen == null) throw new ArgumentNullException(nameof(specimen));
+        if (specimen is null) throw new ArgumentNullException(nameof(specimen));
 
         if (ExplicitSpecimenType is not null) return ExplicitSpecimenType;
 

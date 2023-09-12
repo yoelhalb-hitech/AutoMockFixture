@@ -6,6 +6,7 @@ namespace AutoMockFixture.Tests.FixtureUtils.Commands;
 file class TestBase
 {
     public string? TestProp { get; private set; }
+    public int TestPrimitive { get; set; }
 }
 file class TestSub : TestBase { }
 file class TestSubOfSub : TestSub { }
@@ -22,6 +23,8 @@ file class CustomAutoPropertiesCommandSub : CustomAutoPropertiesCommand
 
         return GetPropertiesWithSet(specimen).Select(pi => pi.ReflectionInfo);
     }
+
+    public bool NeedsSetupPublic(object specimen, PropertyInfo pi) => base.NeedsSetup(specimen, pi);
 }
 
 internal class CustomAutoPropertiesCommand_Tests
@@ -40,5 +43,14 @@ internal class CustomAutoPropertiesCommand_Tests
         var props = new CustomAutoPropertiesCommandSub { IncludePrivateSetters = true }.GetAllProperties<TestSubOfSub>();
 
         props.Should().Contain(p => p.Name == nameof(TestBase.TestProp));
+    }
+
+    [Test]
+    public void Test_NeedsSetup_WorksCorrectlyWithPrimitive()
+    {
+        var obj = new TestBase { TestPrimitive = 0 };
+
+        var result = new CustomAutoPropertiesCommandSub().NeedsSetupPublic(obj, typeof(TestBase).GetProperty(nameof(TestBase.TestPrimitive))!);
+        result.Should().BeTrue();
     }
 }

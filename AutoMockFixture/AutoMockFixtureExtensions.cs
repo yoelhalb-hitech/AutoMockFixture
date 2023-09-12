@@ -17,12 +17,12 @@ public static class AutoMockFixtureExtensions
     {
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;
 
-        if (!fixture.PathsDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!fixture.PathsDict.Any(d => object.Equals(d.Key.Target, obj))) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
         if (string.IsNullOrWhiteSpace(path)) throw new Exception(nameof(path) + " doesn't have a value");
 
         path = path.Trim();
 
-        var paths = fixture.PathsDict.First(d => d.Key.Target == obj).Value.Result;
+        var paths = fixture.PathsDict.First(d => object.Equals(d.Key.Target, obj)).Value.Result;
         if (paths is null || !paths.ContainsKey(path)) throw new Exception($"`{path}` not found, please ensure that it is the correct path on the correct object");
 
         return paths[path].GetValidValues();
@@ -33,9 +33,9 @@ public static class AutoMockFixtureExtensions
     {
         currentObject = fixture.AutoMockHelpers.GetFromObj(currentObject) ?? currentObject;
 
-        if (!fixture.PathsDict.Any(d => d.Key.Target == mainObj)) throw new Exception("Main object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!fixture.PathsDict.Any(d => object.Equals(d.Key.Target, mainObj))) throw new Exception("Main object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
 
-        var path = fixture.PathsDict.First(d => d.Key.Target == mainObj).Value.Result
+        var path = fixture.PathsDict.First(d => object.Equals(d.Key.Target, mainObj)).Value.Result
                             .FirstOrDefault(kvp => kvp.Value.Contains(currentObject)).Key;
 
         if (path is null) throw new Exception("Object not found or is Garbage Collected, or .Equals() has been overriden incorrectly");
@@ -81,9 +81,9 @@ public static class AutoMockFixtureExtensions
     {
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;
 
-        if (!fixture.MocksByTypeDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!fixture.MocksByTypeDict.Any(d => object.Equals(d.Key.Target, obj))) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
 
-        var typeDict = fixture.MocksByTypeDict.First(d => d.Key.Target == obj).Value.Result;
+        var typeDict = fixture.MocksByTypeDict.First(d => object.Equals(d.Key.Target, obj)).Value.Result;
 
         return typeDict.Where(td => td.Key.IsAssignableFrom(type))
                             .SelectMany(td => td.Value.GetValidValues());
@@ -109,8 +109,8 @@ public static class AutoMockFixtureExtensions
     {
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;
 
-        if (!fixture.PathsDict.Any(d => d.Key.Target == obj)) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
+        if (!fixture.PathsDict.Any(d => object.Equals(d.Key.Target, obj))) throw new Exception("Object not found, ensure that it is a root object in the current fixture that is not yet garbage collected, and possibly verify that .Equals() works correctly on the object");
 
-        return fixture.PathsDict.First(d => d.Key.Target == obj).Value.Result.Keys.ToList();
+        return fixture.PathsDict.First(d => object.Equals(d.Key.Target, obj)).Value.Result.Keys.ToList();
     }
 }

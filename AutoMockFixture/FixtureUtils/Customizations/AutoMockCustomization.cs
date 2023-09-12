@@ -21,7 +21,7 @@ public class AutoMockCustomization : ICustomization
     public bool GenerateDelegates { get; set; } = true;
     public void Customize(IFixture fixture)
     {
-        if (fixture == null || fixture is not IAutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
+        if (fixture is null || fixture is not IAutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new AutoMockTypeControlBuilder(),

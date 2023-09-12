@@ -39,7 +39,7 @@ public class FreezeRecursionBehavior : ISpecimenBuilderTransformation
     /// </returns>
     public ISpecimenBuilderNode Transform(ISpecimenBuilder builder)
     {
-        if (builder == null) throw new ArgumentNullException(nameof(builder));
+        if (builder is null) throw new ArgumentNullException(nameof(builder));
 
         return new RecursionGuard(builder, new FreezeOnRecursionHandler(), this.recursionDepth);
     }

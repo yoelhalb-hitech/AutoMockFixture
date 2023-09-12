@@ -79,7 +79,7 @@ namespace System
             var bytes = new byte[sizeof(uint)];
             lock (_rngAccess)
             {
-                if (_rng == null)
+                if (_rng is null)
                     _rng = new RNGCryptoServiceProvider();
                 _rng.GetBytes(bytes);
             }
