@@ -1,5 +1,6 @@
 ﻿using AutoMockFixture.Moq4.AutoMockProxy;
 using Castle.DynamicProxy;
+using DotNetPowerExtensions.Reflection;
 using Moq;
 using System.Reflection;
 
@@ -364,6 +365,68 @@ public class AutoMock_Tests
     }
 
     [Test]
+    public void Test_Setup_Func_Works_WithString_WhenComplexType()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup(nameof(Test.TestMethod5), Times.Once());
+        mock.Object.TestMethod5();
+
+        Assert.DoesNotThrow(() => mock.Verify());
+    }
+
+    [Test]
+    public void Test_Setup_Func_Works_WithString_WhenProtected()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup("TestProtected1", Times.Once());
+        typeof(Test).GetMethod("TestProtected1", BindingFlagsExtensions.AllBindings)!.Invoke(mock.Object, new object[] { });
+
+        Assert.DoesNotThrow(() => mock.Verify());
+    }
+
+
+    [Test]
+    public void Test_Setup_Func_Works_WithStringAndReturn()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup(nameof(Test.TestMethod3), new { }, 10, Times.Once());
+        var result = mock.Object.TestMethod3();
+
+        Assert.DoesNotThrow(() => mock.Verify());
+
+        result.Should().Be(10);
+    }
+
+    [Test]
+    public void Test_Setup_Func_Works_WithStringAndReturn_WhenComplexType()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup(nameof(Test.TestMethod5), new { }, new EmptyType(), Times.Once());
+        var result = mock.Object.TestMethod5();
+
+        Assert.DoesNotThrow(() => mock.Verify());
+
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_Setup_Func_Works_WithStringAndReturn_WhenProtected()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup("TestProtected1", new { }, 10, Times.Once());
+        var result = typeof(Test).GetMethod("TestProtected1", BindingFlagsExtensions.AllBindings)!.Invoke(mock.Object, new object[] { });
+
+        Assert.DoesNotThrow(() => mock.Verify());
+
+        result.Should().Be(10);
+    }
+
+    [Test]
     [Obsolete]
     public void Test_Setup_Func_ThrowsOnVerify()
     {
@@ -408,6 +471,44 @@ public class AutoMock_Tests
         mock.Object.TestMethod4("str", 10, 6.95m);
 
         Assert.DoesNotThrow(() => mock.Verify());
+    }
+
+    [Test]
+    public void Test_Setup_Func_Works_WithParams_WithString_WhenComplexType()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup(nameof(Test.TestMethod6), Times.Once());
+        mock.Object.TestMethod4("str", 10, 6.95m);
+
+        Assert.DoesNotThrow(() => mock.Verify());
+    }
+
+    [Test]
+    public void Test_Setup_Func_Works_WithParams_WithStringAndReturn()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup(nameof(Test.TestMethod4), new { }, 10, Times.Once());
+        var result = mock.Object.TestMethod4("str", 10, 6.95m);
+
+        Assert.DoesNotThrow(() => mock.Verify());
+
+        result.Should().Be(10);
+    }
+
+
+    [Test]
+    public void Test_Setup_Func_Works_WithParams_WithStringAndReturn_WhenComplexType()
+    {
+        var mock = new AutoMock<Test>();
+
+        mock.Setup(nameof(Test.TestMethod6), new { }, new EmptyType(), Times.Once());
+        var result = mock.Object.TestMethod6("str", 10, 6.95m);
+
+        Assert.DoesNotThrow(() => mock.Verify());
+
+        result.Should().NotBeNull();
     }
 
 
@@ -490,5 +591,10 @@ public class AutoMock_Tests
         public virtual void TestMethod2(string str, int i, decimal m) {}
         public virtual int TestMethod3() { return 10; }
         public virtual int TestMethod4(string str, int i, decimal m) { return 10; }
+        public virtual EmptyType? TestMethod5() { return null; }
+        public virtual EmptyType? TestMethod6(string str, int i, decimal m) { return null; }
+        protected virtual int TestProtected1() { return 10; }
+        protected virtual int TestProtected2(string str, int i, decimal m) { return 10; }
     }
+    public class EmptyType { }
 }

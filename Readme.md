@@ -49,7 +49,8 @@ class Foo
    internal string InternalProp { get; set; }
    
    public virtual void Method1(Bar1 bar1, Bar2 bar2){}
-   public virtual void Method2(Bar1 bar1, Bar2 bar2){}
+   public virtual int Method2(int intArg, Bar2 bar2){}
+   protected virtual int ProtectedMethod(Bar1 bar1, Bar2 bar2){}
 }
 ```
 
@@ -63,13 +64,15 @@ In Moq:
 var mock = new Mock<Foo>(Mock.Of<Bar>()); // Will call the ctor even when callbase is false
 
 mock.Setup(m => m.Method1(It.IsAny<Bar1>(), It.IsAny<Bar2>()));
-mock.Setup(m => m.Method2(It.IsAny<Bar1>(), It.IsAny<Bar2>()));
+mock.Setup(m => m.Method2(It.Is<int>(b => b == 4), It.IsAny<Bar2>())).Returns(10);
+mock.Protected().Setup<int>("ProtectedMethod", ItExpr.IsAny<Bar1>(), ItExpr.IsAny<Bar2>())).Returns(10);
 
 var obj = mock.Object;
 obj.Method1(Mock.Of<Bar1>(), Mock.Of<Bar2>());
 
 mock.Verify(m => m.Method1(It.IsAny<Bar1>(), It.IsAny<Bar2>()), Times.Once());
-mock.Verify(m => m.Method2(It.IsAny<Bar1>(), It.IsAny<Bar2>()), Times.Never());
+mock.Verify(m => m.Method2(It.Is<int>(b => b == 4), It.IsAny<Bar2>()), Times.Never());
+mock.Protected().Verify("ProtectedMethod", Times.Never(), ItExpr.IsAny<Bar1>(), ItExpr.IsAny<Bar2>());
 ```
 
 In AutoMockFixture:
@@ -77,9 +80,10 @@ In AutoMockFixture:
 ```cs
 var mockObj = new AutoMock<Foo>() // Won't call the ctor since callbase is false
                .Setup(nameof(Foo.Method1), Times.Once())
-               .Setup(nameof(Foo.Method1), Times.Never()); // We can chain it
+               .Setup(nameof(Foo.Method2), new { intArg = 4 }, 10, Times.Never()) // We can chain it, note the proeprty has to match the argument name, CAUTION: This only works so far with primitive types
+               .Setup("ProtectedMethod", new {}, 10, Times.Never()); // We can also do it for protected without all the ceremony
 
-mockObj.Method1(Mock.Of<Bar1>(), Mock.Of<Bar2>());
+mockObj.Method1(AutoMock.Of<Bar1>(), AutoMock.Of<Bar2>());
 
 mockObj.Verify();
 ```
