@@ -1,3 +1,8 @@
+## [5.0.1] - 2023-09-07
+
+### Fixed
+- Fix a bug that for properties or fields the type is a value type it didn't set values
+
 ## [5.0.0] - 2023-09-07
 
 ### Changed
