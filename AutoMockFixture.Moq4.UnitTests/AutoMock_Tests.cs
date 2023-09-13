@@ -479,7 +479,7 @@ public class AutoMock_Tests
         var mock = new AutoMock<Test>();
 
         mock.Setup(nameof(Test.TestMethod6), Times.Once());
-        mock.Object.TestMethod4("str", 10, 6.95m);
+        mock.Object.TestMethod6("str", 10, 6.95m);
 
         Assert.DoesNotThrow(() => mock.Verify());
     }
