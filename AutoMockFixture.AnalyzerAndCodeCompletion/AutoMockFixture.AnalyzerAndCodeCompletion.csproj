@@ -61,7 +61,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SequelPay.DotNetPowerExtensions" Version="[4.0.0,)" PrivateAssets="All" GeneratePathProperty="true" />
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="4.0.0">
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Analyzers" Version="4.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
