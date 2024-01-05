@@ -1,11 +1,11 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection.Models;
+
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class MethodSetupServiceWithSameResult : MethodLazySetupServiceBase
 {
-    public MethodSetupServiceWithSameResult(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-        string? customTrackingPath = null, Type? mockType = null, MethodInfo? underlying = null)
-            : base(mock, method, context, customTrackingPath, mockType, underlying)
+    public MethodSetupServiceWithSameResult(IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath)
+            : base(mock, method, context, trackingPath)
     {
     }
 

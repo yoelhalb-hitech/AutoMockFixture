@@ -51,7 +51,7 @@ internal class MockSetupService
         // Properties with set will be handled in the command for it
         // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects, but maybe this might cause it to stop having property behavier
         // Remeber that `private` setters in the base will have no setter in the proxy
-        var singleMethodProperties = allProperties.Where(p => p.SetMethod is null || p.SetMethod.IsPrivate == true);
+        var singleMethodProperties = allProperties.Where(p => p.SetMethod is null || p.SetMethod.ReflectionInfo.IsPrivate);
         foreach (var prop in singleMethodProperties)
         {
             SetupSingleMethodProperty(prop);
@@ -62,91 +62,52 @@ internal class MockSetupService
         var detailType = mockedType.GetTypeDetailInfo();
 
         var explicitProperties = detailType.ExplicitPropertyDetails.ToArray();
-        foreach (var prop in explicitProperties.Where(p => p.SetMethod is null || p.ReflectionInfo?.SetMethod?.IsPrivate == true))
+        foreach (var prop in explicitProperties.Where(p => p.SetMethod is null || p.SetMethod.ReflectionInfo.IsPrivate))
         {
-            SetupExplicitProperty(prop, mock);
+            SetupSingleMethodProperty(prop);
         }
 
         var explicitMethods = detailType.ExplicitMethodDetails.ToArray();
         foreach (var method in explicitMethods)
         {
-            SetupExplicitMethod(method, mock);
+            SetupMethod(method);
         }
 
     }
 
-    private void SetupExplicitProperty(PropertyDetail propInfo, IAutoMock mock)
+    private void Setup<T>(MemberDetail<T> member, Func<ISetupService> setupFunc) where T : MemberInfo
     {
-        var trackingPath = ":" + propInfo.ExplicitInterface!.FullName + "." + propInfo.Name;
+        var prop = member as PropertyDetail;
+        var method = member as MethodDetail ?? prop!.GetMethod ?? prop.SetMethod!;
 
-        var method = propInfo.ReflectionInfo.GetMethod ?? propInfo.ReflectionInfo.SetMethod!;
-        var underlyingProp = propInfo.ExplicitInterface.GetProperty(propInfo.Name, BindingFlagsExtensions.AllBindings);
-        var underlying = underlyingProp?.GetMethod ?? underlyingProp?.SetMethod;
+        var trackingPath = prop?.GetTrackingPath() ?? method!.GetTrackingPath();
 
-        Func<ISetupService> setupFunc = ()
-                                => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath, propInfo.ExplicitInterface, underlying);
-
-        SetupExplicitMember(method, mock, propInfo.ReflectionInfo, trackingPath, setupFunc);
-    }
-
-    private void SetupExplicitMethod(MethodDetail methodInfo, IAutoMock mock)
-    {
-        var trackingPath = ":" + methodInfo.ExplicitInterface!.FullName + "." + methodInfo.Name; // Do not use DeclaringType as it might be an override
-
-        var method = methodInfo.ReflectionInfo;
-        var underlying = methodInfo.ExplicitInterface.GetMethod(methodInfo.Name, BindingFlagsExtensions.AllBindings);
-
-        Func<ISetupService> setupFunc = ()
-                                => setupServiceFactory.GetMethodSetup(mock, method, context, trackingPath, methodInfo.ExplicitInterface, underlying);
-
-        SetupExplicitMember(method, mock, method, trackingPath, setupFunc);
-    }
-
-    private void SetupExplicitMember(MethodInfo method, IAutoMock mock, MemberInfo member,
-        string trackingPath, Func<ISetupService> setupFunc)
-    {
-        try
+        if (!autoMockHelpers.CanMock(method.ExplicitInterface ?? method.ReflectionInfo.DeclaringType!))
         {
-            if (!autoMockHelpers.CanMock(method.DeclaringType!))
-            {
-                HandleCannotSetup(trackingPath, CannotSetupReason.TypeNotPublic);
-                return;
-            }
-
-            setupFunc().Setup();
-
-            mock.MethodsSetup.Add(trackingPath, member);
+            HandleCannotSetup(trackingPath, CannotSetupReason.TypeNotPublic);
+            return;
         }
-        catch (Exception ex)
-        {
-            mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(CannotSetupReason.Exception, ex));
-        }
-    }
 
-    private void Setup(MemberInfo member, Action action, string? trackingPath = null)
-    {
-        var prop = member as PropertyInfo;
-        var method = member as MethodInfo ?? prop!.GetMethod ?? prop.SetMethod!;
-
-        trackingPath ??= prop?.GetTrackingPath() ?? method!.GetTrackingPath();
-
-        if (mock.CallBase && !method.IsAbstract) // Cannot check by interface as an interface can have a default implementation
+        if (mock.CallBase && !method.ReflectionInfo.IsAbstract) // Cannot check by interface as an interface can have a default implementation
         { // It is callbase and has an implementation so let's ignore it
             HandleCannotSetup(trackingPath, CannotSetupReason.CallBaseNoAbstract);
             return;
         }
 
-        var configureInfo = CanBeConfigured(method);
-        if (!configureInfo.CanConfigure)
+        if(!method.IsExplicit) // Explicit is always private and non virtual but is anyway configurable
         {
-            HandleCannotSetup(trackingPath, configureInfo.Reason!.Value);
-            return;
+            var configureInfo = CanBeConfigured(method.ReflectionInfo);
+            if (!configureInfo.CanConfigure)
+            {
+                HandleCannotSetup(trackingPath, configureInfo.Reason!.Value);
+                return;
+            }
         }
 
         try
         {
-            action();
-            mock.MethodsSetup.Add(trackingPath, member);
+            setupFunc().Setup();
+            mock.MethodsSetup.Add(trackingPath, member.ReflectionInfo);
         }
         catch (Exception ex)
         {
@@ -154,35 +115,28 @@ internal class MockSetupService
         }
     }
 
-    private void SetupMethod(MethodInfo method)
-    {
-        Setup(method, () => setupServiceFactory.GetMethodSetup(mock, method, context).Setup());
-    }
+    private void SetupMethod(MethodDetail method) 
+        => Setup(method, () => setupServiceFactory.GetMethodSetup(mock, method, context));
 
-    private void SetupSingleMethodProperty(PropertyInfo prop)
-    {
-        var method = prop.GetAllMethods().First();
+    private void SetupSingleMethodProperty(PropertyDetail prop)
+        => Setup(prop, () => setupServiceFactory.GetSingleMethodPropertySetup(mock, prop, context));
 
-        var trackingPath = prop.GetTrackingPath();
-        Setup(method, () => setupServiceFactory.GetPropertySetup(mock, method, context, trackingPath).Setup(), trackingPath);
-    }
-
-    private void SetupAutoProperty(PropertyInfo prop)
+    private void SetupAutoProperty(PropertyDetail prop)
     {
         Setup(prop, () =>
         {
             var request = noMockDependencies
-                                    ? new PropertyRequest(mockedType, prop, tracker)
-                                    : new AutoMockPropertyRequest(mockedType, prop, tracker);
+                                    ? new PropertyRequest(mockedType, prop.ReflectionInfo, tracker)
+                                    : new AutoMockPropertyRequest(mockedType, prop.ReflectionInfo, tracker);
             var propValue = context.Resolve(request);
-            setupServiceFactory.GetAutoPropertySetup(mockedType, prop.PropertyType, mock, prop, propValue).Setup();
+            return setupServiceFactory.GetAutoPropertySetup(mockedType, prop.ReflectionInfo.PropertyType, mock, prop.ReflectionInfo, propValue);
         });
     }
 
-    private IEnumerable<PropertyInfo> GetProperties(bool includeNotOverridableCurrent, bool includeNotOverridableBase)
+    private IEnumerable<PropertyDetail> GetProperties(bool includeNotOverridableCurrent, bool includeNotOverridableBase)
     {
         // If "type" is a delegate, return "Invoke" method only and skip the rest of the methods.
-        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new PropertyInfo[] {};
+        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new PropertyDetail[] {};
 
         var detailType = mockedType.GetTypeDetailInfo();
 
@@ -197,13 +151,13 @@ internal class MockSetupService
                                 .Concat(detailType.ShadowedPropertyDetails); // Cannot override a shadowed method...
         }
 
-        return propDetails.Select(d => d.ReflectionInfo);
+        return propDetails;
     }
 
-    private IEnumerable<MethodInfo> GetMethods(bool includeNotOverridableCurrent, bool includeNotOverridableBase)
+    private IEnumerable<MethodDetail> GetMethods(bool includeNotOverridableCurrent, bool includeNotOverridableBase)
     {
         // If "type" is a delegate, return "Invoke" method only and skip the rest of the methods.
-        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new[] { mockedType.GetTypeInfo().GetMethod("Invoke") }.OfType<MethodInfo>();
+        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new[] { mockedType.GetTypeInfo().GetTypeDetailInfo().MethodDetails.FirstOrDefault(md => md.Name == "Invoke") };
 
         var detailType = mockedType.GetTypeDetailInfo();
 
@@ -218,19 +172,19 @@ internal class MockSetupService
                                 .Concat(detailType.ShadowedMethodDetails); // Cannot override a shadowed method...
         }
 
-        return methodDetails.Select(d => d.ReflectionInfo); // Remember that the property methods and explicit methods will get filtered out by the TypeDetaiInfo
+        return methodDetails; // Remember that the property methods and explicit methods will get filtered out by the TypeDetaiInfo
     }
 
     private void HandleCannotSetup(string trackingPath, CannotSetupReason reason)
         => mock.MethodsNotSetup.Add(trackingPath, new CannotSetupMethodException(reason));
 
-    private (bool CanConfigure, CannotSetupReason? Reason) CanBeConfigured(MethodInfo methods)
+    private (bool CanConfigure, CannotSetupReason? Reason) CanBeConfigured(MethodInfo method)
     {
-        if (!mockedType.IsInterface && !methods.IsOverridable()) return (false, CannotSetupReason.NonVirtual);
+        if (!mockedType.IsInterface && !method.IsOverridable()) return (false, CannotSetupReason.NonVirtual);
 
-        if (methods.IsPrivate) return (false, CannotSetupReason.Private);
+        if (method.IsPrivate) return (false, CannotSetupReason.Private);
 
-        if (!methods.IsPublicOrInternal()) return (false, CannotSetupReason.Protected); //TODO... maybe we should set it up in case someone calls callbase on a method?
+        if (!method.IsPublicOrInternal()) return (false, CannotSetupReason.Protected); //TODO... maybe we should set it up in case someone calls callbase on a method?
 
         return (true, null);
     }

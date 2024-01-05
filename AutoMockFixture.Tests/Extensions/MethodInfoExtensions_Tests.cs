@@ -39,7 +39,7 @@ internal class MethodInfoExtensions_Tests
     [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), "NonOverloadWithNonUsingGenericArgs`1")]
     public void TestGetTrackingPath_ReturnsCorrectly_ForNonOverloads(string name, string expectedTrackingPath)
     {
-        var trackingPath = GetMethod(m => m.Name == name).GetTrackingPath();
+        var trackingPath = GetMethod(m => m.Name == name).GetTrackingPath(false);
 
         trackingPath.Should().Be(expectedTrackingPath);
     }
@@ -51,7 +51,7 @@ internal class MethodInfoExtensions_Tests
     [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(string), "NonOverloadWithNonUsingGenericArgs<String>")]
     public void TestGetTrackingPath_ReturnsCorrectly_ForConstructudNonOverloads(string name, Type type, string expectedTrackingPath)
     {
-        var trackingPath = GetMethod(m => m.Name == name).MakeGenericMethod(type).GetTrackingPath();
+        var trackingPath = GetMethod(m => m.Name == name).MakeGenericMethod(type).GetTrackingPath(false);
 
         trackingPath.Should().Be(expectedTrackingPath);
     }

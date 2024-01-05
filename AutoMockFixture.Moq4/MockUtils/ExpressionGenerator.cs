@@ -1,6 +1,7 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
+using DotNetPowerExtensions.Reflection.Models;
 
 namespace AutoMockFixture.Moq4.MockUtils;
 
@@ -8,12 +9,12 @@ internal class ExpressionGenerator
 {
     private static readonly DelegateSpecification delegateSpecification = new DelegateSpecification();
     private readonly Type mockedType;
-    private readonly MethodInfo method;
+    private readonly MethodDetail method;
     private readonly ISpecimenContext context;
     private readonly ITracker? tracker;
     private readonly bool noMockDependencies;
 
-    public ExpressionGenerator(Type mockedType, MethodInfo method,
+    public ExpressionGenerator(Type mockedType, MethodDetail method,
                                                   ISpecimenContext context, ITracker? tracker)
     {
         this.mockedType = mockedType;
@@ -27,7 +28,7 @@ internal class ExpressionGenerator
     {
         var lambdaParam = Expression.Parameter(mockedType, "x");
 
-        var methodCallParams = method.GetParameters()
+        var methodCallParams = method.ReflectionInfo.GetParameters()
                         .Select(param => MakeParameterExpression(param))
                         .ToList();
 
@@ -36,16 +37,18 @@ internal class ExpressionGenerator
 
         var parameters = methodCallParams.OfType<Expression>().ToList();
 
+        var methodToUse = method.ExplicitInterfaceReflectionInfo ?? method.ReflectionInfo;
+
         Expression methodCall;
         if (delegateSpecification.IsSatisfiedBy(mockedType))
         {
             // e.g. "x(It.IsAny<string>(), out parameter)"
             methodCall = Expression.Invoke(lambdaParam, parameters);
         }
-        else if (method.ContainsGenericParameters)
+        else if (methodToUse.ContainsGenericParameters)
         {
-            var genericMethod = method.MakeGenericMethod(
-                method.GetGenericArguments()
+            var genericMethod = methodToUse.MakeGenericMethod(
+                methodToUse.GetGenericArguments()
                         .Select(a => MatcherGenerator.GetGenericMatcher(a)).ToArray());
             // e.g. "x.Method(It.IsAny<string>(), out parameter)"
             methodCall = Expression.Call(lambdaParam, genericMethod, parameters.ToArray());
@@ -53,7 +56,7 @@ internal class ExpressionGenerator
         else
         {
             // e.g. "x.Method(It.IsAny<string>(), out parameter)"
-            methodCall = Expression.Call(lambdaParam, method, parameters);
+            methodCall = Expression.Call(lambdaParam, methodToUse, parameters);
         }
 
         // e.g. "x => x.Method(It.IsAny<string>(), out parameter)"

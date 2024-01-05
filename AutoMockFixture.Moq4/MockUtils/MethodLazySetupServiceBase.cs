@@ -1,11 +1,11 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection.Models;
+
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal abstract class MethodLazySetupServiceBase : MethodSetupServiceBase
 {
-    protected MethodLazySetupServiceBase(IAutoMock mock, MethodInfo method,ISpecimenContext context,
-        string? customTrackingPath = null, Type? mockType = null, MethodInfo? underlying = null)
-            : base(mock, method, context, customTrackingPath, mockType, underlying)
+    protected MethodLazySetupServiceBase(IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath)
+            : base(mock, method, context, trackingPath)
     {
     }
 

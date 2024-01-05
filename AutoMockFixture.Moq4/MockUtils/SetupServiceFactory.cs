@@ -1,4 +1,5 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection.Models;
+
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class SetupServiceFactory : SetupServiceFactoryBase
@@ -9,16 +10,16 @@ internal class SetupServiceFactory : SetupServiceFactoryBase
         => new AutoPropertySetupService(mockedType, propertyType, mock, prop, propValue);
 
     protected override ISetupService GetService(MethodSetupTypes setupType,
-        IAutoMock mock, MethodInfo method, ISpecimenContext context, string? customTrackingPath, Type? mockType = null, MethodInfo? underlying = null)
+        IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath)
     {
         switch (setupType)
         {
             case MethodSetupTypes.Eager:
-                return new MethodEagerSetupService(mock, method, context, customTrackingPath, mockType, underlying);
+                return new MethodEagerSetupService(mock, method, context, trackingPath);
             case MethodSetupTypes.LazySame:
-                return new MethodSetupServiceWithSameResult(mock, method, context, customTrackingPath, mockType, underlying);
+                return new MethodSetupServiceWithSameResult(mock, method, context, trackingPath);
             case MethodSetupTypes.LazyDifferent:
-                return new MethodSetupServiceWithDifferentResult(mock, method, context, customTrackingPath, mockType, underlying);
+                return new MethodSetupServiceWithDifferentResult(mock, method, context, trackingPath);
             default:
                 throw new InvalidEnumArgumentException();
 }

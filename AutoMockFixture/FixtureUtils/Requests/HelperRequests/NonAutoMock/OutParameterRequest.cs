@@ -1,9 +1,11 @@
 ﻿
+using DotNetPowerExtensions.Reflection.Models;
+
 namespace AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 
 internal record OutParameterRequest : BaseTracker
 {
-    public OutParameterRequest(Type declaringType, MethodInfo methodInfo,
+    public OutParameterRequest(Type declaringType, MethodDetail methodInfo,
         ParameterInfo parameterInfo, Type parameterType, ITracker? tracker) : base(tracker)
     {
         DeclaringType = declaringType;
@@ -13,7 +15,7 @@ internal record OutParameterRequest : BaseTracker
     }
 
     public virtual Type DeclaringType { get; }
-    public virtual MethodInfo MethodInfo { get; }
+    public virtual MethodDetail MethodInfo { get; }
     public virtual ParameterInfo ParameterInfo { get; }
     public virtual Type ParameterType { get; }
 

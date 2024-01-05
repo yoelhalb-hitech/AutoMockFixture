@@ -1,4 +1,6 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
+
 namespace AutoMockFixture.AutoMockUtils;
 
 internal abstract class SetupServiceFactoryBase
@@ -10,24 +12,25 @@ internal abstract class SetupServiceFactoryBase
         this.setupTypeFunc = setupTypeFunc;
     }
 
-    public ISetupService GetMethodSetup(IAutoMock mock, MethodInfo method,
-        ISpecimenContext context, string? customTrackingPath = null, Type? mockType = null, MethodInfo? underlying = null)
+    public ISetupService GetMethodSetup(IAutoMock mock, MethodDetail method, ISpecimenContext context)
     {
-        return GetService(setupTypeFunc(), mock, method, context, customTrackingPath, mockType, underlying);
+        return GetService(setupTypeFunc(), mock, method, context, method.GetTrackingPath());
     }
 
-    public ISetupService GetPropertySetup(IAutoMock mock, MethodInfo method,
-                                            ISpecimenContext context, string? customTrackingPath = null, Type? mockType = null, MethodInfo? underlying = null)
+    public ISetupService GetSingleMethodPropertySetup(IAutoMock mock, PropertyDetail prop, ISpecimenContext context)
     {
         var setupType = setupTypeFunc();
         // For properties we always use same
         if (setupType == MethodSetupTypes.LazyDifferent) setupType = MethodSetupTypes.LazySame;
 
-        return GetService(setupType, mock, method, context, customTrackingPath, mockType, underlying);
+        var method = prop.GetMethod is not null && (!prop.GetMethod.ReflectionInfo.IsPrivate || prop.IsExplicit)
+                                                                                    ? prop.GetMethod : prop.SetMethod;
+
+        return GetService(setupType, mock, method!, context, prop.GetTrackingPath());
     }
 
     public abstract ISetupService GetAutoPropertySetup(Type mockedType, Type propertyType, IAutoMock mock, PropertyInfo prop, object? propValue);
 
     protected abstract ISetupService GetService(MethodSetupTypes setupType,
-        IAutoMock mock, MethodInfo method, ISpecimenContext context, string? customTrackingPath, Type? mockType = null, MethodInfo? underlying = null);
+        IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath);
 }

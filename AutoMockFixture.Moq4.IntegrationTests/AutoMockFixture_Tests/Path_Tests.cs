@@ -99,4 +99,31 @@ internal class Path_Tests
         paths.Should().Contain(".Delegate.Invoke");
         fixture.GetAt(obj, ".Delegate.Invoke").First().Should().Be(obj.Delegate!()!);
     }
+
+    internal interface IExplicit
+    {
+        int Test();
+        void TestWithOut(out object? obj);
+    }
+    internal class Explicit : IExplicit
+    {
+        int IExplicit.Test() { return 0; }
+        void IExplicit.TestWithOut(out object? obj) { obj = null; }
+    }
+
+    [Test]
+    [TestCase(AutoMockType.AutoMock)]
+    public void Test_Explicit(AutoMockType type)
+    {
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.Eager;
+
+        var obj = GetObj<Explicit>(fixture, type);
+        obj.Should().NotBeNull();
+
+        var paths = fixture.GetPaths(obj!);
+       
+        paths.Should().Contain(".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.TestWithOut->obj");
+        paths.Should().Contain(".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.Test");
+    }
 }

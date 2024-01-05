@@ -2,31 +2,29 @@
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
 using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
 
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal abstract class MethodSetupServiceBase : ISetupService
 {
     protected readonly IAutoMock mock;
+    protected readonly MethodDetail method;
     protected readonly Type mockedType;
-    private readonly MethodInfo? underlying;
-    protected readonly MethodInfo method;
     protected readonly ISpecimenContext context;
     protected readonly ITracker? tracker;
-    protected readonly string? customTrackingPath;
+    protected readonly string trackingPath;
     protected readonly bool noMockDependencies;
 
-    public MethodSetupServiceBase(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-                                                                        string? customTrackingPath = null, Type? mockedType = null, MethodInfo? underlying = null)
+    public MethodSetupServiceBase(IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath)
     {
         this.mock = mock;
         this.method = method;
         this.context = context;
-        this.customTrackingPath = customTrackingPath;
+        this.trackingPath = trackingPath;
 
         // Don't do mock.GetMocked().GetType() as it has additional properties etc.
-        this.mockedType = mockedType ?? mock.GetInnerType();
-        this.underlying = underlying;
+        this.mockedType = method.ExplicitInterface ?? mock.GetInnerType();
         this.tracker = mock.Tracker;
 
         this.noMockDependencies = !mock.Tracker?.StartTracker.MockDependencies ?? false;
@@ -35,17 +33,17 @@ internal abstract class MethodSetupServiceBase : ISetupService
     public void Setup()
     {
         var returnType = method.ReturnType;
-        var methodInvocationLambda = new ExpressionGenerator(mockedType, underlying ?? method, context, tracker)
+        var methodInvocationLambda = new ExpressionGenerator(mockedType, method, context, tracker)
                                                     .MakeMethodInvocationLambda();
 
         if (methodInvocationLambda is null) return;
 
-        if (method.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
+        if (method.ReflectionInfo.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
         {
             SetupHelpers.SetupCallbaseMethod(mockedType, returnType, mock, methodInvocationLambda);
             return;
         }
-        else if (method.IsVoid())
+        else if (method.ReflectionInfo.IsVoid())
         {
             SetupHelpers.SetupVoidMethod(mockedType, mock, methodInvocationLambda);
             return;
@@ -95,13 +93,12 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
     protected Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
     protected object lockObject = new object(); // Not static as it is only local to the object
+    
 
     protected abstract object? HandleInvocationFunc(IInvocation invocation);
 
     protected object? GenerateResult(MethodInfo method)
     {
-        var trackingPath = method.GetTrackingPath();
-
         Logger.LogInfo("In generate result - Is generic definition: " + method.IsGenericMethodDefinition);
 
         // Can actually happen if this is an explicit interface implementation while there is another method on the class with the same signature
@@ -113,8 +110,8 @@ internal abstract class MethodSetupServiceBase : ISetupService
         Logger.LogInfo("\t\tResolving return: " + method.ReturnType.FullName);
 
         var request = noMockDependencies
-                             ? new ReturnRequest(mockedType, method, method.ReturnType, tracker)
-                             : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker, customTrackingPath);
+                             ? new ReturnRequest(mockedType, method, method.ReturnType, tracker, trackingPath)
+                             : new AutoMockReturnRequest(mockedType, method, method.ReturnType, tracker, trackingPath);
         Logger.LogInfo("\t\tResolving return for containing path: " + request.Path);
 
         try

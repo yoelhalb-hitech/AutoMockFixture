@@ -1,4 +1,7 @@
 ﻿using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace AutoMockFixture.Extensions;
 
@@ -22,29 +25,36 @@ internal static class MethodInfoExtensions
                                                     && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m)
                                                     && m != method) ?? false;
 
+    internal static ConcurrentDictionary<(MethodInfo, bool), string> methodPathCache = new();
 
-    internal static string GetTrackingPath(this MethodInfo method)
-    {
-        var str = method.Name;
+    internal static string GetTrackingPath(this MethodDetail methodDetail)
+        => methodDetail.ExplicitInterfaceReflectionInfo?.GetTrackingPath(true)
+                    ?? methodDetail.ReflectionInfo.GetTrackingPath(false);
 
-        if (method.IsGenericMethod && !method.IsGenericMethodDefinition)
+    internal static string GetTrackingPath(this MethodInfo method, bool isExplicit)
+        => methodPathCache.GetOrAdd((method, isExplicit), (_) =>
         {
-            // TODO... do we have to be concerned that there will be two different types with the same name?...
-            str += "<" + String.Join(",", method.GetGenericArguments().Select(m => m.Name)) + ">";
-        }
-        else if(method.IsGenericMethodDefinition)
-        {
-            str += $"`{method.GetGenericArguments().Length}";
-        }
+            var str = method.Name;
+            if (isExplicit) str = ":" + method.DeclaringType.FullName + "." + str;
 
-        var hasOverloads = method.HasOverloads();
-        var hasSameCount = hasOverloads && method.HasOverloadSameCount();
+            if (method.IsGenericMethod && !method.IsGenericMethodDefinition)
+            {
+                // TODO... do we have to be concerned that there will be two different types with the same name?...
+                str += "<" + String.Join(",", method.GetGenericArguments().Select(m => m.Name)) + ">";
+            }
+            else if (method.IsGenericMethodDefinition)
+            {
+                str += $"`{method.GetGenericArguments().Length}";
+            }
 
-        return str + hasOverloads switch
-        {
-            false => "",
-            true when !hasSameCount => "(`" + method.GetParameters().Length + ")",
-            _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
-        };
-    }
+            var hasOverloads = method.HasOverloads();
+            var hasSameCount = hasOverloads && method.HasOverloadSameCount();
+
+            return str + hasOverloads switch
+            {
+                false => "",
+                true when !hasSameCount => "(`" + method.GetParameters().Length + ")",
+                _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+            };
+        });
 }

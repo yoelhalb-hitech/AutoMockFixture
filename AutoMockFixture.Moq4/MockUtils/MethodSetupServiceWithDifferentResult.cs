@@ -1,11 +1,12 @@
-﻿
+﻿using DotNetPowerExtensions.Reflection.Models;
+
 namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class MethodSetupServiceWithDifferentResult : MethodLazySetupServiceBase
 {
-    public MethodSetupServiceWithDifferentResult(IAutoMock mock, MethodInfo method, ISpecimenContext context,
-        string? customTrackingPath = null, Type? mockType = null, MethodInfo? underlying = null)
-            : base(mock, method, context, customTrackingPath, mockType, underlying)
+    public MethodSetupServiceWithDifferentResult(IAutoMock mock, MethodDetail method, ISpecimenContext context,
+                                                                                                    string trackingPath)
+            : base(mock, method, context, trackingPath)
     {
     }
 
