@@ -2,6 +2,7 @@
 using AutoMockFixture.Moq4.VerifyInfo;
 using DotNetPowerExtensions.Reflection;
 using Moq.Language.Flow;
+using System.Reflection;
 
 namespace AutoMockFixture.Moq4.AutoMockUtils;
 
@@ -12,11 +13,20 @@ internal class SetupUtils<T> where T : class
         AutoMock = autoMock;
     }
     private readonly BasicExpressionBuilder<T> basicExpression = new();
-    public MethodInfo GetMethod(string methodName) => typeof(T).GetMethod(methodName, BindingFlagsExtensions.AllBindings)
-                                                      ?? typeof(T).GetProperty(methodName, BindingFlagsExtensions.AllBindings)?.GetMethod
-                                                      ?? typeof(T).GetInterfaces().Select(i => i.GetMethod(methodName, BindingFlagsExtensions.AllBindings)).SingleOrDefault()
-                                                      ?? typeof(T).GetInterfaces().Select(i => i.GetProperty(methodName, BindingFlagsExtensions.AllBindings)).SingleOrDefault()?.GetMethod
-                                                      ?? throw new MissingMethodException(methodName);
+    public MethodInfo GetMethod(string methodName)
+    {
+        if (typeof(T).GetAllMethodTrackingPaths().ContainsKey(methodName))
+            return typeof(T).GetAllMethodTrackingPaths()[methodName].ReflectionInfo;
+        
+        if (typeof(T).GetAllPropertyTrackingPaths().ContainsKey(methodName))
+            return typeof(T).GetAllPropertyTrackingPaths()[methodName].ReflectionInfo.GetMethod ?? throw new MissingMethodException(methodName);
+        
+        if (typeof(T).GetAllEventTrackingPaths().ContainsKey(methodName))
+            return typeof(T).GetAllEventTrackingPaths()[methodName].ReflectionInfo.AddMethod;
+
+        throw new MissingMethodException(methodName);
+    } 
+            
     public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
     {
         return SetupActionInternal(expression, times);
@@ -59,6 +69,9 @@ internal class SetupUtils<T> where T : class
 
     public IReturnsResult<T> SetupFuncWithResult<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, TResult result, Times? times = null)
     {
+        if(!method.ReturnType.IsAssignableFrom(typeof(TResult)))
+            throw new ArgumentException($"Provided return value does not match method return type of {method.ReturnType.Name}");
+
         if (method.IsSpecialName) // Assumming property get
         {
             AutoMock.SetupGet(expression).Returns(result);

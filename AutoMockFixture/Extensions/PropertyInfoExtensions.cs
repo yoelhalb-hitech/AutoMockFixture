@@ -1,5 +1,4 @@
-﻿
-using DotNetPowerExtensions.Reflection.Models;
+﻿using DotNetPowerExtensions.Reflection.Models;
 
 namespace AutoMockFixture.Extensions;
 

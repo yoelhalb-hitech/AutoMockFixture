@@ -79,7 +79,23 @@ internal class SetupString_Tests
     {
         var autoMock = new AutoMock<Test>();
 
-        Assert.Throws<AmbiguousMatchException>(() => autoMock.Setup(nameof(Test.TestMethod2), new { }, 50), "Ambiguous match found");
+        Assert.Throws<MissingMethodException>(() => autoMock.Setup(nameof(Test.TestMethod2), new { }, 50));
+    }
+
+    [Test]
+    public void Test_SetupString_SetsUp_WhenTrackingPath()
+    {
+        var autoMock = new AutoMock<Test>();
+
+        Assert.DoesNotThrow(() => autoMock.Setup(nameof(Test.TestMethod2) + "(`1)", new { }, 50));
+    }
+
+    [Test]
+    public void Test_SetupString_Throws_WhenReturnTypeInvalid()
+    {
+        var autoMock = new AutoMock<Test>();
+
+        Assert.DoesNotThrow(() => autoMock.Setup(nameof(Test.TestMethod), new { }, "test"));
     }
 
     [Test]

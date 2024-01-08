@@ -33,9 +33,19 @@ internal class BasicExpressionBuilder<T>
 
         var paramDataFields = typeof(TAnon).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
+        var invalidNames = paramDataFields.Select(pd => pd.Name).Except(methodParams.Select(p => p.Name)).ToList();
+        if(invalidNames.Any())
+        {
+            throw new ArgumentException($"Argument{(invalidNames.Count > 1 ? "s" : "")} `{string.Join("", invalidNames)}` are not valid arguments on the method `{method.Name}`");
+        }
+
         return methodParams.Select((p, i) =>
         {
             var paramFieldData = paramDataFields.FirstOrDefault(p => methodParams[i].Name == p.Name);
+
+            if (paramFieldData is not null && !p.ParameterType.IsAssignableFrom(paramFieldData.PropertyType))
+                throw new Exception($"Argument `{p.Name}` is expected to be of type `{p.ParameterType.Name}`");
+
             return paramFieldData is not null
                 ? (Expression)Expression.Constant(paramFieldData.GetValue(paramData))
                 : Expression.Call(typeof(It), nameof(It.IsAny), new Type[] { types[i] });

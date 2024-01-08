@@ -1,6 +1,7 @@
 ﻿using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
+using System.Collections.Concurrent;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace AutoMockFixture.Extensions;
 
@@ -9,6 +10,41 @@ internal static class TypeExtensions
     internal static IEnumerable<ConstructorInfo> GetPublicAndProtectedConstructors(this Type type)
         => type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(ctor => !ctor.IsPrivate);
+
+    internal static ConcurrentDictionary<Type, Dictionary<string, MethodDetail>> methodPathCache = new();
+    internal static ConcurrentDictionary<Type, Dictionary<string, PropertyDetail>> propPathCache = new();
+    internal static ConcurrentDictionary<Type, Dictionary<string, EventDetail>> evtPathCache = new();
+    internal static Dictionary<string, MethodDetail> GetAllMethodTrackingPaths(this Type type)
+        => methodPathCache.GetOrAdd(type, t =>
+        {
+            var typeDetails = t.GetTypeDetailInfo();
+
+            var methods = typeDetails.MethodDetails
+                            .Union(typeDetails.ExplicitMethodDetails)
+                            .Union(typeDetails.PropertyDetails.SelectMany(pd => new[] { pd.GetMethod, pd.SetMethod }.OfType<MethodDetail>()))
+                            .Union(typeDetails.ExplicitPropertyDetails.SelectMany(pd => new[] { pd.GetMethod, pd.SetMethod }.OfType<MethodDetail>()))
+                            .Union(typeDetails.ExplicitEventDetails.SelectMany(ed => new[] { ed.AddMethod, ed.RemoveMethod }))
+                            .Union(typeDetails.EventDetails.SelectMany(ed => new[] { ed.AddMethod, ed.RemoveMethod }));
+            return methods.ToDictionary(md => md.GetTrackingPath());
+        });
+
+    internal static Dictionary<string, PropertyDetail> GetAllPropertyTrackingPaths(this Type type)
+        => propPathCache.GetOrAdd(type, t =>
+        {
+            var typeDetails = t.GetTypeDetailInfo();
+
+            var props = typeDetails.PropertyDetails.Union(typeDetails.ExplicitPropertyDetails);
+            return props.ToDictionary(pd => pd.GetTrackingPath());
+        });
+
+    internal static Dictionary<string, EventDetail> GetAllEventTrackingPaths(this Type type)
+        => evtPathCache.GetOrAdd(type, t =>
+        {
+            var typeDetails = t.GetTypeDetailInfo();
+
+            var evts = typeDetails.EventDetails.Union(typeDetails.ExplicitEventDetails);
+            return evts.ToDictionary(evt => evt.GetTrackingPath());
+        });
 
     internal static IEnumerable<MethodInfo> GetAllMethods(this Type type, bool includeBasePrivate = false)
     {
