@@ -8,8 +8,11 @@ namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 internal abstract class NonConformingBuilder : ISpecimenBuilder
 {
     public abstract Type[] SupportedTypes { get; }
-    public abstract int Repeat { get; }
-    public abstract object? CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context);
+    public virtual Type[] NotSupportedTypes => new Type[] { };
+
+    public virtual bool NoGenerateInner => false;
+
+    public abstract object? CreateResult(Type requestType, object[] innerResults, IRequestWithType typeRequest, ISpecimenContext context);
     public virtual Type[] GetInnerTypes(Type requestType)
         => requestType.IsArray ? new Type[] { requestType.GetElementType()! } : requestType.GenericTypeArguments;
 
@@ -23,54 +26,40 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         // generic type defintions are not conisdered assignable
         if (!SupportedTypes.Any(t => t.IsAssignableFrom(type)
                     || ((type.IsGenericType || type.IsArray) && t.IsGenericTypeDefinition && genericDefinitions.Contains(t)))) return new NoSpecimen();
+        if(NotSupportedTypes.Any(t => t.IsAssignableFrom(type))) return new NoSpecimen();
 
-        var innerResult = GetRepeatedInnerSpecimens(typeRequest, context);
+        var innerResult = NoGenerateInner ? new object[] { } : GetInnerSpecimens(typeRequest, context);
 
-        if (innerResult is NoSpecimen) return innerResult;
+        if (innerResult.OfType<NoSpecimen>().Any()) return new NoSpecimen();
 
-        var finalResult = CreateResult(type, (object[][])innerResult, typeRequest, context);
+        var finalResult = CreateResult(type, innerResult, typeRequest, context);
         typeRequest.SetResult(finalResult, this);
 
         return finalResult;
     }
 
-    protected virtual object GetRepeatedInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
-    {
-        var resultArray = new object[Repeat][];
-        for (int i = 0; i < Repeat; i++)
-        {
-            var inner = GetInnerSpecimens(originalRequest, i, context);
-            if (inner is NoSpecimen) return inner;
-
-            resultArray[i] = (object[])inner;
-        }
-
-        return resultArray;
-    }
-
-    protected virtual object GetInnerSpecimens(IRequestWithType originalRequest, int index, ISpecimenContext context)
+    protected virtual object[] GetInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
     {
         var innerTypes = originalRequest.Request.GetInnerTypes();
 
-        return BuildInnerSpecimens(originalRequest, innerTypes, index, context);
+        return BuildInnerSpecimens(originalRequest, innerTypes, context);
     }
 
-    protected virtual object BuildInnerSpecimens(IRequestWithType originalRequest, Type[] innerTypes,
-                        int index, ISpecimenContext context)
+    protected virtual object[] BuildInnerSpecimens(IRequestWithType originalRequest, Type[] innerTypes, ISpecimenContext context)
     {
         var result = new List<object>();
 
         var typeIndex = 0; // To keep track of tuple index
         foreach (var type in innerTypes)
         {
-            var newRequest = GetInnerRequest(type, originalRequest, index, typeIndex);
+            var newRequest = GetInnerRequest(type, originalRequest, typeIndex);
 
             var specimen = context.Resolve(newRequest);
 
             if (specimen is NoSpecimen || specimen is OmitSpecimen)
             {
                 originalRequest.SetResult(specimen, this);
-                return new NoSpecimen(); // Let the system handle it
+                return new[] { new NoSpecimen() }; // Let the system handle it
             }
 
             result.Add(specimen);
@@ -81,5 +70,5 @@ internal abstract class NonConformingBuilder : ISpecimenBuilder
         return result.ToArray();
     }
 
-    protected abstract InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex);
+    protected abstract InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int argIndex);
 }

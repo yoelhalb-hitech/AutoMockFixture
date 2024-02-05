@@ -1,9 +1,7 @@
-﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.FixtureUtils.Requests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
 using DotNetPowerExtensions.Reflection;
-using System.Collections;
 
 namespace AutoMockFixture.FixtureUtils.Builders.SpecialBuilders;
 
@@ -17,163 +15,48 @@ internal class EnumerableBuilder : NonConformingBuilder
 #endif
     };
 
-    public EnumerableBuilder(IAutoMockHelpers autoMockHelpers)
+    public override Type[] NotSupportedTypes => new[] { typeof(string) };
+
+    public EnumerableBuilder(IAutoMockHelpers autoMockHelpers, int repeat)
     {
         AutoMockHelpers = autoMockHelpers ?? throw new ArgumentNullException(nameof(autoMockHelpers));
+        this.Repeat = repeat;
     }
 
     public IAutoMockHelpers AutoMockHelpers { get; }
 
-    public override int Repeat => 3;
+    public int Repeat { get; }
 
-    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
-        => new ListItemRequest(type, originalRequest, index);
+    public override bool NoGenerateInner => true;
 
-    protected override object GetRepeatedInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
+    public override object? CreateResult(Type requestType, object[] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
     {
-        if (originalRequest.Request == typeof(string)) return new NoSpecimen();
+        var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings).Where(c => c.IsConstructor && !c.IsStatic);
 
-        return base.GetRepeatedInnerSpecimens(originalRequest, context);
-    }
-
-    public override object? CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
-    {
-        var count = innerResults.Length;
-        var genericType = GetInnerTypes(requestType).First();
-
-        var data = innerResults.Select(x => x.First()); //Assuming that it is only one item per line
-        var casted = (IEnumerable?)(typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))?
-            .MakeGenericMethod(genericType)?
-            .Invoke(null, new object[] { data }));
-
-        var typedData = casted ?? new object[] { };
-        if (casted is null) count = 0;
-
-        var isNotEnumerable = requestType.GetInterfaces().All(x => x.IsGenericType && x.GetGenericTypeDefinition() != typeof(IEnumerable<>));
-
-        var typeToMatch =
-#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
-            isNotEnumerable ? typeof(IAsyncEnumerable<>).MakeGenericType(genericType) :
-#endif
-            typedData.GetType();
-        Func<Type, bool> isMatch = t => t.IsAssignableFrom(typeToMatch);
-
-#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
-        if (isNotEnumerable && typeToMatch == requestType)
+        if(requestType.IsAbstract) // Even if he requested a mock we won't give it unless it's abstract
         {
-            return GetType()
-                .GetMethod(nameof(CreateAsyncEnumerable), BindingFlags.Instance | BindingFlags.NonPublic)
-                .MakeGenericMethod(genericType)
-                .Invoke(this, new object[] { typedData });
-        }
-#endif
-
-        if (isNotEnumerable && isMatch(requestType)) return typedData;
-
-        if (requestType.IsGenericType && requestType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            return typedData;
-
-        if (requestType.IsArray) return typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))?
-            .MakeGenericMethod(genericType)?
-            .Invoke(null, new object[] { typedData });
-
-        if (new[] {typeof(List<>), typeof(IList<>)}.Contains(requestType.GetGenericTypeDefinition()))
-            return typeof(Enumerable).GetMethod(nameof(Enumerable.ToList))?
-            .MakeGenericMethod(genericType)?
-            .Invoke(null, new object[] { typedData });
-
-        // TODO...probably better handle direct Dictionary ReadOnlyCollection HashSet and their interfaces etc, and everything in system.collections.generic.
-
-        return CreateType(requestType, genericType, typedData, isMatch, count, typeRequest, context) ?? new NoSpecimen();
-    }
-
-    private object? CreateType(Type requestType, Type genericType,
-                                    IEnumerable typedData, Func<Type, bool> isMatch, int count, IRequestWithType typeRequest, ISpecimenContext context)
-    {
-        IAutoMock? mock = null;
-        object? mocked = null;
-        if (requestType.IsAbstract || typeRequest is AutoMockRequest)
-        {
-            var directRequest =  new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
+            var directRequest = new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
             {
-                MockShouldCallbase = false,
+                MockShouldCallbase = true, // Sorry, but we will use the base methods when available, since officially we don't mock at all the special types
             };
 
             var specimen = context.Resolve(directRequest);
-            if (specimen is null || specimen is NoSpecimen || specimen is OmitSpecimen)
-            {
-                typeRequest.SetResult(specimen, this);
-                return specimen;
-            }
+            if (specimen is null || specimen is NoSpecimen || specimen is OmitSpecimen) return new NoSpecimen();
 
-            mock = AutoMockHelpers.GetFromObj(specimen)!;
-            mocked = mock.GetMocked();
+            return specimen is IAutoMock mock ? mock.GetMocked() : specimen;
         }
 
-        // TODO... interfaces
-        var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings).Where(c => c.IsConstructor && !c.IsStatic);
-        var singleCtors = ctors.Where(x => x.GetParameters().Length == 1);
-        var enumerableCtor = singleCtors.FirstOrDefault(x => isMatch(x.GetParameters()[0].ParameterType));
-        if (enumerableCtor is not null) return enumerableCtor.Invoke(new object[] { typedData });
+        var hasCountCtor = ctors.Any(x => x.GetParameters().Length == 1 && x.GetParameters().First().ParameterType == typeof(int));
+        if(hasCountCtor) return Activator.CreateInstance(requestType, Repeat);
 
-        var emptyCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 0);
-        var intCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1
-                                                && x.GetParameters().First().ParameterType ==  typeof(int));
-        var methods = requestType.GetAllMethods();
-        Func<object?> ctorInvoke = () => (mocked is not null
-                                                        ? emptyCtor?.Invoke(mocked, new object[] { }) ?? intCtor?.Invoke(mocked, new object[] { count })
-                                                        : emptyCtor?.Invoke(new object[] { }) ?? intCtor?.Invoke(new object[] { count })) // If mocked is null we need to call this overload
-                                        ?? mocked; // The overload with an object retruns null so return mocked
-        if (emptyCtor is not null || intCtor is not null)
-        {
-            var enumerableMethod = methods.FirstOrDefault(m => m.GetParameters().Length == 1
-                        && isMatch(m.GetParameters()[0].ParameterType));
-            if (enumerableMethod is not null)
-            {
-                var obj = ctorInvoke(); // Since if mocked i
-                enumerableMethod.Invoke(enumerableMethod.IsStatic ? null : obj, new object[] { typedData });
+        var hasDefaultCtor = ctors.Any(x => !x.GetParameters().Any());
+        if(hasDefaultCtor) return Activator.CreateInstance(requestType);
 
-                if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
-                return obj;
-            }
-
-            var singleItemMethod = methods.FirstOrDefault(m => m.GetParameters().Length == 1
-                        && m.GetParameters()[0].ParameterType == genericType);
-            if (singleItemMethod is not null)
-            {
-                var obj = ctorInvoke();
-                foreach (var item in typedData)
-                {
-                    singleItemMethod.Invoke(singleItemMethod.IsStatic ? null : obj, new object[] { item });
-                }
-
-                if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
-                return obj;
-            }
-        }
-        // TODO... we can go further and look for a ctor or a method that can take another enumerable descendent as parameter and
-        //      if that one has a method that can accept the data, and we can go further recursviely
-        // var typeToBaseOf = isNotEnumerable ? typeToMatch : typeof(IEnumerable<>).MakeGenericType(genericType);
-        //var otherCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == 1 && typeToBaseOf.IsAssignableFrom(x.GetParameters()[0].ParameterType));
-        //if (otherCtor is not null)
-        //{
-        //    var obj = mocked is not null ? otherCtor.Invoke(mocked, new object[] { typedData }) : otherCtor.Invoke(new object[] { typedData });
-        //    obj = obj ?? mocked;
-        //    if (mock is not null) ((ISetCallBase)mock).ForceSetCallbase(true);
-        //    return obj;
-        //}
-
-        return null;
+        return new NoSpecimen();
     }
 
-#if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
-    private async IAsyncEnumerable<T> CreateAsyncEnumerable<T>(IEnumerable<T> enumerable)
+    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int argIndex)
     {
-        await Task.CompletedTask.ConfigureAwait(false);
-        foreach (var item in enumerable)
-        {
-            yield return item;
-        }
+        throw new NotImplementedException("Should not arrive here");
     }
-#endif
 }

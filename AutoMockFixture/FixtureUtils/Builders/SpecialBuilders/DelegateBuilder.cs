@@ -11,20 +11,18 @@ internal class DelegateBuilder : NonConformingBuilder
         typeof(System.MulticastDelegate),
     };
 
-    public override int Repeat => 1;
-
-    protected override object GetInnerSpecimens(IRequestWithType originalRequest, int index, ISpecimenContext context)
+    protected override object[] GetInnerSpecimens(IRequestWithType originalRequest, ISpecimenContext context)
     {
-        if (originalRequest.Request.IsGenericType) return new NoSpecimen();
+        if (originalRequest.Request.IsGenericType) return new[] { new NoSpecimen() };
 
-        return BuildInnerSpecimens(originalRequest, new[] { typeof(Action) }, index, context);
+        return BuildInnerSpecimens(originalRequest, new[] { typeof(Action) }, context);
     }
 
-    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
+    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int argIndex)
         => new InnerRequest(type, originalRequest);
 
-    public override object CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
+    public override object CreateResult(Type requestType, object[] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
     {
-        return innerResults.First().First();
+        return innerResults.First();
     }
 }

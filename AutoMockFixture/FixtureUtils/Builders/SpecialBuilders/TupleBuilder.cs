@@ -18,14 +18,12 @@ internal class TupleBuilder : NonConformingBuilder
         typeof(KeyValuePair<,>),
     };
 
-    public override int Repeat => 1;
-
-    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int index, int argIndex)
+    protected override InnerRequest GetInnerRequest(Type type, IRequestWithType originalRequest, int argIndex)
          => new TupleItemRequest(type, originalRequest, argIndex);
 
-    public override object? CreateResult(Type requestType, object[][] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
+    public override object? CreateResult(Type requestType, object[] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
     {
-        return requestType.GetConstructor(requestType.GenericTypeArguments)?
-                .Invoke(innerResults.First());
+        return requestType.GetConstructor(requestType.GenericTypeArguments)? // Will also filter out static ctors as they don't have arguments
+                .Invoke(innerResults);
     }
 }
