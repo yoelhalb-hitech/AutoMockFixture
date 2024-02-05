@@ -30,7 +30,6 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
     public AutoDataBaseAttribute(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes methodSetupType)
         : this(noConfigureMembers, generateDelegates)
     {
-
         this.methodSetupType = methodSetupType;
     }
 
@@ -38,9 +37,16 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {
-        // We need a fixture per method and per exectution, otherwise we can run in problems...
-        var builder = new AutoMockData(GetFixture);
-        return builder.BuildFrom(method, suite);
+        try
+        {
+            // We need a fixture per method and per exectution, otherwise we can run in problems...
+            var builder = new AutoMockData(GetFixture);
+            return builder.BuildFrom(method, suite);
+        }
+        catch
+        {
+            return new TestMethod[] { }; // This building part happens inside the test harness and an exception here will cause all tests in the entire assembly to be ignored
+        }
     }
 
     protected virtual AutoMockFixtureBase GetFixture()
