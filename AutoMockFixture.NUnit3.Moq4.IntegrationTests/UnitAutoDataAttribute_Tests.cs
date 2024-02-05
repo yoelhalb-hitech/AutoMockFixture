@@ -1,5 +1,7 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.Moq4.AutoMockUtils;
+using NUnit.Framework.Internal;
+using AutoMockFixture.NUnit3;
 
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
@@ -113,5 +115,22 @@ internal class AutoDataUnitAttribute_Tests
         {
             if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeFalse();
         }
+    }
+
+    [Test]
+    public void Test_UnitAutoDataAttribute_DoesNotThrow()
+    {
+        // If this doesn't throw then there is no point in the test...
+        Assert.Catch(() => new AutoMockData(() => new UnitFixture()).BuildFrom(null!, null).ToArray()); // Will only throw on enumeration
+
+        var attribute = new UnitAutoDataAttribute();
+
+        IEnumerable<TestMethod>? result = null;
+        Assert.DoesNotThrow(() => result = attribute.BuildFrom(null!, null));
+
+        Assert.DoesNotThrow(() => result!.ToArray());
+
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
     }
 }

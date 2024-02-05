@@ -6,6 +6,7 @@ using NUnit.Framework.Internal.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace AutoMockFixture.NUnit3.Moq4;
 
@@ -41,7 +42,7 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
         {
             // We need a fixture per method and per exectution, otherwise we can run in problems...
             var builder = new AutoMockData(GetFixture);
-            return builder.BuildFrom(method, suite);
+            return builder.BuildFrom(method, suite).ToArray(); // Enumerate here to force throw the error if there is
         }
         catch
         {

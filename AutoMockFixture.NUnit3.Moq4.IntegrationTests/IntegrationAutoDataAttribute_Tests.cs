@@ -1,4 +1,6 @@
 ﻿
+using NUnit.Framework.Internal;
+
 namespace AutoMockFixture.NUnit3.Moq4.IntegrationTests;
 
 internal class AutoDataIntegrationAttribute_Tests
@@ -112,5 +114,22 @@ internal class AutoDataIntegrationAttribute_Tests
         {
             if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeTrue();
         }
+    }
+
+    [Test]
+    public void Test_IntegrationAutoDataAttribute_DoesNotThrow()
+    {
+        // If this doesn't throw then there is no point in the test...
+        Assert.Catch(() => new AutoMockData(() => new IntegrationFixture()).BuildFrom(null!, null).ToArray()); // Will only throw on enumeration
+
+        var attribute = new IntegrationAutoDataAttribute();
+
+        IEnumerable<TestMethod>? result = null;
+        Assert.DoesNotThrow(() => result = attribute.BuildFrom(null!, null));
+
+        Assert.DoesNotThrow(() => result!.ToArray());
+
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
     }
 }
