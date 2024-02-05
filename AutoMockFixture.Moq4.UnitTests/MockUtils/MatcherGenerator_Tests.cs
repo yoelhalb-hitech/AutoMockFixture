@@ -45,4 +45,23 @@ public class MatcherGenerator_Tests
     [Test]
     public void Test_GetGenericMatcher_Works_WithClassWithMultipleInterfaces()
             => Executer(nameof(TestClass.TestClassWithMultipleInterfaces));
+
+    class TestPartialConstructed
+    {
+        public void Test<T>() { }
+    }
+    [Test]
+    public void Test_Works_WithPartialConstructedClass()
+    {
+        var obj = new TestPartialConstructed();
+        var method = typeof(TestPartialConstructed).GetMethod(nameof(TestPartialConstructed.Test));
+
+        var type = typeof(IEnumerable<>).MakeGenericType(method!.GetGenericArguments().First());
+        var matcher = MatcherGenerator.GetGenericMatcher(type);
+
+        var geneticMethod = method.MakeGenericMethod(matcher);
+
+        matcher.Should().NotBeNull();
+        Assert.DoesNotThrow(() => geneticMethod.Invoke(obj, new object[] { }));
+    }
 }

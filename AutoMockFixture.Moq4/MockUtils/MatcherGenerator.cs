@@ -1,4 +1,6 @@
 ﻿
+using Moq;
+
 namespace AutoMockFixture.Moq4.MockUtils;
 
 public class MatcherGenerator
@@ -13,7 +15,7 @@ public class MatcherGenerator
     /// <returns>A <see cref="Type"/> instance of the correct matcher</returns>
     public static Type GetGenericMatcher(ParameterInfo parameterInfo)
     {
-        return GetMatcherForParameterInternal(parameterInfo.ParameterType).Item1;
+        return GetMatcherForParameterInternal(parameterInfo.ParameterType).type;
     }
 
     /// <summary>
@@ -23,6 +25,8 @@ public class MatcherGenerator
     /// <returns>A <see cref="Type"/> instance of the correct matcher</returns>
     public static Type GetGenericMatcher(Type genericType)
     {
+        if (!genericType.IsGenericParameter) return GetMatcherForParameterInternal(genericType).type;
+
         var isValueType = (genericType.GenericParameterAttributes &
         GenericParameterAttributes.SpecialConstraintMask & GenericParameterAttributes.NotNullableValueTypeConstraint) != 0;
         var constraints = genericType.GetGenericParameterConstraints();
@@ -37,30 +41,31 @@ public class MatcherGenerator
         }
     }
 
-    private static Tuple<Type, bool> GetMatcherForParameterInternal(Type parameterType)
+    private static(Type type, bool constructed) GetMatcherForParameterInternal(Type parameterType)
     {
         if (parameterType.IsArray)
         {
             var recurse = GetMatcherForParameterInternal(parameterType.GetElementType()!);
-            if (recurse.Item2) return Tuple.Create(recurse.Item1.MakeArrayType(), true);
-            return Tuple.Create(parameterType, false);
+            if (recurse.constructed) return (recurse.Item1.MakeArrayType(), true);
+            return (parameterType, false);
         }
 
         if (parameterType.IsGenericType)
         {
-            var parameters = parameterType.GenericTypeArguments;
+            var parameters = parameterType.GetGenericArguments(); // `GetGenericArguments()` returns the actual types if specified, otherwise the stubs
             var recurses = parameters.Select(p => GetMatcherForParameterInternal(p)).ToList();
-            if (recurses.All(r => !r.Item2)) return Tuple.Create(parameterType, false);
+            if (!recurses.Any(r => r.constructed)) return (parameterType, false);
 
-            return Tuple.Create(parameterType.MakeGenericType(recurses.Select(r => r.Item1).ToArray()), true);
+            return (parameterType.GetGenericTypeDefinition()
+                                    .MakeGenericType(recurses.Select(r => r.Item1).ToArray()), true);
         }
 
         if (parameterType.IsGenericParameter)
         {
-            return Tuple.Create(GetGenericMatcher(parameterType), true);
+            return (GetGenericMatcher(parameterType), true);
         }
 
-        return Tuple.Create(parameterType, false);
+        return (parameterType, false);
     }
 
     private static Type GetOrAdd(IEnumerable<Type> types)
