@@ -18,7 +18,6 @@ internal record AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IF
     }
 
     public required virtual Type Request { get; init; }
-    public virtual bool NoConfigureMemebrs { get; set; }
 
     public override string InstancePath => "";
 

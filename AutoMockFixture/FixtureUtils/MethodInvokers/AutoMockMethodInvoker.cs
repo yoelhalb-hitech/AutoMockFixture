@@ -26,7 +26,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         if (request is not AutoMockDirectRequest mockRequest) return new NoSpecimen();
 
-        Logger.LogInfo("In autmock ctor arg - type is " + mockRequest.Request.FullName);
+        Logger.LogInfo("In automock ctor arg - type is " + mockRequest.Request.FullName);
 
         // Not doing this in a special builder, to ensure that no matter what happens we do it on recursion
         if (context is RecursionContext recursionContext && recursionContext.BuilderCache.ContainsKey(mockRequest.Request))

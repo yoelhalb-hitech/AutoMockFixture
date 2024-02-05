@@ -10,12 +10,11 @@ internal class AutoMockDirectRequest_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var autoMockRequest = new AutoMockDirectRequest(typeof(string), fixture) { MockShouldCallbase = true, NoConfigureMemebrs = true };
+        var autoMockRequest = new AutoMockDirectRequest(typeof(string), fixture) { MockShouldCallbase = true };
         var newRequest = autoMockRequest with { Request = typeof(int) };
 
         newRequest.Should().NotBeNull();
         newRequest.MockShouldCallbase.Should().BeTrue();
-        newRequest.NoConfigureMemebrs.Should().BeTrue();
 
         autoMockRequest.Request.Should().Be(typeof(string));
         newRequest.Request.Should().Be(typeof(int));

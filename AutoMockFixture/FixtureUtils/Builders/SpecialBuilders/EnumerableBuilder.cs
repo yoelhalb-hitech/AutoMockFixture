@@ -97,7 +97,6 @@ internal class EnumerableBuilder : NonConformingBuilder
             var directRequest =  new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
             {
                 MockShouldCallbase = false,
-                NoConfigureMemebrs = true,
             };
 
             var specimen = context.Resolve(directRequest);
