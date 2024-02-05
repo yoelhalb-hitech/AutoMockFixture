@@ -17,16 +17,37 @@ internal class SetupUtils<T> where T : class
     {
         if (typeof(T).GetAllMethodTrackingPaths().ContainsKey(methodName))
             return typeof(T).GetAllMethodTrackingPaths()[methodName].ReflectionInfo;
-        
+
         if (typeof(T).GetAllPropertyTrackingPaths().ContainsKey(methodName))
             return typeof(T).GetAllPropertyTrackingPaths()[methodName].ReflectionInfo.GetMethod ?? throw new MissingMethodException(methodName);
-        
+
         if (typeof(T).GetAllEventTrackingPaths().ContainsKey(methodName))
             return typeof(T).GetAllEventTrackingPaths()[methodName].ReflectionInfo.AddMethod;
 
+        var methodWithPrefix = "." + methodName;
+        var possibleMatchingMethods = typeof(T).GetAllMethodTrackingPaths().Where(m => m.Key.EndsWith(methodWithPrefix));
+
+        if (possibleMatchingMethods.Any() && !possibleMatchingMethods.Skip(1).Any())
+                return possibleMatchingMethods.First().Value.ReflectionInfo;
+        else if(possibleMatchingMethods.Any()) throw new AmbiguousMatchException($"Found multiple candidates `{string.Join(",",possibleMatchingMethods.Select(m => m.Key))}`");
+
+        var possibleMatchingProperties = typeof(T).GetAllPropertyTrackingPaths().Where(m => m.Key.EndsWith(methodWithPrefix));
+
+        if (possibleMatchingProperties.Any() && !possibleMatchingProperties.Skip(1).Any()
+                                    && possibleMatchingProperties.First().Value.ReflectionInfo.GetMethod is not null)
+                return possibleMatchingProperties.First().Value.ReflectionInfo.GetMethod;
+        else if(possibleMatchingProperties.Any()) throw new AmbiguousMatchException($"Found multiple candidates `{string.Join(",", possibleMatchingProperties.Select(m => m.Key))}`");
+
+        var possibleMatchingEvents = typeof(T).GetAllEventTrackingPaths().Where(m => m.Key.EndsWith(methodWithPrefix));
+
+        if (possibleMatchingEvents.Any() && !possibleMatchingEvents.Skip(1).Any())
+                return possibleMatchingEvents.First().Value.ReflectionInfo.AddMethod;
+        else if (possibleMatchingEvents.Any()) throw new AmbiguousMatchException($"Found multiple candidates `{string.Join(",", possibleMatchingEvents.Select(m => m.Key))}`");
+
+
         throw new MissingMethodException(methodName);
-    } 
-            
+    }
+
     public ISetup<T> SetupInternal(LambdaExpression originalExpression, Expression<Action<T>> expression, Times? times = null)
     {
         return SetupActionInternal(expression, times);
@@ -113,6 +134,9 @@ internal class SetupUtils<T> where T : class
     public IReturnsResult<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times? times) where TAnon : class
     {
         method = GetCorrectMethod(method);
+
+        if (!method.ReturnType.IsAssignableFrom(typeof(TResult)))
+            throw new ArgumentException($"Provided return value does not match method return type of {method.ReturnType.Name}");
 
         var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
         var expr = basicExpression.GetExpression(method, paramData, paramTypes);

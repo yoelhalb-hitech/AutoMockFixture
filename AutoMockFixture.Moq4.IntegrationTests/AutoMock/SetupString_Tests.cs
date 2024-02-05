@@ -70,8 +70,8 @@ internal class SetupString_Tests
     {
         var autoMock = new AutoMock<Test2>();
 
-        Assert.Throws<InvalidOperationException>(() => autoMock.Setup(nameof(ITest.TestITestProp), new { }, 50), "Sequence contains more than one element");
-        Assert.Throws<InvalidOperationException>(() => autoMock.Setup(nameof(ITest.TestITestMethod), new { }, 100), "Sequence contains more than one element");
+        Assert.Throws<AmbiguousMatchException>(() => autoMock.Setup(nameof(ITest.TestITestProp), new { }, 50), "Found multiple candidates `:AutoMockFixture.Moq4.IntegrationTests.AutoMock.SetupString_Tests+ITest.TestITestProp,:AutoMockFixture.Moq4.IntegrationTests.AutoMock.SetupString_Tests+ITest2.TestITestProp`");
+        Assert.Throws<AmbiguousMatchException>(() => autoMock.Setup(nameof(ITest.TestITestMethod), new { }, 100), "Found multiple candidates `:AutoMockFixture.Moq4.IntegrationTests.AutoMock.SetupString_Tests+ITest.TestITestMethod,:AutoMockFixture.Moq4.IntegrationTests.AutoMock.SetupString_Tests+ITest2.TestITestMethod`");
     }
 
     [Test]
@@ -95,7 +95,7 @@ internal class SetupString_Tests
     {
         var autoMock = new AutoMock<Test>();
 
-        Assert.DoesNotThrow(() => autoMock.Setup(nameof(Test.TestMethod), new { }, "test"));
+        Assert.Throws<ArgumentException>(() => autoMock.Setup(nameof(Test.TestMethod), new { }, "test"), "Provided return value does not match method return type of Int32");
     }
 
     [Test]
