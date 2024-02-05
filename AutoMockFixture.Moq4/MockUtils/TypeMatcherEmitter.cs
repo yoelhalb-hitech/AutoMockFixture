@@ -11,7 +11,7 @@ namespace AutoMockFixture.Moq4.MockUtils;
 internal class TypeMatcherEmitter
 {
     private static ConstructorInfo ignoreAccessCtor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new Type[] { typeof(string) })!;
-    private static ConstructorInfo typeMatcherCtor = typeof(TypeMatcherAttribute).GetConstructor(new Type[] { })!;
+    private static ConstructorInfo typeMatcherCtor = typeof(TypeMatcherAttribute).GetConstructor(new Type[] { })!; // Will also filter out static ctors as they are not public
 
     private MethodInfo[] methods;
     private Type[] interfaces;

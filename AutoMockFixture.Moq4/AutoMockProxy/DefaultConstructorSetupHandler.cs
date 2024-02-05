@@ -9,9 +9,9 @@ internal class DefaultConstructorSetupHandler : IProxyTypeSetupHandler
     {
         var publicInstanceBinding = BindingFlags.Instance | BindingFlags.Public;
 
-        var originalDefaultCtor = originalType.GetConstructor(publicInstanceBinding, null, new Type[] { }, null);
+        var originalDefaultCtor = originalType.GetConstructor(publicInstanceBinding, null, new Type[] { }, null); // Will also filter out static ctors as they are not public
 
-        var originalPublicInstanceCtors = originalType.GetConstructors(publicInstanceBinding);
+        var originalPublicInstanceCtors = originalType.GetConstructors(publicInstanceBinding); // Will also filter out static ctors as they are not public
 
         if (originalDefaultCtor is not null) originalPublicInstanceCtors = originalPublicInstanceCtors
                                                                                         .Except(new ConstructorInfo[] { originalDefaultCtor })

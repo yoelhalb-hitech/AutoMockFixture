@@ -111,7 +111,7 @@ internal class EnumerableBuilder : NonConformingBuilder
         }
 
         // TODO... interfaces
-        var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings);
+        var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings).Where(c => c.IsConstructor && !c.IsStatic);
         var singleCtors = ctors.Where(x => x.GetParameters().Length == 1);
         var enumerableCtor = singleCtors.FirstOrDefault(x => isMatch(x.GetParameters()[0].ParameterType));
         if (enumerableCtor is not null) return enumerableCtor.Invoke(new object[] { typedData });

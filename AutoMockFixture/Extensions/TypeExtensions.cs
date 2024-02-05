@@ -9,7 +9,7 @@ internal static class TypeExtensions
 {
     internal static IEnumerable<ConstructorInfo> GetPublicAndProtectedConstructors(this Type type)
         => type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-            .Where(ctor => !ctor.IsPrivate);
+            .Where(ctor => ctor.IsConstructor && !ctor.IsStatic && !ctor.IsPrivate); // Static ctors are returrned by `GetConstructors` but are `IsConstructor` == false and `IsStatic` == true
 
     internal static ConcurrentDictionary<Type, Dictionary<string, MethodDetail>> methodPathCache = new();
     internal static ConcurrentDictionary<Type, Dictionary<string, PropertyDetail>> propPathCache = new();
