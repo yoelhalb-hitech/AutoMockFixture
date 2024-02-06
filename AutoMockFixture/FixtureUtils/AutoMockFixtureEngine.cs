@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 using DotNetPowerExtensions.Reflection;
 using static AutoMockFixture.FixtureUtils.Customizations.SubclassTransformCustomization;
 
@@ -39,10 +40,16 @@ internal class AutoMockFixtureEngine
     }
 
     public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => Cast<T>(CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl));
+    {
+        EnsureValid(typeof(T), autoMockTypeControl);
+        return Cast<T>(CreateWithAutoMockDependencies(typeof(T), callBase, autoMockTypeControl));
+    }
 
     public async Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => await CastAsync<T>(CreateWithAutoMockDependenciesAsync(typeof(T), callBase, autoMockTypeControl)).ConfigureAwait(false);
+    {
+        EnsureValid(typeof(T), autoMockTypeControl);
+        return await CastAsync<T>(CreateWithAutoMockDependenciesAsync(typeof(T), callBase, autoMockTypeControl)).ConfigureAwait(false);
+    }
 
     #endregion
 
@@ -55,10 +62,16 @@ internal class AutoMockFixtureEngine
             => await ExecuteAsync(new NonAutoMockRequest(t, fixture) { MockShouldCallbase = callbase }, autoMockTypeControl).ConfigureAwait(false);
 
     public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-            => Cast<T>(CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl));
+    {
+        EnsureValid(typeof(T), autoMockTypeControl);
+        return Cast<T>(CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl));
+    }
 
     public async Task<T?> CreateNonAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => await CastAsync<T>(CreateNonAutoMockAsync(typeof(T), callbase, autoMockTypeControl)).ConfigureAwait(false);
+    {
+        EnsureValid(typeof(T), autoMockTypeControl);
+        return await CastAsync<T>(CreateNonAutoMockAsync(typeof(T), callbase, autoMockTypeControl)).ConfigureAwait(false);
+    }
 
     #endregion
 
@@ -100,14 +113,40 @@ internal class AutoMockFixtureEngine
     }
 
     public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-            => Cast<T>(CreateAutoMock(typeof(T), callBase, autoMockTypeControl));
+    {
+        EnsureValid(typeof(T), autoMockTypeControl);
+        return Cast<T>(CreateAutoMock(typeof(T), callBase, autoMockTypeControl));
+    }
 
     public async Task<T?> CreateAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-        => await CastAsync<T>(CreateAutoMockAsync(typeof(T), callBase, autoMockTypeControl)).ConfigureAwait(false);
+    {
+        EnsureValid(typeof(T), autoMockTypeControl);
+        return await CastAsync<T>(CreateAutoMockAsync(typeof(T), callBase, autoMockTypeControl)).ConfigureAwait(false);
+    }
 
     #endregion
 
     #region Utils
+
+    private void EnsureValid(Type type, AutoMockTypeControl? autoMockTypeControl = null)
+    {
+        if (!fixture.AutoMockHelpers.IsAutoMock(type)) return; // TODO... do we need to handle Mock?
+
+        // If he asks for an AutoMock but we won't be able to give it then we won't be able to cast even if we create something so just stop it here
+
+        var innerType = fixture.AutoMockHelpers.GetMockedType(type)!;
+
+        var specification = new AutoMockableSpecification(fixture.AutoMockHelpers);
+
+        if (!specification.IsSatisfiedBy(innerType))
+            throw new InvalidOperationException(
+                $"The request for AutoMock on type `{innerType.Name}` cannot be fulfiled as it is not Mockable by the rules of AutoMock");
+
+        if (autoMockTypeControl?.NeverAutoMockTypes.Contains(innerType) == true || fixture.AutoMockTypeControl.NeverAutoMockTypes.Contains(innerType) == true)
+            throw new InvalidOperationException(
+                $"The request for AutoMock on type `{innerType.Name}` cannot be fulfiled as it is not Mockable by the rules of the provided `{nameof(AutoMockTypeControl)}`");
+
+    }
 
     private T? Cast<T>(object? result)
     {
