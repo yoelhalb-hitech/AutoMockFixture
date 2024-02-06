@@ -21,20 +21,20 @@ public abstract class IntegrationFixtureBase : AutoMockFixtureBase
     }
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override T? Create<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
+    public override T? Create<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
         => CreateNonAutoMock<T>(false, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override Task<T?> CreateAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
+    public override Task<T?> CreateAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
         => CreateNonAutoMockAsync<T>(false, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => CreateNonAutoMock(t, callbase, autoMockTypeControl);
+    public override object? Create(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => CreateNonAutoMock(t, callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override Task<object?> CreateAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => CreateNonAutoMockAsync(t, callbase, autoMockTypeControl);
+    public override Task<object?> CreateAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => CreateNonAutoMockAsync(t, callBase, autoMockTypeControl);
 
-    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new NonAutoMockRequest(type, this) { MockShouldCallbase = callBase };
+    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new NonAutoMockRequest(type, this) { MockShouldCallBase = callBase };
 }

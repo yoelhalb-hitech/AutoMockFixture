@@ -145,7 +145,7 @@ internal class SetupUtils<T> where T : class
     }
 
     // Doing this way it because of issues with overload resolution
-    public void SetupInternal<TAnon>(MethodInfo method, TAnon paramData, Times? times, bool callbase = false) where TAnon : class
+    public void SetupInternal<TAnon>(MethodInfo method, TAnon paramData, Times? times, bool callBase = false) where TAnon : class
     {
         method = GetCorrectMethod(method);
 
@@ -155,12 +155,12 @@ internal class SetupUtils<T> where T : class
         if (method.ReturnType == typeof(void))
         {
             var setup = SetupActionInternal((Expression<Action<T>>)expr, times);
-            if (callbase) setup.CallBase();
+            if (callBase) setup.CallBase();
         }
         else
         {
             var setup = GetSetupFuncInternal(method.ReturnType)!.Invoke(this, new object?[] { method, expr, times })!;
-            if (callbase) setup.GetType().GetMethod(nameof(global::Moq.Language.ICallBase.CallBase))!.Invoke(setup, new object[] { });
+            if (callBase) setup.GetType().GetMethod(nameof(global::Moq.Language.ICallBase.CallBase))!.Invoke(setup, new object[] { });
         }
     }
 }

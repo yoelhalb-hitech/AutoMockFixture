@@ -38,8 +38,8 @@ internal class TrackerWithFixture_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var callBaseTrue = new TrackerWithFixtureNonAbstract(fixture) { MockShouldCallbase = true };
-        var callBaseFalse = new TrackerWithFixtureNonAbstract(fixture) { MockShouldCallbase = false };
+        var callBaseTrue = new TrackerWithFixtureNonAbstract(fixture) { MockShouldCallBase = true };
+        var callBaseFalse = new TrackerWithFixtureNonAbstract(fixture) { MockShouldCallBase = false };
 
         var request = new TrackerWithFixtureNonAbstract(fixture, callBaseTrue);
         var request2 = new TrackerWithFixtureNonAbstract(fixture, callBaseFalse);
@@ -52,8 +52,8 @@ internal class TrackerWithFixture_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var callBaseTrue1 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = true };
-        var callBaseTrue2 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = true };
+        var callBaseTrue1 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallBase = true };
+        var callBaseTrue2 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallBase = true };
 
         var request = new TrackerWithFixtureNonAbstract(fixture, callBaseTrue1);
         var request2 = new TrackerWithFixtureNonAbstract(fixture, callBaseTrue2);
@@ -66,8 +66,8 @@ internal class TrackerWithFixture_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var callBaseFalse1 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = false };
-        var callBaseFalse2 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = false };
+        var callBaseFalse1 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallBase = false };
+        var callBaseFalse2 = new AutoMockRequest(typeof(string), fixture) { MockShouldCallBase = false };
 
         var request = new TrackerWithFixtureNonAbstract(fixture, callBaseFalse1);
         var request2 = new TrackerWithFixtureNonAbstract(fixture, callBaseFalse2);

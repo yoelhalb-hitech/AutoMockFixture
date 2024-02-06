@@ -27,7 +27,7 @@ While existing Mocking frameworks are great, they have many shortcoming:
    - In `Moq` the actual object has to be called explictly by doing `.Object` which is annyoing sometimes
    
 While AutoFixture helps with a lot of the setups, it does have many shortcomings, for example:
-   - When setting up generic methods, and defaulting to `Callbase = false`, as well as providing real arguments to the mock instead of mocks
+   - When setting up generic methods, and defaulting to `CallBase = false`, as well as providing real arguments to the mock instead of mocks
    - Inability to instantiate a ciruclar graph (i.e. an object `Foo` that has a ctor argument `Boo` that in turn has a ctor arg of `Foo` )
    - Inability to provide custom constructor arguments
    - We might want that a non mock object should be provided with mock arguments, (very useful when for testing when we want the SUT to be real but all arguments to be mocks)
@@ -61,7 +61,7 @@ Here is the test code:
 In Moq:
 
 ```cs
-var mock = new Mock<Foo>(Mock.Of<Bar>()); // Will call the ctor even when callbase is false
+var mock = new Mock<Foo>(Mock.Of<Bar>()); // Will call the ctor even when callBase is false
 
 mock.Setup(m => m.Method1(It.IsAny<Bar1>(), It.IsAny<Bar2>()));
 mock.Setup(m => m.Method2(It.Is<int>(b => b == 4), It.IsAny<Bar2>())).Returns(10);
@@ -78,7 +78,7 @@ mock.Protected().Verify("ProtectedMethod", Times.Never(), ItExpr.IsAny<Bar1>(), 
 In AutoMockFixture:
 
 ```cs
-var mockObj = new AutoMock<Foo>() // Won't call the ctor since callbase is false
+var mockObj = new AutoMock<Foo>() // Won't call the ctor since callBase is false
                .Setup(nameof(Foo.Method1), Times.Once())
                .Setup(nameof(Foo.Method2), new { intArg = 4 }, 10, Times.Never()) // We can chain it, note the proeprty has to match the argument name, CAUTION: This only works so far with primitive types
                .Setup("ProtectedMethod", new {}, 10, Times.Never()); // We can also do it for protected without all the ceremony
@@ -92,7 +92,7 @@ mockObj.Verify();
 
 #### Simple Example
 
-Let's say that you want to make a concrete instance of `Foo` but mock all arguments with callbase false, so that you can verify it uses the arguments correctly.
+Let's say that you want to make a concrete instance of `Foo` but mock all arguments with callBase false, so that you can verify it uses the arguments correctly.
 
 In AutoFixture:
 
@@ -178,8 +178,8 @@ Here is one way to do it, (NOTE: For help with the path you can use the `AutoMoc
 ```cs
 var fixture = new UnitFixture();
 
-var order1 = fixture.CreateWithAutoMockDependencies<Order>(callBase: true); // If not callbase it won't call the ctor
-var order2 = fixture.CreateWithAutoMockDependencies<Order>(callBase: true); // If not callbase it won't call the ctor
+var order1 = fixture.CreateWithAutoMockDependencies<Order>(callBase: true); // If not callBase it won't call the ctor
+var order2 = fixture.CreateWithAutoMockDependencies<Order>(callBase: true); // If not callBase it won't call the ctor
 
 fixture.GetAutoMock<Address>(order2, "..ctor->customer..ctor->billingAddress").Verify(a => a.SetZip("11111")); // If you want only want for order2 and billing
 fixture.GetAutoMocks<Address>(order2).Verify(a => a.SetZip("11111")); // To verify for all addresses for order 2
@@ -214,12 +214,12 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
 #### On Moq
 - **Minimal setup**: You can setup methods without providing all arguments, just the ones you specifically want
 - **Setup verification times**: Setup verification times along with the method setup (currently Moq only suuports to setup that it has to be called using `Verifiable`)
-- **Default Interface Implmentation - no callbase**: Moq is currently using default interface implmenetations when mocking a class that has a default interface implementation and `callbase` is false (in which case it shouldn't)
+- **Default Interface Implmentation - no callBase**: Moq is currently using default interface implmenetations when mocking a class that has a default interface implementation and `callBase` is false (in which case it shouldn't)
 - **Default Interface Implmentation - events**: Moq is currently not working correctly with default interface implementations of events
 - **Default Interface Implmentation - abstract base**: Moq is currently not working correctly when the original interface is abstract and the default implementation is in an inherited interface
 - **Interface ReImplmentation - with late binding**: When a class implements an interface then in Moq when creating the `Mock` via late binding (such as generic on the interface) and also calling `As<that interface>` it will not call the original implementation even if the base is not virtual 
 - **Generic constrains**: Provide matchers for generics with constraints
-- **Ignore ctor**: When `Callbase = false` it does not call any constructors on the object
+- **Ignore ctor**: When `CallBase = false` it does not call any constructors on the object
 - **No casting**: An `AutoMock` has an implicit cast to the mocked object, in many cases there is no need to call `.Object` on it
 - **Targeted object**: Has the ability to mock around an existing Target object (as in [Castle Project](https://github.com/castleproject/Home))
 - **Check if mock**: Can check if an object was created by AutoMock without throwing and capturing as in Moq
@@ -260,12 +260,12 @@ public void MyTestMethod([CallBase]Order order1, [CallBase]Order order2, IAutoMo
 - **Unique method return**: For mocks there is the option to have the methods setup to return unique results per invocation (by passing in `MethodSetupTypes.LazyDifferent` to the fixture)
 - **Eager vs Lazy**: For mocks by default the return value for methods is created when first time called (to optimize the generation of the mock), this can be changed by passing in `MethodSetupTypes.Eager` to the fixture
 - **Verify fixture**: Verify all mocks in the fixture at once
-- **Explicit interface implementation**: Sets up explictly implemented interface members when `Callbase` is false
+- **Explicit interface implementation**: Sets up explictly implemented interface members when `CallBase` is false
 - **Can register a derived class to replace the original request**: Either replace a concrete class with a subclass (via `SubClassCustomization` or `SubClassTransformCustomization`) or an open generic class (via `SubClassOpenGenericCustomization` or `SubClassTransformCustomization`), can be useful to replace for example `DbSet<>` with a dervied class for any concrete instance of `DbSet<>`
 
-- Sets up `GetHashCode` and `.Equals` to work correctly even when `Callbase` is false
-- Defaults to `Callbase = false` however for Relay obejcts it sets `Callbase = true`, but there is an option to pass in the `Createxxx` calls to change the default for non relays
-- When `Callbase = true` it does not setup implemented methods (i.e. not in an interface and the method is not abstract)
+- Sets up `GetHashCode` and `.Equals` to work correctly even when `CallBase` is false
+- Defaults to `CallBase = false` however for Relay obejcts it sets `CallBase = true`, but there is an option to pass in the `Createxxx` calls to change the default for non relays
+- When `CallBase = true` it does not setup implemented methods (i.e. not in an interface and the method is not abstract)
 
 ####### TODO
 - Get the fixture from the object without having to call it manually

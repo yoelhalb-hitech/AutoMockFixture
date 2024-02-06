@@ -40,7 +40,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
         if (method.ReflectionInfo.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
         {
-            SetupHelpers.SetupCallbaseMethod(mockedType, returnType, mock, methodInvocationLambda);
+            SetupHelpers.SetupCallBaseMethod(mockedType, returnType, mock, methodInvocationLambda);
             return;
         }
         else if (method.ReflectionInfo.IsVoid())

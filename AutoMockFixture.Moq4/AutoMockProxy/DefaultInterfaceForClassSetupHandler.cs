@@ -29,7 +29,7 @@ internal class DefaultInterfaceForClassSetupHandler : IProxyTypeSetupHandler
     {
         if (originalType.IsInterface) return;
 
-        // Moq has an issue on class with default interface method that it callsbase (even for non callbase) and any setup is always ignored
+        // Moq has an issue on class with default interface method that it callsbase (even for non callBase) and any setup is always ignored
         // Another issue is for SetupSet etc. since it considers it to be sealed
 
         var defaultMethods = GetDefaultInterfaceMethods(originalType).Select(m => m.ReflectionInfo).ToArray();

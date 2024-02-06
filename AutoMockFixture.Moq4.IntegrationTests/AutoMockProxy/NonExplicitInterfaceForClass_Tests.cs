@@ -38,9 +38,9 @@ internal class NonExplicitInterfaceForClass_Tests
     [TestCase<TypeWithNonExplicit>(false)]
     [TestCase<TypeWithNonExplicitSub>(true)]
     [TestCase<TypeWithNonExplicitSub>(false)]
-    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnDynamicBinding<T>(bool callbase) where T : class, IWithNoDefault
+    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnDynamicBinding<T>(bool callBase) where T : class, IWithNoDefault
     {
-        var mock = new AutoMock<T>() { CallBase = callbase };
+        var mock = new AutoMock<T>() { CallBase = callBase };
         mock.As<IWithNoDefault>(); // Force to reimplement
         var obj = mock.Object;
 
@@ -57,9 +57,9 @@ internal class NonExplicitInterfaceForClass_Tests
     [TestCase<TypeWithReimplmented>(false)]
     [TestCase<TypeWithReimplmentedSub>(true)]
     [TestCase<TypeWithReimplmentedSub>(false)]
-    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnDynamicBinding_AndReimplmented<T>(bool callbase) where T : class, IWithNoDefault
+    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnDynamicBinding_AndReimplmented<T>(bool callBase) where T : class, IWithNoDefault
     {
-        var mock = new AutoMock<T>() { CallBase = callbase };
+        var mock = new AutoMock<T>() { CallBase = callBase };
         mock.As<IWithNoDefault>(); // Force to reimplement
         var obj = mock.Object;
 
@@ -76,9 +76,9 @@ internal class NonExplicitInterfaceForClass_Tests
     [TestCase<TypeWithNonExplicit>(false)]
     [TestCase<TypeWithNonExplicitSub>(true)]
     [TestCase<TypeWithNonExplicitSub>(false)]
-    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnStaticBinding<T>(bool callbase) where T : TypeWithNonExplicit, IWithNoDefault
+    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnStaticBinding<T>(bool callBase) where T : TypeWithNonExplicit, IWithNoDefault
     {
-        var mock = new AutoMock<T>() { CallBase = callbase };
+        var mock = new AutoMock<T>() { CallBase = callBase };
         mock.As<IWithNoDefault>(); // Force to reimplement
         var obj = mock.Object;
 
@@ -96,9 +96,9 @@ internal class NonExplicitInterfaceForClass_Tests
     [TestCase<TypeWithReimplmentedSub>(true)]
     [TestCase<TypeWithReimplmentedSub>(false)]
     // NOTE That it won't work correctly if using TypeWithNonExplicit since of the static binding
-    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnStaticBinding_AndReimplmented<T>(bool callbase) where T : TypeWithReimplmented, IWithNoDefault
+    public void Test_TypeWithNonExplicitImplementation_Callsbase_OnStaticBinding_AndReimplmented<T>(bool callBase) where T : TypeWithReimplmented, IWithNoDefault
     {
-        var mock = new AutoMock<T>() { CallBase = callbase };
+        var mock = new AutoMock<T>() { CallBase = callBase };
         mock.As<IWithNoDefault>(); // Force to reimplement
         var obj = mock.Object;
 

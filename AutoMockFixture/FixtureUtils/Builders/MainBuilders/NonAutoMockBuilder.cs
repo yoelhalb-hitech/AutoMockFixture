@@ -32,7 +32,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
 
             var automockRequest = new AutoMockRequest(inner, nonMockRequest)
             {
-                MockShouldCallbase = !isMock || nonMockRequest.MockShouldCallbase == true // If it's an AutoMock then respect the user setting but otherwise we just do it as a subsitute and it's supposed to emulate the original object
+                MockShouldCallBase = !isMock || nonMockRequest.MockShouldCallBase == true // If it's an AutoMock then respect the user setting but otherwise we just do it as a subsitute and it's supposed to emulate the original object
             };
 
             // TODO... we have to not mock the depedencies

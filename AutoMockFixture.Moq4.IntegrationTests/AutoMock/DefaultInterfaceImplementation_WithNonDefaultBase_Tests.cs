@@ -219,7 +219,7 @@ internal class DefaultInterfaceImplementation_WithNonDefaultBase_Tests
     [TestCase<DefaultWithExplicit3>("TestPropFromClass", "TestMethodFromClass")]
     [TestCase<DefaultWithExplicitSub3>("TestPropFromClass", "TestMethodFromClass")]
     [TestCase<DefaultWithExplicitSubWithIDefault3>("TestPropFromClass", "TestMethodFromClass")]
-    public void Test_DefaultInterfaceImplementation_NoImplementation_NoSetup_CallbaseTrue<T>(string? prop, string? method)
+    public void Test_DefaultInterfaceImplementation_NoImplementation_NoSetup_CallBaseTrue<T>(string? prop, string? method)
                                                                             where T : class, IDefault
     {
         var m = new AutoMock<T>() { CallBase = true };
@@ -261,7 +261,7 @@ internal class DefaultInterfaceImplementation_WithNonDefaultBase_Tests
     [TestCase<DefaultWithExplicit3>("TestPropFromClass", "TestMethodFromClass")]
     [TestCase<DefaultWithExplicitSub3>("TestPropFromClass", "TestMethodFromClass")]
     [TestCase<DefaultWithExplicitSubWithIDefault3>("TestPropFromClass", "TestMethodFromClass")]
-    public void Test_DefaultInterfaceImplementation_NoImplementation_NoSetup_CallbaseCall<T>(string? prop, string? method)
+    public void Test_DefaultInterfaceImplementation_NoImplementation_NoSetup_CallBaseCall<T>(string? prop, string? method)
                                                                         where T : class, IDefault
     {
         var m = new AutoMock<T>() { CallBase = false };
@@ -304,7 +304,7 @@ internal class DefaultInterfaceImplementation_WithNonDefaultBase_Tests
     [TestCase<DefaultWithExplicit3>]
     [TestCase<DefaultWithExplicitSub3>]
     [TestCase<DefaultWithExplicitSubWithIDefault3>]
-    public void Test_DefaultInterfaceImplementation_NoImplementation_NoSetup_NoCallbase<T>() where T : class, IDefault
+    public void Test_DefaultInterfaceImplementation_NoImplementation_NoSetup_NoCallBase<T>() where T : class, IDefault
     {
         var m = new AutoMock<T>() { CallBase = false };
         m.As<IDefault>();

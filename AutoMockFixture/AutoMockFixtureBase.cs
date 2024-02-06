@@ -127,70 +127,70 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public Task<T?> CreateAsync<T>() => CreateAsync<T>(false, null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract T? Create<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract T? Create<T>(bool callBase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract Task<T?> CreateAsync<T>(bool callbase, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract Task<T?> CreateAsync<T>(bool callBase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract object? Create(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract object? Create(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract Task<object?> CreateAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract Task<object?> CreateAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 
     #region AutoMockDependencies
 
-    public T? CreateWithAutoMockDependencies<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-            => AutoMockEngine.CreateWithAutoMockDependencies<T>(callbase, autoMockTypeControl);
+    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+            => AutoMockEngine.CreateWithAutoMockDependencies<T>(callBase, autoMockTypeControl);
 
-    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callbase, autoMockTypeControl);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateWithAutoMockDependencies(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependencies(t, callbase, autoMockTypeControl);
+    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callbase, autoMockTypeControl);
+    public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependencies(t, callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callBase, autoMockTypeControl);
 
     #endregion
 
     #region NonAutoMock
 
-    public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateNonAutoMock<T>(callbase, autoMockTypeControl);
+    public T? CreateNonAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateNonAutoMock<T>(callBase, autoMockTypeControl);
 
-    public Task<T?> CreateNonAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateNonAutoMockAsync<T>(callbase, autoMockTypeControl);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-                => AutoMockEngine.CreateNonAutoMock(t, callbase, autoMockTypeControl);
+    public Task<T?> CreateNonAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateNonAutoMockAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateNonAutoMockAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-            => AutoMockEngine.CreateNonAutoMockAsync(t, callbase, autoMockTypeControl);
+    public object? CreateNonAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+                => AutoMockEngine.CreateNonAutoMock(t, callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateNonAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+            => AutoMockEngine.CreateNonAutoMockAsync(t, callBase, autoMockTypeControl);
 
     #endregion
 
     #region AutoMock
 
-    public T? CreateAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-            => AutoMockEngine.CreateAutoMock<T>(callbase, autoMockTypeControl);
+    public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+            => AutoMockEngine.CreateAutoMock<T>(callBase, autoMockTypeControl);
 
-    public Task<T?> CreateAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-            => AutoMockEngine.CreateAutoMockAsync<T>(callbase, autoMockTypeControl);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateAutoMock(t, callbase, autoMockTypeControl);
+    public Task<T?> CreateAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+            => AutoMockEngine.CreateAutoMockAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateAutoMockAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateAutoMockAsync(t, callbase, autoMockTypeControl);
+    public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMock(t, callBase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMockAsync(t, callBase, autoMockTypeControl);
 
     #endregion
 

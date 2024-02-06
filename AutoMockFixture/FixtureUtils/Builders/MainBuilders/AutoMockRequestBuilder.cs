@@ -49,7 +49,7 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
 
         var directRequest = new AutoMockDirectRequest(type, mockRequest)
         {
-            MockShouldCallbase = mockRequest.MockShouldCallbase,
+            MockShouldCallBase = mockRequest.MockShouldCallBase,
         };
 
 

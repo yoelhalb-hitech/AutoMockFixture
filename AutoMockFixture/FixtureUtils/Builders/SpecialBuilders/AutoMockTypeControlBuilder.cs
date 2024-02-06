@@ -78,7 +78,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
                 var autoMockRequest = typedRequest is not null
                                             ? new AutoMockRequest(type, typedRequest)
                                             : new AutoMockRequest(type, fixture);
-                autoMockRequest.MockShouldCallbase = false;
+                autoMockRequest.MockShouldCallBase = false;
 
                 return autoMockRequest;
             }

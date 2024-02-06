@@ -13,7 +13,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.Moq4</PackageId>
-    <PackageVersion>5.0.2</PackageVersion>
+    <PackageVersion>5.0.3</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>

@@ -61,7 +61,7 @@ public class InterfaceDefaultViaNonDefaultForClass_Tests
     [TestCase<TypeWithReimplmentedDefaultSub>]
     [TestCase<TypeWithReimplmentedInClass>]
     [TestCase<TypeWithReimplmentedInClassSub>]
-    public void Test_TypeWithDefaultImplementation_DoesNotCallbase_OnNonCallbase<T>() where T : class, IWithDefaultBase
+    public void Test_TypeWithDefaultImplementation_DoesNotCallBase_OnNonCallBase<T>() where T : class, IWithDefaultBase
     {
         var mock = new AutoMock<T>() { CallBase = false };
 
@@ -77,7 +77,7 @@ public class InterfaceDefaultViaNonDefaultForClass_Tests
     [Test]
     [TestCase<TypeWithDefault>]
     [TestCase<TypeWithDefaultSub>]
-    public void Test_TypeWithDefaultImplementation_Callsbase_OnCallbase<T>() where T : class, IWithDefaultBase
+    public void Test_TypeWithDefaultImplementation_Callsbase_OnCallBase<T>() where T : class, IWithDefaultBase
     {
         var mock = new AutoMock<T>() { CallBase = true };
 
@@ -93,7 +93,7 @@ public class InterfaceDefaultViaNonDefaultForClass_Tests
     [Test]
     [TestCase<TypeWithReimplmentedDefault>]
     [TestCase<TypeWithReimplmentedDefaultSub>]
-    public void Test_TypeWithReimplemented_Callsbase_OnCallbase<T>() where T : class, IWithDefaultBase
+    public void Test_TypeWithReimplemented_Callsbase_OnCallBase<T>() where T : class, IWithDefaultBase
     {
         var mock = new AutoMock<T>() { CallBase = true };
 
@@ -109,7 +109,7 @@ public class InterfaceDefaultViaNonDefaultForClass_Tests
     [Test]
     [TestCase<TypeWithReimplmentedInClass>]
     [TestCase<TypeWithReimplmentedInClassSub>]
-    public void Test_TypeWithReimplmentedInClass_Callsbase_OnCallbase<T>() where T : class, IWithDefaultBase
+    public void Test_TypeWithReimplmentedInClass_Callsbase_OnCallBase<T>() where T : class, IWithDefaultBase
     {
         var mock = new AutoMock<T>() { CallBase = true };
 
@@ -136,9 +136,9 @@ public class InterfaceDefaultViaNonDefaultForClass_Tests
     [TestCase<TypeWithReimplmentedInClass>(false)]
     [TestCase<TypeWithReimplmentedInClassSub>(true)]
     [TestCase<TypeWithReimplmentedInClassSub>(false)]
-    public void Test_TypeWithDefaultImplementation_SetsUpCorrectly<T>(bool callbase) where T : class, IWithDefaultBase
+    public void Test_TypeWithDefaultImplementation_SetsUpCorrectly<T>(bool callBase) where T : class, IWithDefaultBase
     {
-        var mock = new AutoMock<T>() { CallBase = callbase };
+        var mock = new AutoMock<T>() { CallBase = callBase };
         mock.As<IWithDefaultBase>().Setup(i => i.TestMethod()).Returns(50);
         mock.As<IWithDefaultBase>().SetupGet(i => i.TestProp).Returns(60);
 
@@ -166,7 +166,7 @@ public class InterfaceDefaultViaNonDefaultForClass_Tests
     [TestCase<TypeWithReimplmentedDefaultSub>]
     [TestCase<TypeWithReimplmentedInClass>]
     [TestCase<TypeWithReimplmentedInClassSub>]
-    // Moq has a bug that it calls base on .Callback for events (unlike properties and methods) so we have to test it only on non callbase
+    // Moq has a bug that it calls base on .Callback for events (unlike properties and methods) so we have to test it only on non callBase
     public void Test_TypeWithDefaultImplementation_SetsUpEventsCorrectly_ForNonCallBase<T>() where T : class, IWithDefaultBase
     {
         var mock = new AutoMock<T>() { CallBase = false };

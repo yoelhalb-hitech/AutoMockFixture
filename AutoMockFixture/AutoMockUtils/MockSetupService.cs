@@ -62,7 +62,7 @@ internal class MockSetupService
             SetupReadWriteProperty(prop);
         }
 
-        if (mock.CallBase || delegateSpecification.IsSatisfiedBy(mockedType)) return; // Explicit interface implementation must have an implementation so only if !callbase
+        if (mock.CallBase || delegateSpecification.IsSatisfiedBy(mockedType)) return; // Explicit interface implementation must have an implementation so only if !callBase
 
         var detailType = mockedType.GetTypeDetailInfo();
 
@@ -100,7 +100,7 @@ internal class MockSetupService
         }
 
         if (mock.CallBase && !method.ReflectionInfo.IsAbstract) // Cannot check by interface as an interface can have a default implementation
-        { // It is callbase and has an implementation so let's ignore it
+        { // It is callBase and has an implementation so let's ignore it
             HandleCannotSetup(trackingPath, CannotSetupReason.CallBaseNoAbstract);
             return;
         }
@@ -195,7 +195,7 @@ internal class MockSetupService
 
         if (method.IsPrivate) return (false, CannotSetupReason.Private);
 
-        if (!method.IsPublicOrInternal()) return (false, CannotSetupReason.Protected); //TODO... maybe we should set it up in case someone calls callbase on a method?
+        if (!method.IsPublicOrInternal()) return (false, CannotSetupReason.Protected); //TODO... maybe we should set it up in case someone calls callBase on a method?
 
         return (true, null);
     }

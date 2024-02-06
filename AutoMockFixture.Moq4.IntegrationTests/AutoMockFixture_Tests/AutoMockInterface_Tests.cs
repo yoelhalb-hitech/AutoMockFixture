@@ -47,7 +47,7 @@ file class TestWithDefault : ITestWithDefault { }
 internal class AutoMockInterface_Tests
 {
     [Test]
-    public void Test_ITestWithDefault_NonCallbase()
+    public void Test_ITestWithDefault_NonCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
         var obj = fixture.CreateAutoMock<ITestWithDefault>();
@@ -64,10 +64,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_ITestWithDefault_WithCallbase()
+    public void Test_ITestWithDefault_WithCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<ITestWithDefault>(callbase: true);
+        var obj = fixture.CreateAutoMock<ITestWithDefault>(callBase: true);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -78,10 +78,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_ITestWithDefault_WithCallbase_AsCall()
+    public void Test_ITestWithDefault_WithCallBase_AsCall()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<ITestWithDefault>(callbase: false);
+        var obj = fixture.CreateAutoMock<ITestWithDefault>(callBase: false);
 
         obj.Should().NotBeNull();
         AutoMock.Get(obj!).Should().NotBeNull();
@@ -98,10 +98,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_ITestWithDefault_WithCallbase_AsInterface_AsCall()
+    public void Test_ITestWithDefault_WithCallBase_AsInterface_AsCall()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<ITestWithDefault>(callbase: false);
+        var obj = fixture.CreateAutoMock<ITestWithDefault>(callBase: false);
 
         obj.Should().NotBeNull();
         AutoMock.Get(obj!).Should().NotBeNull();
@@ -118,7 +118,7 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_TestWithDefault_NonCallbase()
+    public void Test_TestWithDefault_NonCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
         var obj = fixture.CreateAutoMock<TestWithDefault>();
@@ -135,11 +135,11 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_TestWithDefault_WithCallbase()
+    public void Test_TestWithDefault_WithCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var obj = fixture.CreateAutoMock<TestWithDefault>(callbase: true) ;
+        var obj = fixture.CreateAutoMock<TestWithDefault>(callBase: true) ;
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -165,11 +165,11 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_ITest_WithCallbase()
+    public void Test_ITest_WithCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var obj = fixture.CreateAutoMock<ITest>(callbase: true);
+        var obj = fixture.CreateAutoMock<ITest>(callBase: true);
 
         obj.Should().NotBeNull();
         obj!.TestReadOnly.Should().NotBeNull();
@@ -212,10 +212,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_TestOnlyExplicit_Callbase()
+    public void Test_TestOnlyExplicit_CallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<TestOnlyExplicit>(callbase: true);
+        var obj = fixture.CreateAutoMock<TestOnlyExplicit>(callBase: true);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -225,10 +225,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_TestOnlyExplicit_NonCallbase()
+    public void Test_TestOnlyExplicit_NonCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<TestOnlyExplicit>(callbase: false);
+        var obj = fixture.CreateAutoMock<TestOnlyExplicit>(callBase: false);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -242,10 +242,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_SubOnlyExplicit_Callbase()
+    public void Test_SubOnlyExplicit_CallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<SubOnlyExplicit>(callbase: true);
+        var obj = fixture.CreateAutoMock<SubOnlyExplicit>(callBase: true);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -255,10 +255,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_SubOnlyExplicit_NonCallbase()
+    public void Test_SubOnlyExplicit_NonCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<SubOnlyExplicit>(callbase: false);
+        var obj = fixture.CreateAutoMock<SubOnlyExplicit>(callBase: false);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -274,11 +274,11 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_TestBoth_Callbase()
+    public void Test_TestBoth_CallBase()
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var obj = fixture.CreateAutoMock<TestBoth>(callbase: true);
+        var obj = fixture.CreateAutoMock<TestBoth>(callBase: true);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -292,10 +292,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_TestBoth_NonCallbase()
+    public void Test_TestBoth_NonCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<TestBoth>(callbase: false);
+        var obj = fixture.CreateAutoMock<TestBoth>(callBase: false);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -316,11 +316,11 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_SubBoth_Callbase()
+    public void Test_SubBoth_CallBase()
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var obj = fixture.CreateAutoMock<SubBoth>(callbase: true);
+        var obj = fixture.CreateAutoMock<SubBoth>(callBase: true);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();
@@ -334,10 +334,10 @@ internal class AutoMockInterface_Tests
     }
 
     [Test]
-    public void Test_SubBoth_NonCallbase()
+    public void Test_SubBoth_NonCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
-        var obj = fixture.CreateAutoMock<SubBoth>(callbase: false);
+        var obj = fixture.CreateAutoMock<SubBoth>(callBase: false);
 
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITest>();

@@ -37,13 +37,13 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 
     public override bool CallBase { get => base.CallBase; set
           {
-            if (mocked is not null) throw new Exception("Cannot set callbase after object has been created");
+            if (mocked is not null) throw new Exception("Cannot set callBase after object has been created");
             base.CallBase = value;
         } }
 
     public object? Target => target;
 
-    void ISetCallBase.ForceSetCallbase(bool value) => base.CallBase = value;
+    void ISetCallBase.ForceSetCallBase(bool value) => base.CallBase = value;
 
     private void SetupGenerator()
         => generatorFieldInfo.SetValue(Moq.ProxyFactory.Instance, new AutoMockProxyGenerator(target, this.CallBase));
@@ -74,8 +74,8 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 
         // Moq Bug Workaround
         // This has to be done otherwise explicit interface implementations and default interface implementations might not work correctly
-        // While for callbase without a setup it will work correctly even without calling "As", it will not work correctly in the following situations:
-        // 1) For non callbase without a setup
+        // While for callBase without a setup it will work correctly even without calling "As", it will not work correctly in the following situations:
+        // 1) For non callBase without a setup
         // 2) For a custom setup if `As` has been called only after object creation
         // 3) When setting up via reflection
         var asMethod = typeof(Mock).GetMethod(nameof(Mock.As))!;

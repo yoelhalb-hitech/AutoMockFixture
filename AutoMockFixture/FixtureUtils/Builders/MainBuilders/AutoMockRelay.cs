@@ -34,7 +34,7 @@ internal class AutoMockRelay : ISpecimenBuilder
         var autoMockType = Fixture.AutoMockHelpers.GetAutoMockType(t); // We make it for an AutoMock type so it will be automocked
         var directRequest = new NonAutoMockRequest(autoMockType, Fixture) // Use NonAutoMockRequest so not to mock dependencies
         {
-            MockShouldCallbase = true,
+            MockShouldCallBase = true,
         };
 
         var result = context.Resolve(directRequest);

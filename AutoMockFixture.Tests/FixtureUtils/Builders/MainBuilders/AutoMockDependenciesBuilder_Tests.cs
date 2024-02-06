@@ -32,12 +32,12 @@ internal class AutoMockDependenciesBuilder_Tests
     }
 
     [Test]
-    public void Test_Create_AsksForCallBase_WhenRequestIsAutoMock_BasedOnCallBase([Values(true, false)] bool callbase)
+    public void Test_Create_AsksForCallBase_WhenRequestIsAutoMock_BasedOnCallBase([Values(true, false)] bool callBase)
     {
         var fixture = new AbstractAutoMockFixture();
 
         var innerType = typeof(AutoMockDependenciesBuilder_Tests);
-        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture) { MockShouldCallbase = callbase };
+        var request = new AutoMockDependenciesRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture) { MockShouldCallBase = callBase };
 
         var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
@@ -45,7 +45,7 @@ internal class AutoMockDependenciesBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallbase == callbase)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == callBase)));
         contextMock.VerifyNoOtherCalls();
     }
 
@@ -149,7 +149,7 @@ internal class AutoMockDependenciesBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var request = new AutoMockDependenciesRequest(type, fixture) { MockShouldCallbase = false, };
+        var request = new AutoMockDependenciesRequest(type, fixture) { MockShouldCallBase = false, };
 
         var builder = new AutoMockDependenciesBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
         var contextMock = new Mock<ISpecimenContext>();
@@ -157,7 +157,7 @@ internal class AutoMockDependenciesBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallbase == true)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == true)));
         contextMock.VerifyNoOtherCalls();
     }
 

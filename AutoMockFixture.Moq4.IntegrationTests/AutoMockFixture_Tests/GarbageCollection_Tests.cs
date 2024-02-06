@@ -107,12 +107,12 @@ public class GarbageCollection_Tests
     public void Test_IsGarabaseCollectible_WhenAutoMock(
                     [ValueSource(nameof(AutoMockTypes))] Type type,
                     [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
-                    [Values(true, false)] bool callbase)
+                    [Values(true, false)] bool callBase)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = setupType;
 
-        IsGarbageCollectible(() => fixture.CreateAutoMock(type, callbase)!).Should().BeTrue();
+        IsGarbageCollectible(() => fixture.CreateAutoMock(type, callBase)!).Should().BeTrue();
     }
 
     [Test, Pairwise]
@@ -129,12 +129,12 @@ public class GarbageCollection_Tests
     public void Test_IsGarabaseCollectible_WhenAutoMockDependencies(
                     [ValueSource(nameof(AutoMockTypes))] Type type,
                     [ValueSource(nameof(SetupTypeLists))] MethodSetupTypes setupType,
-                    [Values(true, false)] bool callbase)
+                    [Values(true, false)] bool callBase)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = setupType;
 
-        IsGarbageCollectible(() => fixture.CreateWithAutoMockDependencies(type, callbase)!).Should().BeTrue();
+        IsGarbageCollectible(() => fixture.CreateWithAutoMockDependencies(type, callBase)!).Should().BeTrue();
     }
 
 

@@ -10,11 +10,11 @@ internal class NonAutoMockRequest_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var nonAutoMockRequest = new NonAutoMockRequest(typeof(string), fixture) { MockShouldCallbase = true };
+        var nonAutoMockRequest = new NonAutoMockRequest(typeof(string), fixture) { MockShouldCallBase = true };
         var newRequest = nonAutoMockRequest with { Request = typeof(int) };
 
         newRequest.Should().NotBeNull();
-        newRequest.MockShouldCallbase.Should().BeTrue();
+        newRequest.MockShouldCallBase.Should().BeTrue();
 
         nonAutoMockRequest.Request.Should().Be(typeof(string));
         newRequest.Request.Should().Be(typeof(int));

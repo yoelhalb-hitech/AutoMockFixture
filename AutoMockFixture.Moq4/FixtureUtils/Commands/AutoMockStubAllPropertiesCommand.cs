@@ -36,7 +36,7 @@ internal class AutoMockStubAllPropertiesCommand : ISpecimenCommand
             }
             else
             {
-                // If callbase it will already have property behavior from the parent
+                // If callBase it will already have property behavior from the parent
                 // and we don't want to setup as it will destroy any existing values from the ctor since the object has already been created
                 // and also it might prevent to call the base
 

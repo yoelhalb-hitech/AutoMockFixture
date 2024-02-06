@@ -94,11 +94,11 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
 
             var autoMockRequest = new AutoMockRequest(requestedType, dependencyRequest)
             {
-                // We want MockShouldCallbase so to get ctor dependencies and also because AutoMockDependencies is a SUT
-                // It should automatically revert to the MockShouldCallbase on the StartTracker for the dependencies
+                // We want MockShouldCallBase so to get ctor dependencies and also because AutoMockDependencies is a SUT
+                // It should automatically revert to the MockShouldCallBase on the StartTracker for the dependencies
                 // However if it's an explicit automock request we have to respect the users wish (since at UnitFixture asking for an AutoMock via `.Create()` will arrive here)
 
-                MockShouldCallbase = isAutoMock ? dependencyRequest.MockShouldCallbase : true
+                MockShouldCallBase = isAutoMock ? dependencyRequest.MockShouldCallBase : true
             };
 
             var autoMockResult = context.Resolve(autoMockRequest);

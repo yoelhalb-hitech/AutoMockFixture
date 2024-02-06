@@ -10,11 +10,11 @@ internal class AutoMockRequest_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var autoMockRequest = new AutoMockRequest(typeof(string), fixture) { MockShouldCallbase = true, BypassChecks = true };
+        var autoMockRequest = new AutoMockRequest(typeof(string), fixture) { MockShouldCallBase = true, BypassChecks = true };
         var newRequest = autoMockRequest with { Request = typeof(int) };
 
         newRequest.Should().NotBeNull();
-        newRequest.MockShouldCallbase.Should().BeTrue();
+        newRequest.MockShouldCallBase.Should().BeTrue();
         newRequest.BypassChecks.Should().BeTrue();
 
         autoMockRequest.Request.Should().Be(typeof(string));

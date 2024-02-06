@@ -1,3 +1,8 @@
+## [5.0.3] - 2024-02-06
+
+### Changed
+- All names contaiing `Callbase`\ `callbase` will now the `B` uppercased `CallBase`\ `callBase` (unlike till now where some were `callbase` or `Callbase`), this time all of them are actually updated (hoepfully...)
+
 ## [5.0.2] - 2024-02-06
 
 ### Added

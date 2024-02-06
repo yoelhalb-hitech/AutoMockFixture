@@ -8,18 +8,18 @@ internal class AutoMockProxyGenerator : ProxyGenerator
 {
     private static ProxyGenerator originalProxyGenerator = new ProxyGenerator();
     // This contains the caches so we will have it static
-    private static DefaultProxyBuilder nonCallbaseProxyBuilder = new DefaultProxyBuilder();
+    private static DefaultProxyBuilder nonCallBaseProxyBuilder = new DefaultProxyBuilder();
 
     internal object? Target { get; }
-    internal bool? Callbase { get; }
+    internal bool? CallBase { get; }
     internal bool isMoq = false;
 
-    public AutoMockProxyGenerator(object? target, bool callbase) : base(nonCallbaseProxyBuilder)
+    public AutoMockProxyGenerator(object? target, bool callBase) : base(nonCallBaseProxyBuilder)
     {
         Target = target;
-        Callbase = callbase;
+        CallBase = callBase;
     }
-    public AutoMockProxyGenerator() : base(nonCallbaseProxyBuilder)
+    public AutoMockProxyGenerator() : base(nonCallBaseProxyBuilder)
     {
         isMoq = true;
     }
@@ -51,13 +51,13 @@ internal class AutoMockProxyGenerator : ProxyGenerator
 
         // In Moq they use two types of proxies
         //      1) for mock (which always has IMocked)
-        //      2) for recording which doesn't need to callbase (and might have issues if we don't supply the ctor args and there is no defualt ctor)
+        //      2) for recording which doesn't need to callBase (and might have issues if we don't supply the ctor args and there is no defualt ctor)
         var imockedType = classToProxy.IsClass ? typeof(IMocked<>).MakeGenericType(classToProxy) : null;
 
-        // If callbase is false we want to add/replace the default ctor
+        // If callBase is false we want to add/replace the default ctor
         // But also moq has an issue for explicit implementations that it always calls base (unless the method/prop/event is explictly setup, and even that doesn't work for default interface)
         if (typeof(Type) == classToProxy ||
-            (Callbase != false && imockedType is not null && additionalInterfacesToProxy.Contains(imockedType)))
+            (CallBase != false && imockedType is not null && additionalInterfacesToProxy.Contains(imockedType)))
         {
             // Moq has an issue with default interface implementation (when not overriden) in that it always calls base even when explictly setup
             var typeDetail = classToProxy.GetTypeDetailInfo();
@@ -70,7 +70,7 @@ internal class AutoMockProxyGenerator : ProxyGenerator
             }
         }
 
-        var typeToUse = ProxyTypeService.GetProxyType(classToProxy, Callbase != false);
+        var typeToUse = ProxyTypeService.GetProxyType(classToProxy, CallBase != false);
 
         var proxyType = CreateClassProxyType(typeToUse, additionalInterfacesToProxy, options);
         var arguments = BuildArgumentListForClassProxy(options, interceptors);

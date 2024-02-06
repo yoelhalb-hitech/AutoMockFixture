@@ -20,7 +20,7 @@ internal class AutoMockDependenciesAutoPropertiesHandlerCommand : ISpecimenComma
 
         var command = new AutoMockAutoPropertiesCommand(Fixture)
         {
-            // Private setters is always the job of the object code, while mocked non callbase doesn't need it (as we custom setup the readonly prop)
+            // Private setters is always the job of the object code, while mocked non callBase doesn't need it (as we custom setup the readonly prop)
             IncludePrivateSetters = false,
         };
 

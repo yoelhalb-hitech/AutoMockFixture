@@ -18,7 +18,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
     public ISpecimenCommand AutoMockInitCommand { get; }
 
     private bool ShouldCallBase(IAutoMock mock, AutoMockDirectRequest mockRequest) => !mock.GetInnerType().IsDelegate()
-                                && (mockRequest.MockShouldCallbase == true || mockRequest.StartTracker.MockShouldCallbase == true);
+                                && (mockRequest.MockShouldCallBase == true || mockRequest.StartTracker.MockShouldCallBase == true);
 
     public object Create(object request, ISpecimenContext context)
     {
@@ -86,7 +86,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
         finally
         {
             // We have to do it before calling a constructor, otherwise if the ctor is setting a virtual property with private setter it will not work
-            ((ISetCallBase)mock).ForceSetCallbase(callBase); // Remember we only call non default ctors if Callbase is true
+            ((ISetCallBase)mock).ForceSetCallBase(callBase); // Remember we only call non default ctors if CallBase is true
         }
 
         return mock.GetMocked();

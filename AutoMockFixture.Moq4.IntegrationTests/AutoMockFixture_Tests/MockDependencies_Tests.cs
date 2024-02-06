@@ -43,7 +43,7 @@ public class MockDependencies_Tests
     {
         obj.Should().NotBeNull();
 
-        obj.TestInnerFromCtor.Should().BeNull(); // Remember that non callbase doesn't call ctor
+        obj.TestInnerFromCtor.Should().BeNull(); // Remember that non callBase doesn't call ctor
 
         AutoMockFixture.Moq4.AutoMock.Get(obj.PropWithSet).Should().NotBeNull();
         AutoMockFixture.Moq4.AutoMock.Get(obj.Field).Should().NotBeNull();
@@ -53,7 +53,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_MockDependencies_When_CreateAutoMockDependecies_AutoMockType_Callbase()
+    public void Test_MockDependencies_When_CreateAutoMockDependecies_AutoMockType_CallBase()
     {
         var result = new AbstractAutoMockFixture().CreateWithAutoMockDependencies<AutoMock<TestOuter>>(true);
 
@@ -64,7 +64,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_MockDependencies_When_CreateAutoMockDependecies_AutoMockType_NonCallbase()
+    public void Test_MockDependencies_When_CreateAutoMockDependecies_AutoMockType_NonCallBase()
     {
         var result = new AbstractAutoMockFixture().CreateWithAutoMockDependencies<AutoMock<TestOuter>>(false);
 
@@ -75,7 +75,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_MockDependencies_When_CreateAutoMockDependecies_AbstractType_Callbase()
+    public void Test_MockDependencies_When_CreateAutoMockDependecies_AbstractType_CallBase()
     {
         var result = new AbstractAutoMockFixture().CreateWithAutoMockDependencies<TestOuterOuter>(true);
 
@@ -89,7 +89,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_MockDependencies_When_CreateAutoMockDependecies_AbstractType_NonCallbase()
+    public void Test_MockDependencies_When_CreateAutoMockDependecies_AbstractType_NonCallBase()
     {
         var result = new AbstractAutoMockFixture().CreateWithAutoMockDependencies<TestOuterOuter>(false);
 
@@ -104,7 +104,7 @@ public class MockDependencies_Tests
 
 
     [Test]
-    public void Test_MockDependencies_When_UnitFixture_CreateAutoMock_AutoMockType_Callbase()
+    public void Test_MockDependencies_When_UnitFixture_CreateAutoMock_AutoMockType_CallBase()
     {
         var result = new UnitFixture().CreateAutoMock<TestOuter>(true);
 
@@ -115,7 +115,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_MockDependencies_When_UnitFixture_CreateAutoMock_AutoMockType_NonCallbase()
+    public void Test_MockDependencies_When_UnitFixture_CreateAutoMock_AutoMockType_NonCallBase()
     {
         var result = new UnitFixture().CreateAutoMock<TestOuter>(false);
 
@@ -149,7 +149,7 @@ public class MockDependencies_Tests
     {
         obj.Should().NotBeNull();
 
-        obj.TestInnerFromCtor.Should().BeNull(); // Remember that non callbase doesn't call ctor
+        obj.TestInnerFromCtor.Should().BeNull(); // Remember that non callBase doesn't call ctor
 
         obj.PropWithSet.Should().NotBeNull();
         Assert.Throws<ArgumentException>(() => AutoMockFixture.Moq4.AutoMock.Get(obj.PropWithSet));
@@ -169,7 +169,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AutoMockType_Callbase()
+    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AutoMockType_CallBase()
     {
         var result = new AbstractAutoMockFixture().CreateNonAutoMock<AutoMock<TestOuter>>(true);
 
@@ -178,7 +178,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AutoMockType_NonCallbase()
+    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AutoMockType_NonCallBase()
     {
         var result = new AbstractAutoMockFixture().CreateNonAutoMock<AutoMock<TestOuter>>(false);
 
@@ -187,7 +187,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AbstractType_Callbase()
+    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AbstractType_CallBase()
     {
         var result = new AbstractAutoMockFixture().CreateNonAutoMock<TestOuterOuter>(true);
         result.Should().NotBeNull();
@@ -200,7 +200,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AbstractType_NonCallbase()
+    public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AbstractType_NonCallBase()
     {
         var result = new AbstractAutoMockFixture().CreateNonAutoMock<TestOuterOuter>(false);
         result.Should().NotBeNull();
@@ -209,11 +209,11 @@ public class MockDependencies_Tests
         obj.Should().NotBeNull();
         AutoMockFixture.Moq4.AutoMock.Get(obj).Should().NotBeNull();
 
-        Validate_NoMockDependecies_CallBase(obj!); // Although it is callbase false it won't respect it for the abstract case only for the explicit mock case
+        Validate_NoMockDependecies_CallBase(obj!); // Although it is callBase false it won't respect it for the abstract case only for the explicit mock case
     }
 
     [Test]
-    public void Test_DoesNotMockDependencies_When_IntegrationFixtureCreateAutoMock_AutoMockType_Callbase()
+    public void Test_DoesNotMockDependencies_When_IntegrationFixtureCreateAutoMock_AutoMockType_CallBase()
     {
         var result = new IntegrationFixture().CreateAutoMock<TestOuter>(true);
 
@@ -224,7 +224,7 @@ public class MockDependencies_Tests
     }
 
     [Test]
-    public void Test_DoesNotMockDependencies_When_IntegrationFixtureCreateAutoMock_AutoMockType_NonCallbase()
+    public void Test_DoesNotMockDependencies_When_IntegrationFixtureCreateAutoMock_AutoMockType_NonCallBase()
     {
         var result = new IntegrationFixture().CreateAutoMock<TestOuter>(false);
 

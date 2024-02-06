@@ -24,7 +24,7 @@ internal class AutoMockFixtureEngine_Tests
         return fixtureMock;
     }
 
-    private void TestNonGeneric<T>(bool callbase, Func<AutoMockFixtureEngine, Type, AutoMockTypeControl, object?> func) where T : TrackerWithFixture, IRequestWithType
+    private void TestNonGeneric<T>(bool callBase, Func<AutoMockFixtureEngine, Type, AutoMockTypeControl, object?> func) where T : TrackerWithFixture, IRequestWithType
     {
         var fixtureMock = GetFixtureMock();
 
@@ -33,7 +33,7 @@ internal class AutoMockFixtureEngine_Tests
 
         var t = typeof(object);
 
-        fixtureMock.As<ISpecimenBuilder>().Setup(b => b.Create(It.Is<object>(r => r is T && (r as T)!.Request == t && (r as T)!.MockShouldCallbase == callbase),
+        fixtureMock.As<ISpecimenBuilder>().Setup(b => b.Create(It.Is<object>(r => r is T && (r as T)!.Request == t && (r as T)!.MockShouldCallBase == callBase),
                                                                It.Is<ISpecimenContext>(c => c is RecursionContext
                                                                     && (c as RecursionContext)!.AutoMockTypeControl == autoMockTypeControl)))
                                            .Returns(result)
@@ -46,7 +46,7 @@ internal class AutoMockFixtureEngine_Tests
         fixtureMock.Verify();
     }
 
-    private void TestGeneric<TTracker, TType>(bool callbase, Func<AutoMockFixtureEngine, AutoMockTypeControl, object?> func)
+    private void TestGeneric<TTracker, TType>(bool callBase, Func<AutoMockFixtureEngine, AutoMockTypeControl, object?> func)
             where TTracker : TrackerWithFixture, IRequestWithType
     {
         var fixtureMock = GetFixtureMock();
@@ -55,7 +55,7 @@ internal class AutoMockFixtureEngine_Tests
         var autoMockTypeControl = new AutoMockTypeControl();
 
         fixtureMock.As<ISpecimenBuilder>().Setup(b => b.Create(It.Is<object>(r => r is TTracker && (r as TTracker)!.Request == typeof(TType)
-                                                                                                && (r as TTracker)!.MockShouldCallbase == callbase),
+                                                                                                && (r as TTracker)!.MockShouldCallBase == callBase),
                                                                It.Is<ISpecimenContext>(c => c is RecursionContext
                                                                     && (c as RecursionContext)!.AutoMockTypeControl == autoMockTypeControl)))
                                            .Returns(result)
@@ -71,27 +71,27 @@ internal class AutoMockFixtureEngine_Tests
     #region AutoMockDependencies
 
     [Test]
-    public void Test_CreateWithAutoMockDependencies_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateWithAutoMockDependencies_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestNonGeneric<AutoMockDependenciesRequest>(callbase, (e, t, tc) => e.CreateWithAutoMockDependencies(t, callbase, tc));
+        TestNonGeneric<AutoMockDependenciesRequest>(callBase, (e, t, tc) => e.CreateWithAutoMockDependencies(t, callBase, tc));
     }
 
     [Test]
-    public void Test_CreateWithAutoMockDependencies_Generic_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateWithAutoMockDependencies_Generic_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestGeneric<AutoMockDependenciesRequest, object>(callbase, (e, tc) => e.CreateWithAutoMockDependencies<object>(callbase, tc));
+        TestGeneric<AutoMockDependenciesRequest, object>(callBase, (e, tc) => e.CreateWithAutoMockDependencies<object>(callBase, tc));
     }
 
     [Test]
-    public void Test_CreateWithAutoMockDependenciesAsync_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateWithAutoMockDependenciesAsync_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestNonGeneric<AutoMockDependenciesRequest>(callbase, (e, t, tc) => e.CreateWithAutoMockDependenciesAsync(t, callbase, tc).Result);
+        TestNonGeneric<AutoMockDependenciesRequest>(callBase, (e, t, tc) => e.CreateWithAutoMockDependenciesAsync(t, callBase, tc).Result);
     }
 
     [Test]
-    public void Test_CreateWithAutoMockDependenciesAsync_Generic_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateWithAutoMockDependenciesAsync_Generic_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestGeneric<AutoMockDependenciesRequest, object>(callbase, (e, tc) => e.CreateWithAutoMockDependenciesAsync<object>(callbase, tc).Result);
+        TestGeneric<AutoMockDependenciesRequest, object>(callBase, (e, tc) => e.CreateWithAutoMockDependenciesAsync<object>(callBase, tc).Result);
     }
 
     #endregion
@@ -99,27 +99,27 @@ internal class AutoMockFixtureEngine_Tests
     #region NonAutoMock
 
     [Test]
-    public void Test_CreateNonAutoMock_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateNonAutoMock_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestNonGeneric<NonAutoMockRequest>(callbase, (e, t, tc) => e.CreateNonAutoMock(t, callbase, tc));
+        TestNonGeneric<NonAutoMockRequest>(callBase, (e, t, tc) => e.CreateNonAutoMock(t, callBase, tc));
     }
 
     [Test]
-    public void Test_CreateNonAutoMock_Generic_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateNonAutoMock_Generic_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestGeneric<NonAutoMockRequest, object>(callbase, (e, tc) => e.CreateNonAutoMock<object>(callbase, tc));
+        TestGeneric<NonAutoMockRequest, object>(callBase, (e, tc) => e.CreateNonAutoMock<object>(callBase, tc));
     }
 
     [Test]
-    public void Test_CreateNonAutoMockAsync_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateNonAutoMockAsync_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestNonGeneric<NonAutoMockRequest>(callbase, (e, t, tc) => e.CreateNonAutoMockAsync(t, callbase, tc).Result);
+        TestNonGeneric<NonAutoMockRequest>(callBase, (e, t, tc) => e.CreateNonAutoMockAsync(t, callBase, tc).Result);
     }
 
     [Test]
-    public void Test_CreateNonAutoMockAsync_Generic_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateNonAutoMockAsync_Generic_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestGeneric<NonAutoMockRequest, object>(callbase, (e, tc) => e.CreateNonAutoMockAsync<object>(callbase, tc).Result);
+        TestGeneric<NonAutoMockRequest, object>(callBase, (e, tc) => e.CreateNonAutoMockAsync<object>(callBase, tc).Result);
     }
 
     #endregion
@@ -127,27 +127,27 @@ internal class AutoMockFixtureEngine_Tests
     #region AutoMock
 
     [Test]
-    public void Test_CreateAutoMock_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateAutoMock_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestNonGeneric<AutoMockRequest>(callbase, (e, t, tc) => e.CreateAutoMock(t, callbase, tc));
+        TestNonGeneric<AutoMockRequest>(callBase, (e, t, tc) => e.CreateAutoMock(t, callBase, tc));
     }
 
     [Test]
-    public void Test_CreateAutoMock_Generic_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateAutoMock_Generic_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestGeneric<AutoMockRequest, object>(callbase, (e, tc) => e.CreateAutoMock<object>(callbase, tc));
+        TestGeneric<AutoMockRequest, object>(callBase, (e, tc) => e.CreateAutoMock<object>(callBase, tc));
     }
 
     [Test]
-    public void Test_CreateAutoMockAsync_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateAutoMockAsync_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestNonGeneric<AutoMockRequest>(callbase, (e, t, tc) => e.CreateAutoMockAsync(t, callbase, tc).Result);
+        TestNonGeneric<AutoMockRequest>(callBase, (e, t, tc) => e.CreateAutoMockAsync(t, callBase, tc).Result);
     }
 
     [Test]
-    public void Test_CreateAutoMockAsync_Generic_ForwardsCorretly([Values(true, false)] bool callbase)
+    public void Test_CreateAutoMockAsync_Generic_ForwardsCorretly([Values(true, false)] bool callBase)
     {
-        TestGeneric<AutoMockRequest, object>(callbase, (e, tc) => e.CreateAutoMockAsync<object>(callbase, tc).Result);
+        TestGeneric<AutoMockRequest, object>(callBase, (e, tc) => e.CreateAutoMockAsync<object>(callBase, tc).Result);
     }
 
     #endregion

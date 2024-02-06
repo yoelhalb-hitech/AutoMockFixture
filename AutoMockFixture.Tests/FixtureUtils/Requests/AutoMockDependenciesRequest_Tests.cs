@@ -10,11 +10,11 @@ internal class AutoMockDependenciesRequest_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var autoMockRequest = new AutoMockDependenciesRequest(typeof(string), fixture) { MockShouldCallbase = true };
+        var autoMockRequest = new AutoMockDependenciesRequest(typeof(string), fixture) { MockShouldCallBase = true };
         var newRequest = autoMockRequest with { Request = typeof(int) };
 
         newRequest.Should().NotBeNull();
-        newRequest.MockShouldCallbase.Should().BeTrue();
+        newRequest.MockShouldCallBase.Should().BeTrue();
 
         autoMockRequest.Request.Should().Be(typeof(string));
         newRequest.Request.Should().Be(typeof(int));

@@ -25,7 +25,7 @@ internal class AutoMockFixtureEngine
     {
         if (t.IsValueType) return new SpecimenContext(fixture).Resolve(new SeededRequest(t, t.GetDefault()));
 
-        var result = Execute(new AutoMockDependenciesRequest(t, fixture) { MockShouldCallbase = callBase }, autoMockTypeControl);
+        var result = Execute(new AutoMockDependenciesRequest(t, fixture) { MockShouldCallBase = callBase }, autoMockTypeControl);
 
         return result;
     }
@@ -34,7 +34,7 @@ internal class AutoMockFixtureEngine
     {
         if (t.IsValueType) return new SpecimenContext(fixture).Resolve(new SeededRequest(t, t.GetDefault()));
 
-        var result = await ExecuteAsync(new AutoMockDependenciesRequest(t, fixture) { MockShouldCallbase = callBase }, autoMockTypeControl).ConfigureAwait(false);
+        var result = await ExecuteAsync(new AutoMockDependenciesRequest(t, fixture) { MockShouldCallBase = callBase }, autoMockTypeControl).ConfigureAwait(false);
 
         return result;
     }
@@ -55,22 +55,22 @@ internal class AutoMockFixtureEngine
 
     #region NonAutoMock
 
-    public object? CreateNonAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-                => Execute(new NonAutoMockRequest(t, fixture) { MockShouldCallbase = callbase }, autoMockTypeControl);
+    public object? CreateNonAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+                => Execute(new NonAutoMockRequest(t, fixture) { MockShouldCallBase = callBase }, autoMockTypeControl);
 
-    public async Task<object?> CreateNonAutoMockAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
-            => await ExecuteAsync(new NonAutoMockRequest(t, fixture) { MockShouldCallbase = callbase }, autoMockTypeControl).ConfigureAwait(false);
+    public async Task<object?> CreateNonAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+            => await ExecuteAsync(new NonAutoMockRequest(t, fixture) { MockShouldCallBase = callBase }, autoMockTypeControl).ConfigureAwait(false);
 
-    public T? CreateNonAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public T? CreateNonAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         EnsureValid(typeof(T), autoMockTypeControl);
-        return Cast<T>(CreateNonAutoMock(typeof(T), callbase, autoMockTypeControl));
+        return Cast<T>(CreateNonAutoMock(typeof(T), callBase, autoMockTypeControl));
     }
 
-    public async Task<T?> CreateNonAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public async Task<T?> CreateNonAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
     {
         EnsureValid(typeof(T), autoMockTypeControl);
-        return await CastAsync<T>(CreateNonAutoMockAsync(typeof(T), callbase, autoMockTypeControl)).ConfigureAwait(false);
+        return await CastAsync<T>(CreateNonAutoMockAsync(typeof(T), callBase, autoMockTypeControl)).ConfigureAwait(false);
     }
 
     #endregion
@@ -89,7 +89,7 @@ internal class AutoMockFixtureEngine
         if(!fixture.AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
-        var result = Execute(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallbase = callBase }, autoMockTypeControl);
+        var result = Execute(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallBase = callBase }, autoMockTypeControl);
 
         return type != t ? fixture.AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
     }
@@ -106,7 +106,7 @@ internal class AutoMockFixtureEngine
         if (!fixture.AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
-        var result = await ExecuteAsync(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallbase = callBase }, autoMockTypeControl)
+        var result = await ExecuteAsync(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallBase = callBase }, autoMockTypeControl)
                                                     .ConfigureAwait(false);
 
         return type != t ? fixture.AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
@@ -310,7 +310,7 @@ internal class AutoMockFixtureEngine
         catch (ObjectCreationException)
         {
             throw;
-            // Only use the following if callbase is false, but specified to call the base constructors, so far we don't support that
+            // Only use the following if callBase is false, but specified to call the base constructors, so far we don't support that
 //                throw new Exception(@"Unable to create object, please check inner exception for details
 //This can happen if the object (or a dependendent object) constructor calls a method or property that has not been setup corretly.
 //You can troubleshoot why the method/property has not been setup, it might be private/protected or non virtual or generic with arguments or ref or out method.

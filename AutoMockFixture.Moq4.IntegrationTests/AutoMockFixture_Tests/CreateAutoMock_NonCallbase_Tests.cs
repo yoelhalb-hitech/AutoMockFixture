@@ -1,7 +1,7 @@
 ﻿
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
-internal class CreateAutoMock_NonCallbase_Tests
+internal class CreateAutoMock_NonCallBase_Tests
 {
     [Test]
     public void Test_AutoMock_WithNonCallBase_IsNot_CallBase()

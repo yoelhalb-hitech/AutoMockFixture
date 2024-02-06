@@ -11,12 +11,12 @@ internal class GetAutoMocks_Tests
     [TestCase(true, 6, 0, MethodSetupTypes.Eager)]
     [TestCase(true, 6, 0, MethodSetupTypes.LazySame)]
     [TestCase(true, 6, 0, MethodSetupTypes.LazyDifferent)]
-    public void Test_Works_CreatAutoMock(bool callbase, int expectSimple, int expectedAbstractMethod, MethodSetupTypes setupType)
+    public void Test_Works_CreatAutoMock(bool callBase, int expectSimple, int expectedAbstractMethod, MethodSetupTypes setupType)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = setupType;
 
-        var obj = fixture.CreateAutoMock<WithComplexTestClass>(callbase);
+        var obj = fixture.CreateAutoMock<WithComplexTestClass>(callBase);
 
         if (setupType != MethodSetupTypes.Eager)
         {
@@ -60,12 +60,12 @@ internal class GetAutoMocks_Tests
     [TestCase(true, 6, 0, MethodSetupTypes.Eager)]
     [TestCase(true, 6, 0, MethodSetupTypes.LazySame)]
     [TestCase(true, 6, 0, MethodSetupTypes.LazyDifferent)]
-    public void Test_Works_CreatAutoMockDepndencies(bool callbase, int expectSimple, int expectedAbstractMethod, MethodSetupTypes setupType)
+    public void Test_Works_CreatAutoMockDepndencies(bool callBase, int expectSimple, int expectedAbstractMethod, MethodSetupTypes setupType)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = setupType;
 
-        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callbase);
+        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callBase);
 
         if (setupType != MethodSetupTypes.Eager)
         {

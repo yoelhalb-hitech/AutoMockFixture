@@ -16,7 +16,7 @@ internal abstract record TrackerWithFixture : BaseTracker, IFixtureTracker
 
     public override string InstancePath => "";
 
-    public bool? MockShouldCallbase { get; set; }
+    public bool? MockShouldCallBase { get; set; }
 
     public abstract bool MockDependencies { get; }
 
@@ -25,14 +25,14 @@ internal abstract record TrackerWithFixture : BaseTracker, IFixtureTracker
                 && other is TrackerWithFixture tracker
                 && IsFixtureTrackerEquals(tracker);
 
-    //public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Fixture, MockShouldCallbase, MockDependencies);
+    //public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Fixture, MockShouldCallBase, MockDependencies);
 
     public virtual bool IsStartTrackerEquals(IFixtureTracker other) => IsFixtureTrackerEquals(other);
 
     protected virtual bool IsFixtureTrackerEquals(IFixtureTracker other)
                 => Object.ReferenceEquals(other.Fixture, Fixture)
                     && other.MockDependencies == MockDependencies
-                    && (other.MockShouldCallbase ?? other.StartTracker.MockShouldCallbase) == (MockShouldCallbase ?? StartTracker.MockShouldCallbase);
+                    && (other.MockShouldCallBase ?? other.StartTracker.MockShouldCallBase) == (MockShouldCallBase ?? StartTracker.MockShouldCallBase);
 
     public event EventHandler<UpdateData>? DataUpdated;
 

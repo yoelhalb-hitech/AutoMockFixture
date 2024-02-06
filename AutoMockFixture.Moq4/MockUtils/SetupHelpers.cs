@@ -8,9 +8,9 @@ internal static class SetupHelpers
     private static Mock GetMock(IAutoMock mock, Type mockedType)
         => mock.GetInnerType() == mockedType ? (Mock)mock : (Mock)typeof(Mock).GetMethod(nameof(Mock.As))!.MakeGenericMethod(mockedType)!.Invoke(mock, new Type[]{})!;
 
-    public static void SetupCallbaseMethod(Type mockedType, Type returnType, IAutoMock mock, Expression methodInvocationLambda)
+    public static void SetupCallBaseMethod(Type mockedType, Type returnType, IAutoMock mock, Expression methodInvocationLambda)
     {
-        GetMethod(nameof(SetupCallbaseMethod))
+        GetMethod(nameof(SetupCallBaseMethod))
             .MakeGenericMethod(mockedType, returnType)
             .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda });
     }
@@ -56,7 +56,7 @@ where TMock : class
         mock.Setup(methodCallExpression);
     }
 
-    private static void SetupCallbaseMethod<TMock, TResult>(Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
+    private static void SetupCallBaseMethod<TMock, TResult>(Mock<TMock> mock, Expression<Func<TMock, TResult>> methodCallExpression)
 where TMock : class
     {
         mock.Setup(methodCallExpression).CallBase();

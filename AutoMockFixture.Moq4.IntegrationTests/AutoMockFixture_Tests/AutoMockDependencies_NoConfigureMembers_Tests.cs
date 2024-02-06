@@ -59,12 +59,12 @@ internal class AutoMockDependencies_NoConfigureMembers_Tests
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void Test_NoConfigureMembers_PropertiesPrivateSetter_NotSet(bool callbase)
+    public void Test_NoConfigureMembers_PropertiesPrivateSetter_NotSet(bool callBase)
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture(true);
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callbase);
+        var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase);
         // Assert
         obj.Should().NotBeNull();
         obj!.TestClassPropWithPrivateSet.Should().BeNull();

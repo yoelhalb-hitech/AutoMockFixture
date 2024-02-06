@@ -67,12 +67,12 @@ internal class MethodSetupTypes_Tests
     [TestCase(MethodSetupTypes.Eager)]
     [TestCase(MethodSetupTypes.LazySame)]
     [TestCase(MethodSetupTypes.LazyDifferent)]
-    public void Test_MethodSetupTypes_ReadWriteProperty_SettingUpfront_ForCallbase(MethodSetupTypes methodSetupType)
+    public void Test_MethodSetupTypes_ReadWriteProperty_SettingUpfront_ForCallBase(MethodSetupTypes methodSetupType)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callbase: true);
+        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callBase: true);
 
         AutoMock.Get(obj)!.MethodsSetup.Should().NotContainKey(nameof(InternalSimpleTestClass.InternalTest));
 
@@ -87,7 +87,7 @@ internal class MethodSetupTypes_Tests
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callbase: false);
+        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callBase: false);
 
         AutoMock.Get(obj)!.MethodsSetup.Should().ContainKey(nameof(InternalSimpleTestClass.InternalTest));
 
@@ -101,7 +101,7 @@ internal class MethodSetupTypes_Tests
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callbase: false);
+        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callBase: false);
 
         AutoMock.Get(obj)!.MethodsSetup.Should().NotContainKey(nameof(InternalSimpleTestClass.InternalTest));
 
@@ -115,12 +115,12 @@ internal class MethodSetupTypes_Tests
     [TestCase(MethodSetupTypes.LazySame, false)]
     [TestCase(MethodSetupTypes.LazyDifferent, true)]
     [TestCase(MethodSetupTypes.LazyDifferent, false)]
-    public void Test_MethodSetupTypes_ReadWriteProperty_Same(MethodSetupTypes methodSetupType, bool callbase)
+    public void Test_MethodSetupTypes_ReadWriteProperty_Same(MethodSetupTypes methodSetupType, bool callBase)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callbase: callbase);
+        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callBase: callBase);
         obj!.InternalTest.Should().NotBeNullOrWhiteSpace();
 
         var first = obj!.InternalTest;
@@ -143,12 +143,12 @@ internal class MethodSetupTypes_Tests
     [TestCase(MethodSetupTypes.LazyDifferent, false, true)]
     [TestCase(MethodSetupTypes.LazyDifferent, false, false)]
     public void Test_MethodSetupTypes_ReadWriteProperty_SetPropertyWorks(MethodSetupTypes methodSetupType,
-                    bool callbase, bool readFirst)
+                    bool callBase, bool readFirst)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callbase: callbase);
+        var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(callBase: callBase);
         if(readFirst) obj!.InternalTest.Should().NotBeNullOrWhiteSpace();
 
         var testData = Guid.NewGuid().ToString();
@@ -288,7 +288,7 @@ internal class MethodSetupTypes_Tests
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<ProtectedSetterPropertyClass>(callbase: false);
+        var obj = fixture.CreateAutoMock<ProtectedSetterPropertyClass>(callBase: false);
         AutoMock.Get(obj)!.MethodsSetup.Should().NotContainKey(nameof(InternalSimpleTestClass.InternalTest));
 
         fixture.GetTracker(obj!)!.GetChildrensPaths()!.Keys.Should().Contain("." + nameof(ProtectedSetterPropertyClass.InternalTest));
@@ -297,12 +297,12 @@ internal class MethodSetupTypes_Tests
     [Test]
     [TestCase(MethodSetupTypes.LazySame)]
     [TestCase(MethodSetupTypes.LazyDifferent)]
-    public void Test_MethodSetupTypes_ProtectedSetterProperty_NotSettingUpfront_OnLazyNonCallbase(MethodSetupTypes methodSetupType)
+    public void Test_MethodSetupTypes_ProtectedSetterProperty_NotSettingUpfront_OnLazyNonCallBase(MethodSetupTypes methodSetupType)
     {
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = methodSetupType;
 
-        var obj = fixture.CreateAutoMock<ProtectedSetterPropertyClass>(callbase: false);
+        var obj = fixture.CreateAutoMock<ProtectedSetterPropertyClass>(callBase: false);
         AutoMock.Get(obj)!.MethodsSetup.Should().ContainKey(nameof(InternalSimpleTestClass.InternalTest));
 
         fixture.GetTracker(obj!)!.GetChildrensPaths()!.Keys.Should().NotContain("." + nameof(ProtectedSetterPropertyClass.InternalTest));

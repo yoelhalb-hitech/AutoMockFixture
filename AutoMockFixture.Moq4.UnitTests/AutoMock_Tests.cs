@@ -23,7 +23,7 @@ public class AutoMock_Tests
         if(currentValue is AutoMockProxyGenerator automockGenerator)
         {
             automockGenerator.Target.Should().BeNull();
-            automockGenerator.Callbase.Should().BeNull();
+            automockGenerator.CallBase.Should().BeNull();
         }
     }
 

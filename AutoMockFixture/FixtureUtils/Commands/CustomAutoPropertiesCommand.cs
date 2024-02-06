@@ -110,7 +110,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
     }
 
     // We need to handle internal properties as the outside code might depend on it
-    // However no need for private protected properties as it is only used if callbase and if so the base should set it...
+    // However no need for private protected properties as it is only used if callBase and if so the base should set it...
     protected IEnumerable<FieldInfo> GetFields(object specimen)
     {
         var type = GetSpecimenType(specimen);
@@ -119,7 +119,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
 
         // Remember that backing fields will get filtered out by the TypeDetailInfo
         var details = from fd in detailInfo.FieldDetails
-                                // Setting it up in case a specific method is setup to `callbase` and it calls the base private field
+                                // Setting it up in case a specific method is setup to `callBase` and it calls the base private field
                                 .Concat(detailInfo.BasePrivateFieldDetails.Where(_ => IncludePrivateSetters && IncludePrivateOrMissingGetter))
                                 .Concat(detailInfo.ShadowedFieldDetails)
                         select fd.ReflectionInfo;
