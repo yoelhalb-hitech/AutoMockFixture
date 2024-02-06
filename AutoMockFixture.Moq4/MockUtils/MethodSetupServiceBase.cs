@@ -93,7 +93,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
     protected Dictionary<MethodInfo, object?> resultDict = new Dictionary<MethodInfo, object?>();
     protected object lockObject = new object(); // Not static as it is only local to the object
-    
+
 
     protected abstract object? HandleInvocationFunc(IInvocation invocation);
 

@@ -4,10 +4,16 @@ namespace AutoMockFixture.Moq4.MockUtils;
 
 internal class SetupServiceFactory : SetupServiceFactoryBase
 {
+    class AutoPropertyEagerService : ISetupService
+    {
+        public void Setup() { throw new Exception("Not setting up read-write properties when `MethodSetupTypes.Eager`"); }
+    }
+
     public SetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc) : base(setupTypeFunc) { }
 
-    public override ISetupService GetAutoPropertySetup(Type mockedType, Type propertyType, IAutoMock mock, PropertyInfo prop, object? propValue)
-        => new AutoPropertySetupService(mockedType, propertyType, mock, prop, propValue);
+    public override ISetupService GetReadWritePropertySetup(Type mockedType, Type propertyType, IAutoMock mock, PropertyInfo prop, Func<object?> propValueGenerator)
+        => setupTypeFunc() == MethodSetupTypes.Eager ? new AutoPropertyEagerService() :
+                                new ReadWritePropertyLazySetupService(mockedType, propertyType, mock, prop, propValueGenerator);
 
     protected override ISetupService GetService(MethodSetupTypes setupType,
         IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath)

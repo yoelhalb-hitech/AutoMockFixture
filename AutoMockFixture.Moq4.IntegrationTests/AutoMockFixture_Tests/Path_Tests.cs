@@ -34,6 +34,7 @@ internal class Path_Tests
     public void Test_ReadWriteProperty(AutoMockType type)
     {
         var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.Eager;
 
         var obj = GetObj<InternalSimpleTestClass>(fixture, type);
 
@@ -122,7 +123,7 @@ internal class Path_Tests
         obj.Should().NotBeNull();
 
         var paths = fixture.GetPaths(obj!);
-       
+
         paths.Should().Contain(".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.TestWithOut->obj");
         paths.Should().Contain(".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.Test");
     }

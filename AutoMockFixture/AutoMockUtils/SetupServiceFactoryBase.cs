@@ -5,7 +5,7 @@ namespace AutoMockFixture.AutoMockUtils;
 
 internal abstract class SetupServiceFactoryBase
 {
-    private readonly Func<MethodSetupTypes> setupTypeFunc;
+    protected readonly Func<MethodSetupTypes> setupTypeFunc;
 
     public SetupServiceFactoryBase(Func<MethodSetupTypes> setupTypeFunc)
     {
@@ -29,7 +29,7 @@ internal abstract class SetupServiceFactoryBase
         return GetService(setupType, mock, method!, context, prop.GetTrackingPath());
     }
 
-    public abstract ISetupService GetAutoPropertySetup(Type mockedType, Type propertyType, IAutoMock mock, PropertyInfo prop, object? propValue);
+    public abstract ISetupService GetReadWritePropertySetup(Type mockedType, Type propertyType, IAutoMock mock, PropertyInfo prop, Func<object?> propValueGenerator);
 
     protected abstract ISetupService GetService(MethodSetupTypes setupType,
         IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath);

@@ -48,13 +48,18 @@ internal class MockSetupService
 
         var allProperties = GetProperties(includeNotOverridableCurrent, includeNotOverridableBase);
 
-        // Properties with set will be handled in the command for it
-        // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects, but maybe this might cause it to stop having property behavier
+         // TODO... for virtual methods we can do it here and use a custom invocation func so to delay the generation of the objects, but maybe this might cause it to stop having property behavier
         // Remeber that `private` setters in the base will have no setter in the proxy
         var singleMethodProperties = allProperties.Where(p => p.SetMethod is null || p.SetMethod.ReflectionInfo.IsPrivate);
         foreach (var prop in singleMethodProperties)
         {
             SetupSingleMethodProperty(prop);
+        }
+
+        var autoProperties = allProperties.Where(p => p.SetMethod is not null && p.GetMethod is not null && !p.SetMethod.ReflectionInfo.IsPrivate);
+        foreach (var prop in autoProperties)
+        {
+            SetupReadWriteProperty(prop);
         }
 
         if (mock.CallBase || delegateSpecification.IsSatisfiedBy(mockedType)) return; // Explicit interface implementation must have an implementation so only if !callbase
@@ -65,6 +70,12 @@ internal class MockSetupService
         foreach (var prop in explicitProperties.Where(p => p.SetMethod is null || p.SetMethod.ReflectionInfo.IsPrivate))
         {
             SetupSingleMethodProperty(prop);
+        }
+
+        var explicitAutoProperties = explicitProperties.Where(p => p.SetMethod is not null && p.GetMethod is not null && !p.SetMethod.ReflectionInfo.IsPrivate);
+        foreach (var prop in explicitAutoProperties)
+        {
+            SetupReadWriteProperty(prop);
         }
 
         var explicitMethods = detailType.ExplicitMethodDetails.ToArray();
@@ -115,21 +126,21 @@ internal class MockSetupService
         }
     }
 
-    private void SetupMethod(MethodDetail method) 
+    private void SetupMethod(MethodDetail method)
         => Setup(method, () => setupServiceFactory.GetMethodSetup(mock, method, context));
 
     private void SetupSingleMethodProperty(PropertyDetail prop)
         => Setup(prop, () => setupServiceFactory.GetSingleMethodPropertySetup(mock, prop, context));
 
-    private void SetupAutoProperty(PropertyDetail prop)
+    private void SetupReadWriteProperty(PropertyDetail prop)
     {
         Setup(prop, () =>
         {
             var request = noMockDependencies
                                     ? new PropertyRequest(mockedType, prop.ReflectionInfo, tracker)
                                     : new AutoMockPropertyRequest(mockedType, prop.ReflectionInfo, tracker);
-            var propValue = context.Resolve(request);
-            return setupServiceFactory.GetAutoPropertySetup(mockedType, prop.ReflectionInfo.PropertyType, mock, prop.ReflectionInfo, propValue);
+            var propValueGenerator = () => context.Resolve(request);
+            return setupServiceFactory.GetReadWritePropertySetup(mockedType, prop.ReflectionInfo.PropertyType, mock, prop.ReflectionInfo, propValueGenerator);
         });
     }
 

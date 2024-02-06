@@ -37,23 +37,12 @@ internal static class SetupHelpers
             .Invoke(null, new object[] { GetMock(mock, mockedType), methodInvocationLambda, invocationFunc });
     }
 
-    public static void SetupAutoProperty(Type mockedType, Type propertyType,
-        IAutoMock mock, PropertyInfo property, object? initialValue)
+    public static void SetupLazyReadWriteProperty(Type mockedType, Type propertyType,
+        IAutoMock mock, PropertyInfo property, Func<object?> valueGenerator)
     {
-        var paramExpr = Expression.Parameter(mockedType);
-        var expr = Expression.Lambda(Expression.MakeMemberAccess(paramExpr, property), paramExpr);
-
-        GetMethod(nameof(SetupMethodWithResult))
+        GetMethod(nameof(SetupLazyReadWriteProperty))
                .MakeGenericMethod(mockedType, propertyType)
-               .Invoke(null, new object?[] { GetMock(mock, mockedType), expr, initialValue });
-    }
-
-    public static void SetupAutoProperty(Type mockedType, Type propertyType,
-            IAutoMock mock, Expression methodInvocationLambda, object? initialValue)
-    {
-        GetMethod(nameof(SetupMethodWithResult))
-               .MakeGenericMethod(mockedType, propertyType)
-               .Invoke(null, new object?[] { GetMock(mock, mockedType), methodInvocationLambda, initialValue });
+               .Invoke(null, new object?[] { GetMock(mock, mockedType), property, valueGenerator });
     }
 
     private static MethodInfo GetMethod(string name) => typeof(SetupHelpers)
@@ -92,20 +81,45 @@ where TMock : class
     }
 
     // https://stackoverflow.com/a/72440782/640195
-    public static void SetupAutoProperty<TMock, TProperty>(this Mock<TMock> mock,
-           Expression<Func<TMock, TProperty>> memberAccessExpr,
-           TProperty initialValue) where TMock : class
+    private static void SetupLazyReadWriteProperty<TMock, TProperty>(this Mock<TMock> mock,
+           PropertyInfo property,
+           Func<object> valueGenerator) where TMock : class
     {
-        var propStates = new List<TProperty>();
-        Expression<Action> captureExpression = () => Capture.In(propStates);
+        TProperty? propState = default;
+        var matchCapture = new CaptureMatch<TProperty>(x => propState = x);
 
-        var finalExpression = Expression.Lambda<Action<TMock>>(
-                    Expression.Assign(memberAccessExpr.Body, captureExpression.Body),
-                                           memberAccessExpr.Parameters);
+        TProperty? propGenerated = default;
+        var isAssigned = false;
+        var isEvaluated = false;
+        var lockObject = new object();
 
-        mock.SetupSet(finalExpression.Compile());
-        mock.SetupGet(memberAccessExpr).Returns(() =>
-                   propStates.Any() ? propStates.Last() : initialValue);
+        Expression<Action> captureExpression = () => Capture.With(matchCapture);
+
+        var paramExpr = Expression.Parameter(typeof(TMock));
+        var getExpr = Expression.Lambda<Func<TMock, TProperty>>(Expression.Call(paramExpr, property.GetMethod), paramExpr);
+
+        var setExpression = Expression.Lambda<Action<TMock>>(
+                                Expression.Call(paramExpr, property.SetMethod, captureExpression.Body),
+                                           paramExpr);
+
+        var propFunc = () =>
+        {
+            if (isEvaluated) return propGenerated;
+
+            lock (lockObject)
+            {
+                if (isEvaluated) return propGenerated;
+
+                propGenerated = (TProperty)valueGenerator();
+                isEvaluated = true;
+
+                return propGenerated;
+            }
+        };
+
+        // Cannot use `SetupSet` as Moq will try to create a new mock from the mocked type, which might not have a default ctor
+        mock.Setup(setExpression).Callback((TProperty p) => { isAssigned = true; });
+        mock.Setup(getExpr).Returns(() => isAssigned ? propState! : propFunc());
     }
 #pragma warning restore CA1811 // AvoidUncalledPrivateCode
 }
