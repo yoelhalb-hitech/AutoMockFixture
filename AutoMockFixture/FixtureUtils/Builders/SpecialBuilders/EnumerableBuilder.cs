@@ -33,11 +33,14 @@ internal class EnumerableBuilder : NonConformingBuilder
     {
         var ctors = requestType.GetConstructors(BindingFlagsExtensions.AllBindings).Where(c => c.IsConstructor && !c.IsStatic);
 
-        if(requestType.IsAbstract) // Even if he requested a mock we won't give it unless it's abstract
+        if(requestType.IsAbstract || requestType.IsInterface
+            || (AutoMockHelpers.IsAutoMock(requestType) && AutoMockHelpers.IsAutoMockAllowed(AutoMockHelpers.GetMockedType(requestType)!))
+            || (typeRequest is AutoMockRequest && AutoMockHelpers.IsAutoMockAllowed(requestType)))
         {
-            var directRequest = new AutoMockDirectRequest(AutoMockHelpers.GetAutoMockType(requestType), typeRequest)
+            var mockType = AutoMockHelpers.IsAutoMock(requestType) ? requestType : AutoMockHelpers.GetAutoMockType(requestType);
+            var directRequest = new AutoMockDirectRequest(mockType, typeRequest)
             {
-                MockShouldCallbase = true, // Sorry, but we will use the base methods when available, since officially we don't mock at all the special types
+                MockShouldCallbase = (typeRequest as AutoMockRequest)?.MockShouldCallbase ?? true,
             };
 
             var specimen = context.Resolve(directRequest);

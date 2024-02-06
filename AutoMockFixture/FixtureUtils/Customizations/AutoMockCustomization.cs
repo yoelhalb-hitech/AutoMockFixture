@@ -21,7 +21,7 @@ public class AutoMockCustomization : ICustomization
     public bool GenerateDelegates { get; set; } = true;
     public void Customize(IFixture fixture)
     {
-        if (fixture is null || fixture is not IAutoMockFixture mockFixture) throw new ArgumentNullException(nameof(fixture));
+        if (fixture is null || fixture is not AutoMockFixtureBase mockFixture) throw new ArgumentNullException(nameof(fixture));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new AutoMockTypeControlBuilder(),
@@ -29,8 +29,8 @@ public class AutoMockCustomization : ICustomization
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new PostprocessorWithRecursion(mockFixture,
-                                            new EnumerableBuilder(mockFixture.AutoMockHelpers, 3),
-                                            new PopulateEnumerableCommand(mockFixture.AutoMockHelpers, mockFixture, 3)),
+                                            new EnumerableBuilder(mockFixture.AutoMockHelpers, mockFixture.RepeatCount),
+                                            new PopulateEnumerableCommand(mockFixture.AutoMockHelpers, mockFixture, mockFixture.RepeatCount)),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -66,7 +66,10 @@ public class AutoMockCustomization : ICustomization
                                                 new MethodInvokerWithRecursion(
                                                     new CustomModestConstructorQuery(mockFixture.AutoMockHelpers), mockFixture.AutoMockHelpers),
                                                 mockFixture.AutoMockHelpers),
-                                            ConfigureMembers ? new CustomAutoPropertiesCommand(mockFixture) : new EmptyCommand()),
+                                            ConfigureMembers ? new CompositeSpecimenCommand(
+                                                    new CustomAutoPropertiesCommand(mockFixture),
+                                                    new PopulateEnumerableCommand(mockFixture.AutoMockHelpers, mockFixture, mockFixture.RepeatCount))
+                                                : new EmptyCommand()),
                                         new TypeMatchSpecification(typeof(NonAutoMockRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
@@ -113,6 +116,7 @@ public class AutoMockCustomization : ICustomization
                                                 new AutoMockVirtualMethodsCommand(mockFixture.AutoMockHelpers, setupFactory),
                                                 // This one has to be after `AutoMockStubAllPropertiesCommand`
                                                 new AutoMockAutoPropertiesHandlerCommand(mockFixture.AutoMockHelpers),
+                                                new PopulateEnumerableCommand(mockFixture.AutoMockHelpers, mockFixture, mockFixture.RepeatCount),
                                                 // This one has to be after `AutoMockAutoPropertiesHandlerCommand`
                                                 mockFixture.AutoMockHelpers.GetClearInvocationsCommand()));
         }

@@ -47,7 +47,9 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                                             engine,
                                             new MultipleRelay { Count = this.RepeatCount }),
                                         // AutoFixture expects `AutoPropertiesCommand` to be a single command, so we have to stuff anoything extra in an extra
-                                        new CustomAutoPropertiesCommand(this),
+                                        new CompositeSpecimenCommand(
+                                            new CustomAutoPropertiesCommand(this),
+                                            new PopulateEnumerableCommand(this.AutoMockHelpers, this, this.RepeatCount)),
                                         new AnyTypeSpecification(),
                                         new CacheCommand(this.Cache)));
 

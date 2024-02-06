@@ -62,15 +62,15 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateNonAutoMock<T>();
+        var result = fixture.CreateNonAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         AutoMock.Get(result).Should().NotBeNull();
 
-        result = fixture.CreateAutoMock<T>();
+        result = fixture.CreateAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         AutoMock.Get(result).Should().NotBeNull();
 
-        result = fixture.CreateWithAutoMockDependencies<T>();
+        result = fixture.CreateWithAutoMockDependencies<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         AutoMock.Get(result).Should().NotBeNull();
     }
@@ -86,17 +86,17 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateNonAutoMock<T>();
+        var result = fixture.CreateNonAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         (result as IAutoMock).Should().NotBeNull();
         (result as IAutoMock)!.GetMocked().Should().NotBeNull();
 
-        result = fixture.CreateAutoMock<T>();
+        result = fixture.CreateAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         (result as IAutoMock).Should().NotBeNull();
         (result as IAutoMock)!.GetMocked().Should().NotBeNull();
 
-        result = fixture.CreateWithAutoMockDependencies<T>();
+        result = fixture.CreateWithAutoMockDependencies<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         (result as IAutoMock).Should().NotBeNull();
         (result as IAutoMock)!.GetMocked().Should().NotBeNull();
@@ -109,22 +109,22 @@ internal class EnumerableBuilder_Tests
     [TestCase<NonAbstractList<int>>]
     [TestCase<NonAbstractListWithAdd<int>>]
     [TestCase<NonAbstractListWithAddRange<int>>]
-    public void Test_DoesNotCreatesAutoMock_ForNonAbstract<T>() where T : class
+    public void Test_WorksCorrectly_ForNonAbstract<T>() where T : class
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateNonAutoMock<T>();
+        var result = fixture.CreateNonAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         (result as IAutoMock).Should().BeNull();
         Assert.Throws<ArgumentException>(() => AutoMock.Get(result), "Object instance was not created by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')");
 
-        result = fixture.CreateAutoMock<T>();
+        result = fixture.CreateAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         (result as IAutoMock).Should().BeNull();
-        Assert.Throws<ArgumentException>(() => AutoMock.Get(result), "Object instance was not created by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')");
+        Assert.DoesNotThrow(() => AutoMock.Get(result));
+        AutoMock.Get(result).Should().NotBeNull();
 
-
-        result = fixture.CreateWithAutoMockDependencies<T>();
+        result = fixture.CreateWithAutoMockDependencies<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         (result as IAutoMock).Should().BeNull();
         Assert.Throws<ArgumentException>(() => AutoMock.Get(result), "Object instance was not created by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')");
@@ -141,12 +141,20 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        // TODO... we need to work that out better...
-        Assert.Catch(()=> fixture.CreateNonAutoMock<T>());
-        Assert.Catch(()=> fixture.CreateWithAutoMockDependencies<T>());
+        var result = fixture.CreateAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+        (result as IAutoMock).Should().NotBeNull();
+        (result as IAutoMock)!.GetMocked().Should().NotBeNull();
 
-        var result = fixture.CreateAutoMock<T>();
-        result.Should().BeNull();
+        result = fixture.CreateNonAutoMock<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+        (result as IAutoMock).Should().NotBeNull();
+        (result as IAutoMock)!.GetMocked().Should().NotBeNull();
+
+        result = fixture.CreateWithAutoMockDependencies<T>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+        (result as IAutoMock).Should().NotBeNull();
+        (result as IAutoMock)!.GetMocked().Should().NotBeNull();
     }
 
     [Test]
@@ -154,7 +162,7 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateNonAutoMock<WithAbstractEnumerableProperty>();
+        var result = fixture.CreateNonAutoMock<WithAbstractEnumerableProperty>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
         result!.AbstractListProp.Should().NotBeNull();
@@ -174,7 +182,7 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateNonAutoMock<WithNonAbstractEnumerableProperty>();
+        var result = fixture.CreateNonAutoMock<WithNonAbstractEnumerableProperty>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
         result!.NonAbstractListProp.Should().NotBeNull();
@@ -194,7 +202,7 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateAutoMock<WithNonAbstractEnumerableProperty>();
+        var result = fixture.CreateAutoMock<WithNonAbstractEnumerableProperty>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
         result!.NonAbstractListProp.Should().NotBeNull();
@@ -214,7 +222,7 @@ internal class EnumerableBuilder_Tests
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateAutoMock<WithBuiltInTypes>();
+        var result = fixture.CreateAutoMock<WithBuiltInTypes>(callbase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
         result!.PropArray.Should().NotBeNull();
@@ -230,7 +238,7 @@ internal class EnumerableBuilder_Tests
         result.PropSet!.Should().NotContainNulls();
 
         result!.PropDict.Should().NotBeNull();
-        result.PropDict!.Count().Should().Be(0);
+        result.PropDict!.Count().Should().Be(3);
 
         result!.PropConcurentDict.Should().NotBeNull();
         result.PropConcurentDict!.Count().Should().Be(0);

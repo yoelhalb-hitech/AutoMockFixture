@@ -40,6 +40,24 @@ internal class NonConforming_Tests
     }
 
     [Test]
+    public void Test_AutoMock_List()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+
+        // Act
+        //// We cannot use CreateAutoMock as it is not valid for arrays
+        var obj = fixture.CreateWithAutoMockDependencies<List<AutoMock<InternalAbstractMethodTestClass>>>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj.Should().BeOfType<List<AutoMock<InternalAbstractMethodTestClass>>>();
+        obj!.Count.Should().Be(3);
+        obj.First().Should().BeOfType<AutoMock<InternalAbstractMethodTestClass>>();
+        obj.First().GetMocked().Should().NotBeNull();
+        obj.First().GetMocked().InternalTest.Should().NotBeNull();
+    }
+
+    [Test]
     public void Test_NonAutoMock_Tuple()
     {
         // Arrange

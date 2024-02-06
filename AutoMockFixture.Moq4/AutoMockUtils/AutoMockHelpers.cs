@@ -4,6 +4,7 @@ using AutoMockFixture.Moq4.FixtureUtils.Specifications;
 using AutoMockFixture.Moq4.MockUtils;
 using Castle.DynamicProxy;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace AutoMockFixture.Moq4.AutoMockUtils;
 
@@ -21,7 +22,11 @@ internal class AutoMockHelpers : IAutoMockHelpers
 
         try
         {
-            return global::Moq.Mock.Get<T>(mocked) as AutoMock<T>;
+            var m = global::Moq.Mock.Get<T>(mocked);
+            if(m is not IAutoMock) throw new ArgumentException("Object instance was created by Mock but not by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')");
+            if(m is not AutoMock<T>) throw new ArgumentException($"Expected Mock to be of type `{typeof(AutoMock<T>).FullName}` but found {m.GetType().FullName}");
+
+            return m as AutoMock<T>;
         }
         catch(ArgumentException ex) when (ex.Message == "Object instance was not created by Moq. (Parameter 'mocked')")
         {
@@ -51,6 +56,12 @@ internal class AutoMockHelpers : IAutoMockHelpers
         if (t.IsPrimitive || t == typeof(string) || t == typeof(object)
                     || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
                     || t == typeof(Array)
+                    ||  (t.IsGenericType && new[]
+                        {
+                            typeof(IEnumerable).Namespace,
+                            typeof(List<>).Namespace,
+                            typeof(ConcurrentDictionary<,>).Namespace,
+                        }.Contains(t.GetGenericTypeDefinition().Namespace))
                     //|| typeof(IEnumerable).IsAssignableFrom(t)|| typeof(ICollection).IsAssignableFrom(t) || typeof(IList).IsAssignableFrom(t)
 
 #if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER

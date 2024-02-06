@@ -19,18 +19,24 @@ internal class InnerBuilder : ISpecimenBuilder
 
         var type = innerRequest.Request;
 
-        IRequestWithType newRequest = innerRequest.OuterRequest switch
+        object newRequest = innerRequest.OuterRequest switch
         {
             { } when AutoMockHelpers.IsAutoMock(type) => new AutoMockDirectRequest(type, innerRequest),
             AutoMockDependenciesRequest => new AutoMockDependenciesRequest(type, innerRequest),
             AutoMockRequest => new AutoMockRequest(type, innerRequest),
             NonAutoMockRequest => new NonAutoMockRequest(type, innerRequest),
-            _ => throw new NotSupportedException(),
+            _ => type,
         };
 
         var specimen = context.Resolve(newRequest);
 
-        newRequest.SetResult(specimen, this);
+        (newRequest as ITracker)?.SetResult(specimen, this);
+        if (newRequest is ITracker tracker)
+        {
+            tracker.SetResult(specimen, this);
+            innerRequest.SetCompleted(this);
+        }
+        else innerRequest.SetResult(specimen, this);
 
         if (specimen is NoSpecimen || specimen is OmitSpecimen)
         {
