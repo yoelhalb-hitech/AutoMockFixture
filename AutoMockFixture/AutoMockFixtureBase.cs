@@ -87,33 +87,34 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     #region Freeze
 
-    protected virtual void FreezeInternal(Type type)
+    public virtual void JustFreeze<T>() => JustFreeze(typeof(T));
+    public virtual void JustFreeze(Type type)
             => Customize(new FreezeCustomization(new TypeOrRequestSpecification(new ExactTypeSpecification(type), AutoMockHelpers)));
 
     public virtual T? Freeze<T>()
     {
-        FreezeInternal(typeof(T));
+        JustFreeze<T>();
 
         return Create<T>();
     }
 
     public virtual object? Freeze(Type type)
     {
-        FreezeInternal(type);
+        JustFreeze(type);
 
         return Create(type);
     }
 
     public virtual async Task<T?> FreezeAsync<T>()
     {
-        FreezeInternal(typeof(T));
+        JustFreeze<T>();
 
         return await CreateAsync<T>().ConfigureAwait(false);
     }
 
     public virtual async Task<object?> FreezeAsync(Type type)
     {
-        FreezeInternal(type);
+        JustFreeze(type);
 
         return await CreateAsync(type).ConfigureAwait(false);
     }

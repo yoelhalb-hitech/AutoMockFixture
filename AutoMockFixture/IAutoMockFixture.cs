@@ -17,6 +17,9 @@ public interface IAutoMockFixture
 
     #region Freeze
 
+    void JustFreeze<T>();
+    void JustFreeze(Type type);
+
     T? Freeze<T>();
     Task<T?> FreezeAsync<T>();
     object? Freeze(Type type);
