@@ -1,3 +1,24 @@
+## [5.0.2] - 2024-02-06
+
+### Added
+- The `AutoMock` `Setup` methods will now support more complicated strings representing overloads
+- While in general the rules are strict currently on what strings can be provided to the `AutoMock` `Setup` methods, still it will attempt to match similar methods if possible
+- Add `JustFreeze` in the `Fixture` for freezing without creating
+
+### Removed
+- Remove the `NoConfigureMembers` option from the individual requests, it can only be set on the `Fixture`
+
+### Fixed
+- Fix bugs with `EnumerableBuilder`
+- The generic `Create`/`CreateXXX` will throw an `InvalidOperationException` if the generic type provided is `AutoMock` and type is not mockable
+- Fix issue with `MatcherGenerator` for partially constructed types
+- Fix bug with explicit interface tracking paths
+
+### Changed
+- All callbase parmaeters will now be all lowercase `callbase` (unlike till now where some were `callBase`)
+- Change the `UnitAutoData` and `IntegrationAutoData` not to throw any exceptions as this might crash the test runners
+- Optimize virtual read-write properties (when not call base) to be created lazily (unless we use `MethodSetupType.Eager`)
+
 ## [5.0.1] - 2023-09-07
 
 ### Fixed

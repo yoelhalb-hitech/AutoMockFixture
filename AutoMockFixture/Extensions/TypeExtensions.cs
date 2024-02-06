@@ -11,6 +11,9 @@ internal static class TypeExtensions
         => type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(ctor => ctor.IsConstructor && !ctor.IsStatic && !ctor.IsPrivate); // Static ctors are returrned by `GetConstructors` but are `IsConstructor` == false and `IsStatic` == true
 
+    // TODO... maybe add a cache with longer names that can also match (such as full args even when there is no overload)
+    // TODO... we can maybe add for base private and shadowed...
+    // TODO... we can simplify the process of creating the path for methods by creating for all methods at once and see if there is a collision
     internal static ConcurrentDictionary<Type, Dictionary<string, MethodDetail>> methodPathCache = new();
     internal static ConcurrentDictionary<Type, Dictionary<string, PropertyDetail>> propPathCache = new();
     internal static ConcurrentDictionary<Type, Dictionary<string, EventDetail>> evtPathCache = new();
@@ -81,6 +84,7 @@ internal static class TypeExtensions
     }
 
     // Based on  https://stackoverflow.com/a/22824808/640195
+    // TODO... How to handle file class??
     internal static string ToGenericTypeString(this Type t, params Type[] arg)
     {
         // TODO... Maybe CodeDomProvider.GetTypeOutput does the job already? at least we can use it for the primitive types

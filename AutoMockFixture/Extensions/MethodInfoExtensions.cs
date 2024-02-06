@@ -46,7 +46,7 @@ internal static class MethodInfoExtensions
             {
                 str += $"`{method.GetGenericArguments().Length}";
             }
-
+            // TODO... out and ref or in are considered different overloads than if none
             var hasOverloads = method.HasOverloads();
             var hasSameCount = hasOverloads && method.HasOverloadSameCount();
 
