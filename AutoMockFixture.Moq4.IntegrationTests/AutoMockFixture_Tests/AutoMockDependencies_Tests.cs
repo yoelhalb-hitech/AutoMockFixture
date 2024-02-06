@@ -37,7 +37,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callBase: callbase);
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callbase: callbase);
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<AutoMock<WithCtorArgsTestClass>>();
@@ -52,7 +52,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callBase: callBase);
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(callbase: callBase);
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<AutoMock<WithCtorArgsTestClass>>();
@@ -82,7 +82,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass>(callbase: false);
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();
@@ -101,7 +101,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass>(callBase: callBase);
+        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass>(callbase: callBase);
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();
@@ -144,7 +144,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<ITestInterface>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<ITestInterface>(callbase: false);
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITestInterface>();
@@ -163,7 +163,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<ITestInterface>(callBase: callBase);
+        var obj = fixture.CreateWithAutoMockDependencies<ITestInterface>(callbase: callBase);
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITestInterface>();
@@ -278,7 +278,7 @@ internal class AutoMockDependencies_Tests
         var fixture = new AbstractAutoMockFixture();
         fixture.MethodSetupType = MethodSetupTypes.Eager;
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callbase: false);
         // Assert
         obj.Should().NotBeNull();
         obj!.WithCtorArgs.Should().NotBeNull();
@@ -299,7 +299,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithComplexTestClass>>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithComplexTestClass>>(callbase: false);
         // Assert
         obj.Should().NotBeNull();
         obj!.Object.WithCtorArgs.Should().NotBeNull();
@@ -320,7 +320,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callBase: true);
+        var obj = fixture.CreateWithAutoMockDependencies<WithComplexTestClass>(callbase: true);
         // Assert
         obj!.WithCtorArgs.Should().NotBeNull();
 
@@ -335,7 +335,7 @@ internal class AutoMockDependencies_Tests
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithComplexTestClass>>(callBase: true);
+        var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithComplexTestClass>>(callbase: true);
         // Assert
         obj.Should().NotBeNull();
         obj!.Object.WithCtorArgs.Should().NotBeNull();

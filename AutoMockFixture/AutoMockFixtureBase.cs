@@ -139,19 +139,19 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     #region AutoMockDependencies
 
-    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-            => AutoMockEngine.CreateWithAutoMockDependencies<T>(callBase, autoMockTypeControl);
+    public T? CreateWithAutoMockDependencies<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+            => AutoMockEngine.CreateWithAutoMockDependencies<T>(callbase, autoMockTypeControl);
 
-    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callBase, autoMockTypeControl);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependencies(t, callBase, autoMockTypeControl);
+    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callbase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callBase, autoMockTypeControl);
+    public object? CreateWithAutoMockDependencies(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependencies(t, callbase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callbase, autoMockTypeControl);
 
     #endregion
 
@@ -175,19 +175,19 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     #region AutoMock
 
-    public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-            => AutoMockEngine.CreateAutoMock<T>(callBase, autoMockTypeControl);
+    public T? CreateAutoMock<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+            => AutoMockEngine.CreateAutoMock<T>(callbase, autoMockTypeControl);
 
-    public Task<T?> CreateAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
-            => AutoMockEngine.CreateAutoMockAsync<T>(callBase, autoMockTypeControl);
-
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateAutoMock(t, callBase, autoMockTypeControl);
+    public Task<T?> CreateAutoMockAsync<T>(bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+            => AutoMockEngine.CreateAutoMockAsync<T>(callbase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateAutoMockAsync(t, callBase, autoMockTypeControl);
+    public object? CreateAutoMock(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMock(t, callbase, autoMockTypeControl);
+
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public Task<object?> CreateAutoMockAsync(Type t, bool callbase = false, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMockAsync(t, callbase, autoMockTypeControl);
 
     #endregion
 
