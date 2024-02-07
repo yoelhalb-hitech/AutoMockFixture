@@ -48,13 +48,19 @@ internal class AutoMockHelpers : IAutoMockHelpers
 
     public bool IsAutoMockAllowed(Type t, bool force = false)
     {
+        if (!Moq.Extensions.IsMockable(t) || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))) return false;
+
+        return IsAllowed(t, force);
+    }
+
+    public bool IsAllowed(Type t, bool force = false)
+    {
         // We cannot afford to mock Type objects in the fixture as it might mess up things, although AutoMock itself allows it, and we actually use it
         // As a matter of fact there is no point to it either, as code using a type via a property or method etc. usually expects a specific type anyway
-        if (t is null || t.IsValueType || !Moq.Extensions.IsMockable(t) || typeof(Type).IsAssignableFrom(t)) return false;
+        if (t is null || t.IsValueType || typeof(Type).IsAssignableFrom(t)) return false;
         if(force) return true;
 
         if (t.IsPrimitive || t == typeof(string) || t == typeof(object)
-                    || (t.IsSealed && !typeof(System.Delegate).IsAssignableFrom(t))
                     || t == typeof(Array)
                     ||  (t.IsGenericType && new[]
                         {

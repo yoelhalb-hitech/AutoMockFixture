@@ -43,7 +43,7 @@ internal class AutoMockDependenciesBuilder : ISpecimenBuilder
             return autoMock;
         }
 
-        if (!AutoMockHelpers.IsAutoMockAllowed(dependencyRequest.Request)
+        if (!AutoMockHelpers.IsAllowed(dependencyRequest.Request)
             || typeof(System.Delegate).IsAssignableFrom(dependencyRequest.Request))
         {
             // Note that IEnumerable etc. should already be handled in the special builders

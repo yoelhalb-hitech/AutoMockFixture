@@ -17,6 +17,8 @@ internal interface IAutoMockHelpers
 
     bool IsAutoMockAllowed(Type t, bool force = false);
 
+    bool IsAllowed(Type t, bool force = false);
+
     SetupServiceFactoryBase GetSetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc);
 
     ISpecimenCommand GetStubAllPropertiesCommand();
