@@ -32,6 +32,7 @@ internal abstract record TrackerWithFixture : BaseTracker, IFixtureTracker
     protected virtual bool IsFixtureTrackerEquals(IFixtureTracker other)
                 => Object.ReferenceEquals(other.Fixture, Fixture)
                     && other.MockDependencies == MockDependencies
+                    && other.StartTracker.MockShouldCallBase == StartTracker.MockShouldCallBase
                     && (other.MockShouldCallBase ?? other.StartTracker.MockShouldCallBase) == (MockShouldCallBase ?? StartTracker.MockShouldCallBase);
 
     public event EventHandler<UpdateData>? DataUpdated;
