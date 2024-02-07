@@ -1,5 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
+using System.Linq;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 
@@ -21,7 +22,8 @@ internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
         var mock = AutoMockHelpers.GetFromObj(specimen);
         if (mock is null) return;
 
-        if (delegateSpecification.IsSatisfiedBy(mock.GetInnerType())) return;
+        var innerType = mock.GetInnerType();
+        if (delegateSpecification.IsSatisfiedBy(innerType)) return;
 
         var directTracker = mock.Tracker as AutoMockDirectRequest;
 
@@ -34,9 +36,14 @@ internal class AutoMockAutoPropertiesHandlerCommand : ISpecimenCommand
 
         // Private setters is normally the job of the class code but if not callBase we have to do it
         command.IncludePrivateSetters = !mock.CallBase;
-        // Private getters is normally not relevent outside the class code and the caller code has to handle it
-        //      but if not callBase we have to do it in case some method is setup with callBase and will run into issues (because the other methods are not callBase)
-        command.IncludePrivateOrMissingGetter = !mock.CallBase;
+
+        if (!mock.CallBase && (fixture.TypesToSetupPrivateGetters.Contains(innerType) || fixture.TypesToSetupPrivateGetters.Contains(mock.GetType())))
+        {
+            // Private getters is normally not relevent outside the class code and the caller code has to handle it
+            //      but if not callBase we have to do it in case some method is setup with callBase and will run into issues (because the other methods are not callBase)
+            command.IncludePrivateOrMissingGetter = true;
+        }
+        else command.IncludePrivateOrMissingGetter = false;
 
         command.Execute(mock.GetMocked(), context);
     }

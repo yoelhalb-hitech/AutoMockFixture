@@ -1,4 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.Commands;
+using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
 using System.Reflection;
 
 namespace AutoMockFixture.Tests.FixtureUtils.Commands;
@@ -24,7 +26,7 @@ file class CustomAutoPropertiesCommandSub : CustomAutoPropertiesCommand
         return GetPropertiesWithSet(specimen).Select(pi => pi.ReflectionInfo);
     }
 
-    public bool NeedsSetupPublic(object specimen, PropertyInfo pi) => base.NeedsSetup(specimen, pi);
+    public bool NeedsSetupPublic(object specimen, PropertyDetail pd) => base.NeedsSetup(specimen, pd);
 }
 
 internal class CustomAutoPropertiesCommand_Tests
@@ -50,7 +52,7 @@ internal class CustomAutoPropertiesCommand_Tests
     {
         var obj = new TestBase { TestPrimitive = 0 };
 
-        var result = new CustomAutoPropertiesCommandSub().NeedsSetupPublic(obj, typeof(TestBase).GetProperty(nameof(TestBase.TestPrimitive))!);
+        var result = new CustomAutoPropertiesCommandSub().NeedsSetupPublic(obj, typeof(TestBase).GetTypeDetailInfo().PropertyDetails.First(pd => pd.Name == nameof(TestBase.TestPrimitive)));
         result.Should().BeTrue();
     }
 }

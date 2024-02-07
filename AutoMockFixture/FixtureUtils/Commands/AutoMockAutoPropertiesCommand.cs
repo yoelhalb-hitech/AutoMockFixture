@@ -1,5 +1,7 @@
 ﻿using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.AutoMock;
+using DotNetPowerExtensions.Reflection;
+using DotNetPowerExtensions.Reflection.Models;
 
 namespace AutoMockFixture.FixtureUtils.Commands;
 
@@ -9,14 +11,34 @@ internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
     public AutoMockAutoPropertiesCommand(IRequestSpecification specification, IAutoMockFixture fixture) : base(specification, fixture) { }
 
     // In mock it might have been setup lazily so don't eveluate it now rather check if it's
-    protected override bool NeedsSetup(object specimen, PropertyInfo pi)
+    protected override bool NeedsSetup(object specimen, PropertyDetail pd)
     {
         var mock = Fixture.AutoMockHelpers.GetFromObj(specimen);
         // We base on the name and not on the property itself since it might be a sub property, but the names should match in general (TODO... need to check the case of exlicit implemented in the base)
         // Not checking on the value since for single method props it might actually save the method instead of the prop
-        if (mock is not null && mock.MethodsSetup.Any(ms => ms.Key is not null && ms.Key == pi.Name)) return false;
+        // TODO... we need to handle the explicit interface better
+        if (mock is not null && mock.MethodsSetup.Any(ms => ms.Key is not null && ms.Key == pd.ReflectionInfo.Name)) return false;
 
-        return base.NeedsSetup(specimen, pi);
+        var prop = pd;
+
+        while (prop.GetMethod is null && prop.BasePrivateGetMethod is null && prop.OverridenProperty is not null)
+        {
+            prop = prop.OverridenProperty;
+        }
+
+        return base.NeedsSetup(specimen, prop);
+    }
+
+    protected override void HandleProperty(object specimen, ISpecimenContext context, PropertyDetail pd, ITracker tracker)
+    {
+        var prop = pd;
+
+        while(prop.SetMethod is null && prop.BasePrivateSetMethod is null && prop.OverridenProperty is not null)
+        {
+            prop = prop.OverridenProperty;
+        }
+
+        base.HandleProperty(specimen, context, prop, tracker);
     }
 
     protected override object? GetPropertyValue(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)

@@ -85,6 +85,12 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();
     internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
 
+    /// <summary>
+    /// A list of <see cref="Type"/> for which we should setup the properties with the private getters (private setters will always be setup for non <see cref="IAutoMock.CallBase">)
+    /// </summary>
+    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>
+    public IList<Type> TypesToSetupPrivateGetters { get; } = new List<Type>();
+
     #region Freeze
 
     public virtual void JustFreeze<T>() => JustFreeze(typeof(T));

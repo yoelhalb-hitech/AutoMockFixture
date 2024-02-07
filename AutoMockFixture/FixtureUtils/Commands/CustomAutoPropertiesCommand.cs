@@ -50,7 +50,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
             try
             {
                 // If it is already set (possibly by the constructor or if it's static) then no need to set again
-                if (!NeedsSetup(specimen, pd.ReflectionInfo)) continue;
+                if (!NeedsSetup(specimen, pd)) continue;
 
                 HandleProperty(specimen, context, pd, tracker);
             }
@@ -73,10 +73,16 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
         if (existingTracker is null) tracker.SetCompleted(this);
     }
 
-    protected virtual bool NeedsSetup(object specimen, PropertyInfo pi) => object.Equals(pi.GetValue(specimen), pi.PropertyType.GetDefault()); // Use object.Equals because of primitive types
+    protected virtual bool NeedsSetup(object specimen, PropertyDetail pd) =>
+        (pd.GetMethod is not null || pd.BasePrivateGetMethod is not null)
+            && object.Equals(pd.GetMethod is not null ? pd.ReflectionInfo.GetValue(specimen)
+                            : pd.BasePrivateGetMethod!.ReflectionInfo.Invoke(specimen, new object[] { }),
+                    pd.ReflectionInfo.PropertyType.GetDefault()); // Use object.Equals because of primitive types
 
     protected virtual void HandleProperty(object specimen, ISpecimenContext context, PropertyDetail pd, ITracker tracker)
     {
+        if (pd.SetMethod is null && pd.BasePrivateSetMethod is null) return; // Avoid creating the value..
+
         var propertyValue = GetPropertyValue(specimen, context, pd.ReflectionInfo, tracker);
 
         if (propertyValue is NoSpecimen || propertyValue is OmitSpecimen) return;

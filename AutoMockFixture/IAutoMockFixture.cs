@@ -13,6 +13,12 @@ public interface IAutoMockFixture
 
     AutoMockTypeControl AutoMockTypeControl { get; set; }
 
+    /// <summary>
+    /// A list of <see cref="Type"/> for which we should setup the properties with the private getters (private setters will always be setup for non <see cref="IAutoMock.CallBase">)
+    /// </summary>
+    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>
+    IList<Type> TypesToSetupPrivateGetters {  get; }
+
     TraceInfo Trace();
 
     #region Freeze
