@@ -1,7 +1,23 @@
+## [5.0.4] - 2024-02-06
+
+### Added
+- `IAutoMockFixture.TypesToSetupPrivateGetters` property 
+
+### Fixed
+- Fix to consider the start tracker `MockShouldCallBase` setting, in particular when creating `Enumerable` mocks
+- Fix bugs in handling properties/fields private getters/setters when setting up `AutoMock` properties
+
+### Changed
+- Allow creation of selaed classes with `AutoMockDependency` and `NonAutoMock`
+- To setup properties/fields private/missing getters on an `AutoMock` one has to add the type containing the property/field to the `IAutoMockFixture.TypesToSetupPrivateGetters` list (and only if `!CallBase`), the default is changed to only handle private setters but not private or missing getters 
+
+### Removed
+- Remove support for .Net core 2.1 as .Net has security warnings on it
+
 ## [5.0.3] - 2024-02-06
 
 ### Changed
-- All names contaiing `Callbase`\ `callbase` will now the `B` uppercased `CallBase`\ `callBase` (unlike till now where some were `callbase` or `Callbase`), this time all of them are actually updated (hoepfully...)
+- All names containing `Callbase`\ `callbase` will now have the `B` uppercased `CallBase`\ `callBase` (unlike till now where some were `callbase` or `Callbase`), this time all of them are actually updated (hoepfully...)
 
 ## [5.0.2] - 2024-02-06
 
