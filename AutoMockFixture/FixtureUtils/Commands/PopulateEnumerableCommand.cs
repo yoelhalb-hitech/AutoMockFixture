@@ -31,9 +31,12 @@ internal class PopulateEnumerableCommand : ISpecimenCommand
         if(enumerableIface is null) return;
 
         var innerType = enumerableIface.GetInnerTypes().First();
-        foreach (var item in enumerable) // Will start enumeration, but we return immediately if there is anything, this way we don't have to figure out how to do `.Any()`...
-            if (item is not null && innerType?.GetDefault() != item) return; // Only doing if not setup, example if it is from cache
-
+        try
+        {
+            foreach (var item in enumerable) // Will start enumeration, but we return immediately if there is anything, this way we don't have to figure out how to do `.Any()`...
+                if (item is not null && innerType?.GetDefault() != item) return; // Only doing if not setup, example if it is from cache
+        }
+        catch { } // In case there is an issue with the enumerator
 
         var requestType = typedRequest.Request; // Working with the request so we can get the concrete type to see if it is abstract
         while (AutoMockHelpers.IsAutoMock(requestType)) requestType = AutoMockHelpers.GetMockedType(requestType)!;
