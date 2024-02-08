@@ -15,14 +15,13 @@ internal static class MethodInfoExtensions
     internal static bool HasRefParameters(this MethodInfo method) => method.GetParameters()
                      .Any(p => p.ParameterType.IsByRef && !p.IsOut);
 
-    internal static bool HasOverloads(this MethodInfo method)
-        => method.ReflectedType?.GetAllMethods().Any(m => m.Name == method.Name && m != method // CATUION: Use `RefelectedType` as `DeclaringType` methods will be different for a subclass
-                    && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m.GetGenericMethodDefinition())) // CATUION: Use `GetGenericMethodDefinition` on both sides of the equality since `ReflectedType` for `GetGenericMethodDefinition` might be the base class
-            ?? false;
+    internal static bool HasOverloads(this MethodInfo method) => method.HasOverloadsInternal(false);
 
-    internal static bool HasOverloadSameCount(this MethodInfo method)
+    internal static bool HasOverloadSameCount(this MethodInfo method) => method.HasOverloadsInternal(true);
+
+    private static bool HasOverloadsInternal(this MethodInfo method, bool sameCount)
         => method.ReflectedType?.GetAllMethods().Any(m => m.Name == method.Name // CATUION: Use `RefelectedType` as `DeclaringType` methods will be different for a subclass
-                    && m.GetParameters().Length == method.GetParameters().Length
+                    && (!sameCount || m.GetParameters().Length == method.GetParameters().Length)
                     && (!method.IsGenericMethod || !m.IsGenericMethod
                             || method.GetGenericMethodDefinition() != m.GetGenericMethodDefinition()) // CATUION: Use `GetGenericMethodDefinition` on both sides of the equality since `ReflectedType` for `GetGenericMethodDefinition` might be the base class
                     && m != method) ?? false;

@@ -5,7 +5,7 @@ namespace AutoMockFixture.Tests.Extensions;
 public class MethodInfoExtensions_Tests
 {
     [Test]
-    [TestCase(nameof(TestClass.NonOverload), false)]
+    [TestCase( nameof(TestClass.NonOverload), false)]
     [TestCase(nameof(TestClass.NonOverloadWithArgs), false)]
     [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), false)]
     [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), false)]
@@ -30,6 +30,19 @@ public class MethodInfoExtensions_Tests
         var hasOverload = GetSubClassMethod(m => m.Name == name).HasOverloads();
 
         hasOverload.Should().Be(expectedHasOverload);
+    }
+
+    [TestCase(typeof(TestClassOverloadsFirstNonGeneric))] // CATUION: Declared order of methods matters when enumerating
+    [TestCase(typeof(TestSubClassOverloadsFirstNonGeneric))]
+    [TestCase(typeof(TestClassOverloadsFirstGeneric))]
+    [TestCase(typeof(TestSubClassOverloadsFirstGeneric))]
+    public void Test_HasOverloads_DoesNotThrow_BugRepro(Type t)
+    {
+        foreach (var method in t.GetAllMethods())
+        {
+            Assert.DoesNotThrow(() => method.HasOverloads());
+            Assert.DoesNotThrow(() => method.HasOverloadSameCount());
+        }
     }
 
     [Test]
@@ -61,9 +74,9 @@ public class MethodInfoExtensions_Tests
     }
 
     [Test]
-    [TestCase(nameof(TestClass.NonOverload),"NonOverload")]
+    [TestCase(nameof(TestClass.NonOverload), "NonOverload")]
     [TestCase(nameof(TestClass.NonOverloadWithArgs), "NonOverloadWithArgs")]
-    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs),"NonOverloadWithGenericArgs`1")]
+    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), "NonOverloadWithGenericArgs`1")]
     [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), "NonOverloadWithNonUsingGenericArgs`1")]
     public void TestGetTrackingPath_ReturnsCorrectly_ForNonOverloads(string name, string expectedTrackingPath)
     {
@@ -140,6 +153,36 @@ public class MethodInfoExtensions_Tests
     }
 
     internal class TestSubClass : TestClass { }
+
+    internal class TestClassOverloadsFirstNonGeneric
+    {
+        public void OverloadSameArgNumber(int _) { }
+        public void OverloadSameArgNumber(string _) { }
+        public void OverloadSameArgNumber<T>(T _) { }
+        public void OverloadSameArgNumber<T1, T2>(T1 _) { }
+        public void OverloadDifferentArgNumber() { }
+        public void OverloadDifferentArgNumber(string _) { }
+        public void OverloadDifferentArgNumber(string _, int i) { }
+        public void OverloadDifferentArgNumber<T>(string _, int i, T t) { }
+        public void OverloadDifferentArgNumber<T1, T2>(string _, int i, string s2, T1 t) { }
+    }
+
+    internal class TestSubClassOverloadsFirstNonGeneric : TestClassOverloadsFirstNonGeneric { }
+
+    internal class TestClassOverloadsFirstGeneric
+    {
+        public void OverloadSameArgNumber<T>(T _) { }
+        public void OverloadSameArgNumber<T1, T2>(T1 _) { }
+        public void OverloadSameArgNumber(int _) { }
+        public void OverloadSameArgNumber(string _) { }
+        public void OverloadDifferentArgNumber<T>(string _, int i, T t) { }
+        public void OverloadDifferentArgNumber<T1, T2>(string _, int i, string s2, T1 t) { }
+        public void OverloadDifferentArgNumber() { }
+        public void OverloadDifferentArgNumber(string _) { }
+        public void OverloadDifferentArgNumber(string _, int i) { }
+    }
+
+    internal class TestSubClassOverloadsFirstGeneric : TestClassOverloadsFirstGeneric { }
 
     #endregion
 
