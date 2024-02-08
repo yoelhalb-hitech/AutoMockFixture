@@ -16,14 +16,16 @@ internal static class MethodInfoExtensions
                      .Any(p => p.ParameterType.IsByRef && !p.IsOut);
 
     internal static bool HasOverloads(this MethodInfo method)
-        => method.DeclaringType?.GetAllMethods().Any(m => m.Name == method.Name && m != method
-                        && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m)) ?? false;
+        => method.ReflectedType?.GetAllMethods().Any(m => m.Name == method.Name && m != method // CATUION: Use `RefelectedType` as `DeclaringType` methods will be different for a subclass
+                    && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m.GetGenericMethodDefinition())) // CATUION: Use `GetGenericMethodDefinition` on both sides of the equality since `ReflectedType` for `GetGenericMethodDefinition` might be the base class
+            ?? false;
 
     internal static bool HasOverloadSameCount(this MethodInfo method)
-        => method.DeclaringType?.GetAllMethods().Any(m => m.Name == method.Name
-                                                    && m.GetParameters().Length == method.GetParameters().Length
-                                                    && (!method.IsGenericMethod || method.GetGenericMethodDefinition() != m)
-                                                    && m != method) ?? false;
+        => method.ReflectedType?.GetAllMethods().Any(m => m.Name == method.Name // CATUION: Use `RefelectedType` as `DeclaringType` methods will be different for a subclass
+                    && m.GetParameters().Length == method.GetParameters().Length
+                    && (!method.IsGenericMethod || !m.IsGenericMethod
+                            || method.GetGenericMethodDefinition() != m.GetGenericMethodDefinition()) // CATUION: Use `GetGenericMethodDefinition` on both sides of the equality since `ReflectedType` for `GetGenericMethodDefinition` might be the base class
+                    && m != method) ?? false;
 
     internal static ConcurrentDictionary<(MethodInfo, bool), string> methodPathCache = new();
 
