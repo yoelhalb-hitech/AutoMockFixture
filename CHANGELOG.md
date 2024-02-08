@@ -1,3 +1,9 @@
+## [5.0.5] - 2024-02-08
+
+### Fixed
+- Fix bug setting up `.Equals` `.GetHashCode` `.ToString` when it was overriden in a base class
+- Fix bugs with method paths when methods were declared in a base class
+
 ## [5.0.4] - 2024-02-06
 
 ### Added

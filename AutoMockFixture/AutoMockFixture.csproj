@@ -42,7 +42,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture</PackageId>
-    <PackageVersion>5.0.4</PackageVersion>
+    <PackageVersion>5.0.5</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
