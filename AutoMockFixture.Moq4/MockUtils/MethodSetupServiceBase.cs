@@ -30,6 +30,8 @@ internal abstract class MethodSetupServiceBase : ISetupService
         this.noMockDependencies = !mock.Tracker?.StartTracker.MockDependencies ?? false;
     }
 
+    static MethodInfo[] objectMethods = typeof(object).GetMethods();
+
     public void Setup()
     {
         var returnType = method.ReturnType;
@@ -38,7 +40,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
         if (methodInvocationLambda is null) return;
 
-        if (method.ReflectionInfo.DeclaringType == typeof(object)) // Overriding .Equals etc. can cause problems
+        if (objectMethods.Any(m => m.IsSignatureEqual(method.ReflectionInfo))) // Overriding .Equals etc. can cause problems, note that we cannot base on the DelcaringType if it is overriden
         {
             SetupHelpers.SetupCallBaseMethod(mockedType, returnType, mock, methodInvocationLambda);
             return;
