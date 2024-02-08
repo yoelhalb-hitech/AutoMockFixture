@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.AnalyzerAnd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMockFixture.AnalyzerAndCodeCompletion.Vsix", "AutoMockFixture.AnalyzerAndCodeCompletion.Vsix\AutoMockFixture.AnalyzerAndCodeCompletion.Vsix.csproj", "{277FC7F1-BC43-4C3F-85DF-9269207B3F81}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A363E443-A21F-4A46-A74C-6654C4F2995F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +86,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{904BBB37-81DF-43B1-AB1C-DE1A89EF022F} = {A363E443-A21F-4A46-A74C-6654C4F2995F}
+		{BE76726D-E2B3-41D6-BFBD-44BBA03CD834} = {A363E443-A21F-4A46-A74C-6654C4F2995F}
+		{FC4AAC03-06EC-4FED-8D30-077A0980E728} = {A363E443-A21F-4A46-A74C-6654C4F2995F}
+		{BBF8628D-6E2C-433A-8558-BE87DAAB983C} = {A363E443-A21F-4A46-A74C-6654C4F2995F}
+		{05DB9990-B4E0-4E88-9150-8B6E4539539B} = {A363E443-A21F-4A46-A74C-6654C4F2995F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0DF38A59-03B9-453C-A538-1B857004BAC7}
