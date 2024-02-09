@@ -87,7 +87,7 @@ internal class AutoMockFixtureEngine
                         ? t
                         : t.IsGenericType ? t.GenericTypeArguments.First(): typeof(object);
         if(!fixture.AutoMockHelpers.IsAutoMockAllowed(type))
-            throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
+            throw new InvalidOperationException($"{type.ToGenericTypeString()} cannot be AutoMock");
 
         var result = Execute(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallBase = callBase }, autoMockTypeControl);
 
