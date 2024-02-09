@@ -1,3 +1,16 @@
+## [6.0.0] - 2024-02-08
+
+### Breaking change
+- Will no longer initialize properties/fields that are internal to microsoft assemblies
+
+### Changed
+- Fix bug with delegates
+- Fix more bugs with paths
+
+### Fixed
+- Throw detailed error when requesting the mock via wrong type of mocked (in `AutoMock.Get()`)
+- Use a better description for string representation of types
+
 ## [5.0.5] - 2024-02-08
 
 ### Fixed
