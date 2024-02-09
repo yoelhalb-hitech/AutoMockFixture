@@ -134,7 +134,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
         // InitOnly is meant to be set by the ctor only so it's like a private setter
         return from fi in details
                             where !fi.IsInitOnly || (!fi.IsStatic && IncludePrivateSetters)
-                            where (IncludePrivateSetters && IncludePrivateOrMissingGetter) || fi.IsPublicOrInternal()
+                            where (IncludePrivateSetters && IncludePrivateOrMissingGetter) || fi.IsRelevant()
                             where Specification?.IsSatisfiedBy(fi) != false
                                select fi;
     }
@@ -153,8 +153,8 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
                         .Concat(detailInfo.ShadowedPropertyDetails)
                         .Concat(detailInfo.ExplicitPropertyDetails.Where(d => validInterfaces?.Contains(d.ExplicitInterface) ?? false))
                      where pi.SetMethod is not null || pi.BasePrivateSetMethod is not null
-                     where IncludePrivateSetters || pi.SetMethod?.ReflectionInfo.IsPublicOrInternal() == true
-                     where IncludePrivateOrMissingGetter || pi.GetMethod?.ReflectionInfo.IsPublicOrInternal() == true
+                     where IncludePrivateSetters || pi.SetMethod?.ReflectionInfo.IsRelevant() == true
+                     where IncludePrivateOrMissingGetter || pi.GetMethod?.ReflectionInfo.IsRelevant() == true
                      where pi.ReflectionInfo.GetIndexParameters().Length == 0 && Specification?.IsSatisfiedBy(pi.ReflectionInfo) != false
                      select pi;
     }
