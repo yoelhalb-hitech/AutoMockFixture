@@ -24,12 +24,15 @@ internal class AutoMockHelpers : IAutoMockHelpers
         {
             var m = global::Moq.Mock.Get<T>(mocked);
             if(m is not IAutoMock) throw new ArgumentException("Object instance was created by Mock but not by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')");
-            if(m is not AutoMock<T>) throw new ArgumentException($"Expected Mock to be of type `{typeof(AutoMock<T>).FullName}` but found {m.GetType().FullName}");
+            if(m is not AutoMock<T>) throw new ArgumentException($"Expected Mock to be of type `{typeof(AutoMock<T>).ToGenericTypeString()}` but found {m.GetType().ToGenericTypeString()}");
 
             return m as AutoMock<T>;
         }
         catch(ArgumentException ex) when (ex.Message == "Object instance was not created by Moq. (Parameter 'mocked')")
         {
+            var obj = new AutoMockHelpers().GetFromObj(mocked);
+            if(obj is not null) throw new InvalidCastException($"Mock is of type AutoMock<{obj.GetType().GetGenericArguments().First().ToGenericTypeString()}> and cannot be casted to AutoMock<{typeof(T).ToGenericTypeString()}>");
+
             throw new ArgumentException("Object instance was not created by AutoMockFixture.Moq.AutoMock. (Parameter 'mocked')", ex);
         }
     }
