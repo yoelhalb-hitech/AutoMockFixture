@@ -33,8 +33,9 @@ internal class PopulateEnumerableCommand : ISpecimenCommand
         var innerType = enumerableIface.GetInnerTypes().First();
         try
         {
-            foreach (var item in enumerable) // Will start enumeration, but we return immediately if there is anything, this way we don't have to figure out how to do `.Any()`...
-                if (item is not null && innerType?.GetDefault() != item) return; // Only doing if not setup, example if it is from cache
+            if (enumerable.GetEnumerator() is not null) // Can happen if not setup correctly
+                foreach (var item in enumerable) // Will start enumeration, but we return immediately if there is anything, this way we don't have to figure out how to do `.Any()`...
+                    if (item is not null && innerType?.GetDefault() != item) return; // Only doing if not setup, example if it is from cache
         }
         catch { } // In case there is an issue with the enumerator
 
