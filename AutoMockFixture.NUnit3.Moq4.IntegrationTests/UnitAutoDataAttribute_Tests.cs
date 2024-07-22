@@ -39,6 +39,45 @@ internal class AutoDataUnitAttribute_Tests
 
     [Test]
     [UnitAutoData]
+    public void Test_UnitAutoDataAttribute_WithPrimitiveArray(decimal[] dcmls, double[] dbls, int[] ints, long[] longs)
+    {
+        dcmls.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0);
+        dbls.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0);
+        ints.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0);
+        longs.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0);
+    }
+
+    [Test]
+    [UnitAutoData]
+    public void Test_UnitAutoDataAttribute_WithPrimitiveJaggedArray(decimal[][] dcmls, double[][] dbls,
+                                                                        int[][] ints, long[][] longs)
+    {
+        dcmls.Should().HaveCount(3).And.NotContainNulls();
+        dcmls.ToList().ForEach(d => d.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0));
+
+        dbls.Should().HaveCount(3).And.NotContainNulls();
+        dbls.ToList().ForEach(d => d.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0));
+
+        ints.Should().HaveCount(3).And.NotContainNulls();
+        ints.ToList().ForEach(d => d.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0));
+
+        longs.Should().HaveCount(3).And.NotContainNulls();
+        longs.ToList().ForEach(d => d.Should().HaveCount(3).And.NotContainNulls().And.NotContain(0));
+    }
+
+    [Test]
+    [UnitAutoData]
+    public void Test_UnitAutoDataAttribute_WithPrimitive2DismentionArray(decimal[,] dcmls, double[,] dbls,
+                                                                    int[,] ints, long[,] longs)
+    {
+        dcmls.Should().HaveCount(9).And.NotContainNulls().And.NotContain(0);
+        dbls.Should().HaveCount(9).And.NotContainNulls().And.NotContain(0);
+        ints.Should().HaveCount(9).And.NotContainNulls().And.NotContain(0);
+        longs.Should().HaveCount(9).And.NotContainNulls().And.NotContain(0);
+    }
+
+    [Test]
+    [UnitAutoData]
     public void Test_UnitAutoDataAttribute_AutoMocksDependencies_WhenAutoMock(AutoMock<WithCtorArgsTestClass> testClass)
     {
         testClass.Should().NotBeNull();

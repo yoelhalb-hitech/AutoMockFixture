@@ -9,6 +9,7 @@ internal class EnumerableBuilder : NonConformingBuilder
 {
     public override Type[] SupportedTypes => new Type[]
     {
+        typeof(Array),
         typeof(IEnumerable<>),
 #if NET461_OR_GREATER || NETSTANDARD2_0_OR_GREATER
         typeof(IAsyncEnumerable<>)
@@ -52,6 +53,12 @@ internal class EnumerableBuilder : NonConformingBuilder
 
         var hasCountCtor = ctors.Any(x => x.GetParameters().Length == 1 && x.GetParameters().First().ParameterType == typeof(int));
         if(hasCountCtor) return Activator.CreateInstance(requestType, Repeat);
+
+        if(requestType.IsArray && requestType.GetArrayRank() > 1)
+        {
+            var countCtor = ctors.FirstOrDefault(x => x.GetParameters().Length == requestType.GetArrayRank() && x.GetParameters().All(p => p.ParameterType == typeof(int)));
+            if (countCtor is not null) return countCtor.Invoke(Enumerable.Repeat(Repeat as object, requestType.GetArrayRank()).ToArray());
+        }
 
         var hasDefaultCtor = ctors.Any(x => !x.GetParameters().Any());
         if(hasDefaultCtor) return Activator.CreateInstance(requestType);

@@ -17,13 +17,15 @@ internal class Enumerable_Tests
         public AbstractListWithAdd<string>? AbstractListPropWithAdd { get; set; }
         public AbstractList<string>? AbstractListProp { get; set; }
     }
-    public class WithBuiltInTypes
+    public class WithBuiltInTypes<T> where T : notnull
     {
-        public string[]? PropArray { get; set; }
-        public List<string>? PropList { get; set; }
-        public HashSet<string>? PropSet { get; set; }
-        public Dictionary<string, string>? PropDict { get; set; }
-        public ConcurrentDictionary<string, string>? PropConcurentDict { get; set; }
+        public T[]? PropArray { get; set; }
+        public T[][]? PropJaggedArray { get; set; }
+        public T[,]? Prop2DimArray { get; set; }
+        public List<T>? PropList { get; set; }
+        public HashSet<T>? PropSet { get; set; }
+        public Dictionary<T, T>? PropDict { get; set; }
+        public ConcurrentDictionary<T, T>? PropConcurentDict { get; set; }
     }
     public abstract class AbstractList<T> : IEnumerable<T> // Remember that Enumerbale builder will only work for generic types
     {
@@ -166,16 +168,11 @@ internal class Enumerable_Tests
         var result = fixture.CreateNonAutoMock<WithAbstractEnumerableProperty>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
-        result!.AbstractListProp.Should().NotBeNull();
-        result.AbstractListProp!.Count().Should().Be(0);
+        result!.AbstractListProp.Should().BeEmpty();
 
-        result!.AbstractListPropWithAdd.Should().NotBeNull();
-        result.AbstractListPropWithAdd!.Count().Should().Be(3);
-        result.AbstractListPropWithAdd!.Should().NotContainNulls();
+        result!.AbstractListPropWithAdd.Should().HaveCount(3).And.NotContainNulls();
 
-        result!.AbstractListPropWithAddRange.Should().NotBeNull();
-        result.AbstractListPropWithAddRange!.Count().Should().Be(3);
-        result.AbstractListPropWithAddRange!.Should().NotContainNulls();
+        result!.AbstractListPropWithAddRange.Should().HaveCount(3).And.NotContainNulls();
     }
 
     [Test]
@@ -186,16 +183,11 @@ internal class Enumerable_Tests
         var result = fixture.CreateNonAutoMock<WithNonAbstractEnumerableProperty>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
-        result!.NonAbstractListProp.Should().NotBeNull();
-        result.NonAbstractListProp!.Count().Should().Be(0);
+        result!.NonAbstractListProp.Should().BeEmpty();
 
-        result!.NonAbstractListPropWithAdd.Should().NotBeNull();
-        result.NonAbstractListPropWithAdd!.Count().Should().Be(3);
-        result.NonAbstractListPropWithAdd!.Should().NotContainNulls();
+        result!.NonAbstractListPropWithAdd.Should().HaveCount(3).And.NotContainNulls();
 
-        result!.NonAbstractListPropWithAddRange.Should().NotBeNull();
-        result.NonAbstractListPropWithAddRange!.Count().Should().Be(3);
-        result.NonAbstractListPropWithAddRange!.Should().NotContainNulls();
+        result!.NonAbstractListPropWithAddRange.Should().HaveCount(3).And.NotContainNulls();
     }
 
     [Test]
@@ -206,43 +198,68 @@ internal class Enumerable_Tests
         var result = fixture.CreateAutoMock<WithNonAbstractEnumerableProperty>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
-        result!.NonAbstractListProp.Should().NotBeNull();
-        result.NonAbstractListProp!.Count().Should().Be(0);
+        result!.NonAbstractListProp.Should().BeEmpty();
 
-        result!.NonAbstractListPropWithAdd.Should().NotBeNull();
-        result.NonAbstractListPropWithAdd!.Count().Should().Be(3);
-        result.NonAbstractListPropWithAdd!.Should().NotContainNulls();
+        result!.NonAbstractListPropWithAdd.Should().HaveCount(3).And.NotContainNulls();
 
-        result!.NonAbstractListPropWithAddRange.Should().NotBeNull();
-        result.NonAbstractListPropWithAddRange!.Count().Should().Be(3);
-        result.NonAbstractListPropWithAddRange!.Should().NotContainNulls();
+        result!.NonAbstractListPropWithAddRange.Should().HaveCount(3).And.NotContainNulls();
     }
 
     [Test]
-    public void Test_HandlesCorrectlyBuiltInTypes_AutoMockRequest()
+    [TestCase<string>, TestCase<string[]>, TestCase<List<string>>]
+    [TestCase<decimal>, TestCase<decimal[]>, TestCase<List<decimal>>]
+    [TestCase<int>, TestCase<int[]>, TestCase<List<int>>]
+    public void Test_HandlesCorrectlyBuiltInTypes_AutoMockRequest<T>() where T : notnull
     {
         var fixture = new AbstractAutoMockFixture();
 
-        var result = fixture.CreateAutoMock<WithBuiltInTypes>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
+        var result = fixture.CreateAutoMock<WithBuiltInTypes<T>>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
 
-        result!.PropArray.Should().NotBeNull();
-        result.PropArray!.Count().Should().Be(3);
-        result.PropArray!.Should().NotContainNulls();
+        result!.PropArray.Should().HaveCount(3).And.NotContainNulls().And.NotContain(default(T)!);
 
-        result!.PropList.Should().NotBeNull();
-        result.PropList!.Count().Should().Be(3);
-        result.PropList!.Should().NotContainNulls();
+        result!.PropJaggedArray.Should().HaveCount(3).And.NotContainNulls();
+        result.PropJaggedArray!.ToList().ForEach(p => p.Should().HaveCount(3).And.NotContainNulls());
 
-        result!.PropSet.Should().NotBeNull();
-        result.PropSet!.Count().Should().Be(3);
-        result.PropSet!.Should().NotContainNulls();
+        result!.Prop2DimArray.Should().HaveCount(9).And.NotContainNulls();
+        foreach (var item in result!.Prop2DimArray!) item.Should().NotBe(default(T));
 
-        result!.PropDict.Should().NotBeNull();
-        result.PropDict!.Count().Should().Be(3);
+        result!.PropList.Should().HaveCount(3).And.NotContainNulls().And.NotContain(default(T)!);
 
-        result!.PropConcurentDict.Should().NotBeNull();
-        result.PropConcurentDict!.Count().Should().Be(0);
+        result!.PropSet.Should().HaveCount(3).And.NotContainNulls().And.NotContain(default(T)!);
+
+        result!.PropDict.Should().HaveCount(3).And.NotContainValue(default(T)!);
+
+        result!.PropConcurentDict.Should().HaveCount(3).And.NotContainValue(default(T)!);
+    }
+
+    [Test]
+    [TestCase<string>, TestCase<string[]>, TestCase<List<string>>]
+    [TestCase<decimal>, TestCase<decimal[]>, TestCase<List<decimal>>]
+    [TestCase<int>, TestCase<int[]>, TestCase<List<int>>]
+    public void Test_HandlesCorrectlyBuiltInTypes_NonAutoMockRequest<T>() where T : notnull
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateNonAutoMock<WithBuiltInTypes<T>>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+
+        result!.PropArray.Should().HaveCount(3).And.NotContainNulls().And.NotContain(default(T)!);
+
+        result!.PropJaggedArray.Should().HaveCount(3).And.NotContainNulls();
+        result.PropJaggedArray!.ToList().ForEach(p => p.Should().HaveCount(3).And.NotContainNulls());
+
+        result!.Prop2DimArray.Should().HaveCount(9).And.NotContainNulls();
+        foreach (var item in result!.Prop2DimArray!) item.Should().NotBe(default(T));
+
+        result!.PropList.Should().HaveCount(3).And.NotContainNulls().And.NotContain(default(T)!);
+
+        result!.PropSet.Should().HaveCount(3).And.NotContainNulls().And.NotContain(default(T)!);
+
+        result!.PropDict.Should().HaveCount(3).And.NotContainValue(default(T)!);
+
+        result!.PropConcurentDict.Should().HaveCount(3).And.NotContainValue(default(T)!);
+
     }
 
     [Test]
