@@ -262,7 +262,8 @@ internal class SubclassOpenGenericCustomization_Tests
 
     [Test]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_FailsCorrectly_When_NeverAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_FailsCorrectly_When_NeverAutoMock<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
@@ -275,7 +276,8 @@ internal class SubclassOpenGenericCustomization_Tests
 
     [Test]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_DoesNotFail_When_NeverAutoMock_OnlyOriginal<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_DoesNotFail_When_NeverAutoMock_OnlyOriginal<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
@@ -298,7 +300,8 @@ internal class SubclassOpenGenericCustomization_Tests
     [TestCase<ISubTestIface<string>, SubTestType<string>>]
     [TestCase<BaseTestType<string>, SubTestType<string>>]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_FreezesCorrectly<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_FreezesCorrectly<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());
@@ -318,7 +321,8 @@ internal class SubclassOpenGenericCustomization_Tests
     [TestCase<ITestIface<string>, SubTestType<string>>]
     [TestCase<ISubTestIface<string>, SubTestType<string>>]
     [TestCase<BaseTestType<string>, SubTestType<string>>]
-    public void Test_FreezesCorrectly_When_NeverAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_FreezesCorrectly_When_NeverAutoMock<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
@@ -342,7 +346,8 @@ internal class SubclassOpenGenericCustomization_Tests
     [TestCase<ISubTestIface<string>, SubTestType<string>>]
     [TestCase<BaseTestType<string>, SubTestType<string>>]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_FreezesCorrectly_When_ForceAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_FreezesCorrectly_When_ForceAutoMock<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
@@ -391,7 +396,8 @@ internal class SubclassOpenGenericCustomization_Tests
     [TestCase<ISubTestIface<string>, SubTestType<string>>]
     [TestCase<BaseTestType<string>, SubTestType<string>>]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_FreezesCorrectly_ForAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_FreezesCorrectly_ForAutoMock<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassCustomization<TOriginal, TSubClass>());
@@ -412,7 +418,8 @@ internal class SubclassOpenGenericCustomization_Tests
     [TestCase<ISubTestIface<string>, SubTestType<string>>]
     [TestCase<BaseTestType<string>, SubTestType<string>>]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_FreezesCorrectly_ForAutoMock_WithDifferent<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_FreezesCorrectly_ForAutoMock_WithDifferent<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());
@@ -433,7 +440,8 @@ internal class SubclassOpenGenericCustomization_Tests
     [TestCase<ISubTestIface<string>, SubTestType<string>>]
     [TestCase<BaseTestType<string>, SubTestType<string>>]
     [TestCase<ITestIface<string>, ISubTestIface<string>>]
-    public void Test_ThrowsCorretly_ForAutoMock_WhenAutoMock<TOriginal, TSubClass>() where TOriginal : class where TSubClass : class
+    public void Test_ThrowsCorretly_ForAutoMock_WhenAutoMock<TOriginal, TSubClass>()
+        where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
         fixture.Customize(new SubclassOpenGenericCustomization<TOriginal, TSubClass>());

@@ -6,6 +6,9 @@ using DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Customizations;
 
+/// <summary>
+/// Customization to use a given subclass instead of the original baseclass
+/// </summary>
 public class SubclassTransformCustomization : ICustomization
 {
     public SubclassTransformCustomization(Type originalType, Type subclassType)
