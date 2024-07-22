@@ -18,8 +18,10 @@ internal class TaskBuilder : NonConformingBuilder
 
     public override object? CreateResult(Type requestType, object[] innerResults, IRequestWithType typeRequest, ISpecimenContext context)
     {
-        var nonGenericType = requestType.IsGenericType ? requestType.BaseType : requestType;
+        if (requestType == typeof(Task)) return Task.FromResult(new object());
+        if (requestType == typeof(ValueTask)) return new ValueTask();
 
+        var nonGenericType = requestType.GetGenericTypeDefinition() == typeof(Task<>) ? typeof(Task) : typeof(ValueTask);
         var args = innerResults.FirstOrDefault() ?? new object(); // For the non generic we use object
         var specimen = nonGenericType?.GetMethod(nameof(Task.FromResult))?
                             .MakeGenericMethod(requestType.GetGenericArguments().FirstOrDefault() ?? typeof(object))?

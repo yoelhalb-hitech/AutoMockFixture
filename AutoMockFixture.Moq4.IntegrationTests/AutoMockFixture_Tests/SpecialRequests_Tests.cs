@@ -72,4 +72,34 @@ internal class SpecialRequests_Tests
 
         fixture.CreateNonAutoMock<TTask>(callBase: callBase).Should().NotBeNull();
     }
+
+    [Test]
+    [TestCase<ValueTask>(true)]
+    [TestCase<ValueTask>(false)]
+    [TestCase<ValueTask<TestClass>>(true)]
+    [TestCase<ValueTask<TestClass>>(false)]
+    [TestCase<ValueTask<Action>>(true)]
+    [TestCase<ValueTask<Action>>(false)]
+    [TestCase<ValueTask<string>>(true)]
+    [TestCase<ValueTask<string>>(false)]
+    [TestCase<ValueTask<string[]>>(true)]
+    [TestCase<ValueTask<string[]>>(false)]
+    [TestCase<ValueTask<List<string>>>(true)]
+    [TestCase<ValueTask<List<string>>>(false)]
+    [TestCase<ValueTask<Func<Action>>>(true)]
+    [TestCase<ValueTask<Func<Action>>>(false)]
+    [TestCase<ValueTask<Func<Func<Action>>>>(true)]
+    [TestCase<ValueTask<Func<Func<Action>>>>(false)]
+    [TestCase<ValueTask<Func<string>>>(true)]
+    [TestCase<ValueTask<Func<string>>>(false)]
+    [TestCase<ValueTask<Func<string, int>>>(true)]
+    [TestCase<ValueTask<Func<string, int>>>(false)]
+    public void Test_HandlesCorrectlyValueTasks<TTask>(bool callBase) where TTask : struct
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        fixture.CreateWithAutoMockDependencies<TTask>(callBase: callBase).Should().NotBeNull();
+
+        fixture.CreateNonAutoMock<TTask>(callBase: callBase).Should().NotBeNull();
+    }
 }
