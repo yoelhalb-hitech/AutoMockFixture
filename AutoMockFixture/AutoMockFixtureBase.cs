@@ -9,6 +9,9 @@ using AutoMockFixture.FixtureUtils.Specifications;
 using AutoMockFixture.FixtureUtils.Trace;
 using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)
@@ -66,6 +69,48 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IFixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(ISpecimenBuilder)), AutoMockHelpers))));
+
+        Customize(new SubclassOpenGenericCustomization<IList<object>, List<object>>());
+        Customize(new SubclassOpenGenericCustomization<IDictionary<object, object>, Dictionary<object, object>>());
+        Customize(new SubclassOpenGenericCustomization<ICollection<object>, Collection<object>>());
+        Customize(new SubclassOpenGenericCustomization<ISet<object>, HashSet<object>>());
+
+        if(Type.GetType("System.Data.Objects.IObjectSet`1") is var iobjectSet && iobjectSet is not null)
+        {
+            try
+            {
+                Customize(new SubclassTransformCustomization(iobjectSet!, Type.GetType("System.Data.Objects.ObjectSet`1")!));
+            }
+            catch { }
+        }
+
+        Customize(new SubclassOpenGenericCustomization<IProducerConsumerCollection<object>, ConcurrentBag<object>>());
+
+        Customize(new SubclassOpenGenericCustomization<IReadOnlyCollection<object>, ReadOnlyCollection<object>>());
+        Customize(new SubclassOpenGenericCustomization<IReadOnlyList<object>, ReadOnlyCollection<object>>());
+        Customize(new SubclassOpenGenericCustomization<IReadOnlyDictionary<object, object>, ReadOnlyDictionary<object, object>>());
+
+        if(Type.GetType("System.Collections.Immutable.IImmutableList`1") is not null)
+        {
+            try
+            {
+                var t = (string s) => Type.GetType("System.Collections.Immutable." + s);
+                Customize(new SubclassTransformCustomization(t("IImmutableList`1"), t("ImmutableList`1")));
+                Customize(new SubclassTransformCustomization(t("IImmutableSet`1"), t("ImmutableHashSet`1")));
+                Customize(new SubclassTransformCustomization(t("IImmutableStack`1"), t("ImmutableStack`1")));
+                Customize(new SubclassTransformCustomization(t("IImmutableQueue`1"), t("IImmutableQueue`1")));
+                Customize(new SubclassTransformCustomization(t("IImmutableDictionary`2"), t("ImmutableDictionary`2")));
+            }
+            catch {}
+        }
+
+#if NET5_0_OR_GREATER
+        try
+        {
+            Customize(new SubclassOpenGenericCustomization<IReadOnlySet<object>, HashSet<object>>());
+        }
+        catch { }
+#endif
 
         Customize(new AutoMockCustomization { ConfigureMembers = !noConfigureMembers, GenerateDelegates = generateDelegates });
 
