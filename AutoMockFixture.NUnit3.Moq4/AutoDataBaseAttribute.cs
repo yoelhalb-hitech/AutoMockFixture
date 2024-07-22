@@ -2,6 +2,7 @@
 using AutoMockFixture.FixtureUtils;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using NUnit.Framework.Internal.Builders;
 using NUnit.Framework.Internal.Commands;
 using System;
 using System.Collections.Generic;
@@ -40,9 +41,28 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
     {
         try
         {
-            // We need a fixture per method and per exectution, otherwise we can run in problems...
-            var builder = new AutoMockData(GetFixture);
-            return builder.BuildFrom(method, suite).ToArray(); // Enumerate here to force throw the error if there is
+            try
+            {
+                // We need a fixture per method and per exectution, otherwise we can run in problems...
+                var builder = new AutoMockData(GetFixture);
+                return builder.BuildFrom(method, suite).ToArray(); // Enumerate here to force throw the error if there is
+            }
+            catch (AggregateException ax)
+            {
+                // This building part happens inside the test harness and an exception here will cause all tests in the entire assembly to be ignored
+
+                var parms = new TestCaseParameters { RunState = RunState.NotRunnable };
+                parms.Properties.Set(PropertyNames.SkipReason, $"Exception of type '{ax.InnerExceptions.First().GetType().FullName}' was thrown, message is '{ax.InnerExceptions.First().Message}'");
+                return new[] { new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parms) };
+            }
+            catch (Exception ex)
+            {
+                // This building part happens inside the test harness and an exception here will cause all tests in the entire assembly to be ignored
+
+                var parms = new TestCaseParameters { RunState = RunState.NotRunnable };
+                parms.Properties.Set(PropertyNames.SkipReason, $"Exception of type '{ex.GetType().FullName}' was thrown, message is '{ex.Message}'");
+                return new[] { new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parms) };
+            }
         }
         catch
         {
