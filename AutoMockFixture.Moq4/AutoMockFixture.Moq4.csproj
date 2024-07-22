@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netstandard2.0;net452;net461;net47;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
 
-	<LangVersion>11.0</LangVersion>
+	<LangVersion>12.0</LangVersion>
 	<Nullable>enable</Nullable>
 
     <Platforms>AnyCPU</Platforms>
@@ -66,7 +66,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[4.0.1,)" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[4.1.1,)" />
   </ItemGroup>
 
   <ItemGroup>
