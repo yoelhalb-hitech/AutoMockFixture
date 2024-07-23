@@ -1,3 +1,20 @@
+## [7.0.0] - 2024-07-22
+
+### Breaking change
+- Will no longer support .Net Framework as it appears to cause too much headache and not working correctly anyways
+- The `SubclassCustomization` type arguments will be a compile time error if the type args don't derive from each other
+
+### Changed - possibly breaking
+- Provide default implementation for many Enumerable interfaces such as `IList`/`ICollection`/`ISet` and many immutable and readonly interfaces
+
+### Changed
+- Add fixture wide `CallBase` option to be able to change the default from `false` to `true`
+
+### Fixed
+- Throw detailed error for `UnitAutoData`\'IntegrationAutoData' when there is an error in the Engine
+- Fix issues with Enumerable and specifically multi dimensional arrays or collections
+- Fix `ValueTask` and `ValueTask<>`
+
 ## [6.0.0] - 2024-02-08
 
 ### Breaking change
