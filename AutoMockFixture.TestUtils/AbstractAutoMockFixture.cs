@@ -14,10 +14,10 @@ public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixtureBase
     public Dictionary<object, ITracker> ProcessingTrackerDict => (this as IAutoMockFixture)!.ProcessingTrackerDict;
 
     internal override IAutoMockHelpers AutoMockHelpers => new AutoMockHelpers();
-    public override T? Create<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default => throw new NotSupportedException();
-    public override Task<T?> CreateAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default => throw new NotSupportedException();
-    public override object? Create(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
-    public override Task<object?> CreateAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+    public override T? Create<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default => throw new NotSupportedException();
+    public override Task<T?> CreateAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default => throw new NotSupportedException();
+    public override object? Create(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
+    public override Task<object?> CreateAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) => throw new NotSupportedException();
     public override T Freeze<T>()
     {
         try
@@ -31,5 +31,5 @@ public class AbstractAutoMockFixture : FixtureUtils.AutoMockFixtureBase
     }
 
     // Essentially this will make it behave like the UnitFixture for the CreateAutoMock which is what the tests in general expect
-    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new AutoMockRequest(type, this) { MockShouldCallBase = callBase };
+    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool? callBase) => new AutoMockRequest(type, this) { MockShouldCallBase = callBase ?? CallBase };
 }

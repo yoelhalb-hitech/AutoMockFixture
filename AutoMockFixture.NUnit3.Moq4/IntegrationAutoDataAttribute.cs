@@ -22,8 +22,9 @@ public class IntegrationAutoDataAttribute : AutoDataBaseAttribute
     {
     }
 
+    public bool CallBase { get; set; }
 
-    protected override AutoMockFixtureBase CreateFixture() => new IntegrationFixture(noConfigureMembers, generateDelegates, methodSetupType);
+    protected override AutoMockFixtureBase CreateFixture() => new IntegrationFixture(noConfigureMembers, generateDelegates, methodSetupType) { CallBase = CallBase };
 }
 
 [AttributeUsage(AttributeTargets.Method)]

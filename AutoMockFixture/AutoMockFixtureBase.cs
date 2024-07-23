@@ -75,7 +75,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         Customize(new SubclassOpenGenericCustomization<ICollection<object>, Collection<object>>());
         Customize(new SubclassOpenGenericCustomization<ISet<object>, HashSet<object>>());
 
-        if(Type.GetType("System.Data.Objects.IObjectSet`1") is var iobjectSet && iobjectSet is not null)
+        if (Type.GetType("System.Data.Objects.IObjectSet`1") is var iobjectSet && iobjectSet is not null)
         {
             try
             {
@@ -90,7 +90,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         Customize(new SubclassOpenGenericCustomization<IReadOnlyList<object>, ReadOnlyCollection<object>>());
         Customize(new SubclassOpenGenericCustomization<IReadOnlyDictionary<object, object>, ReadOnlyDictionary<object, object>>());
 
-        if(Type.GetType("System.Collections.Immutable.IImmutableList`1") is not null)
+        if (Type.GetType("System.Collections.Immutable.IImmutableList`1") is not null)
         {
             try
             {
@@ -101,7 +101,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                 Customize(new SubclassTransformCustomization(t("IImmutableQueue`1"), t("IImmutableQueue`1")));
                 Customize(new SubclassTransformCustomization(t("IImmutableDictionary`2"), t("ImmutableDictionary`2")));
             }
-            catch {}
+            catch { }
         }
 
 #if NET5_0_OR_GREATER
@@ -129,6 +129,8 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();
     internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
+
+    public virtual bool CallBase { get; set; } = false;
 
     /// <summary>
     /// A list of <see cref="Type"/> for which we should setup the properties with the private getters (private setters will always be setup for non <see cref="IAutoMock.CallBase">)
@@ -178,69 +180,69 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public Task<T?> CreateAsync<T>() => CreateAsync<T>(false, null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract T? Create<T>(bool callBase, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract T? Create<T>(bool? callBase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract Task<T?> CreateAsync<T>(bool callBase, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract Task<T?> CreateAsync<T>(bool? callBase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract object? Create(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract object? Create(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract Task<object?> CreateAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract Task<object?> CreateAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 
     #region AutoMockDependencies
 
-    public T? CreateWithAutoMockDependencies<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public T? CreateWithAutoMockDependencies<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
             => AutoMockEngine.CreateWithAutoMockDependencies<T>(callBase, autoMockTypeControl);
 
-    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateWithAutoMockDependencies(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public object? CreateWithAutoMockDependencies(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateWithAutoMockDependencies(t, callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callBase, autoMockTypeControl);
 
     #endregion
 
     #region NonAutoMock
 
-    public T? CreateNonAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public T? CreateNonAutoMock<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateNonAutoMock<T>(callBase, autoMockTypeControl);
 
-    public Task<T?> CreateNonAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public Task<T?> CreateNonAutoMockAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateNonAutoMockAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public object? CreateNonAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
                 => AutoMockEngine.CreateNonAutoMock(t, callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateNonAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public Task<object?> CreateNonAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
             => AutoMockEngine.CreateNonAutoMockAsync(t, callBase, autoMockTypeControl);
 
     #endregion
 
     #region AutoMock
 
-    public T? CreateAutoMock<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+    public T? CreateAutoMock<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : class
             => AutoMockEngine.CreateAutoMock<T>(callBase, autoMockTypeControl);
 
-    public Task<T?> CreateAutoMockAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : class
+    public Task<T?> CreateAutoMockAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : class
             => AutoMockEngine.CreateAutoMockAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateAutoMock(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public object? CreateAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateAutoMock(t, callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateAutoMockAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public Task<object?> CreateAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateAutoMockAsync(t, callBase, autoMockTypeControl);
 
     #endregion
@@ -254,7 +256,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     private protected AutoMockFixtureEngine AutoMockEngine;
 
-    internal abstract TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase);
+    internal abstract TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool? callBase);
 
     internal abstract IAutoMockHelpers AutoMockHelpers { get; }
 

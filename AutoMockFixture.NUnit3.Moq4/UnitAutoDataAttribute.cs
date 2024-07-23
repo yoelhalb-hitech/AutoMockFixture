@@ -20,8 +20,9 @@ public class UnitAutoDataAttribute : AutoDataBaseAttribute
     {
     }
 
+    public bool CallBase { get; set; }
 
-    protected override AutoMockFixtureBase CreateFixture() => new UnitFixture(noConfigureMembers, generateDelegates, methodSetupType);
+    protected override AutoMockFixtureBase CreateFixture() => new UnitFixture(noConfigureMembers, generateDelegates, methodSetupType) { CallBase = CallBase };
 }
 
 [AttributeUsage(AttributeTargets.Method)]

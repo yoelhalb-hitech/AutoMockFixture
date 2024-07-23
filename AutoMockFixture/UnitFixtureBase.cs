@@ -21,20 +21,20 @@ public abstract class UnitFixtureBase : AutoMockFixtureBase
     }
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override T? Create<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
+    public override T? Create<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default
         => CreateWithAutoMockDependencies<T>(false, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override Task<T?> CreateAsync<T>(bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null) where T : default
+    public override Task<T?> CreateAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default
         => CreateWithAutoMockDependenciesAsync<T>(false, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override object? Create(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public override object? Create(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => CreateWithAutoMockDependencies(t, callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public override Task<object?> CreateAsync(Type t, bool callBase = false, AutoMockTypeControl? autoMockTypeControl = null)
+    public override Task<object?> CreateAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => CreateWithAutoMockDependenciesAsync(t, callBase, autoMockTypeControl);
 
-    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool callBase) => new AutoMockDependenciesRequest(type, this) { MockShouldCallBase = callBase };
+    internal override TrackerWithFixture GetStartTrackerForAutoMock(Type type, bool? callBase) => new AutoMockDependenciesRequest(type, this) { MockShouldCallBase = callBase ?? CallBase };
 }

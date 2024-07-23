@@ -51,13 +51,13 @@ internal class AutoMockData : AutoDataAttribute
 
                 var func = autoMockType?.AutoMockType switch
                 {
-                    AutoMockTypes.AutoMock => (Func<Type, bool, AutoMockTypeControl?, Task<object?>>) Fixture.CreateAutoMockAsync,
+                    AutoMockTypes.AutoMock => (Func<Type, bool?, AutoMockTypeControl?, Task<object?>>) Fixture.CreateAutoMockAsync,
                     AutoMockTypes.NonAutoMock => Fixture.CreateNonAutoMockAsync,
                     AutoMockTypes.AutoMockDependencies => Fixture.CreateWithAutoMockDependenciesAsync,
                     _ => Fixture.CreateAsync,
                 };
 
-                return func(parameter.ParameterType, callBase?.CallBase ?? false, autoMockTypeControl?.AutoMockTypeControl);
+                return func(parameter.ParameterType, callBase?.CallBase, autoMockTypeControl?.AutoMockTypeControl);
             });
         Task.WaitAll(parameters.ToArray());
 
