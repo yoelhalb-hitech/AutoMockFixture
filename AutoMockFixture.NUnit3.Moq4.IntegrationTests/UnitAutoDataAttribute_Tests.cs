@@ -103,6 +103,33 @@ internal class AutoDataUnitAttribute_Tests
     }
 
     [Test]
+    [UnitAutoData(CallBase = true)]
+    public void Test_UnitAutoDataAttribute_CallBase_WhenMainCallBaseTrue(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+                                                WithCtorArgsTestClass dependencyTestClass,
+                                                UnitFixture fixture)
+    {
+        autoMockTestClass.CallBase.Should().BeTrue();
+        foreach (var path in fixture.GetPaths(dependencyTestClass))
+        {
+            if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeTrue();
+        }
+    }
+
+    [Test]
+    [UnitAutoData(CallBase = true)]
+    public void Test_UnitAutoDataAttribute_NotCallBase_WhenMainCallBaseTrue_AndCallBaseAttributeFalse([CallBase(false)] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+                                                [CallBase(false)] WithCtorArgsTestClass dependencyTestClass,
+                                                UnitFixture fixture)
+    {
+        autoMockTestClass.CallBase.Should().BeFalse();
+
+        foreach (var path in fixture.GetPaths(dependencyTestClass))
+        {
+            if (fixture.TryGetAutoMock(dependencyTestClass, path, out var autoMock)) autoMock.CallBase.Should().BeFalse();
+        }
+    }
+
+    [Test]
     [UnitAutoData]
     public void Test_UnitAutoDataAttribute_CallBase_WhenCallBaseAttributeTrue([CallBase(true)] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
                                                     [CallBase(true)] WithCtorArgsTestClass dependencyTestClass,
