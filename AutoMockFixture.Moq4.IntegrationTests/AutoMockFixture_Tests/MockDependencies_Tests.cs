@@ -202,14 +202,14 @@ public class MockDependencies_Tests
     [Test]
     public void Test_DoesNotMockDependencies_When_CreateNonAutoMock_AbstractType_NonCallBase()
     {
-        var result = new AbstractAutoMockFixture().CreateNonAutoMock<TestOuterOuter>(false);
+        var result = new AbstractAutoMockFixture().CreateNonAutoMock<TestOuterOuter>();
         result.Should().NotBeNull();
 
         var obj = result!.TestOuterAbstract;
         obj.Should().NotBeNull();
         AutoMockFixture.Moq4.AutoMock.Get(obj).Should().NotBeNull();
 
-        Validate_NoMockDependecies_CallBase(obj!); // Although it is callBase false it won't respect it for the abstract case only for the explicit mock case
+        Validate_NoMockDependecies_CallBase(obj!); // Since callBase is default it will not use callBase for the abstract case only for the explicit mock case
     }
 
     [Test]
@@ -221,6 +221,17 @@ public class MockDependencies_Tests
         AutoMockFixture.Moq4.AutoMock.Get(result).Should().NotBeNull();
 
         Validate_NoMockDependecies_CallBase(result!);
+    }
+
+    [Test]
+    public void Test_DoesNotMockDependencies_When_IntegrationFixtureCreateAutoMock_AutoMockType_DefaultCallBase()
+    {
+        var result = new IntegrationFixture().CreateAutoMock<TestOuter>();
+
+        result.Should().NotBeNull();
+        AutoMockFixture.Moq4.AutoMock.Get(result).Should().NotBeNull();
+
+        Validate_NoMockDependecies_NonCallBase(result!);
     }
 
     [Test]

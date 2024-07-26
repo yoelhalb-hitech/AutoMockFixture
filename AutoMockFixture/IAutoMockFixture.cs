@@ -19,7 +19,7 @@ public interface IAutoMockFixture
     /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>
     IList<Type> TypesToSetupPrivateGetters {  get; }
 
-    bool CallBase { get; set; }
+    bool? CallBase { get; set; }
 
     TraceInfo Trace();
 

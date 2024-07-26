@@ -248,4 +248,37 @@ internal class CreateAutoMock_CallBase_Tests
 
         obj!.NonAbstractWithValueMethod().Should().Be(10);
     }
+
+    [Test]
+    public void Test_AutoMock_WithCallBase_CallsBase_UnitFixture_bugRepro()
+    {
+        // Arrange
+        var fixture = new UnitFixture();
+
+        // Act
+        var mock = fixture.Create<AutoMock<InternalSimpleTestClass>>(true);
+        var depends = fixture.Create<WithCtorArgsTestClass>(true);
+
+        // Assert
+        mock.Should().NotBeNull();
+        mock!.CallBase.Should().BeTrue();
+
+        depends.Should().NotBeNull();
+        depends!.TestCtorArg.Should().BeAutoMock();
+        AutoMock.Get(depends!.TestCtorArg)!.CallBase.Should().BeTrue();
+    }
+
+    [Test]
+    public void Test_AutoMock_WithCallBase_CallsBase_IntegrationFixture_bugRepro()
+    {
+        // Arrange
+        var fixture = new IntegrationFixture();
+
+        // Act
+        var mock = fixture.Create<AutoMock<InternalSimpleTestClass>>(true);
+
+        // Assert
+        mock.Should().NotBeNull();
+        mock!.CallBase.Should().BeTrue();
+    }
 }

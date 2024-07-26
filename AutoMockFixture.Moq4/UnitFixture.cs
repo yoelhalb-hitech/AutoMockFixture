@@ -7,10 +7,15 @@ namespace AutoMockFixture.Moq4;
 /// </summary>
 public class UnitFixture : AutoMockFixture.FixtureUtils.UnitFixtureBase
 {
-    public UnitFixture(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
-            : base(noConfigureMembers, generateDelegates, methodSetupType)
-    {
-    }
+    public UnitFixture() : this(false) {}
+
+    public UnitFixture(bool noConfigureMembers) : this(noConfigureMembers, false) {}
+
+    public UnitFixture(bool noConfigureMembers, bool generateDelegates)
+                                : this(noConfigureMembers, generateDelegates, null) {}
+
+    public UnitFixture(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes? methodSetupType)
+                                : base(noConfigureMembers, generateDelegates, methodSetupType) {}
 
     internal override IAutoMockHelpers AutoMockHelpers => new AutoMockHelpers();
 }

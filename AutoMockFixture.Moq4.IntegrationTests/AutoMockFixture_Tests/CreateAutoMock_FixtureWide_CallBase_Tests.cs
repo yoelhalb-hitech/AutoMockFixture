@@ -1,4 +1,7 @@
 ﻿
+using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.NUnit3;
+
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class CreateAutoMock_FixtureWide_CallBase_Tests
@@ -247,5 +250,60 @@ internal class CreateAutoMock_FixtureWide_CallBase_Tests
         mock.Should().BeOfType<AutoMock<InternalAbstractSimpleTestClass>>();
 
         obj!.NonAbstractWithValueMethod().Should().Be(10);
+    }
+
+    [Test]
+    [TestCase<UnitFixture>]
+    [TestCase<IntegrationFixture>]
+    public void Test_AutoMock_WithFixtureWideCallBase_CallsBase_BugRepro<TFixture>()
+            where TFixture : AutoMockFixtureBase, new()
+    {
+        // Arrange
+        var fixture = new TFixture();
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(InternalSimpleTestClass));
+        fixture.CallBase = true;
+        // Act
+        var obj = fixture.Create<WithCtorArgsTestClass>();
+
+        // Assert
+        obj!.Should().NotBeNull();
+        obj!.TestCtorArg.Should().BeAutoMock();
+        AutoMock.Get(obj.TestCtorArg)!.CallBase.Should().BeTrue();
+    }
+
+    [Test]
+    [TestCase<UnitFixture>]
+    [TestCase<IntegrationFixture>]
+    public async Task TestAsync_AutoMock_WithFixtureWideCallBase_CallsBase_BugRepro<TFixture>()
+            where TFixture : AutoMockFixtureBase, new()
+    {
+        // Arrange
+        var fixture = new TFixture();
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(InternalSimpleTestClass));
+        fixture.CallBase = true;
+        // Act
+        var obj = await fixture.CreateAsync<WithCtorArgsTestClass>().ConfigureAwait(false);
+
+        // Assert
+        obj!.Should().NotBeNull();
+        obj!.TestCtorArg.Should().BeAutoMock();
+        AutoMock.Get(obj.TestCtorArg)!.CallBase.Should().BeTrue();
+    }
+
+    [Test]
+    [TestCase<UnitFixture>]
+    [TestCase<IntegrationFixture>]
+    public void Test_UnitFixture_DoesNotChangeOnSelf_BugRepro<TFixture>() where TFixture : AutoMockFixtureBase, new()
+    {
+        // Arrange
+        var fixture = new TFixture();
+
+        // Act
+        var f = fixture.Create<TFixture>() as TFixture; // The bug was that UnitFixture/IntegrationFixture were not directly registered and therefore went through AutoMockDependencyBuilder which was setting up their properties
+
+        // Assert
+        f.Should().NotBeNull();
+        f.Should().BeSameAs(fixture);
+        fixture.CallBase.Should().BeNull();
     }
 }

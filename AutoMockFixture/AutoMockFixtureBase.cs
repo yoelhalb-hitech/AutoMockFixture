@@ -64,6 +64,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         Customizations.Add(new FilteringSpecimenBuilder(
                                 new FixedBuilder(this),
                                 new OrRequestSpecification(
+                                    new TypeOrRequestSpecification(new ExactTypeSpecification(this.GetType()), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(AutoMockFixtureBase)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(IAutoMockFixture)), AutoMockHelpers),
                                     new TypeOrRequestSpecification(new ExactTypeSpecification(typeof(Fixture)), AutoMockHelpers),
@@ -130,7 +131,10 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public AutoMockTypeControl AutoMockTypeControl { get; set; } = new AutoMockTypeControl();
     internal virtual MethodSetupTypes MethodSetupType { get; set; } = MethodSetupTypes.LazySame;
 
-    public virtual bool CallBase { get; set; } = false;
+    /// <summary>
+    /// Fixture wide default callBase setting, can be overriden on the individual request level
+    /// </summary>
+    public virtual bool? CallBase { get; set; }
 
     /// <summary>
     /// A list of <see cref="Type"/> for which we should setup the properties with the private getters (private setters will always be setup for non <see cref="IAutoMock.CallBase">)
@@ -176,8 +180,8 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     #region Create
 
-    public T? Create<T>() => Create<T>(false, null);
-    public Task<T?> CreateAsync<T>() => CreateAsync<T>(false, null);
+    public T? Create<T>() => Create<T>(null, null);
+    public Task<T?> CreateAsync<T>() => CreateAsync<T>(null, null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public abstract T? Create<T>(bool? callBase, AutoMockTypeControl? autoMockTypeControl = null);

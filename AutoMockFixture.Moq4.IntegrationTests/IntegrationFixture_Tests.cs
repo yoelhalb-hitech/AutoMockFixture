@@ -8,8 +8,6 @@ internal class IntegrationFixture_Tests
 {
     [Test]
     [TestCase<IntegrationFixture>]
-    [TestCase<IntegrationFixtureBase>]
-    [TestCase<AutoMockFixtureBase>]
     [TestCase<IAutoMockFixture>]
     [TestCase<Fixture>]
     [TestCase<IFixture>]

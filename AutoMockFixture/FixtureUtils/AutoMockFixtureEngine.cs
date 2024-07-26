@@ -56,7 +56,7 @@ internal class AutoMockFixtureEngine
     #region NonAutoMock
 
     public object? CreateNonAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-                => Execute(new NonAutoMockRequest(t, fixture) { MockShouldCallBase = callBase }, autoMockTypeControl);
+                => Execute(new NonAutoMockRequest(t, fixture) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl);
 
     public async Task<object?> CreateNonAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
             => await ExecuteAsync(new NonAutoMockRequest(t, fixture) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl).ConfigureAwait(false);
@@ -89,7 +89,7 @@ internal class AutoMockFixtureEngine
         if(!fixture.AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.ToGenericTypeString()} cannot be AutoMock");
 
-        var result = Execute(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl);
+        var result = Execute(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase ?? fixture.CallBase)) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl);
 
         return type != t ? fixture.AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed
     }
@@ -106,7 +106,7 @@ internal class AutoMockFixtureEngine
         if (!fixture.AutoMockHelpers.IsAutoMockAllowed(type))
             throw new InvalidOperationException($"{type.FullName} cannot be AutoMock");
 
-        var result = await ExecuteAsync(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase)) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl)
+        var result = await ExecuteAsync(new AutoMockRequest(type, fixture.GetStartTrackerForAutoMock(type, callBase ?? fixture.CallBase)) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl)
                                                     .ConfigureAwait(false);
 
         return type != t ? fixture.AutoMockHelpers.GetFromObj(result)! : result; // It appears that the cast operators only work when statically typed

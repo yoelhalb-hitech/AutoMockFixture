@@ -5,7 +5,7 @@ using AutoMockFixture.NUnit3;
 
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
-internal class AutoDataUnitAttribute_Tests
+internal class UnitAutoDataAttribute_Tests
 {
     [Test]
     [UnitAutoData]
@@ -103,7 +103,7 @@ internal class AutoDataUnitAttribute_Tests
     }
 
     [Test]
-    [UnitAutoData(CallBase = true)]
+    [UnitAutoData(true)]
     public void Test_UnitAutoDataAttribute_CallBase_WhenMainCallBaseTrue(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
                                                 WithCtorArgsTestClass dependencyTestClass,
                                                 UnitFixture fixture)
@@ -116,7 +116,7 @@ internal class AutoDataUnitAttribute_Tests
     }
 
     [Test]
-    [UnitAutoData(CallBase = true)]
+    [UnitAutoData(true)]
     public void Test_UnitAutoDataAttribute_NotCallBase_WhenMainCallBaseTrue_AndCallBaseAttributeFalse([CallBase(false)] AutoMock<WithCtorArgsTestClass> autoMockTestClass,
                                                 [CallBase(false)] WithCtorArgsTestClass dependencyTestClass,
                                                 UnitFixture fixture)

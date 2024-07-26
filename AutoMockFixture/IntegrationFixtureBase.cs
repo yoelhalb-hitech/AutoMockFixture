@@ -13,20 +13,15 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 public abstract class IntegrationFixtureBase : AutoMockFixtureBase
 {
     public IntegrationFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
-                : base(noConfigureMembers, generateDelegates, methodSetupType)
-    {
-        Customizations.Add(new FilteringSpecimenBuilder(
-                            new FixedBuilder(this),
-                            new TypeOrRequestSpecification(new TypeSpecification(typeof(IntegrationFixtureBase)), AutoMockHelpers)));
-    }
+                : base(noConfigureMembers, generateDelegates, methodSetupType) {}
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public override T? Create<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default
-        => CreateNonAutoMock<T>(false, autoMockTypeControl);
+        => CreateNonAutoMock<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public override Task<T?> CreateAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default
-        => CreateNonAutoMockAsync<T>(false, autoMockTypeControl);
+        => CreateNonAutoMockAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public override object? Create(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)

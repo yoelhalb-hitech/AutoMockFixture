@@ -21,21 +21,23 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
     protected readonly bool generateDelegates;
     protected readonly MethodSetupTypes? methodSetupType;
 
-    // Attributes can only deal with non nullable enums
-    public AutoDataBaseAttribute(bool noConfigureMembers = false, bool generateDelegates = false)
+    // Attributes can only deal with non nullable value types
+    public AutoDataBaseAttribute() { }
+    public AutoDataBaseAttribute(bool callBase)
     {
-        this.noConfigureMembers = noConfigureMembers;
-        this.generateDelegates = generateDelegates;
+        CallBase = callBase;
     }
 
     // Cannot have defualt value or the calls might be ambiguous
-    public AutoDataBaseAttribute(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes methodSetupType)
-        : this(noConfigureMembers, generateDelegates)
+    public AutoDataBaseAttribute(bool callBase, MethodSetupTypes methodSetupType)
+        : this(callBase)
     {
         this.methodSetupType = methodSetupType;
     }
 
     protected virtual List<ICustomization> Customizations => new List<ICustomization>();
+
+    public bool? CallBase { get; }
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {

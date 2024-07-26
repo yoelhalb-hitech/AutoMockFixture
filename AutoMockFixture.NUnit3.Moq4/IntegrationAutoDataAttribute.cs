@@ -11,18 +11,15 @@ namespace AutoMockFixture.NUnit3.Moq4;
 [AttributeUsage(AttributeTargets.Method)]
 public class IntegrationAutoDataAttribute : AutoDataBaseAttribute
 {
-    public IntegrationAutoDataAttribute(bool noConfigureMembers = false, bool generateDelegates = false) : base(noConfigureMembers, generateDelegates)
-    {
+    public IntegrationAutoDataAttribute(){}
 
-    }
+    public IntegrationAutoDataAttribute(bool callBase) : base(callBase){}
 
     // Cannot have defualt value or the calls might be ambiguous
-    public IntegrationAutoDataAttribute(bool noConfigureMembers, bool generateDelegates, MethodSetupTypes methodSetupType)
-        : base(noConfigureMembers, generateDelegates, methodSetupType)
+    public IntegrationAutoDataAttribute(bool callBase, MethodSetupTypes methodSetupType)
+        : base(callBase, methodSetupType)
     {
     }
-
-    public bool CallBase { get; set; }
 
     protected override AutoMockFixtureBase CreateFixture() => new IntegrationFixture(noConfigureMembers, generateDelegates, methodSetupType) { CallBase = CallBase };
 }
