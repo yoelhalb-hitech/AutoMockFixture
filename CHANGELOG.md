@@ -1,3 +1,11 @@
+## [7.0.1] - 2024-07-26
+
+### Added
+- New attribute overloads on `UnitAutoData`/`IntegrationAutoData` for freezing types
+
+### Fixed
+- The generic versions of `UnitAutoData`/`IntegrationAutoData` should also have all ctor overloads fo the non generic versions
+
 ## [7.0.0] - 2024-07-26
 
 ### Breaking change
