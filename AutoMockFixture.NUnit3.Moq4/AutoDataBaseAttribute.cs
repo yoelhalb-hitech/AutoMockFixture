@@ -1,5 +1,9 @@
 ﻿using AutoFixture;
+using AutoFixture.Kernel;
+using AutoFixture.NUnit3;
 using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.FixtureUtils.Customizations;
+using AutoMockFixture.FixtureUtils.Specifications;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Builders;
@@ -23,14 +27,31 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
 
     // Attributes can only deal with non nullable value types
     public AutoDataBaseAttribute() { }
+
     public AutoDataBaseAttribute(bool callBase)
     {
         CallBase = callBase;
     }
 
     // Cannot have defualt value or the calls might be ambiguous
-    public AutoDataBaseAttribute(bool callBase, MethodSetupTypes methodSetupType)
-        : this(callBase)
+    public AutoDataBaseAttribute(bool callBase, MethodSetupTypes methodSetupType) : this(callBase)
+    {
+        this.methodSetupType = methodSetupType;
+    }
+
+    public AutoDataBaseAttribute(params Type[] typesToFreeze)
+    {
+        TypesToFreeze = typesToFreeze;
+    }
+
+    public AutoDataBaseAttribute(bool callBase, params Type[] typesToFreeze) : this(typesToFreeze)
+    {
+        CallBase = callBase;
+    }
+
+
+    public AutoDataBaseAttribute(bool callBase, MethodSetupTypes methodSetupType, params Type[] typesToFreeze)
+        : this(callBase, typesToFreeze)
     {
         this.methodSetupType = methodSetupType;
     }
@@ -38,6 +59,7 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
     protected virtual List<ICustomization> Customizations => new List<ICustomization>();
 
     public bool? CallBase { get; }
+    public Type[]? TypesToFreeze { get; }
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test? suite)
     {
@@ -75,6 +97,11 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
     protected virtual AutoMockFixtureBase GetFixture()
     {
         fixture = CreateFixture();
+
+        TypesToFreeze?.ToList().ForEach(t =>
+            fixture.Customize(new FreezeCustomization(
+                    new TypeOrRequestSpecification(new ExactTypeSpecification(t), fixture.AutoMockHelpers))));
+
         Customizations.ForEach(c => fixture.Customize(c));
 
         return fixture;

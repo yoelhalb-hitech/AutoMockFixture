@@ -55,4 +55,51 @@ public class IntegrationAutoDataAttribute_Frozen_Tests
         Assert.DoesNotThrow(() => AutoMock.Get((SubTest)t1).Should().NotBeNull());
         t1.Should().Be(t2);
     }
+
+    [Test]
+    [IntegrationAutoData(typeof(Test))]
+    public void Test_Frozen_ByIntegrationAutoDataAttribute(Test t1, Test t2)
+    {
+        t1.Should().NotBeNull();
+        t1.Should().Be(t2);
+    }
+
+    [Test]
+    [IntegrationAutoData(typeof(AutoMock<Test>))]
+    public void Test_Frozen_AutoMock_ByIntegrationAutoDataAttribute(AutoMock<Test> t1, AutoMock<Test> t2)
+    {
+        t1.Should().NotBeNull();
+        t1.Should().Be(t2);
+    }
+
+    [Test]
+    [IntegrationAutoData(typeof(Test))]
+    public void Test_Frozen_AutoMockAttribute_ByIntegrationAutoDataAttribute([AutoMock] Test t1, [AutoMock] Test t2)
+    {
+        t1.Should().NotBeNull();
+        Assert.DoesNotThrow(() => AutoMock.Get(t1).Should().NotBeNull());
+
+        t1.Should().Be(t2);
+    }
+
+    [Test]
+    [IntegrationAutoData<SubclassCustomization<Test, SubTest>>(typeof(Test))]
+    public void Test_Frozen_SubclassCustomization_ByIntegrationAutoDataAttribute(Test t1, Test t2)
+    {
+        t1.Should().NotBeNull();
+        t1.Should().BeAssignableTo<SubTest>();
+
+        t1.Should().Be(t2);
+    }
+
+    [Test]
+    [IntegrationAutoData<SubclassCustomization<Test, SubTest>>(typeof(Test))]
+    public void Test_Frozen_SubclassCustomization_AutoMockAttribute_ByIntegrationAutoDataAttribute([AutoMock] Test t1, [AutoMock] Test t2)
+    {
+        t1.Should().NotBeNull();
+        t1.Should().BeAssignableTo<SubTest>();
+
+        Assert.DoesNotThrow(() => AutoMock.Get((SubTest)t1).Should().NotBeNull());
+        t1.Should().Be(t2);
+    }
 }
