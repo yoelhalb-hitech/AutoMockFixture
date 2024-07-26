@@ -46,6 +46,8 @@ internal class LastResortBuilder : ISpecimenBuilder
         if (object.ReferenceEquals(specimen, newRequest) && newRequest is not Type)
             throw new Exception("Unable to create object");
 
+        if (specimen is ITracker) return new NoSpecimen();// We obviously got back our own request (maybe a few levels deep)
+
         var requestTracker = request as ITracker;
 
         // We might get an AutoMock via the relay
