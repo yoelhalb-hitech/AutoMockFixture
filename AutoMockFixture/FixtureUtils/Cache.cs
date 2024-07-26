@@ -15,6 +15,9 @@ internal class Cache
     {
         if (CacheDictionary.ContainsKey(request)) return (true, CacheDictionary[request]);
 
+        // TODO... we need to consider that even if the tracker.MockShouldCallBase is false,
+        //  still the AutoMockMethodInvoker will still count it as true, but here it will be considered false by IsRequestEquals
+        // Note that it can also be null not just true/false
         if (request is ITracker tracker && CacheDictionary.Any(c => (c.Key as ITracker)?.IsRequestEquals(tracker) == true))
         {
             var existing = CacheDictionary.First(c => (c.Key as ITracker)?.IsRequestEquals(tracker) == true);

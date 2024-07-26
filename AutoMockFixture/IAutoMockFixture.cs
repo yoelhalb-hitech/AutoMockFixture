@@ -47,10 +47,10 @@ public interface IAutoMockFixture
     Task<T?> CreateAsync<T>(bool? callBase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? Create(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    object? Create(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    Task<object?> CreateAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<object?> CreateAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 
@@ -60,10 +60,10 @@ public interface IAutoMockFixture
     Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? CreateWithAutoMockDependencies(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    object? CreateWithAutoMockDependencies(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<object?> CreateWithAutoMockDependenciesAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 
@@ -73,10 +73,10 @@ public interface IAutoMockFixture
     Task<T?> CreateNonAutoMockAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? CreateNonAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    object? CreateNonAutoMock(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    Task<object?> CreateNonAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<object?> CreateNonAutoMockAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 
@@ -87,10 +87,10 @@ public interface IAutoMockFixture
     Task<T?> CreateAutoMockAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : class;
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    object? CreateAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    object? CreateAutoMock(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    Task<object?> CreateAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    Task<object?> CreateAutoMockAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 

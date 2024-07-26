@@ -1,19 +1,22 @@
-## [7.0.0] - 2024-07-22
+## [7.0.0] - 2024-07-26
 
 ### Breaking change
 - Will no longer support .Net Framework as it appears to cause too much headache and not working correctly anyways
 - The `SubclassCustomization` type arguments will be a compile time error if the type args don't derive from each other
+- The `UnitAutoDataAttribute`/`IntegrationAutoDataAttribute` will no longer take arguments `noConfigureMemebrs`/`generateDelegates` and instead will take `callBase`
+- `CreateNonAutoMock()` (or `CreateAutoMock()` when called on the `IntegrationFixture`) will always respect the `callBase` setting if explictly provided (in the call or on the fixture), the legacy behaviour of always calling base when mocking because of abstract/interface will only be used if no call base was specified at all
 
 ### Changed - possibly breaking
 - Provide default implementation for many Enumerable interfaces such as `IList`/`ICollection`/`ISet` and many immutable and readonly interfaces
 
-### Changed
+### Added
 - Add fixture wide `CallBase` option to be able to change the default from `false` to `true`
 
 ### Fixed
-- Throw detailed error for `UnitAutoData`\'IntegrationAutoData' when there is an error in the Engine
+- Throw detailed error for `UnitAutoData`/`IntegrationAutoData` when there is an error in the Engine
 - Fix issues with Enumerable and specifically multi dimensional arrays or collections
 - Fix `ValueTask` and `ValueTask<>`
+- Add more doc comments
 
 ## [6.0.0] - 2024-02-08
 

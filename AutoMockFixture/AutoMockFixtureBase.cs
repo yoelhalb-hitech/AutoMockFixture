@@ -190,46 +190,75 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public abstract Task<T?> CreateAsync<T>(bool? callBase, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract object? Create(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract object? Create(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public abstract Task<object?> CreateAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
+    public abstract Task<object?> CreateAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null);
 
     #endregion
 
     #region AutoMockDependencies
 
+    /// <summary>
+    /// Get an object of type <typeparamref name="T"/> where all the properties/fields/ctor args will be mocked automatically
+    /// </summary>
+    /// <typeparam name="T">The type of object to return</typeparam>
+    /// <param name="callBase">Whether the mocks should callBase, will override the fixture wide <see cref="IAutoMockFixture.CallBase"/> if specified</param>
+    /// <param name="autoMockTypeControl">A <see cref="FixtureUtils.AutoMockTypeControl"/> instance, this has a higher priority then the fixture wide <see cref="AutoMockTypeControl"/></param>
+    /// <remarks>When <paramref name="callBase"/> is false any mock will not have any ctor args provided, instead a newely created default ctor will be called</remarks>
+    /// <returns>A non mocked object of <typeparamref name="T"/> (unless <typeparamref name="T"/> is itself <see cref="IAutoMock"/>) with all properties/field/ctor args mocked</returns>
     public T? CreateWithAutoMockDependencies<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
             => AutoMockEngine.CreateWithAutoMockDependencies<T>(callBase, autoMockTypeControl);
 
+    /// <inheritdoc cref="CreateWithAutoMockDependencies{T}(bool?, AutoMockTypeControl?)" />
     public Task<T?> CreateWithAutoMockDependenciesAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateWithAutoMockDependenciesAsync<T>(callBase, autoMockTypeControl);
 
+    /// <summary>
+    /// Get an object of type <paramref name="type"/> where all the properties/field/ctor args will be mocked automatically
+    /// </summary>
+    /// <param name="type">The type of object to return</typeparam>
+    /// <returns>A non mocked object of <paramref name="type"/> (unless <paramref name="type"/> is itself <see cref="IAutoMock"/>) with all properties/field/ctor args mocked</returns>
+    /// <inheritdoc cref="CreateWithAutoMockDependencies{T}(bool?, AutoMockTypeControl?)" />
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateWithAutoMockDependencies(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependencies(t, callBase, autoMockTypeControl);
+    public object? CreateWithAutoMockDependencies(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependencies(type, callBase, autoMockTypeControl);
 
+    /// <inheritdoc cref="CreateWithAutoMockDependencies(Type, bool?, AutoMockTypeControl?)" />
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(t, callBase, autoMockTypeControl);
+    public Task<object?> CreateWithAutoMockDependenciesAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateWithAutoMockDependenciesAsync(type, callBase, autoMockTypeControl);
 
     #endregion
 
     #region NonAutoMock
 
+    /// <summary>
+    /// Get an object of type <typeparamref name="T"/> where all the properties/fields/ctor args are not mocks (unless the type is abstract/interface or has explictly been requested to be a mock via <paramref name="autoMockTypeControl"/>)
+    /// </summary>
+    /// <returns>A non mocked object of <typeparamref name="T"/> (unless <typeparamref name="T"/> is itself <see cref="IAutoMock"/>)</returns>
+    /// <inheritdoc cref="CreateWithAutoMockDependencies{T}(bool?, AutoMockTypeControl?)" />
     public T? CreateNonAutoMock<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateNonAutoMock<T>(callBase, autoMockTypeControl);
 
+    /// <inheritdoc cref="CreateNonAutoMock{T}(bool?, AutoMockTypeControl?)" />
     public Task<T?> CreateNonAutoMockAsync<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
         => AutoMockEngine.CreateNonAutoMockAsync<T>(callBase, autoMockTypeControl);
 
+    /// <summary>
+    /// Get an object of type <paramref name="type"/> where all the properties/fields/ctor args are not mocks (unless the type is abstract/interface or has explictly been requested to be a mock via <paramref name="autoMockTypeControl"/>)
+    /// </summary>
+    /// <param name="type">The type of object to return</typeparam>
+    /// <returns>A non mocked object of <paramref name="type"/> (unless <typeparamref name="type"/> is itself <see cref="IAutoMock"/>)</returns>
+    /// <inheritdoc cref="CreateNonAutoMock{T}(bool?, AutoMockTypeControl?)" />
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateNonAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-                => AutoMockEngine.CreateNonAutoMock(t, callBase, autoMockTypeControl);
+    public object? CreateNonAutoMock(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
+                => AutoMockEngine.CreateNonAutoMock(type, callBase, autoMockTypeControl);
 
+    /// <inheritdoc cref="CreateNonAutoMock(Type, bool?, AutoMockTypeControl?)" />
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateNonAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-            => AutoMockEngine.CreateNonAutoMockAsync(t, callBase, autoMockTypeControl);
+    public Task<object?> CreateNonAutoMockAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
+            => AutoMockEngine.CreateNonAutoMockAsync(type, callBase, autoMockTypeControl);
 
     #endregion
 
@@ -242,12 +271,12 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
             => AutoMockEngine.CreateAutoMockAsync<T>(callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public object? CreateAutoMock(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateAutoMock(t, callBase, autoMockTypeControl);
+    public object? CreateAutoMock(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMock(type, callBase, autoMockTypeControl);
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public Task<object?> CreateAutoMockAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
-        => AutoMockEngine.CreateAutoMockAsync(t, callBase, autoMockTypeControl);
+    public Task<object?> CreateAutoMockAsync(Type type, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
+        => AutoMockEngine.CreateAutoMockAsync(type, callBase, autoMockTypeControl);
 
     #endregion
 
