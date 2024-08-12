@@ -39,14 +39,14 @@ internal static class AutoMockAssertions
     public static AndConstraint<GenericCollectionAssertions<T>> AllAutoMock<T>(this GenericCollectionAssertions<T> assertions)
     {
         assertions.AllNonNull();
-        return CollectionAssertions.ExecuteInternal(assertions, item => AutoMock.IsAutoMock(item), "non auto mocks", "not auto mocks");
+        return CollectionAssertions.ExecuteInternal(assertions, item => AutoMock.IsAutoMock(item), "non auto mock", "not auto mock");
     }
 
     [CustomAssertion]
     public static AndConstraint<GenericCollectionAssertions<T>> AllNonAutoMock<T>(this GenericCollectionAssertions<T> assertions)
     {
         assertions.AllNonNull();
-        return CollectionAssertions.ExecuteInternal(assertions, item => !AutoMock.IsAutoMock(item), "auto mocks");
+        return CollectionAssertions.ExecuteInternal(assertions, item => !AutoMock.IsAutoMock(item), "auto mock");
     }
 
     [CustomAssertion]

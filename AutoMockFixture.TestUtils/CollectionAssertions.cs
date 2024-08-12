@@ -12,6 +12,23 @@ namespace AutoMockFixture.TestUtils;
 
 internal static class CollectionAssertions
 {
+
+    [CustomAssertion]
+    public static AndConstraint<GenericCollectionAssertions<T>> AllNotBeOfType<T, TExpected>(this GenericCollectionAssertions<T> assertions)
+        => ExecuteInternal(assertions, item => item?.GetType() != typeof(TExpected) && (item is not Type t || t != typeof(TExpected)), "of type " + typeof(TExpected).Name);
+
+    [CustomAssertion]
+    public static AndConstraint<GenericCollectionAssertions<T>> AllNotBeAssignableTo <T, TExpected>(this GenericCollectionAssertions<T> assertions)
+        => ExecuteInternal(assertions, item => item is not TExpected && (item is not Type t || !t.IsAssignableTo(typeof(TExpected))), "assignable to " + typeof(TExpected).Name);
+
+    [CustomAssertion]
+    public static AndConstraint<GenericCollectionAssertions<T>> AllBeSameAs<T>(this GenericCollectionAssertions<T> assertions, T t)
+    => ExecuteInternal(assertions, item => ReferenceEquals(item, t), "different than provided");
+
+    [CustomAssertion]
+    public static AndConstraint<GenericCollectionAssertions<T>> AllNotBeSameAs<T>(this GenericCollectionAssertions<T> assertions, T t)
+        => ExecuteInternal(assertions, item => !ReferenceEquals(item, t), "the same as provided");
+
     [CustomAssertion]
     public static AndConstraint<GenericCollectionAssertions<T>> AllNull<T>(this GenericCollectionAssertions<T> assertions)
         => ExecuteInternal(assertions, item => item is null, "non null", "not null");
@@ -55,7 +72,8 @@ internal static class CollectionAssertions
                 }
                 if(actual.Count > 0)
                 {
-                    message = $"The following are {msgPrefix2 ?? msgPrefix1}: " + (actual.Count > 0 ? Environment.NewLine + "\t" : "")
+                    message = $"The following {(actual.Count > 1 ? "are" : "is")} {msgPrefix2 ?? msgPrefix1}: "
+                        + (actual.Count > 1 ? Environment.NewLine + "\t" : "")
                         + string.Join(Environment.NewLine + "\t" , actual.Select(s => s.Trim()));
                 }
             }
@@ -89,7 +107,7 @@ internal static class CollectionAssertions
         static string? GetData(string fileName, int fileLineNumber)
         {
             var lines = File.ReadAllLines(fileName);
-            var text = lines.Skip(fileLineNumber).FirstOrDefault();
+            var text = lines.Skip(fileLineNumber - 1).FirstOrDefault();
 
             int index = 0;
             for (var toAdd = 1; text is null || (index = text.IndexOf("Should", StringComparison.InvariantCulture)) <= 0; toAdd++)
