@@ -13,7 +13,10 @@ namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the m
 public abstract class IntegrationFixtureBase : AutoMockFixtureBase
 {
     public IntegrationFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
-                : base(noConfigureMembers, generateDelegates, methodSetupType) {}
+                : base(noConfigureMembers, generateDelegates, methodSetupType)
+    {
+        AutoTransformBySericeAttributes = true;
+    }
 
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public override T? Create<T>(bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null) where T : default

@@ -137,6 +137,23 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public virtual bool? CallBase { get; set; }
 
     /// <summary>
+    /// If the fixture should automatically register to use a sub type by considering the attributes <see cref="SequelPay.DotNetPowerExtensions.TransientAttribute" />/<see cref="SequelPay.DotNetPowerExtensions.ScopedAttribute" />/<see cref="SequelPay.DotNetPowerExtensions.SingletonAttribute" />
+    /// </summary>
+    public bool AutoTransformBySericeAttributes
+    {
+        get => autoTransformBySericeAttributes;
+        set
+        {
+            autoTransformBySericeAttributes = value;
+
+            if (value) servicesCustomization.Customize(this);
+            else servicesCustomization.RemoveCustomization(this);
+        }
+    }
+    private bool autoTransformBySericeAttributes { get; set; }
+    private ServicesCustomization servicesCustomization = new ();
+
+    /// <summary>
     /// A list of <see cref="Type"/> for which we should setup the properties with the private getters (private setters will always be setup for non <see cref="IAutoMock.CallBase">)
     /// </summary>
     /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>

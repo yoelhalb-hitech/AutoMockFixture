@@ -21,6 +21,11 @@ public interface IAutoMockFixture
 
     bool? CallBase { get; set; }
 
+    /// <summary>
+    /// If the fixture should automatically register to use a sub type by considering the attributes <see cref="SequelPay.DotNetPowerExtensions.TransientAttribute" />/<see cref="SequelPay.DotNetPowerExtensions.ScopedAttribute" />/<see cref="SequelPay.DotNetPowerExtensions.SingletonAttribute" />
+    /// </summary>
+    bool AutoTransformBySericeAttributes { get; set; }
+
     TraceInfo Trace();
 
     #region Freeze
