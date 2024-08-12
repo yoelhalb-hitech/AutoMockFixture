@@ -2,7 +2,7 @@
 
 namespace AutoMockFixture.FixtureUtils.Customizations;
 
-public class FreezeCustomization : ICustomization
+public class FreezeCustomization : IRemovableCustomization
 {
     public FreezeCustomization(IRequestSpecification specification)
     {
@@ -16,7 +16,14 @@ public class FreezeCustomization : ICustomization
         var mockFixture = fixture as IAutoMockFixture;
         if (mockFixture is null) throw new Exception($"{nameof(FreezeCustomization)} can only work with an {nameof(IAutoMockFixture)}");
 
-        if (!mockFixture.Cache.CacheSpecifications.Contains(Specification))
-            mockFixture.Cache.CacheSpecifications.Add(Specification);
+        mockFixture.Cache.CacheSpecifications.Remove(Specification);
+        mockFixture.Cache.CacheSpecifications.Insert(0, Specification);
+    }
+
+    public void RemoveCustomization(IFixture fixture)
+    {
+        var mockFixture = fixture as IAutoMockFixture;
+
+        mockFixture?.Cache.CacheSpecifications.Remove(Specification);
     }
 }

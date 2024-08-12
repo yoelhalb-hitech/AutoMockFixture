@@ -9,7 +9,7 @@ namespace AutoMockFixture.FixtureUtils.Customizations;
 /// <summary>
 /// Customization to use a given subclass instead of the original baseclass
 /// </summary>
-public class SubclassTransformCustomization : ICustomization
+public class SubclassTransformCustomization : IRemovableCustomization
 {
     public SubclassTransformCustomization(Type originalType, Type subclassType)
     {
@@ -37,14 +37,24 @@ public class SubclassTransformCustomization : ICustomization
     public Type OriginalType { get; }
     public Type SubclassType { get; }
 
-
+    SubClassTransformBuilder? builder;
     public void Customize(IFixture fixture)
     {
         if (fixture is not IAutoMockFixture mockFixture) throw new ArgumentException("fixture is not an AutoMockFixture", nameof(fixture));
 
-        fixture.Customizations.Insert(0, new SubClassTransformBuilder(OriginalType, SubclassType, mockFixture.AutoMockHelpers));
+        // We don't have to be afraid to reuse it as it is not dependent on the fixture, only on the AutoMockHelpers
+        if (builder is null) builder = new SubClassTransformBuilder(OriginalType, SubclassType, mockFixture.AutoMockHelpers);
+
+        fixture.Customizations.Remove(builder); // If it is already there we want to take it to the start
+        fixture.Customizations.Insert(0, builder);
     }
 
+    public void RemoveCustomization(IFixture fixture)
+    {
+        if (builder is null) return;
+
+        fixture.Customizations.Remove(builder);
+    }
 
     internal class SubClassTransformBuilder : ISpecimenBuilder
     {
