@@ -2,12 +2,34 @@
 using Castle.DynamicProxy;
 using DotNetPowerExtensions.Reflection;
 using Moq;
+using System.Collections;
 using System.Reflection;
 
 namespace AutoMockFixture.Tests;
 
 public class AutoMock_Tests
 {
+    [Test]
+    public void Test_ResetGenerator_ResetsCorrectly_BugRepro()
+    {
+        // The bug was that the code for the capturing the Moq generator was done in the static ctor for `AutoMock<T>`
+        // So when `AutoMock<IEnumerableTest>.Object` was called it changed the generator to the `AutoMockProxyGenerator`
+        // While in that state and as part of the object generation it created `AutoMock<TypeInfo>`
+        // So the ctor of `AutoMock<TypeInfo>` captured `AutoMockProxyGenerator` instead of the original Moq generator!!
+        // While it was first reset when the `ResetGenerator()` was called for `IEnumerableTest`
+        // But when later trying to setup for `GetEnumerator()` CastleProxy called again `AutoMock<TypeInfo>.Object` to get the return type of the method
+        // But now when `ResetGenerator()` was called it reset to the one captured by `AutoMock<TypeInfo>` which was `AutoMockProxyGenerator`!!
+
+        using var fixture = new AbstractAutoMockFixture();
+        _ = fixture.CreateAutoMock<IEnumerableTest>()!;
+
+        var castleProxyFactoryType = typeof(Moq.CastleProxyFactory);
+        var generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var generator = (ProxyGenerator)generatorFieldInfo.GetValue(Moq.ProxyFactory.Instance)!;
+
+        generator.Should().BeOfType<Castle.DynamicProxy.ProxyGenerator>();
+    }
+
     [Test]
     public void Test_ResetGenerator()
     {
@@ -596,5 +618,13 @@ public class AutoMock_Tests
         protected virtual int TestProtected1() { return 10; }
         protected virtual int TestProtected2(string str, int i, decimal m) { return 10; }
     }
+
+    public abstract class IEnumerableTest : IEnumerable<int>
+    {
+        public abstract IEnumerator<int> GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
     public class EmptyType { }
 }

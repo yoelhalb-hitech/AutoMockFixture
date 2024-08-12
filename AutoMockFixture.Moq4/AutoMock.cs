@@ -24,17 +24,6 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
     public Dictionary<string, CannotSetupMethodException> MethodsNotSetup { get; }
                                         = new Dictionary<string, CannotSetupMethodException>();
 
-    private static FieldInfo generatorFieldInfo;
-    private static ProxyGenerator originalProxyGenerator;
-    static AutoMock()
-    {
-        var castleProxyFactoryType = typeof(Moq.CastleProxyFactory);
-        generatorFieldInfo = castleProxyFactoryType.GetField("generator", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        originalProxyGenerator = (ProxyGenerator)generatorFieldInfo.GetValue(Moq.ProxyFactory.Instance)!;
-
-        ResetGenerator();
-    }
-
     public override bool CallBase { get => base.CallBase; set
           {
             if (mocked is not null) throw new Exception("Cannot set callBase after object has been created");
@@ -45,10 +34,6 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
 
     void ISetCallBase.ForceSetCallBase(bool value) => base.CallBase = value;
 
-    private void SetupGenerator()
-        => generatorFieldInfo.SetValue(Moq.ProxyFactory.Instance, new AutoMockProxyGenerator(target, this.CallBase));
-    private static void ResetGenerator()
-        => generatorFieldInfo.SetValue(Moq.ProxyFactory.Instance, originalProxyGenerator);
     private T? target;
     public bool TrySetTarget(T target)
     {
@@ -99,19 +84,21 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
         //      (since we mock the Type object in the generator) and we would end up with a deadlock
         try
         {
-            SetupGenerator();
             this.AdditionalInterfaces.Add(iautoMockedType);
+            GeneratorSetup.SetupGenerator(target, this.CallBase);
+
             mocked = base.Object;
-            if (this.target is not null && this.CallBase) SetupTargetMethods();
-            this.AdditionalInterfaces.Remove(iautoMockedType);
         }
         finally
         {
             // We need to reset it in case the user wants to use the Mock directly as this property is static...
             // NOTE: Although this call is called recursively (in particular since we mock the Type object in the generator)
             //          we aren't concerned about the reset, since at the point it happens the generator was already called...
-            ResetGenerator();
+            GeneratorSetup.ResetGenerator();
+            this.AdditionalInterfaces.Remove(iautoMockedType);
         }
+
+        if (mocked is not null && this.target is not null && this.CallBase) SetupTargetMethods();
     }
 
     private void SetupTargetMethods()
