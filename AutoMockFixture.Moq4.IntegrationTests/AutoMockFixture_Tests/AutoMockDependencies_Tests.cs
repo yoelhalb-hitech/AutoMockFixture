@@ -77,12 +77,12 @@ internal class AutoMockDependencies_Tests
     }
 
     [Test]
-    public void Test_MainObject_AlwaysCallBase_WhenAbstract()
+    public void Test_MainObjectCallsBase_DependenciesNoCallBase_WhenCallBaseNotSpecified_WhenAbstract()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<InternalAbstractMethodTestClass>();
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<InternalAbstractMethodTestClass>();
@@ -91,12 +91,17 @@ internal class AutoMockDependencies_Tests
         mockObj.Should().NotBeNull();
         mockObj.Should().BeAssignableTo<AutoMock<InternalAbstractMethodTestClass>>();
         mockObj!.CallBase.Should().BeTrue();
+
+        var innerMock = AutoMock.Get(obj!.InternalTestMethodsObj);
+        innerMock.Should().NotBeNull();
+        innerMock.Should().BeAssignableTo<AutoMock<InternalTestMethods>>();
+        innerMock!.CallBase.Should().BeFalse();
     }
 
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void Test_Dependencies_CallBase_BasedOnCallBase_WhenAbstract(bool callBase)
+    public void Test_CallBase_BasedOnCallBase_WhenAbstract(bool callBase)
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -112,6 +117,7 @@ internal class AutoMockDependencies_Tests
         var mockObj = AutoMock.Get(obj);
         mockObj.Should().NotBeNull();
         mockObj.Should().BeAssignableTo<AutoMock<InternalAbstractMethodTestClass>>();
+        mockObj!.CallBase.Should().Be(callBase);
 
         var innerMock = AutoMock.Get(obj!.InternalTestMethodsObj);
         innerMock.Should().NotBeNull();
@@ -139,12 +145,12 @@ internal class AutoMockDependencies_Tests
     }
 
     [Test]
-    public void Test_MainObject_AlwaysCallBase_WhenInterface()
+    public void Test_MainObjectCallsBase_DependenciesNoCallBase_WhenNotSpecified_WhenInterface()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
         // Act
-        var obj = fixture.CreateWithAutoMockDependencies<ITestInterface>(callBase: false);
+        var obj = fixture.CreateWithAutoMockDependencies<ITestInterface>();
         // Assert
         obj.Should().NotBeNull();
         obj.Should().BeAssignableTo<ITestInterface>();
@@ -153,12 +159,17 @@ internal class AutoMockDependencies_Tests
         mockObj.Should().NotBeNull();
         mockObj.Should().BeAssignableTo<AutoMock<ITestInterface>>();
         mockObj!.CallBase.Should().BeTrue();
+
+        var innerMock = AutoMock.Get(obj!.InternalTestMethodsObj);
+        innerMock.Should().NotBeNull();
+        innerMock.Should().BeAssignableTo<AutoMock<InternalTestMethods>>();
+        innerMock!.CallBase.Should().BeFalse();
     }
 
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void Test_Dependencies_CallBase_BasedOnCallBase_WhenInterface(bool callBase)
+    public void Test_CallBase_BasedOnCallBase_WhenInterface(bool callBase)
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -174,6 +185,7 @@ internal class AutoMockDependencies_Tests
         //var mockObj = AutoMock.Get(obj);
         mockObj.Should().NotBeNull();
         mockObj.Should().BeAssignableTo<AutoMock<ITestInterface>>();
+        mockObj!.CallBase.Should().Be(callBase);
 
         var innerMock = AutoMock.Get(obj!.InternalTestMethodsObj);
         innerMock.Should().NotBeNull();
@@ -221,7 +233,7 @@ internal class AutoMockDependencies_Tests
 
         // Assert
         obj.Should().NotBeNull();
-        obj!.TestClassProp.Should().NotBeNull();
+        obj!.TestClassProp!.Should().NotBeNull();
         obj.TestClassProp!.InternalTest.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.TestClassProp).Should().BeTrue();
     }
@@ -237,8 +249,8 @@ internal class AutoMockDependencies_Tests
         var obj = fixture.CreateWithAutoMockDependencies<WithCtorArgsTestClass>(callBase);
         // Assert
         obj.Should().NotBeNull();
-        obj!.TestClassPropWithPrivateSet.Should().BeNull();
-        obj.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj!.TestClassPropWithPrivateSet!.Should().BeNull();
+        obj.TestClassPrivateNonVirtualProp!.Should().BeNull();
         obj.TestClassPropGet.Should().BeNull();
     }
 
@@ -251,8 +263,8 @@ internal class AutoMockDependencies_Tests
         var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(true);
         // Assert
         obj.Should().NotBeNull();
-        obj!.Object.TestClassPropWithPrivateSet.Should().BeNull();
-        obj.Object.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj!.Object.TestClassPropWithPrivateSet!.Should().BeNull();
+        obj.Object.TestClassPrivateNonVirtualProp!.Should().BeNull();
         obj.Object.TestClassPropGet.Should().BeNull();
     }
 
@@ -265,10 +277,10 @@ internal class AutoMockDependencies_Tests
         var obj = fixture.CreateWithAutoMockDependencies<AutoMock<WithCtorArgsTestClass>>(false);
         // Assert
         obj.Should().NotBeNull();
-        obj!.Object.TestClassPropWithPrivateSet.Should().NotBeNull();
+        obj!.Object.TestClassPropWithPrivateSet!.Should().NotBeNull();
         obj!.Object.TestClassPropGet.Should().NotBeNull();
 
-        obj!.Object.TestClassPrivateNonVirtualProp.Should().NotBeNull();
+        obj!.Object.TestClassPrivateNonVirtualProp!.Should().NotBeNull();
     }
 
     [Test]
@@ -283,10 +295,10 @@ internal class AutoMockDependencies_Tests
         obj.Should().NotBeNull();
         obj!.WithCtorArgs.Should().NotBeNull();
 
-        obj.WithCtorArgs!.TestClassPropWithPrivateSet.Should().NotBeNull();
+        obj.WithCtorArgs!.TestClassPropWithPrivateSet!.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.WithCtorArgs.TestClassPropWithPrivateSet).Should().BeTrue();
 
-        obj.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().NotBeNull();
+        obj.WithCtorArgs.TestClassPrivateNonVirtualProp!.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.WithCtorArgs.TestClassPrivateNonVirtualProp).Should().BeTrue();
 
         obj.WithCtorArgs.TestClassPropGet.Should().NotBeNull();
@@ -304,10 +316,10 @@ internal class AutoMockDependencies_Tests
         obj.Should().NotBeNull();
         obj!.Object.WithCtorArgs.Should().NotBeNull();
 
-        obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet.Should().NotBeNull();
+        obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet!.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.Object.WithCtorArgs.TestClassPropWithPrivateSet).Should().BeTrue();
 
-        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().NotBeNull();
+        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp!.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp).Should().BeTrue();
 
         obj.Object.WithCtorArgs.TestClassPropGet.Should().NotBeNull();
@@ -324,8 +336,8 @@ internal class AutoMockDependencies_Tests
         // Assert
         obj!.WithCtorArgs.Should().NotBeNull();
 
-        obj.WithCtorArgs!.TestClassPropWithPrivateSet.Should().BeNull();
-        obj.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj.WithCtorArgs!.TestClassPropWithPrivateSet!.Should().BeNull();
+        obj.WithCtorArgs.TestClassPrivateNonVirtualProp!.Should().BeNull();
         obj.WithCtorArgs.TestClassPropGet.Should().BeNull();
     }
 
@@ -340,8 +352,8 @@ internal class AutoMockDependencies_Tests
         obj.Should().NotBeNull();
         obj!.Object.WithCtorArgs.Should().NotBeNull();
 
-        obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet.Should().BeNull();
-        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp.Should().BeNull();
+        obj.Object.WithCtorArgs!.TestClassPropWithPrivateSet!.Should().BeNull();
+        obj.Object.WithCtorArgs.TestClassPrivateNonVirtualProp!.Should().BeNull();
         obj.Object.WithCtorArgs.TestClassPropGet.Should().BeNull();
     }
 

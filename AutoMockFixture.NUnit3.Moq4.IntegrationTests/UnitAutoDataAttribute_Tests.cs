@@ -171,11 +171,11 @@ internal class UnitAutoDataAttribute_Tests
 
     [Test]
     [UnitAutoData]
-    public void Test_UnitAutoDataAttribute_NotCallBase_WhenNoCallBaseAttribute(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+    public void Test_UnitAutoDataAttribute_NotCallBaseForChildren_ButCallBaseForMain_WhenNoCallBaseAttribute(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
                                                                                     WithCtorArgsTestClass dependencyTestClass,
                                                                                     UnitFixture fixture)
     {
-        autoMockTestClass.CallBase.Should().BeFalse();
+        autoMockTestClass.CallBase.Should().BeTrue();
 
         foreach (var path in fixture.GetPaths(dependencyTestClass))
         {

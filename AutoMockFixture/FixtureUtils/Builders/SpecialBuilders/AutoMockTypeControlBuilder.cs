@@ -78,11 +78,8 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
                 var autoMockRequest = typedRequest is not null
                                             ? new AutoMockRequest(type, typedRequest)
                                             : new AutoMockRequest(type, fixture);
-                // While MockShouldCallBase doesn't make much of a difference as the Builders override it when the start request is true
-                // It does make a difference for the Cache as it won't consider it other
-                autoMockRequest.MockShouldCallBase = (typedRequest as IFixtureTracker)?.MockShouldCallBase
-                                ?? (typedRequest as ITracker)?.StartTracker.MockShouldCallBase
-                                ?? (typedRequest as ITracker)?.StartTracker.Fixture.CallBase;
+
+                autoMockRequest.MockShouldCallBase = (typedRequest as IFixtureTracker)?.MockShouldCallBase; // Forward
 
                 return autoMockRequest;
             }
@@ -91,11 +88,14 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
             {
                 if (typedRequest is not AutoMockRequest) return null;
 
-                return typedRequest is not null
+                TrackerWithFixture newRequest = typedRequest is not null
                             ? typedRequest.StartTracker.MockDependencies
                                 ? new AutoMockDependenciesRequest(type, typedRequest)
                                 : new NonAutoMockRequest(type, typedRequest)
                             : new NonAutoMockRequest(type, fixture);
+
+                newRequest.MockShouldCallBase = (typedRequest as IFixtureTracker)?.MockShouldCallBase;  // Forward
+                return newRequest;
             }
 
             return null;

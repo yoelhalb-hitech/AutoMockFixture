@@ -46,6 +46,10 @@ public class AutoMockCustomization : ICustomization
                                         new TypeMatchSpecification(typeof(InnerRequest))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                        new ForceAutoMockBuilder(mockFixture.AutoMockHelpers),
+                                        new ForceAutoMockSpecification(mockFixture.AutoMockHelpers)));
+
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new PostprocessorWithRecursion(
                                             mockFixture,
                                             new AutoMockDependenciesBuilder(

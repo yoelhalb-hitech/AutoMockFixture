@@ -41,8 +41,7 @@ internal class EnumerableBuilder : NonConformingBuilder
             var mockType = AutoMockHelpers.IsAutoMock(requestType) ? requestType : AutoMockHelpers.GetAutoMockType(requestType);
             var directRequest = new AutoMockDirectRequest(mockType, typeRequest)
             {
-                // Note: If it is an `AutoMockRequest` still `MockShouldCallBase` can be null in which case we want to leave it to the start tracker so leave it as null in this case
-                MockShouldCallBase = typeRequest is AutoMockRequest autoMockRequest ? autoMockRequest.MockShouldCallBase : true,
+                MockShouldCallBase = (typeRequest as IFixtureTracker)?.MockShouldCallBase, // Forward any explicit `MockShouldCallBase` on the request
             };
 
             var specimen = context.Resolve(directRequest);

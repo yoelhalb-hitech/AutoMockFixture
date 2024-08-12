@@ -129,7 +129,7 @@ internal class NonAutoMock_Tests
     }
 
     [Test]
-    public void Test_MainObject_AutoMocked_WhenAutoMock_AndNonCallBase()
+    public void Test_MainObject_AutoMocked_WhenAutoMock_AndNoCallBaseSpecified()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -137,15 +137,17 @@ internal class NonAutoMock_Tests
         var result = fixture.CreateNonAutoMock<AutoMock<WithCtorArgsTestClass>>();
         // Assert
         result.Should().NotBeNull();
+        result.Should().BeAutoMock();
+        result!.CallBase.Should().BeTrue();
 
         var obj = result!.GetMocked();
         obj.Should().NotBeNull();
 
-        VerifyWhenAutoMockNoCB(obj!);
+        VerifyDependecies(obj!);
     }
 
     [Test]
-    public void Test_MainObject_AutoMocked_WhenAlwaysAutoMock_AndNonCallBase()
+    public void Test_MainObject_AutoMocked_WhenAlwaysAutoMock_AndNoCallBaseSpecified()
     {
         // Arrange
         var fixture = new AbstractAutoMockFixture();
@@ -157,6 +159,43 @@ internal class NonAutoMock_Tests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeAutoMock();
+        AutoMock.Get(result)!.CallBase.Should().BeTrue();
+
+        VerifyDependecies(result!);
+    }
+
+    [Test]
+    public void Test_MainObject_AutoMocked_WhenAutoMock_AndCallBaseFalse()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var result = fixture.CreateNonAutoMock<AutoMock<WithCtorArgsTestClass>>(callBase: false);
+        // Assert
+        result.Should().NotBeNull();
+        result!.CallBase.Should().BeFalse();
+
+        var obj = result!.GetMocked();
+        obj.Should().NotBeNull();
+
+        VerifyWhenAutoMockNoCB(obj!);
+    }
+
+    [Test]
+    public void Test_MainObject_AutoMocked_WhenAlwaysAutoMock_AndCallBaseFalse()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(WithCtorArgsTestClass));
+
+        // Act
+        var result = fixture.CreateNonAutoMock<WithCtorArgsTestClass>(callBase: false);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeAutoMock();
+
+        AutoMock.Get(result)!.CallBase.Should()!.BeFalse();
 
         VerifyWhenAutoMockNoCB(result!);
     }

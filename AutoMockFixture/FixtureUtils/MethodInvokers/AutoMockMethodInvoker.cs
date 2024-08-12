@@ -17,8 +17,6 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
     public IMethodQuery Query { get; }
     public ISpecimenCommand AutoMockInitCommand { get; }
 
-    private bool ShouldCallBase(IAutoMock mock, AutoMockDirectRequest mockRequest) => !mock.GetInnerType().IsDelegate()
-                                && (mockRequest.MockShouldCallBase == true || mockRequest.StartTracker.MockShouldCallBase == true);
 
     public object Create(object request, ISpecimenContext context)
     {
@@ -40,7 +38,7 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
         AutoMockInitCommand.Execute(obj, context);
 
-        if (!ShouldCallBase(mock, mockRequest))
+        if (!mockRequest.ShouldCallBase())
         {
             CreateInnerObject(mock, new IMethod[] { }, false);
             return mock;

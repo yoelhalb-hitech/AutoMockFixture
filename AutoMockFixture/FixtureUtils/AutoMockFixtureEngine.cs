@@ -229,7 +229,13 @@ internal class AutoMockFixtureEngine
         try
         {
             var result = new RecursionContext(fixture, fixture) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
-            if (result == this) return (result, null);
+            if (result == this || result == fixture) return (result, null);
+
+            if (ReferenceEquals(result, request)
+                    || (result is ITracker tracker
+                            // Remember that the request might actually have a parent tracker... (for `CreateAutoMock`)
+                            && (ReferenceEquals(tracker.StartTracker, request) || ReferenceEquals(tracker.StartTracker, request.StartTracker))))
+                throw new AutoFixture.ObjectCreationException("Unable to create object, most probably it resulted in a cycle");
 
             // TODO... we might have a problem if there is duplicates (for example for primitive typs or strings)
 

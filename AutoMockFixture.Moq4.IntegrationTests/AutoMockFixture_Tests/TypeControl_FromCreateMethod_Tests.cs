@@ -44,12 +44,23 @@ internal class TypeControl_FromCreateMethod_Tests
     }
 
     [Test]
-    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromCreateMethod_ObjectItself()
+    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromCreateMethod_ObjectItself_WhenCallBaseFalse()
+    {
+        var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>(callBase: false, autoMockTypeControl: GetMockTypeControl());
+
+        obj!.Should().NotBeNull();
+        obj!.Should().BeAutoMock();
+        IsCallBase(obj!).Should().BeFalse();
+    }
+
+    [Test]
+    public void Test_AlwaysAutoMockTypes_WillCallBase_WhenNonAutoMock_FromCreateMethod_ObjectItself_WhenNoCallBaseSpecified()
     {
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>(autoMockTypeControl: GetMockTypeControl());
 
-        obj.Should().NotBeNull();
-        IsCallBase(obj!).Should().BeFalse();
+        obj!.Should().NotBeNull();
+        obj!.Should().BeAutoMock();
+        IsCallBase(obj!).Should().BeTrue();
     }
 
     [Test]
@@ -57,7 +68,7 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateWithAutoMockDependencies<InternalSimpleTestClass>(true, GetMockTypeControl());
 
-        obj.Should().NotBeNull();
+        obj!.Should().NotBeNull();
         IsCallBase(obj!).Should().BeTrue();
     }
 
@@ -66,7 +77,8 @@ internal class TypeControl_FromCreateMethod_Tests
     {
         var obj = fixture.CreateAutoMock<InternalSimpleTestClass>(true, GetMockTypeControl());
 
-        obj.Should().NotBeNull();
+        obj!.Should().NotBeNull();
+        obj!.Should().BeAutoMock();
         IsCallBase(obj!).Should().BeTrue();
     }
 
@@ -95,13 +107,23 @@ internal class TypeControl_FromCreateMethod_Tests
     }
 
     [Test]
-    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromCreateMethod_Dependencies()
+    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromCreateMethod_Dependencies_WhenCallBaseFalse()
     {
-        var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>(autoMockTypeControl: GetMockTypeControl());
+        var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>(callBase: false, autoMockTypeControl: GetMockTypeControl());
         obj.Should().NotBeNull();
 
         IsCallBase(obj!.TestCtorArg).Should().BeFalse();
         IsCallBase(obj!.TestClassProp!).Should().BeFalse();
+    }
+
+    [Test]
+    public void Test_AlwaysAutoMockTypes_WillCallBase_WhenNonAutoMock_FromCreateMethod_Dependencies_WhenNoCallBaseSpecified()
+    {
+        var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>(autoMockTypeControl: GetMockTypeControl());
+        obj.Should().NotBeNull();
+
+        IsCallBase(obj!.TestCtorArg).Should().BeTrue();
+        IsCallBase(obj!.TestClassProp!).Should().BeTrue();
     }
 
     [Test]

@@ -1,5 +1,8 @@
-﻿using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
+﻿using AutoFixture;
+using AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.Tests.FixtureUtils.Requests;
+using Moq;
 
 namespace AutoMockFixture.Tests.FixtureUtils.Builders.MainBuilders;
 
@@ -26,6 +29,23 @@ internal class NonAutoMockBuilder_Tests
         actual.Should().Be(expectedResult);
 
         invokerMock.Verify(c => c.Create(request, contextMock.Object));
+        contextMock.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public void Test_Create_ReturnsNoSpecimen_WhenRequestIsAutoMock()
+    {
+        var fixture = new AbstractAutoMockFixture();
+
+        var innerType = typeof(NonAutoMockRequest_Tests);
+        var request = new NonAutoMockRequest(fixture.AutoMockHelpers.GetAutoMockType(innerType), fixture);
+
+        var builder = new NonAutoMockBuilder(Mock.Of<ISpecimenBuilder>(), fixture.AutoMockHelpers);
+        var contextMock = new Mock<ISpecimenContext>();
+
+        var result = builder.Create(request, contextMock.Object);
+        result.Should().BeOfType<NoSpecimen>();
+
         contextMock.VerifyNoOtherCalls();
     }
 }

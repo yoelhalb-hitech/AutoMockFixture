@@ -131,11 +131,11 @@ internal class IntegrationAutoDataAttribute_Tests
 
     [Test]
     [IntegrationAutoData]
-    public void Test_IntegrationAutoDataAttribute_NotCallBaseForMain_ButCallsForChildren_WhenNoCallBaseAttribute(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
+    public void Test_IntegrationAutoDataAttribute_CallBaseWhenNoCallBaseAttribute(AutoMock<WithCtorArgsTestClass> autoMockTestClass,
                                                                                     WithCtorArgsTestClass dependencyTestClass,
                                                                                     IntegrationFixture fixture)
     {
-        autoMockTestClass.CallBase.Should().BeFalse();
+        autoMockTestClass.CallBase.Should().BeTrue();
 
         foreach (var path in fixture.GetPaths(dependencyTestClass))
         {

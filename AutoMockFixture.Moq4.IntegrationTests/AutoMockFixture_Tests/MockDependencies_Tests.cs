@@ -231,7 +231,7 @@ public class MockDependencies_Tests
         result.Should().NotBeNull();
         AutoMockFixture.Moq4.AutoMock.Get(result).Should().NotBeNull();
 
-        Validate_NoMockDependecies_NonCallBase(result!);
+        Validate_NoMockDependecies_CallBase(result!);
     }
 
     [Test]

@@ -1,4 +1,6 @@
-﻿using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+﻿using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
+using AutoMockFixture.FixtureUtils.Specifications;
 
 namespace AutoMockFixture.FixtureUtils.Builders.MainBuilders;
 
@@ -16,40 +18,7 @@ internal class NonAutoMockBuilder : ISpecimenBuilder
     public object? Create(object request, ISpecimenContext context)
     {
         if (request is not NonAutoMockRequest nonMockRequest) return new NoSpecimen();
-
-        var isCreatable = !nonMockRequest.Request.IsAbstract && !nonMockRequest.Request.IsInterface;
-        var isMock = AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
-                                || AutoMockHelpers.MockRequestSpecification.IsSatisfiedBy(nonMockRequest.Request);
-
-        if (isMock || !isCreatable)
-        {
-            // Remember that the request might be IMock<>
-            var inner = !isMock
-                            ? nonMockRequest.Request
-                            : AutoMockHelpers.IsAutoMock(nonMockRequest.Request)
-                                ? AutoMockHelpers.GetMockedType(nonMockRequest.Request)!
-                                : nonMockRequest.Request.GenericTypeArguments.First();
-
-            var automockRequest = new AutoMockRequest(inner, nonMockRequest)
-            {
-                // If it's an AutoMock then respect the user setting (unless he didn't provide anything in which case we would consider it false)
-                // otherwise we just do it as a subsitute and it's supposed to emulate the original object
-                // unless the use explictly asked for callbase false as we then assume he meant situations like this (as this is `NonAutoMock` anyway)
-                MockShouldCallBase = !isMock
-                        ? nonMockRequest.StartTracker.MockShouldCallBase != false
-                        : (nonMockRequest.MockShouldCallBase ?? nonMockRequest.StartTracker.MockShouldCallBase),
-            };
-
-            // TODO... we have to not mock the depedencies
-            var result = context.Resolve(automockRequest);
-
-            object? autoMock = AutoMockHelpers.GetFromObj(result);
-            if (autoMock is null && isMock) autoMock = new NoSpecimen();
-
-            var retValue = isMock ? autoMock : result is IAutoMock mock ? mock.GetMocked() : result;
-            nonMockRequest.SetResult(retValue, this);
-            return retValue;
-        }
+        if (new ForceAutoMockSpecification(AutoMockHelpers).IsSatisfiedBy(nonMockRequest)) return new NoSpecimen();
 
         // Send all types that we want to leave for AutoFixture to it
         if (!AutoMockHelpers.IsAllowed(nonMockRequest.Request) || typeof(System.Delegate).IsAssignableFrom(nonMockRequest.Request))

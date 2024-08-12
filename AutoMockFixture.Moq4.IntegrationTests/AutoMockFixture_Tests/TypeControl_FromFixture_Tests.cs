@@ -47,12 +47,21 @@ internal class TypeControl_FromFixture_Tests
     }
 
     [Test]
-    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromFixture_ObjectItself()
+    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromFixture_ObjectItself_WhenCallBaseFalse()
+    {
+        fixture.AutoMockTypeControl = GetMockTypeControl();
+        var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>(callBase: false)!;
+
+        IsCallBase(obj).Should().BeFalse();
+    }
+
+    [Test]
+    public void Test_AlwaysAutoMockTypes_WillCallBase_WhenNonAutoMock_FromFixture_ObjectItself_WhenNoCallbaseSpecified()
     {
         fixture.AutoMockTypeControl = GetMockTypeControl();
         var obj = fixture.CreateNonAutoMock<InternalSimpleTestClass>()!;
 
-        IsCallBase(obj).Should().BeFalse();
+        IsCallBase(obj).Should().BeTrue();
     }
 
     [Test]
@@ -97,13 +106,23 @@ internal class TypeControl_FromFixture_Tests
     }
 
     [Test]
-    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromFixture_Dependencies()
+    public void Test_AlwaysAutoMockTypes_WillNotCallBase_WhenNonAutoMock_FromFixture_Dependencies_WhenCallBaseFalse()
+    {
+        fixture.AutoMockTypeControl = GetMockTypeControl();
+        var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>(callBase: false)!;
+
+        IsCallBase(obj.TestCtorArg).Should().BeFalse();
+        IsCallBase(obj!.TestClassProp!).Should().BeFalse();
+    }
+
+    [Test]
+    public void Test_AlwaysAutoMockTypes_WillCallBase_WhenNonAutoMock_FromFixture_Dependencies_WhenNoCallBaseSpecified()
     {
         fixture.AutoMockTypeControl = GetMockTypeControl();
         var obj = fixture.CreateNonAutoMock<WithCtorArgsTestClass>()!;
 
-        IsCallBase(obj.TestCtorArg).Should().BeFalse();
-        IsCallBase(obj!.TestClassProp!).Should().BeFalse();
+        IsCallBase(obj.TestCtorArg).Should().BeTrue();
+        IsCallBase(obj!.TestClassProp!).Should().BeTrue();
     }
 
     [Test]
