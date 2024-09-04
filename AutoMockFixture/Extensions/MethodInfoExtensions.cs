@@ -47,7 +47,7 @@ internal static class MethodInfoExtensions
             if (method.IsGenericMethod && !method.IsGenericMethodDefinition)
             {
                 // TODO... do we have to be concerned that there will be two different types with the same name?...
-                str += "<" + String.Join(",", method.GetGenericArguments().Select(m => m.Name)) + ">";
+                str += "<" + String.Join(",", method.GetGenericArguments().Select(m => m.ToGenericTypeString())) + ">";
             }
             else if (method.IsGenericMethodDefinition)
             {
@@ -61,7 +61,7 @@ internal static class MethodInfoExtensions
             {
                 false => "",
                 true when !hasSameCount => "(`" + method.GetParameters().Length + ")",
-                _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+                _ => "(" + String.Join(",", method.GetParameters().Select(p => p.ParameterType.ToGenericTypeString())) + ")",
             };
         });
 }

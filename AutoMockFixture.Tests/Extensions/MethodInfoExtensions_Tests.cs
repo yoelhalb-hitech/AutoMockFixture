@@ -98,10 +98,10 @@ public class MethodInfoExtensions_Tests
     }
 
     [Test]
-    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(int), "NonOverloadWithGenericArgs<Int32>")]
-    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(string), "NonOverloadWithGenericArgs<String>")]
-    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(int), "NonOverloadWithNonUsingGenericArgs<Int32>")]
-    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(string), "NonOverloadWithNonUsingGenericArgs<String>")]
+    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(int), "NonOverloadWithGenericArgs<int>")]
+    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(string), "NonOverloadWithGenericArgs<string>")]
+    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(int), "NonOverloadWithNonUsingGenericArgs<int>")]
+    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(string), "NonOverloadWithNonUsingGenericArgs<string>")]
     public void TestGetTrackingPath_ReturnsCorrectly_ForConstructudNonOverloads(string name, Type type, string expectedTrackingPath)
     {
         var trackingPath = GetMethod(m => m.Name == name).MakeGenericMethod(type).GetTrackingPath(false);
@@ -110,10 +110,10 @@ public class MethodInfoExtensions_Tests
     }
 
     [Test]
-    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(int), "NonOverloadWithGenericArgs<Int32>")]
-    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(string), "NonOverloadWithGenericArgs<String>")]
-    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(int), "NonOverloadWithNonUsingGenericArgs<Int32>")]
-    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(string), "NonOverloadWithNonUsingGenericArgs<String>")]
+    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(int), "NonOverloadWithGenericArgs<int>")]
+    [TestCase(nameof(TestClass.NonOverloadWithGenericArgs), typeof(string), "NonOverloadWithGenericArgs<string>")]
+    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(int), "NonOverloadWithNonUsingGenericArgs<int>")]
+    [TestCase(nameof(TestClass.NonOverloadWithNonUsingGenericArgs), typeof(string), "NonOverloadWithNonUsingGenericArgs<string>")]
     public void TestGetTrackingPath_ReturnsCorrectly_ForConstructudNonOverloads_OnSubClass(string name, Type type, string expectedTrackingPath)
     {
         var trackingPath = GetSubClassMethod(m => m.Name == name).MakeGenericMethod(type).GetTrackingPath(false);
@@ -126,9 +126,9 @@ public class MethodInfoExtensions_Tests
     [TestCaseSource(nameof(SubClassOverloadMethods))]
     public void TestGetTrackingPath_ReturnsCorrectly_WithOverloads(MethodInfo method, string expectedTrackingPath)
     {
-        var trackingPath = method.HasOverloadSameCount();
+        var trackingPath = method.GetTrackingPath(false);
 
-        trackingPath.Should().Equals(expectedTrackingPath);
+        trackingPath.Should().Be(expectedTrackingPath);
     }
 
     #region Utils
@@ -212,23 +212,25 @@ public class MethodInfoExtensions_Tests
                     && (!genericArgs.HasValue
                             || (m.IsGenericMethod && m.GetGenericArguments().Length == genericArgs.Value)
                     && (genericType is null || (m.IsGenericMethod && m.GetGenericArguments().First() == genericType))));
+                            || (m.IsGenericMethod && m.GetGenericArguments().Length == genericArgs.Value))
+                    && (parameterType is null || (m.GetParameters().FirstOrDefault()?.ParameterType == parameterType)));
 
     public static IEnumerable<TestCaseData> GetOverloadMethods(Func<string, int?, int?, Type?, MethodInfo> getMethod)
     {
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadSameArgNumber), null, null, typeof(int)),
-                        "OverloadSameArgNumber(Int32)");
+                        "OverloadSameArgNumber(int)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadSameArgNumber), null, null, typeof(string)),
-                        "OverloadSameArgNumber(String)");
+                        "OverloadSameArgNumber(string)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadSameArgNumber), null, 1, null),
                         "OverloadSameArgNumber`1(T)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadSameArgNumber), null, 1, null)
                                         .MakeGenericMethod(typeof(string)),
-                        "OverloadSameArgNumber<String>(String)");
+                        "OverloadSameArgNumber<string>(string)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadSameArgNumber), null, 2, null),
                                                                     "OverloadSameArgNumber`2(T1)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadSameArgNumber), null, 2, null)
                                         .MakeGenericMethod(typeof(string), typeof(int)),
-                        "OverloadSameArgNumber<String,Int32>(String)");
+                        "OverloadSameArgNumber<string,int>(string)");
 
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadDifferentArgNumber), 0, null, null),
                         "OverloadDifferentArgNumber(`0)");
@@ -240,12 +242,12 @@ public class MethodInfoExtensions_Tests
                         "OverloadDifferentArgNumber`1(`3)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadDifferentArgNumber), 3, null, null)
                                     .MakeGenericMethod(typeof(string)),
-                        "OverloadDifferentArgNumber<String>(`3)");
+                        "OverloadDifferentArgNumber<string>(`3)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadDifferentArgNumber), 4, null, null),
                         "OverloadDifferentArgNumber`2(`4)");
         yield return new TestCaseData(getMethod(nameof(TestClass.OverloadDifferentArgNumber), 4, null, null)
                                 .MakeGenericMethod(typeof(string), typeof(int)),
-                        "OverloadDifferentArgNumber<String,Int32>(`4)");
+                        "OverloadDifferentArgNumber<string,int>(`4)");
     }
 
     #endregion
