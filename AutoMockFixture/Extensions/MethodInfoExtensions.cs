@@ -8,8 +8,10 @@ namespace AutoMockFixture.Extensions;
 internal static class MethodInfoExtensions
 {
     internal static bool IsRelevant(this MethodInfo method)
-        => method.ReflectedType.Namespace.StartsWith(nameof(System) + ".")
-            || method.ReflectedType.Namespace.StartsWith(nameof(Microsoft) + ".") ? method.IsPublic : method.IsPublicOrInternal();
+        => method.ReflectedType?.Namespace == nameof(System)
+            || method.ReflectedType?.Namespace?.StartsWith(nameof(System) + ".") == true
+            || method.ReflectedType?.Namespace == nameof(Microsoft)
+            || method.ReflectedType?.Namespace?.StartsWith(nameof(Microsoft) + ".") == true ? method.IsPublic : method.IsPublicOrInternal();
 
     internal static bool IsSealed(this MethodInfo method) => !method.IsOverridable();
 
