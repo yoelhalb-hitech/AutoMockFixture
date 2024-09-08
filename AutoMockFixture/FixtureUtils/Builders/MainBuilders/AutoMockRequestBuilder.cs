@@ -71,7 +71,8 @@ internal class AutoMockRequestBuilder : ISpecimenBuilder
         }
 
         var result = AutoMockHelpers.GetFromObj(specimen)!.GetMocked();
-        mockRequest.SetCompleted(this); // Result was set by AutoMockBuilder
+
+        mockRequest.SetResult(result, this);
 
         return result;
     }

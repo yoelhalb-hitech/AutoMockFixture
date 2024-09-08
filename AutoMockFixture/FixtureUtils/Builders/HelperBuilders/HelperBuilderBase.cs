@@ -25,13 +25,7 @@ internal abstract class HelperBuilderBase<TRequest> : ISpecimenBuilder where TRe
 
         var specimen = context.Resolve(new AutoMockRequest(type, trackedRequest));
 
-        if (specimen is NoSpecimen || specimen is OmitSpecimen || specimen is null)
-        {
-            trackedRequest.SetResult(specimen, this);
-            return specimen;
-        }
-
-        trackedRequest.SetCompleted(this);
+        trackedRequest.SetResult(specimen, this);
 
         return specimen;
     }

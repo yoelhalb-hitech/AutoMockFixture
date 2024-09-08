@@ -31,6 +31,38 @@ internal class Path_Tests
 
     [Test]
     [TestCaseSource(nameof(Types))]
+    public void Test_MainObject(AutoMockType type)
+    {
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.Eager;
+
+        var obj = GetObj<InternalSimpleTestClass>(fixture, type);
+
+        obj!.Should().NotBeNull();
+        var paths = fixture.GetPaths(obj!);
+
+        fixture.GetAt(obj!, "").First().Should().Be(obj);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(Types))]
+    public void Test_AskingForAutoMock_WorksCorrectly(AutoMockType type)
+    {
+        var fixture = new AbstractAutoMockFixture();
+        fixture.MethodSetupType = MethodSetupTypes.Eager;
+
+        var obj = GetObj<AutoMock<InternalSimpleTestClass>>(fixture, type);
+
+        obj!.Should().NotBeNull();
+        obj.Should().BeAutoMock();
+
+        var paths = fixture.GetPaths(obj!);
+
+        fixture.GetAt(obj!, "").First().Should().Be(obj!.Object);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(Types))]
     public void Test_ReadWriteProperty(AutoMockType type)
     {
         var fixture = new AbstractAutoMockFixture();
@@ -126,5 +158,9 @@ internal class Path_Tests
 
         paths.Should().Contain(".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.TestWithOut->obj");
         paths.Should().Contain(".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.Test");
+
+        fixture.GetAt(obj!, ".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.TestWithOut->obj").First().Should().NotBeNull();
+        fixture.GetAt(obj!, ".:AutoMockFixture.Tests.AutoMockFixture_Tests.Path_Tests+IExplicit.Test").First()
+                    .Should().NotBeNull().And.BeOfType<int>();
     }
 }

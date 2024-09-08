@@ -50,7 +50,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
 
         public object? GetResult(AutoMockTypeControl autoMockTypeControl)
         {
-            object? newRequest = GetRequest(autoMockTypeControl);
+            var newRequest = GetRequest(autoMockTypeControl);
 
             if (newRequest is null) return new NoSpecimen();
 
@@ -67,7 +67,7 @@ internal class AutoMockTypeControlBuilder : ISpecimenBuilder
             return specimen;
         }
 
-        public object? GetRequest(AutoMockTypeControl autoMockTypeControl)
+        public ITracker? GetRequest(AutoMockTypeControl autoMockTypeControl)
         {
             if (typedRequest is AutoMockDirectRequest) return null; // Not changing anything on a direct request...
 
