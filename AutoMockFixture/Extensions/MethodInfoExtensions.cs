@@ -41,7 +41,7 @@ internal static class MethodInfoExtensions
         => methodPathCache.GetOrAdd((method, isExplicit), (_) =>
         {
             var str = method.Name;
-            if (isExplicit) str = ":" + method.DeclaringType.FullName + "." + str;
+            if (isExplicit) str = ":" + method.DeclaringType?.FullName + "." + str;
 
             if (method.IsGenericMethod && !method.IsGenericMethodDefinition)
             {

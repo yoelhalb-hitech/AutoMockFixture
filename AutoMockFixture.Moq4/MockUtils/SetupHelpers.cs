@@ -96,10 +96,10 @@ where TMock : class
         Expression<Action> captureExpression = () => Capture.With(matchCapture);
 
         var paramExpr = Expression.Parameter(typeof(TMock));
-        var getExpr = Expression.Lambda<Func<TMock, TProperty>>(Expression.Call(paramExpr, property.GetMethod), paramExpr);
+        var getExpr = Expression.Lambda<Func<TMock, TProperty>>(Expression.Call(paramExpr, property.GetMethod!), paramExpr);
 
         var setExpression = Expression.Lambda<Action<TMock>>(
-                                Expression.Call(paramExpr, property.SetMethod, captureExpression.Body),
+                                Expression.Call(paramExpr, property.SetMethod!, captureExpression.Body),
                                            paramExpr);
 
         var propFunc = () =>

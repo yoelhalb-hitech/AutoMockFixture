@@ -1,5 +1,4 @@
-﻿
-using Castle.Core.Resource;
+﻿using Castle.Core.Resource;
 using FluentAssertions.Collections;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
@@ -8,7 +7,7 @@ namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal static class InternalSimpleTestClassExtensions
 {
-    public static InternalSimpleTestClassAssertions Should(this InternalSimpleTestClass instance)
+    public static InternalSimpleTestClassAssertions Should(this InternalSimpleTestClass? instance)
     {
         return new InternalSimpleTestClassAssertions(instance);
     }
@@ -42,7 +41,7 @@ internal static class InternalSimpleTestClassExtensions
 internal class InternalSimpleTestClassAssertions :
     ReferenceTypeExtendedAssertions<InternalSimpleTestClass, InternalSimpleTestClassAssertions>
 {
-    public InternalSimpleTestClassAssertions(InternalSimpleTestClass instance)
+    public InternalSimpleTestClassAssertions(InternalSimpleTestClass? instance)
         : base(instance)
     {
     }

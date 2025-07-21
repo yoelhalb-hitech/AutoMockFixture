@@ -22,7 +22,7 @@ public partial class AutoMock<T>
         return this;
     }
 
-    private AutoMock<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times? times) where TAnon : class
+    private AutoMock<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon? paramData, TResult result, Times? times) where TAnon : class
     {
         setupUtils.SetupInternal(method, paramData, result, times);
         return this;
@@ -48,10 +48,10 @@ public partial class AutoMock<T>
     public AutoMock<T> Setup<TAnon>(MethodInfo method, TAnon paramData, Times times) where TAnon : class
         => SetupInternal(method, paramData, times);
 
-    public AutoMock<T> Setup<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result) where TAnon : class
+    public AutoMock<T> Setup<TAnon, TResult>(MethodInfo method, TAnon? paramData, TResult result) where TAnon : class
          => SetupInternal(method, paramData, result, null);
     // Doing TAnon : class to avoid overload resolution issues
-    public AutoMock<T> Setup<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times times) where TAnon : class
+    public AutoMock<T> Setup<TAnon, TResult>(MethodInfo method, TAnon? paramData, TResult result, Times times) where TAnon : class
             => SetupInternal(method, paramData, result, times);
 
     #endregion
@@ -72,9 +72,9 @@ public partial class AutoMock<T>
     // Doing TAnon : class to avoid overload resolution issues
 
 
-    public AutoMock<T> Setup<TAnon, TResult>(string methodName, TAnon paramData, TResult result) where TAnon : class
+    public AutoMock<T> Setup<TAnon, TResult>(string methodName, TAnon? paramData, TResult result) where TAnon : class
             => SetupInternal(GetMethodInternal(methodName), paramData, result, null);
-    public AutoMock<T> Setup<TAnon, TResult>(string methodName, TAnon paramData, TResult result, Times times) where TAnon : class
+    public AutoMock<T> Setup<TAnon, TResult>(string methodName, TAnon? paramData, TResult result, Times times) where TAnon : class
             => SetupInternal(GetMethodInternal(methodName), paramData, result, times);
 
     #endregion

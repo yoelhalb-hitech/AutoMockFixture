@@ -167,7 +167,9 @@ internal class MockSetupService
     private IEnumerable<MethodDetail> GetMethods(bool includeNotOverridableCurrent, bool includeNotOverridableBase)
     {
         // If "type" is a delegate, return "Invoke" method only and skip the rest of the methods.
-        if (delegateSpecification.IsSatisfiedBy(mockedType)) return new[] { mockedType.GetTypeInfo().GetTypeDetailInfo().MethodDetails.FirstOrDefault(md => md.Name == "Invoke") };
+        if (delegateSpecification.IsSatisfiedBy(mockedType))
+            return new[] { mockedType.GetTypeInfo().GetTypeDetailInfo().MethodDetails.FirstOrDefault(md => md.Name == "Invoke") }
+                .OfType<MethodDetail>();
 
         var detailType = mockedType.GetTypeDetailInfo();
 

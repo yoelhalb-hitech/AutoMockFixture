@@ -73,8 +73,8 @@ internal class PopulateEnumerableCommand : ISpecimenCommand
                 var inners = GetRepeatedInnerSpecimens(typedRequest, innerType, context).ToArray();
                 if (inners.Any(i => i is NoSpecimen || i is OmitSpecimen)) return;
 
-                var cast = typeof(Enumerable).GetMethod(nameof(Enumerable.OfType)).MakeGenericMethod(innerType);
-                var casted = cast.Invoke(typedRequest, new object[] { inners });
+                var cast = typeof(Enumerable).GetMethod(nameof(Enumerable.OfType))!.MakeGenericMethod(innerType);
+                var casted = cast.Invoke(typedRequest, new object[] { inners })!;
                 addRangeMethod.Invoke(obj, new object[] { casted });
                 return;
             }

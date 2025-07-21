@@ -21,13 +21,13 @@ internal class BasicExpressionBuilder<T>
     }
 
     public LambdaExpression GetExpression<TAnon>(
-            MethodInfo method, TAnon paramData, Type[] types)
+            MethodInfo method, TAnon? paramData, Type[] types)
     {
         var methodParams = GetParams(method, paramData, types);
         return GetLambdaExpression(method, methodParams);
     }
 
-    private IEnumerable<Expression> GetParams<TAnon>(MethodInfo method, TAnon paramData, Type[] types)
+    private IEnumerable<Expression> GetParams<TAnon>(MethodInfo method, TAnon? paramData, Type[] types)
     {
         var methodParams = method.GetParameters();
 

@@ -22,7 +22,7 @@ internal class SetupUtils<T> where T : class
             return typeof(T).GetAllPropertyTrackingPaths()[methodName].ReflectionInfo.GetMethod ?? throw new MissingMethodException(methodName);
 
         if (typeof(T).GetAllEventTrackingPaths().ContainsKey(methodName))
-            return typeof(T).GetAllEventTrackingPaths()[methodName].ReflectionInfo.AddMethod;
+            return typeof(T).GetAllEventTrackingPaths()[methodName].ReflectionInfo.AddMethod!;
 
         var methodWithPrefix = "." + methodName;
         var possibleMatchingMethods = typeof(T).GetAllMethodTrackingPaths().Where(m => m.Key.EndsWith(methodWithPrefix));
@@ -35,13 +35,13 @@ internal class SetupUtils<T> where T : class
 
         if (possibleMatchingProperties.Any() && !possibleMatchingProperties.Skip(1).Any()
                                     && possibleMatchingProperties.First().Value.ReflectionInfo.GetMethod is not null)
-                return possibleMatchingProperties.First().Value.ReflectionInfo.GetMethod;
+                return possibleMatchingProperties.First().Value.ReflectionInfo.GetMethod!;
         else if(possibleMatchingProperties.Any()) throw new AmbiguousMatchException($"Found multiple candidates `{string.Join(",", possibleMatchingProperties.Select(m => m.Key))}`");
 
         var possibleMatchingEvents = typeof(T).GetAllEventTrackingPaths().Where(m => m.Key.EndsWith(methodWithPrefix));
 
         if (possibleMatchingEvents.Any() && !possibleMatchingEvents.Skip(1).Any())
-                return possibleMatchingEvents.First().Value.ReflectionInfo.AddMethod;
+                return possibleMatchingEvents.First().Value.ReflectionInfo.AddMethod!;
         else if (possibleMatchingEvents.Any()) throw new AmbiguousMatchException($"Found multiple candidates `{string.Join(",", possibleMatchingEvents.Select(m => m.Key))}`");
 
 

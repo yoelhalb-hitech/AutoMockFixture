@@ -9,7 +9,10 @@ internal abstract class ReferenceTypeExtendedAssertions<TSubject, TAssertions>
      : ReferenceTypeAssertions<TSubject, TAssertions>
         where TAssertions : ReferenceTypeExtendedAssertions<TSubject, TAssertions>
 {
-    protected ReferenceTypeExtendedAssertions(TSubject subject) : base(subject)
+    protected ReferenceTypeExtendedAssertions(TSubject? subject)
+#pragma warning disable CS8604 // Possible null reference argument., Justification: this is intendent to be used in checks for `.BeNull()`
+            : base(subject)
+#pragma warning restore CS8604 // Possible null reference argument.
     {
     }
 

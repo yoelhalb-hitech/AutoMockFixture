@@ -9,5 +9,5 @@ internal static class PropertyInfoExtensions
                                         ?? propDetail.ReflectionInfo.GetTrackingPath(false);
 
     internal static string GetTrackingPath(this PropertyInfo property, bool isExplicit)
-            => (isExplicit ? ":" + property.DeclaringType.FullName + "." : "") + property.Name;
+            => (isExplicit ? ":" + property.DeclaringType!.FullName + "." : "") + property.Name;
 }
