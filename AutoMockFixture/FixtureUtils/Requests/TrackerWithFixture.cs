@@ -1,16 +1,29 @@
-﻿using static AutoMockFixture.FixtureUtils.Requests.IFixtureTracker;
+﻿using System.Diagnostics.CodeAnalysis;
+using static AutoMockFixture.FixtureUtils.Requests.IFixtureTracker;
 
 namespace AutoMockFixture.FixtureUtils.Requests;
 
 /// <summary>
 /// For use with objects that don't have a start tracker, and as a base for IFixtureTracker
 /// </summary>
-internal abstract record TrackerWithFixture : BaseTracker, IFixtureTracker
+internal abstract record TrackerWithFixture : BaseTracker, IFixtureTracker, IRequestWithType
 {
-    public TrackerWithFixture(IAutoMockFixture fixture, ITracker? tracker = null) : base(tracker)
+    [SetsRequiredMembers]
+    public TrackerWithFixture(Type request, ITracker tracker) : base(tracker)
     {
-        Fixture = fixture;
+        Request = request;
+        if (tracker is null) throw new Exception("Either tracker or fixture must be provided");
+        Fixture = tracker.StartTracker.Fixture;
     }
+
+    [SetsRequiredMembers]
+    public TrackerWithFixture(Type request, IAutoMockFixture fixture) : base((ITracker?)null)
+    {
+        Fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
+        Request = request;
+    }
+
+    public required virtual Type Request { get; init; }
 
     public virtual IAutoMockFixture Fixture { get; }
 
