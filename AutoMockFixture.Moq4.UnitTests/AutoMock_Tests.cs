@@ -603,6 +603,18 @@ public class AutoMock_Tests
         Assert.Throws<MockException>(() => mock.Verify());
     }
 
+    [Test]
+    public void Test_Setup_Func_WorksWithGeneric()
+    {
+        var mock = new AutoMock<Test>();
+
+        var expected = new object();
+        mock.Setup(nameof(Test.TestGeneric) + "`1", new {}, expected, Times.Once());
+        var result = mock.Object.TestGeneric<object>();
+        // TODO.... this doesn't work currently but at least we should throw an error that generics is not suppoorted
+        result.Should().Be(expected);
+    }
+
     #endregion
 
 
@@ -617,6 +629,7 @@ public class AutoMock_Tests
         public virtual EmptyType? TestMethod6(string str, int i, decimal m) { return null; }
         protected virtual int TestProtected1() { return 10; }
         protected virtual int TestProtected2(string str, int i, decimal m) { return 10; }
+        public virtual T? TestGeneric<T>() where T : class { return (T?)null; }
     }
 
     public abstract class IEnumerableTest : IEnumerable<int>

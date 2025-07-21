@@ -90,7 +90,7 @@ internal class SetupUtils<T> where T : class
 
     public IReturnsResult<T> SetupFuncWithResult<TResult>(MethodInfo method, Expression<Func<T, TResult>> expression, TResult result, Times? times = null)
     {
-        if(!method.ReturnType.IsAssignableFrom(typeof(TResult)))
+        if(!method.ReturnType.IsAssignableFrom(typeof(TResult)) && !method.ReturnType.IsGenericMethodParameter)
             throw new ArgumentException($"Provided return value does not match method return type of {method.ReturnType.Name}");
 
         if (method.IsSpecialName) // Assumming property get
@@ -131,12 +131,23 @@ internal class SetupUtils<T> where T : class
     }
 
     // Doing this way it because of issues with overload resolution
-    public IReturnsResult<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon paramData, TResult result, Times? times) where TAnon : class
+    public IReturnsResult<T> SetupInternal<TAnon, TResult>(MethodInfo method, TAnon? paramData, TResult result, Times? times) where TAnon : class
     {
         method = GetCorrectMethod(method);
 
-        if (!method.ReturnType.IsAssignableFrom(typeof(TResult)))
+        if (!method.ReturnType.IsAssignableFrom(typeof(TResult)) && !method.ReturnType.IsGenericMethodParameter)
             throw new ArgumentException($"Provided return value does not match method return type of {method.ReturnType.Name}");
+
+        if (method.ReturnType.IsGenericMethodParameter)
+        {
+            method = method.MakeGenericMethod(method.GetGenericArguments()
+                                        .Select(a => a switch
+                                        {
+                                            Type t when t == method.ReturnType => typeof(TResult),
+                                            { IsGenericParameter: true } => typeof(It.IsAnyType),
+                                            _ => a
+                                        }).ToArray());
+        }
 
         var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
         var expr = basicExpression.GetExpression(method, paramData, paramTypes);

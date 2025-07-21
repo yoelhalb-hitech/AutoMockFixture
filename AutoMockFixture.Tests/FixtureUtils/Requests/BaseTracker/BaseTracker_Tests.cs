@@ -11,7 +11,7 @@ internal class BaseTracker_Tests
     public void GetChildrensPaths_ReturnsCurrentPath()
     {
         var fixture = new AbstractAutoMockFixture(); // Plain Autofixture doesn't work... because of constructors
-        var trackerMock = new AutoMock<TrackerWithFixture>(fixture, null);
+        var trackerMock = new AutoMock<TrackerWithFixture>(typeof(Type), fixture);
         trackerMock.SetupGet(t => t.InstancePath).Returns("Test");
         trackerMock.CallBase = true;
 

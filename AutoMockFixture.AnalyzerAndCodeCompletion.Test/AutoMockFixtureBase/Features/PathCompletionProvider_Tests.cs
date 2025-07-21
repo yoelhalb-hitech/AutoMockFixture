@@ -38,7 +38,8 @@ public class PathCompletionProvider_Tests
            .WithAnalyzerReferences(new AnalyzerReference[]
            {
                new AnalyzerFileReference(analyzerPath, loader),
-               new AnalyzerFileReference(typeof(SequelPay.DotNetPowerExtensions.MustInitializeAttribute).Assembly.Location, loader),
+               // We don't currently have tests on MustInitialzie and currently it has multiple versions from the directly installed DotNetPowerExtensions, and the transitive package via DotNetPowerExtensions.Reflection
+               //new AnalyzerFileReference(typeof(SequelPay.DotNetPowerExtensions.MustInitializeAttribute).Assembly.Location, loader),
                new AnalyzerFileReference(typeof(SequelPay.DotNetPowerExtensions.RoslynExtensions.SymbolExtensions).Assembly.Location, loader),
            });
 

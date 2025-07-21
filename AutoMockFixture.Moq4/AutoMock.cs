@@ -152,5 +152,17 @@ public partial class AutoMock<T> : Mock<T>, IAutoMock, ISetCallBase where T : cl
         base.VerifyAll();
     }
 
+    public void Setup(string methodName, object args, object? result, Times? times = null)
+    {
+        var method = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        if (method == null)
+        {
+            throw new ArgumentException($"Method '{methodName}' not found on type {typeof(T).Name}");
+        }
+
+        if(this.CallBase && result is null) setupUtils.SetupInternal(method, args, times, callBase: true);
+        else setupUtils.SetupInternal(method, args, result, times);
+    }
+
     private readonly SetupUtils<T> setupUtils;
 }

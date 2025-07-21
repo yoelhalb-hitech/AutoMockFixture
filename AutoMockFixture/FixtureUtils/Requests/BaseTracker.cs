@@ -115,13 +115,17 @@ internal abstract record BaseTracker : ITracker, IEquatable<BaseTracker>
 
     public virtual void SetResult(object? result, ISpecimenBuilder? builder)
     {
-        // The system might set it after set completed
+        // The system might set it after setting completed
         // But we don't want to call .Equals() if it is a mock since it might affect verification (also for value types == won't work)
-        if (completed && object.Equals(this.result, result)) return;
+        if (completed && this.result is not null) return;
 
-        this.result = result.ToWeakReference();
+        this.result = result as WeakReference ?? result.ToWeakReference();
 
-        StartTracker.Fixture.Cache.AddIfNeeded(this, result);
+        if(Children.Count != 1 || Children.First().InstancePath != ""
+                || Children.First().Result is null || !object.Equals(Children.First().Result!.Target, result))
+        {
+            StartTracker.Fixture.Cache.AddIfNeeded(this, result);
+        }
 
         this.Builder = builder ?? this.Builder; // Don't override when setting the result from outside as we do when CreateAutoMock
 

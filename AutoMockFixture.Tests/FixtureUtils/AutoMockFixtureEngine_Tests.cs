@@ -17,8 +17,13 @@ internal class AutoMockFixtureEngine_Tests
 
         var fixtureMock = new AutoMock<AutoMockFixtureBase>();
         fixtureMock.SetupGet(m => m.AutoMockHelpers).Returns(helpers);
+        fixtureMock.As<IAutoMockFixture>().SetupGet(m => m.AutoMockHelpers).Returns(helpers);
 
-        var startTrackerMock = new Mock<TrackerWithFixture>(fixtureMock.Object, null) { CallBase = true };
+        var cache = new Cache(fixtureMock.Object);
+        fixtureMock.SetupGet(m => m.Cache).Returns(cache);
+        fixtureMock.As<IAutoMockFixture>().SetupGet(m => m.Cache).Returns(cache);
+
+        var startTrackerMock = new Mock<TrackerWithFixture>(typeof(string), fixtureMock.Object) { CallBase = true };
         fixtureMock.Setup(m => m.GetStartTrackerForAutoMock(It.IsAny<Type>(), It.IsAny<bool>())).Returns(startTrackerMock.Object);
 
         return fixtureMock;

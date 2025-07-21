@@ -36,7 +36,7 @@ internal class NonAutoMockRequest_Tests
     [Test]
     public void Test_MockDependecies_ReturnsBaseTracker()
     {
-        var trackerMock = new AutoMock<TrackerWithFixture>(new AbstractAutoMockFixture(), null) { CallBase = true };
+        var trackerMock = new AutoMock<TrackerWithFixture>(typeof(Type), new AbstractAutoMockFixture()) { CallBase = true };
         trackerMock.Setup(t => t.MockDependencies).Returns(true);
 
         var autoMockRequest = new NonAutoMockRequest(typeof(string), trackerMock.Object);

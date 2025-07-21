@@ -206,12 +206,10 @@ public class MethodInfoExtensions_Tests
     private delegate MethodInfo GetMethodDelegate(Func<MethodInfo, bool> func);
 
     private static Func<string, int?, int?, Type?, MethodInfo> GetGetMethod(GetMethodDelegate func)
-        => (string name, int? parameters, int? genericArgs, Type? genericType)
+        => (string name, int? parameters, int? genericArgs, Type? parameterType)
             => func(m => m.Name == name
                     && (!parameters.HasValue || m.GetParameters().Length == parameters.Value)
                     && (!genericArgs.HasValue
-                            || (m.IsGenericMethod && m.GetGenericArguments().Length == genericArgs.Value)
-                    && (genericType is null || (m.IsGenericMethod && m.GetGenericArguments().First() == genericType))));
                             || (m.IsGenericMethod && m.GetGenericArguments().Length == genericArgs.Value))
                     && (parameterType is null || (m.GetParameters().FirstOrDefault()?.ParameterType == parameterType)));
 

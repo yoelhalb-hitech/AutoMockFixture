@@ -317,7 +317,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                     .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
                     .Value;
 
-    internal Cache Cache { get; }
+    internal virtual Cache Cache { get; }
     CacheBuilder? cacheBuilder;
     AutoMockTypeControlBuilder? autoMockTypeControlBuilder;
 
@@ -372,6 +372,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     List<ConstructorArgumentValue> IAutoMockFixture.ConstructorArgumentValues => ConstructorArgumentValues;
 
+    // We can have multiple result at the same path such as in LazyDifferent mode or possibly generics
     Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> IAutoMockFixture.PathsDict => AutoMockEngine.PathsDict;
 
     Dictionary<WeakReference, Task<List<WeakReference<IAutoMock>>>> IAutoMockFixture.MocksDict => AutoMockEngine.MocksDict;

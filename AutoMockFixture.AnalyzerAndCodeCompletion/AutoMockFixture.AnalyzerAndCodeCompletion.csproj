@@ -99,8 +99,8 @@
   <Target Name="_AddAnalyzersToOutput">
     <ItemGroup>
       <TfmSpecificPackageFile Include="$(OutputPath)\AutoMockFixture.AnalyzerAndCodeCompletion.dll" PackagePath="analyzers/dotnet/cs" />
-	  <TfmSpecificPackageFile Include="$(PkgSequelPay_DotNetPowerExtensions)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" />
-	  <TfmSpecificPackageFile Include="$(PkgSequelPay_DotNetPowerExtensions_RoslynExtensions)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" />
-	</ItemGroup>
+	    <TfmSpecificPackageFile Include="$(PkgSequelPay_DotNetPowerExtensions)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" />
+	    <TfmSpecificPackageFile Include="$(PkgSequelPay_DotNetPowerExtensions_RoslynExtensions)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" />
+	  </ItemGroup>
   </Target>
 </Project>

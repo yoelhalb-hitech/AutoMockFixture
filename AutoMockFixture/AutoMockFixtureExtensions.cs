@@ -10,7 +10,7 @@ public static class AutoMockFixtureExtensions
     /// </summary>
     /// <param name="obj">An object created witht he current <see cref="AutoMockFixture"/></param>
     /// <param name="path">The path to get the value at</param>
-    /// <returns></returns>
+    /// <returns>The object at path (or multiple if LazyDifferent mode)</returns>
     /// <exception cref="Exception">Path not provided</exception>
     /// <exception cref="Exception">Object not found</exception>
     public static List<object> GetAt(this IAutoMockFixture fixture, object obj, string path)
@@ -18,7 +18,7 @@ public static class AutoMockFixtureExtensions
         obj = fixture.AutoMockHelpers.GetFromObj(obj) ?? obj;
 
         if (!fixture.PathsDict.Any(d => object.Equals(d.Key.Target, obj))) throw new Exception("Object not found, ensure that it is a root object in the current fixture, and that it is not garbage collected, and possibly verify that .Equals() works correctly on the object");
-        if (string.IsNullOrWhiteSpace(path)) throw new Exception(nameof(path) + " doesn't have a value");
+        if (path is null) throw new Exception(nameof(path) + " doesn't have a value"); // Whitespace would mean the main object while null is invalid
 
         path = path.Trim();
 

@@ -38,7 +38,9 @@ internal class ServicesCustomization : IRemovableCustomization
 
                 var implementingType = type.IsGenericTypeDefinition ? attribute.Use ?? type : type;
 
-                var forTypes = (Type?[])attribute.GetType().InvokeMethod("get_For", attribute)!;
+                var forTypes = (Type?[])attribute.GetType()
+                                .GetProperty("For", BindingFlagsExtensions.AllBindings)!
+                                .GetValue(attribute)!;
                 if (forTypes.Length == 0) forTypes = new[] { type };
 
                 foreach (var forType in forTypes.OfType<Type>())

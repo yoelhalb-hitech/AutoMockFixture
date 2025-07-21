@@ -229,7 +229,7 @@ internal class AutoMockFixtureEngine
         try
         {
             var result = new RecursionContext(fixture, fixture) { AutoMockTypeControl = autoMockTypeControl }.Resolve(request);
-            if (result == this || result == fixture) return (result, null);
+            if (object.Equals(result, this) || object.Equals(result, fixture)) return (result, null); // Not using .Equals because we don't want to affect a mock .Equals verification
 
             if (ReferenceEquals(result, request)
                     || (result is ITracker tracker
@@ -244,6 +244,15 @@ internal class AutoMockFixtureEngine
             // WeakReference won't block Garbage Collection, and also avoids the issue of duplicates
             var key = (fixture.AutoMockHelpers.GetFromObj(result) ?? result).ToWeakReference();
             TrackerDict[key] = request;
+
+            // We need to set the result for the cases we didn't et set it
+            // But for consistency we will always for a mock set the mocked object and not the mock itself
+            // So paths will always return the mocked object while GetAutoMock will always return the mock
+            try
+            {
+                request.SetResult(key is IAutoMock mock ? mock.GetMocked() : key, fixture);
+            }
+            catch { }
 
             if (PathsDict.Any(m => object.Equals(m.Key.Target, key.Target))) return (result, null); // Probably from cache, CAUTION: referencing directly the object in the expression prevents if from GC, only when referencing via the wekreference target
 

@@ -100,6 +100,8 @@ public interface IAutoMockFixture
     #endregion
 
     internal IAutoMockHelpers AutoMockHelpers { get; }
+
+    // We can have multiple result at the same path such as in LazyDifferent mode or possibly generics
     internal Dictionary<WeakReference, Task<Dictionary<string, List<WeakReference?>>>> PathsDict { get; }
     internal Dictionary<WeakReference, Task<Dictionary<Type, List<WeakReference<IAutoMock>>>>> MocksByTypeDict { get; }
     internal Dictionary<WeakReference, ITracker> TrackerDict { get; }
