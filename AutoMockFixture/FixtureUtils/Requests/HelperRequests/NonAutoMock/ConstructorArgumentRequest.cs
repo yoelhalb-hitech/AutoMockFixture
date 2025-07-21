@@ -14,11 +14,4 @@ internal record ConstructorArgumentRequest : BaseTracker
     public virtual ParameterInfo ParameterInfo { get; }
 
     public override string InstancePath => "..ctor->" + ParameterInfo.Name;
-
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is ConstructorArgumentRequest argumentRequest
-            && DeclaringType == argumentRequest.DeclaringType
-            && ParameterInfo == argumentRequest.ParameterInfo
-            && base.IsRequestEquals(other);
 }

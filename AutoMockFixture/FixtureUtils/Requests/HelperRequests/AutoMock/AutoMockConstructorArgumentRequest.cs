@@ -29,7 +29,4 @@ internal record AutoMockConstructorArgumentRequest : ConstructorArgumentRequest,
 
         base.SetResult(result, builder);
     }
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockConstructorArgumentRequest && base.IsRequestEquals(other);
 }

@@ -100,7 +100,7 @@ public abstract class AutoDataBaseAttribute : Attribute, ITestBuilder, IWrapSetU
 
         TypesToFreeze?.ToList().ForEach(t =>
             fixture.Customize(new FreezeCustomization(
-                    new TypeOrRequestSpecification(new ExactTypeSpecification(t), fixture.AutoMockHelpers))));
+                    new TypeOrRequestSpecification(new TypeSpecification(t, fixture.AutoMockHelpers), fixture.AutoMockHelpers))));
 
         Customizations.ForEach(c => fixture.Customize(c));
 

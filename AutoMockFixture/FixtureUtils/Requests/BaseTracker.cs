@@ -128,14 +128,15 @@ internal abstract record BaseTracker : ITracker, IEquatable<BaseTracker>
         completed = true;
         UpdateResult();
     }
-    public virtual bool IsRequestEquals(ITracker other)
-        => StartTracker.IsStartTrackerEquals(other.StartTracker);
 
     //AutoFixture uses this to determine recursion
 #pragma warning disable CS8851 // Record defines 'Equals' but not 'GetHashCode'.
-    public virtual bool Equals(BaseTracker? other) => other is not null
-            && other.StartTracker == StartTracker
-            && IsRequestEquals(other);
+    public virtual bool Equals(BaseTracker? other) =>
+            other is not null
+            && Object.ReferenceEquals(other.StartTracker, StartTracker)
+            && other.GetType() == this.GetType()
+            && other.GetType().DeclaringType == this.GetType().DeclaringType
+            && other.InstancePath == InstancePath;
 #pragma warning restore CS8851 // Record defines 'Equals' but not 'GetHashCode'.
 
     public sealed override string? ToString() // Otherwise we can run in a stack overflow see an exmaple in https://stackoverflow.com/questions/67285095/c-sharp-record-tostring-causes-stack-overflow-and-stops-debugging-session-with

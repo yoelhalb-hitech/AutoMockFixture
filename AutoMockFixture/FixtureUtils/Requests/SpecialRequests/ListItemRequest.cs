@@ -8,6 +8,4 @@ internal record ListItemRequest : OneOfMultipleRequest
     }
 
     public override string InstancePath => $"[{Index}]";
-
-    public override bool IsRequestEquals(ITracker other) => other is ListItemRequest && base.IsRequestEquals(other);
 }

@@ -9,6 +9,4 @@ internal record TupleItemRequest : OneOfMultipleRequest
     }
 
     public override string InstancePath => $"({"".PadLeft(Index, ',')})";
-
-    public override bool IsRequestEquals(ITracker other) => other is TupleItemRequest && base.IsRequestEquals(other);
 }

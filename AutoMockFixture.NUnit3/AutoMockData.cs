@@ -5,6 +5,7 @@ using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Specifications;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using System.Reflection;
 
 namespace AutoMockFixture.NUnit3;
 
@@ -40,7 +41,7 @@ internal class AutoMockData : AutoDataAttribute
                     var customization = ca.GetCustomization(parameter.ParameterInfo);
                     if(customization is FreezeOnMatchCustomization freezeCustomization)
                         this.Fixture
-                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(freezeCustomization.Matcher, Fixture.AutoMockHelpers)));
+                            .Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(((ParameterInfo)freezeCustomization.Request).ParameterType, Fixture.AutoMockHelpers), Fixture.AutoMockHelpers)));
                     else
                         this.Fixture.Customize(customization);
                 }

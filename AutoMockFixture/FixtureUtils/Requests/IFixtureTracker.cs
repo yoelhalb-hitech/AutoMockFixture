@@ -1,17 +1,19 @@
-﻿
+﻿using System.ComponentModel;
+
 namespace AutoMockFixture.FixtureUtils.Requests;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public interface IFixtureTracker : ITracker
 {
     public IAutoMockFixture Fixture { get; }
+
+    /// <summary>
+    /// This property dependes on the context of the request
+    /// If it is being set to a non null value on a `AutoMockRequest` or `AutoMockDirectRequest` then it is
+    /// </summary>
     public bool? MockShouldCallBase { get; }
     public bool MockDependencies { get; }
-    /// <summary>
-    /// Compare two <see cref="IFixtureTracker"/> objects to see if an object in the chain (but not necessarily they themselves) are to be considered equal requests
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    public bool IsStartTrackerEquals(IFixtureTracker other);
+
     public event EventHandler<UpdateData>? DataUpdated;
 
     public class UpdateData : EventArgs

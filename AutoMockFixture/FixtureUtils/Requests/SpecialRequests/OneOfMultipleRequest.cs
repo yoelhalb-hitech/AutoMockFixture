@@ -9,7 +9,4 @@ internal abstract record OneOfMultipleRequest : InnerRequest
     }
 
     public int Index { get; }
-
-    public override bool IsRequestEquals(ITracker other)
-        => base.IsRequestEquals(other) && other is OneOfMultipleRequest otherRequest && otherRequest.Index == Index;
 }

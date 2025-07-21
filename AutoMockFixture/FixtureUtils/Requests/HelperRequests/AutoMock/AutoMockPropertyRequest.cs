@@ -8,7 +8,4 @@ internal record AutoMockPropertyRequest : PropertyRequest, IAutoMockRequest
         : base(declaringType, propertyInfo, tracker)
     {
     }
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockPropertyRequest && base.IsRequestEquals(other);
 }

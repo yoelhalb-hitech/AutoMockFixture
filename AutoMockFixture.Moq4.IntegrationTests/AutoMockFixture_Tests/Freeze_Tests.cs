@@ -1,4 +1,5 @@
 ﻿using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.NUnit3;
 using FluentAssertions.Collections;
 using FluentAssertions.Execution;
 using SequelPay.DotNetPowerExtensions;
@@ -382,12 +383,89 @@ internal class Freeze_Tests
         var obj1 = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
         var obj2 = fixture.CreateAutoMock<NonSingletonClass>();
         var obj3 = fixture.CreateWithAutoMockDependencies<AutoMock<NonSingletonClass>>()!.Object;
+        var obj4 = fixture.CreateAutoMock<NonSingletonClass>();
 
         obj1.Should().NotBeNull();
-        obj2.Should().NotBeNull();
-        obj3.Should().NotBeNull();
-        obj1.Should().BeSameAs(obj2);
-        obj1.Should().BeSameAs(obj3);
+        obj2.Should().NotBeNull().And.NotBeSameAs(obj1);
+        obj3.Should().NotBeNull().And.BeSameAs(obj1);
+        obj4.Should().NotBeNull().And.BeSameAs(obj2);
+    }
+
+    public interface IFace { }
+    public interface DefualtIFace { public int Test => 10; }
+    public class OuterClass
+    {
+        public IFace? IFace { get; set; }
+        public DefualtIFace? DefualtIFace { get; set; }
+    }
+
+    [Test]
+    [TestCase<UnitFixture>]
+    [TestCase<IntegrationFixture>]
+    public void Test_Works_WhenIFace<TFixture>() where TFixture: AutoMockFixtureBase, new()
+    {
+        // For Iface we ignore callbase on itself as long as the call base in general as same
+        var fixture = new TFixture();
+        var iface = fixture.Freeze<IFace>();
+        var ifaceAutoMock = fixture.Freeze<AutoMock<IFace>>();
+
+        var outer = fixture.Create<OuterClass>();
+        var outerMockedFreeze = fixture.Freeze<AutoMock<OuterClass>>();
+        var outerMocked = fixture.Create<AutoMock<OuterClass>>();
+
+        var outerViaMocked = fixture.CreateAutoMock<OuterClass>();
+        var outerViaMocked2 = fixture.CreateAutoMock<OuterClass>();
+
+        iface.Should().BeAutoMock();
+        ifaceAutoMock.Should().BeAutoMock();
+        ifaceAutoMock!.GetMocked().Should().Be(iface);
+
+        outer.Should().NotBeNull().And.NotBeAutoMock();
+
+        outerMockedFreeze.Should().BeAutoMock();
+        outerMockedFreeze!.GetMocked().Should().NotBeNull();
+
+        outerMocked.Should().Be(outerMockedFreeze);
+
+        outerViaMocked.Should().BeAutoMock().And.NotBe(outerMockedFreeze);
+        outerViaMocked2.Should().BeAutoMock().And.Be(outerViaMocked);
+
+        new[] {  ifaceAutoMock!.GetMocked(), outer!.IFace,
+            outerMockedFreeze!.GetMocked().IFace, outerViaMocked!.IFace, outerViaMocked2!.IFace }.Should().AllBeSameAs(iface);
+    }
+
+    [Test]
+    public void Test_UnitFixture_Works_WhenDefaultIFace()
+    {
+        // For default iface we do care on callbase and therefore for Unit fixture there will be a difference between the SUT and dependency
+        var fixture = new UnitFixture();
+
+        var defaultIFace = fixture.Freeze<DefualtIFace>();
+        var defaultIFaceMock = fixture.Freeze<AutoMock<DefualtIFace>>();
+
+        var outer = fixture.Create<OuterClass>();
+        var outerMockedFreeze = fixture.Freeze<AutoMock<OuterClass>>();
+        var outerMocked = fixture.Create<AutoMock<OuterClass>>();
+
+        var outerViaMocked = fixture.CreateAutoMock<OuterClass>();
+        var outerViaMocked2 = fixture.CreateAutoMock<OuterClass>();
+
+        defaultIFace.Should().BeAutoMock();
+        defaultIFaceMock.Should().BeAutoMock();
+        defaultIFaceMock!.GetMocked().Should().Be(defaultIFace);
+
+        outer.Should().NotBeNull().And.NotBeAutoMock();
+
+        outerMockedFreeze.Should().BeAutoMock();
+        outerMockedFreeze!.GetMocked().Should().NotBeNull();
+
+        outerMocked.Should().Be(outerMockedFreeze);
+
+        outerViaMocked.Should().BeAutoMock().And.NotBe(outerMockedFreeze);
+        outerViaMocked2.Should().BeAutoMock().And.Be(outerViaMocked);
+
+        new[] { outer!.DefualtIFace, outerMockedFreeze!.GetMocked().DefualtIFace, outerViaMocked!.DefualtIFace }
+                    .Should().AllNotBeSameAs(defaultIFace);
     }
 
     public class Test { }
@@ -411,13 +489,8 @@ internal class Freeze_Tests
         var obj3 = fixture.CreateNonAutoMock<AutoMock<NonSingletonClass>>()!.Object;
 
         obj1.Should().NotBeNull();
-        obj2.Should().NotBeNull();
-        obj3.Should().NotBeNull();
-        AutoMock.Get(obj1).CallBase.Should().BeFalse();
-        AutoMock.Get(obj2).CallBase.Should().BeFalse();
-        AutoMock.Get(obj3).CallBase.Should().BeFalse();
-        obj1.Should().BeSameAs(obj2);
-        obj1.Should().BeSameAs(obj3);
+        obj2.Should().NotBeNull().And.BeSameAs(obj1);
+        obj3.Should().NotBeNull().And.BeSameAs(obj1);
     }
 
     [Test]
@@ -428,13 +501,21 @@ internal class Freeze_Tests
 
         var frozen = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
         var obj = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
+        var obj2 = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
-        obj!.Class1.Should().Be(frozen);
-        obj!.Class2.Should().Be(frozen);
-        obj!.NonSingletonProp.Should().Be(frozen);
-        obj!.NonSingletonField.Should().Be(frozen);
+        obj2.Should().NotBeNull();
+
+        new[] {
+            obj!.Class1, obj!.Class2, obj!.NonSingletonProp, obj!.NonSingletonField,
+            obj2!.Class1, obj2!.Class2, obj2!.NonSingletonProp, obj2!.NonSingletonField,
+        }.Should().OnlyContain(x => x != frozen);
+
+        new[] {
+            obj!.Class2, obj!.NonSingletonProp, obj!.NonSingletonField,
+            obj2.Class1, obj2!.Class2, obj2!.NonSingletonProp, obj2!.NonSingletonField,
+        }.Should().OnlyContain(x => x == obj.Class1);
     }
 
     [Test]

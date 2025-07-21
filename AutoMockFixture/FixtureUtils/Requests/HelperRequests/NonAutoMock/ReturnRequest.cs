@@ -19,11 +19,5 @@ internal record ReturnRequest : BaseTracker
     public string TrackingPath { get; } // For example when setting up a readonly property via setup method
 
     public override string InstancePath => "." + TrackingPath; // TODO... There might be a conflict if the out argument name is the same as the ctor arg name of the return type
-
-
-    public override bool IsRequestEquals(ITracker other)
-        => base.IsRequestEquals(other)
-            && other is ReturnRequest request && DeclaringType == request.DeclaringType
-            && MethodInfo == request.MethodInfo && ReturnType == request.ReturnType;
 }
 

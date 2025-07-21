@@ -11,8 +11,4 @@ internal record AutoMockDependenciesRequest : TrackerWithFixture, IFixtureTracke
     public AutoMockDependenciesRequest(Type request, IAutoMockFixture fixture) : base(request, fixture) { }
 
     public override bool MockDependencies => StartTracker is null || StartTracker is AutoMockDependenciesRequest ? true : StartTracker.MockDependencies; // Avoid stack overflow
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockDependenciesRequest request
-                && request.Request == Request && base.IsRequestEquals(other);
 }

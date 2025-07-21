@@ -10,7 +10,4 @@ internal record AutoMockOutParameterRequest : OutParameterRequest, IAutoMockRequ
         : base(declaringType, methodInfo, parameterInfo, parameterType, tracker)
     {
     }
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockOutParameterRequest && base.IsRequestEquals(other);
 }

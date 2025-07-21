@@ -40,6 +40,8 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     }
     public AutoMockFixtureBase(bool noConfigureMembers = false, bool generateDelegates = false, MethodSetupTypes? methodSetupType = null)
     {
+        Cache = new Cache(this);
+
         var engine = new CompositeSpecimenBuilder(new CustomEngineParts(this.AutoMockHelpers));
 
         var newAutoProperties = new AutoPropertiesTarget(
@@ -162,7 +164,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
 
     public virtual void JustFreeze<T>() => JustFreeze(typeof(T));
     public virtual void JustFreeze(Type type)
-            => Customize(new FreezeCustomization(new TypeOrRequestSpecification(new ExactTypeSpecification(type), AutoMockHelpers)));
+            => Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(type, this.AutoMockHelpers), AutoMockHelpers)));
 
     public virtual T? Freeze<T>()
     {
@@ -315,7 +317,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
                     .SingleOrDefault(t => t.Key.IsAlive && t.Key.Target == (AutoMockHelpers.GetFromObj(obj) ?? obj))
                     .Value;
 
-    internal Cache Cache { get; } = new Cache();
+    internal Cache Cache { get; }
     CacheBuilder? cacheBuilder;
     AutoMockTypeControlBuilder? autoMockTypeControlBuilder;
 

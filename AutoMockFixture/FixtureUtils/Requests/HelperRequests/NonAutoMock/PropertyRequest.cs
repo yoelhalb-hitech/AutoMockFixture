@@ -13,10 +13,4 @@ internal record PropertyRequest : BaseTracker
     public virtual PropertyInfo PropertyInfo { get; }
 
     public override string InstancePath => "." + PropertyInfo.Name;
-
-
-    public override bool IsRequestEquals(ITracker other)
-        => base.IsRequestEquals(other) && other is PropertyRequest request
-                && DeclaringType == request.DeclaringType
-                && PropertyInfo == request.PropertyInfo;
 }

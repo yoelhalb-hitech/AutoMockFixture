@@ -1,6 +1,8 @@
-﻿
+﻿using System.ComponentModel;
+
 namespace AutoMockFixture.FixtureUtils.Requests;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public interface ITracker
 {
     public IFixtureTracker StartTracker { get; }
@@ -20,5 +22,4 @@ public interface ITracker
     public void SetCompleted(ISpecimenCommand command);
     public void UpdateResult();
     public void AddChild(ITracker tracker);
-    public bool IsRequestEquals(ITracker other);
 }

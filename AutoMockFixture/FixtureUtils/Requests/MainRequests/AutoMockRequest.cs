@@ -15,10 +15,5 @@ internal record AutoMockRequest : TrackerWithFixture, IAutoMockRequest, IDisposa
 
     public override bool MockDependencies => StartTracker is null || StartTracker is AutoMockRequest ? true : StartTracker.MockDependencies; // Avoid stack overflow
 
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockRequest request
-            && request.Request == Request && request.BypassChecks == BypassChecks
-            && base.IsRequestEquals(other);
-
     public void Dispose() => SetCompleted((ISpecimenBuilder?)null);
 }

@@ -9,7 +9,4 @@ internal record AutoMockReturnRequest : ReturnRequest, IAutoMockRequest
         : base(declaringType, methodInfo, returnType, tracker, trackingPath)
     {
     }
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockReturnRequest && base.IsRequestEquals(other);
 }

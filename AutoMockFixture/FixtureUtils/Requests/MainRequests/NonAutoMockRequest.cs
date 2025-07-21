@@ -11,7 +11,4 @@ internal record NonAutoMockRequest : TrackerWithFixture, IRequestWithType, IFixt
     public NonAutoMockRequest(Type request, IAutoMockFixture fixture) : base(request, fixture) { }
 
     public override bool MockDependencies => StartTracker is null || StartTracker is NonAutoMockRequest ? false : StartTracker.MockDependencies; // Avoid stack overflow
-
-    public override bool IsRequestEquals(ITracker other)
-        => base.IsRequestEquals(other) && other is NonAutoMockRequest otherRequest && otherRequest.Request == Request;
 }

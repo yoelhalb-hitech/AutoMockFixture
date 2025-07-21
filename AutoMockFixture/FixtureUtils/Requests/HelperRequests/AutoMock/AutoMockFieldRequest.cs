@@ -8,7 +8,4 @@ internal record AutoMockFieldRequest : FieldRequest, IAutoMockRequest
         : base(declaringType, fieldInfo, tracker)
     {
     }
-
-    public override bool IsRequestEquals(ITracker other)
-        => other is AutoMockFieldRequest && base.IsRequestEquals(other);
 }
