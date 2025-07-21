@@ -1,6 +1,5 @@
 ﻿using AutoMockFixture.FixtureUtils.Commands;
-using DotNetPowerExtensions.Reflection;
-using DotNetPowerExtensions.Reflection.Models;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using System.Reflection;
 
 namespace AutoMockFixture.Tests.FixtureUtils.Commands;

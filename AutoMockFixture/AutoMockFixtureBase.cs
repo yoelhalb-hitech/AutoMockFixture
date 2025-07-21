@@ -7,10 +7,9 @@ using AutoMockFixture.FixtureUtils.Postprocessors;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Specifications;
 using AutoMockFixture.FixtureUtils.Trace;
-using DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 

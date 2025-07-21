@@ -1,5 +1,5 @@
 ﻿using AutoMockFixture.Moq4.AutoMockUtils;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AutoMockFixture.Moq4.IntegrationTests.AutoMockFixture_Tests;

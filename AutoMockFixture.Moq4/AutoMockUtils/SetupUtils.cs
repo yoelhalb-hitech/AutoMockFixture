@@ -1,6 +1,6 @@
 ﻿using AutoMockFixture.Moq4.Expressions;
 using AutoMockFixture.Moq4.VerifyInfo;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using Moq.Language.Flow;
 using System.Reflection;
 

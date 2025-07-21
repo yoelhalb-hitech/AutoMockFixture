@@ -1,6 +1,5 @@
 ﻿using AutoMockFixture.Moq4.AutoMockUtils;
-using DotNetPowerExtensions.Reflection;
-using DotNetPowerExtensions.Reflection.Models;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using Moq.Protected;
 using System.Security.AccessControl;
 

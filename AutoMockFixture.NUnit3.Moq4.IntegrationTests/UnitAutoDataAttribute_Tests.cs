@@ -1,7 +1,5 @@
-﻿using AutoMockFixture.AutoMockUtils;
-using AutoMockFixture.Moq4.AutoMockUtils;
+﻿using AutoMockFixture.NUnit3;
 using NUnit.Framework.Internal;
-using AutoMockFixture.NUnit3;
 
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 

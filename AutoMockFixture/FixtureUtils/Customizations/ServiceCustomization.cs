@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using SequelPay.DotNetPowerExtensions;
 using System.Diagnostics.CodeAnalysis;
 

@@ -3,7 +3,7 @@ using AutoMockFixture.Moq4.AutoMockProxy;
 using AutoMockFixture.Moq4.AutoMockUtils;
 using AutoMockFixture.Moq4.VerifyInfo;
 using Castle.DynamicProxy;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.Moq4;
 

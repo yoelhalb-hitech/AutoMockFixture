@@ -2,7 +2,7 @@
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Customizations;
 

@@ -90,7 +90,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[4.1.1,)" />
+    <PackageReference Include="SequelPay.DotNetPowerExtensions.Reflection" Version="[5.0.0-beta3,)" />
     <PackageReference Include="System.ValueTuple" Version="[4.5.0,)" Condition="'$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461'" />
 	<PackageReference Include="System.Threading.Tasks.Extensions" Version="[4.5.2,)" Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net47'" />
   </ItemGroup>

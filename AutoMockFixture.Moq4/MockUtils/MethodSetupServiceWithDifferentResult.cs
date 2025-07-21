@@ -1,4 +1,4 @@
-﻿using DotNetPowerExtensions.Reflection.Models;
+﻿using SequelPay.DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.Moq4.MockUtils;
 

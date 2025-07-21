@@ -1,4 +1,4 @@
-﻿using DotNetPowerExtensions.Reflection;
+﻿using SequelPay.DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.Extensions;
 

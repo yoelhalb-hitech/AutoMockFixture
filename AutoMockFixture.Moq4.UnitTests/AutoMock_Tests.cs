@@ -1,6 +1,6 @@
 ﻿using AutoMockFixture.Moq4.AutoMockProxy;
 using Castle.DynamicProxy;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using Moq;
 using System.Collections;
 using System.Reflection;

@@ -2,7 +2,7 @@
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using static AutoMockFixture.FixtureUtils.Customizations.SubclassTransformCustomization;
 
 namespace AutoMockFixture.FixtureUtils; // Use this namespace not to be in the main namespace (would have made it internal but then the subclasses would also have to be internal)

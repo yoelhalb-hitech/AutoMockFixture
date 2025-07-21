@@ -1,7 +1,7 @@
 ﻿using AutoMockFixture.AutoMockUtils;
 using AutoMockFixture.FixtureUtils.Requests;
 using AutoMockFixture.FixtureUtils.Requests.SpecialRequests;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using System.Collections;
 using System.Linq;
 

@@ -1,5 +1,4 @@
-﻿using DotNetPowerExtensions.Reflection;
-using DotNetPowerExtensions.Reflection.Models;
+﻿using SequelPay.DotNetPowerExtensions.Reflection;
 using System.Collections.Concurrent;
 using System.Reflection;
 

@@ -1,8 +1,7 @@
-﻿
-using AutoFixture;
+﻿using AutoFixture;
 using AutoFixture.Kernel;
 using AutoMockFixture.Moq4.MockUtils;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 using Moq;
 
 namespace AutoMockFixture.Moq4.UnitTests.MockUtils;

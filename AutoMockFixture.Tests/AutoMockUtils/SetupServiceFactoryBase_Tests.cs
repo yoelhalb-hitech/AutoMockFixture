@@ -1,4 +1,4 @@
-﻿using DotNetPowerExtensions.Reflection;
+﻿using SequelPay.DotNetPowerExtensions.Reflection;
 using AutoMockFixture.AutoMockUtils;
 using Moq;
 using Moq.Protected;

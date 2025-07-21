@@ -1,4 +1,4 @@
-﻿using DotNetPowerExtensions.Reflection;
+﻿using SequelPay.DotNetPowerExtensions.Reflection;
 using System.Reflection.Emit;
 
 public class NoNamespace

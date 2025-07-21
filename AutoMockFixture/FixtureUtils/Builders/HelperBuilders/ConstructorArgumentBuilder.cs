@@ -1,6 +1,6 @@
 ﻿using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Requests.HelperRequests.NonAutoMock;
-using DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection;
 
 namespace AutoMockFixture.FixtureUtils.Builders.HelperBuilders;
 

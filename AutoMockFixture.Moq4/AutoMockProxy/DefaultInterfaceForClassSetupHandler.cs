@@ -1,7 +1,5 @@
-﻿using AutoFixture.AutoMoq;
-using DotNetPowerExtensions.Reflection.Models;
-using DotNetPowerExtensions.Reflection;
-using System.Linq;
+﻿using SequelPay.DotNetPowerExtensions.Reflection;
+using SequelPay.DotNetPowerExtensions.Reflection.Common;
 
 namespace AutoMockFixture.Moq4.AutoMockProxy;
 
