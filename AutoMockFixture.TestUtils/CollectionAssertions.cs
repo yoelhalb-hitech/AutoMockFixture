@@ -23,24 +23,32 @@ internal static class CollectionAssertions
 
     [CustomAssertion]
     public static AndConstraint<GenericCollectionAssertions<T>> AllBeSameAs<T>(this GenericCollectionAssertions<T> assertions, T t)
-    => ExecuteInternal(assertions, item => ReferenceEquals(item, t), "different than provided");
+        => ExecuteInternal(assertions, item => ReferenceEquals(item, t), "different than provided");
 
     [CustomAssertion]
     public static AndConstraint<GenericCollectionAssertions<T>> AllNotBeSameAs<T>(this GenericCollectionAssertions<T> assertions, T t)
         => ExecuteInternal(assertions, item => !ReferenceEquals(item, t), "the same as provided");
 
     [CustomAssertion]
-    public static AndConstraint<GenericCollectionAssertions<T>> AllNull<T>(this GenericCollectionAssertions<T> assertions)
+    public static AndConstraint<GenericCollectionAssertions<T>> AllBeNull<T>(this GenericCollectionAssertions<T> assertions)
         => ExecuteInternal(assertions, item => item is null, "non null", "not null");
 
     [CustomAssertion]
-    public static AndConstraint<GenericCollectionAssertions<T>> AllNonNull<T>(this GenericCollectionAssertions<T> assertions)
+    public static AndConstraint<GenericCollectionAssertions<T>> AllBeNonNull<T>(this GenericCollectionAssertions<T> assertions)
         => ExecuteInternal(assertions, item => item is not null, "null");
+
+    [CustomAssertion]
+    public static AndConstraint<GenericCollectionAssertions<bool>> AllBeTrue(this GenericCollectionAssertions<bool> assertions)
+        => ExecuteInternal(assertions, item => item is true, "false");
+
+    [CustomAssertion]
+    public static AndConstraint<GenericCollectionAssertions<bool>> AllBeFalse(this GenericCollectionAssertions<bool> assertions)
+        => ExecuteInternal(assertions, item => item is false, "true");
 
     [CustomAssertion]
     public static AndConstraint<GenericCollectionAssertions<T>> AllHaveNullState<T>(
             this GenericCollectionAssertions<T> assertions, bool isNull)
-        => isNull ? assertions.AllNull() : assertions.AllNonNull();
+        => isNull ? assertions.AllBeNull() : assertions.AllBeNonNull();
 
     [CustomAssertion]
     internal static AndConstraint<GenericCollectionAssertions<T>> ExecuteInternal<T>(

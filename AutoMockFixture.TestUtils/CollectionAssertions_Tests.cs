@@ -115,18 +115,18 @@ internal class CollectionAssertions_Tests
         Sub s = new();
         Sub1 s1 = new();
         Sub2 s2 = new();
-        new object[] { b1, b2, s1, s2 }.Should().AllNonNull();
+        new object[] { b1, b2, s1, s2 }.Should().AllBeNonNull();
 
-        var func1 = () => new object?[] { (object?)null, s }.Should().AllNonNull();
+        var func1 = () => new object?[] { (object?)null, s }.Should().AllBeNonNull();
         func1.Should().ThrowExactly<AssertionException>().WithMessage($"The following is null: (object?)null");
 
-        var func2 = () => new object?[] { null, null, null }.Should().AllNonNull();
+        var func2 = () => new object?[] { null, null, null }.Should().AllBeNonNull();
         func2.Should().ThrowExactly<AssertionException>().WithMessage($"All entries are null");
 
-        var func3 = () => new object?[] { b, null }.Should().AllNonNull();
+        var func3 = () => new object?[] { b, null }.Should().AllBeNonNull();
         func3.Should().ThrowExactly<AssertionException>().WithMessage("The following is null: null");
 
-        var func4 = () => new object?[] { b, null, (object?)null }.Should().AllNonNull();
+        var func4 = () => new object?[] { b, null, (object?)null }.Should().AllBeNonNull();
         func4.Should().ThrowExactly<AssertionException>().WithMessage($"The following are null: {NewLine}\tnull{NewLine}\t(object?)null");
     }
 
@@ -139,18 +139,54 @@ internal class CollectionAssertions_Tests
         Sub s = new();
         Sub1 s1 = new();
         Sub2 s2 = new();
-        new object?[] { null, null, null }.Should().AllNull();
+        new object?[] { null, null, null }.Should().AllBeNull();
 
-        var func1 = () => new object?[] { null, s }.Should().AllNull();
+        var func1 = () => new object?[] { null, s }.Should().AllBeNull();
         func1.Should().ThrowExactly<AssertionException>().WithMessage($"The following is not null: s");
 
-        var func2 = () => new object?[] { b, b, b }.Should().AllNull();
+        var func2 = () => new object?[] { b, b, b }.Should().AllBeNull();
         func2.Should().ThrowExactly<AssertionException>().WithMessage($"All entries are not null");
 
-        var func3 = () => new object?[] { b, null }.Should().AllNull();
+        var func3 = () => new object?[] { b, null }.Should().AllBeNull();
         func3.Should().ThrowExactly<AssertionException>().WithMessage("The following is not null: b");
 
-        var func4 = () => new object?[] { b, s, null }.Should().AllNull();
+        var func4 = () => new object?[] { b, s, null }.Should().AllBeNull();
         func4.Should().ThrowExactly<AssertionException>().WithMessage($"The following are not null: {NewLine}\tb{NewLine}\ts");
+    }
+
+    [Test]
+    public void Test_AllBeTrue()
+    {
+        bool a = true;
+        new bool[] { true, true, a }.Should().AllBeTrue();
+
+        bool b = false;
+        var func1 = () => new bool[] { true, b }.Should().AllBeTrue();
+        func1.Should().ThrowExactly<AssertionException>().WithMessage($"The following is false: b");
+
+        var func2 = () => new bool[] { false, false, b, }.Should().AllBeTrue();
+        func2.Should().ThrowExactly<AssertionException>().WithMessage($"All entries are false");
+
+        bool c = false;
+        var func3 = () => new bool[] { b, true, c }.Should().AllBeTrue();
+        func3.Should().ThrowExactly<AssertionException>().WithMessage($"The following are false: {NewLine}\tb{NewLine}\tc");
+    }
+
+    [Test]
+    public void Test_AllBeFalse()
+    {
+        bool a = false;
+        new bool[] { false, false, a }.Should().AllBeFalse();
+
+        bool b = true;
+        var func1 = () => new bool[] { false, b }.Should().AllBeFalse();
+        func1.Should().ThrowExactly<AssertionException>().WithMessage($"The following is true: b");
+
+        var func2 = () => new bool[] { true, true, b, }.Should().AllBeFalse();
+        func2.Should().ThrowExactly<AssertionException>().WithMessage($"All entries are true");
+
+        bool c = true;
+        var func3 = () => new bool[] { b, false, c }.Should().AllBeFalse();
+        func3.Should().ThrowExactly<AssertionException>().WithMessage($"The following are true: {NewLine}\tb{NewLine}\tc");
     }
 }

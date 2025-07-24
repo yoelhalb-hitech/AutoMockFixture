@@ -70,9 +70,9 @@ internal class Services_Tests
         var t7 = fixture.CreateWithAutoMockDependencies<TIFaceType>();
         var t8 = fixture.CreateWithAutoMockDependencies<TBaseType>();
 
-        new object[] { t1!, t2!, t5!, t6!, t7!, t8! }.Should().AllBeOfType<TTExpected>().And.AllNonAutoMock();
+        new object[] { t1!, t2!, t5!, t6!, t7!, t8! }.Should().AllBeOfType<TTExpected>().And.AllNotBeAutoMock();
 
-        new object[] { t3!, t4! }.Should().AllBeAssignableTo<TTExpected>().And.AllAutoMock();
+        new object[] { t3!, t4! }.Should().AllBeAssignableTo<TTExpected>().And.AllBeAutoMock();
     }
 
     [Test]
@@ -103,7 +103,7 @@ internal class Services_Tests
 
         new object[] { t1!, t2!, t5!, t6!, t7!, t8! }.Should().AllNotBeAssignableTo<object, TTExpected>();
 
-        new object[] { t3!, t4! }.Should().AllNotBeAssignableTo<object, TTExpected>().And.AllAutoMock();
+        new object[] { t3!, t4! }.Should().AllNotBeAssignableTo<object, TTExpected>().And.AllBeAutoMock();
     }
 
     [Test]
@@ -135,7 +135,7 @@ internal class Services_Tests
 
         new object[] { t1!, t2!, t5!, t6!, t7!, t8! }.Should().AllNotBeAssignableTo<object, TTExpected>();
 
-        new object[] { t3!, t4! }.Should().AllNotBeAssignableTo<object, TTExpected>().And.AllAutoMock();
+        new object[] { t3!, t4! }.Should().AllNotBeAssignableTo<object, TTExpected>().And.AllBeAutoMock();
     }
 
     [Test]
@@ -165,8 +165,8 @@ internal class Services_Tests
         var t7 = fixture.CreateWithAutoMockDependencies<TIFaceType>();
         var t8 = fixture.CreateWithAutoMockDependencies<TBaseType>();
 
-        new object[] { t1!, t2!, t5!, t6!, t7!, t8! }.Should().AllBeOfType<TTExpected>().And.AllNonAutoMock();
+        new object[] { t1!, t2!, t5!, t6!, t7!, t8! }.Should().AllBeOfType<TTExpected>().And.AllNotBeAutoMock();
 
-        new object[] { t3!, t4! }.Should().AllBeAssignableTo<TTExpected>().And.AllAutoMock();
+        new object[] { t3!, t4! }.Should().AllBeAssignableTo<TTExpected>().And.AllBeAutoMock();
     }
 }

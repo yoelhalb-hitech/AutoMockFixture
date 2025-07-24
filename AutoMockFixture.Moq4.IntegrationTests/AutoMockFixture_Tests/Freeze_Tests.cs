@@ -1,34 +1,19 @@
 ﻿using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.NUnit3;
-using FluentAssertions.Collections;
-using FluentAssertions.Execution;
 using SequelPay.DotNetPowerExtensions;
-using static AutoMockFixture.Tests.AutoMockFixture_Tests.Freeze_Tests;
 
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
-internal static class FreezeExtensions
-{
-    [CustomAssertion]
-    public static AndConstraint<GenericCollectionAssertions<SingletonClass>> AllBe(
-                    this GenericCollectionAssertions<SingletonClass> assertions, SingletonClass expected)
-    {
-        if (expected is not null) assertions.AllNonNull(); // This way the message will be clearer
-
-        CollectionAssertions.ExecuteInternal(assertions, item => object.ReferenceEquals(item, expected),
-                                        $"not the same as expected");
-
-        return new AndConstraint<GenericCollectionAssertions<SingletonClass>>(assertions);
-    }
-}
 internal class Freeze_Tests
 {
     #region Singleton
 
     private (T t1, T t2) Exec<T>(Func<bool?, AutoMockTypeControl?, T> func, bool callBase) => (func(callBase, null), func(callBase, null));
     private SingletonClass[] GetProps(SingletonUserClass userClass, bool callBase) =>
-        !callBase ? [userClass.SingletonProp!, userClass.SingletonField!]
-            : [userClass.Class1, userClass.Class2, userClass.SingletonPropGet!, userClass.SingletonProp!, userClass.SingletonField!];
+        !callBase && userClass is IAutoMocked ? [userClass.SingletonPropGet!, userClass.SingletonProp!, userClass.SingletonField!]
+            : [userClass.Class1, userClass.Class2, userClass.SingletonProp!, userClass.SingletonField!];
+    private SingletonClass[] GetProps(SingletonUserClass[] objs, bool callBase) =>
+        objs.SelectMany(o => GetProps(o, callBase)).ToArray();
 
     [Test]
     public void Test_ClassMarkedSingleton_IsFrozen_WhenAutoMock_AutoMockDependencies([Values(true, false)] bool callBase)
@@ -58,7 +43,7 @@ internal class Freeze_Tests
             mockByDepend1!, mockByDepend1!.GetMocked()!, mockByDepend2!, mockByDepend2!.GetMocked()!,
             depend1!, depend2!, dependMock1!, dependMock2!, dependAuto1!, dependAuto2!,
             mockAuto1!, mockAuto2!,
-        }.Should().AllNonNull();
+        }.Should().AllBeNonNull();
 
         SingletonUserClass mockDep1 = mockByDepend1.GetMocked(), mockDep2 = mockByDepend2.GetMocked();
         new[] {
@@ -67,20 +52,20 @@ internal class Freeze_Tests
             obj1!.SingletonProp!, obj1.SingletonField!, obj2!.SingletonProp!, obj2.SingletonField!,
             mockDep1.SingletonProp!, mockDep1.SingletonField!, mockDep2.SingletonProp!, mockDep2.SingletonField!,
             depend1!.SingletonProp!, depend1.SingletonField!, depend2!.SingletonProp!, depend2.SingletonField!,
-        }.Should().AllBe(singletonMock1!);
+        }.Should().AllBeSameAs(singletonMock1!);
 
         if(!callBase)
         {
             new[] {
                 obj1.SingletonPropGet!, obj2.SingletonPropGet!, mockDep1.SingletonPropGet!, mockDep2.SingletonPropGet!,
-            }.Should().AllBe(singletonMock1!);
+            }.Should().AllBeSameAs(singletonMock1!);
         }
         else
         {
             new[] { obj1!.Class1!, obj1.Class2!, obj2!.Class1!, obj2.Class2!,
                 mockDep1.Class1!, mockDep1.Class2!, mockDep2.Class1!, mockDep2.Class2!,
                 depend1!.Class1!, depend1.Class2!, depend2!.Class1!, depend2.Class2!,
-            }.Should().AllBe(singletonMock1!);
+            }.Should().AllBeSameAs(singletonMock1!);
         }
     }
 
@@ -109,31 +94,13 @@ internal class Freeze_Tests
             singleton1!, singleton2!, obj1!, obj2!,depend1!, depend2!,
             dependMock1!, dependMock1!.GetMocked()!, dependMock2!, dependMock2!.GetMocked()!,
             mockAuto1!, mockAuto2!,
-        }.Should().AllNonNull();
+        }.Should().AllBeNonNull();
 
-        SingletonUserClass mockDep1 = dependMock1.GetMocked(), mockDep2 = dependMock2.GetMocked();
-        new[] {
-            obj1!.SingletonProp!, obj1.SingletonField!,
-            obj2!.SingletonProp!, obj2.SingletonField!,
-            mockDep1.SingletonProp!, mockDep1.SingletonField!,
-            mockDep2.SingletonProp!,  mockDep2.SingletonField!,
-            depend1!.SingletonProp!, depend1.SingletonField!,
-            depend2!.SingletonProp!, depend2.SingletonField!,
-        }.Should().AllBe(singleton1!);
-
-        if (!callBase)
-        {
-            new[] {
-                obj1.SingletonPropGet!, obj2.SingletonPropGet!, mockDep1.SingletonPropGet!, mockDep2.SingletonPropGet!,
-            }.Should().AllBe(singleton1!);
-        }
-        else
-        {
-            new[] { obj1!.Class1!, obj1.Class2!, obj2!.Class1!, obj2.Class2!,
-                mockDep1.Class1!, mockDep1.Class2!, mockDep2.Class1!, mockDep2.Class2!,
-                depend1!.Class1!, depend1.Class2!, depend2!.Class1!, depend2.Class2!,
-            }.Should().AllBe(singleton1!);
-        }
+        ((SingletonClass[])[
+            singleton2!, mockAuto1!, mockAuto2!,
+            ..GetProps([obj1!, obj2!, dependMock1.Object, dependMock2.Object, depend1!, depend2!],
+                    callBase),
+        ]).Should().AllBeSameAs(singleton1!);
     }
 
     [Test]
@@ -150,19 +117,12 @@ internal class Freeze_Tests
 
         var (auto1, auto2)              = Exec(fixture.Create<SingletonClass>, callBase);
 
-        new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllNonNull();
+        new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllBeNonNull();
 
-        new[] {
-            plainMock1!.GetMocked(), plainMock2!.GetMocked(),
-            plain1!.SingletonProp!, plain1.SingletonField!,
-            plain2!.SingletonProp!, plain2.SingletonField!,
-            auto1!, auto2!,
-        }.Should().AllBe(singletonMock1!);
-
-        if (callBase)
-        {
-            new[] { plain1!.Class1!, plain1.Class2!, plain2!.Class1!, plain2.Class2!, }.Should().AllBe(singletonMock1!);
-        }
+        ((SingletonClass[])[
+            auto1!, auto2!, plainMock1!.Object, plainMock2!.Object,
+            ..GetProps([plain1!, plain2!], callBase),
+        ]).Should().AllBeSameAs(singletonMock1!);
     }
 
     [Test]
@@ -179,25 +139,12 @@ internal class Freeze_Tests
         var (plainMock1, plainMock2) = Exec(fixture.Create<AutoMock<SingletonUserClass>>, callBase);
         var (auto1, auto2) = Exec(fixture.Create<SingletonUserClass>, callBase);
 
-        new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllNonNull();
+        new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllBeNonNull();
 
-        SingletonUserClass mockDep1 = plainMock1!.GetMocked(), mockDep2 = plainMock2!.GetMocked();
-        new[] {
+        ((SingletonClass[])[
             plain1!, plain2!,
-            mockDep1.SingletonProp!, mockDep1.SingletonField!,
-            mockDep2.SingletonProp!, mockDep2.SingletonField!,
-            auto1!.SingletonProp!, auto1.SingletonField!,
-            auto2!.SingletonProp!, auto2.SingletonField!,
-        }.Should().AllBe(singletonMock1!);
-
-        if (!callBase)
-        {
-            new[] { mockDep1.SingletonPropGet!, mockDep2.SingletonPropGet!, }.Should().AllBe(singletonMock1!);
-        }
-        else
-        {
-            new[] { mockDep1.Class1!, mockDep1.Class2!, mockDep2.Class1!, mockDep2.Class2!, }.Should().AllBe(singletonMock1!);
-        }
+            ..GetProps([plainMock1!.Object, plainMock2!.Object, auto1!, auto2!], callBase),
+        ]).Should().AllBeSameAs(singletonMock1!);
     }
 
     [Test]
@@ -215,14 +162,12 @@ internal class Freeze_Tests
         new object[] {
             singletonMock1!.GetMocked(), singletonMock2!.GetMocked(),
             depend1!, depend2!, dependAuto1!, dependAuto2!,
-        }.Should().AllNonNull();
+        }.Should().AllBeNonNull();
 
-        new[] {
-            singletonMock2!.GetMocked(), dependAuto1!, dependAuto2!,
-
-            depend1!.Class1!, depend1.Class2!, depend1.SingletonProp!, depend1.SingletonField!,
-            depend2!.Class1!, depend2.Class2!, depend2.SingletonProp!, depend2.SingletonField!,
-        }.Should().AllBe(singletonMock1!.GetMocked());
+        ((SingletonClass[])[
+            singletonMock2!.Object, dependAuto1!, dependAuto2!,
+            ..GetProps([depend1!, depend2!], callBase),
+        ]).Should().AllBeSameAs(singletonMock1.Object!);
     }
 
     [Test]
@@ -240,27 +185,13 @@ internal class Freeze_Tests
         new object[] {
             singleton1!, singleton2!,
             depend1!, depend2!, dependAuto1!, dependAuto1!.GetMocked()!, dependAuto2!, dependAuto2!.GetMocked()!,
-        }.Should().AllNonNull();
+        }.Should().AllBeNonNull();
 
-        SingletonUserClass mockDep1 = dependAuto1!.GetMocked(), mockDep2 = dependAuto2!.GetMocked();
-        new[] {
+
+        ((SingletonClass[])[
             singleton2!,
-            mockDep1.SingletonProp!, mockDep1.SingletonField!,
-            mockDep2.SingletonProp!, mockDep2.SingletonField!,
-            depend1!.SingletonProp!, depend1.SingletonField!,
-            depend2!.SingletonProp!, depend2.SingletonField!,
-        }.Should().AllBe(singleton1!);
-
-        if (!callBase)
-        {
-            new[] { mockDep1.SingletonPropGet!, mockDep2.SingletonPropGet!, }.Should().AllBe(singleton1!);
-        }
-        else
-        {
-            new[] {  mockDep1.Class1!, mockDep1.Class2!, mockDep2.Class1!, mockDep2.Class2!,
-                    depend1!.Class1!, depend1.Class2!, depend2!.Class1!, depend2.Class2!,
-            }.Should().AllBe(singleton1!);
-        }
+            ..GetProps([dependAuto1!.Object, dependAuto2!.Object, depend1!, depend2!], callBase),
+        ]).Should().AllBeSameAs(singleton1!);
     }
 
     [Test]
@@ -277,14 +208,12 @@ internal class Freeze_Tests
         var (plain1, plain2)        = Exec(fixture.Create<SingletonUserClass>, callBase);
         var (auto1, auto2)          = Exec(fixture.Create<SingletonClass>, callBase);
 
-        new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllNonNull();
+        new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllBeNonNull();
 
-        new[] {
-            plainMock1!.GetMocked(), plainMock2!.GetMocked(),
-            plain1!.Class1!, plain1.Class2!, plain1.SingletonProp!, plain1.SingletonField!,
-            plain2!.Class1!, plain2.Class2!, plain2.SingletonProp!, plain2.SingletonField!,
-            auto1!, auto2!,
-        }.Should().AllBe(singletonMock1!);
+        ((SingletonClass[])[
+            plainMock1!.Object, plainMock2!.Object, auto1!, auto2!,
+            ..GetProps([plain1!, plain2!], callBase),
+        ]).Should().AllBeSameAs(singletonMock1!);
     }
 
     [Test]
@@ -301,23 +230,11 @@ internal class Freeze_Tests
         var (depenedMock1, dependMock2) = Exec(fixture.Create<AutoMock<SingletonUserClass>>, callBase);
 
         new object[] { singleton1!, obj1!, obj2!,
-            depenedMock1!, depenedMock1!.GetMocked(), dependMock2!, dependMock2!.GetMocked()!, }.Should().AllNonNull();
+            depenedMock1!, depenedMock1!.GetMocked(), dependMock2!, dependMock2!.GetMocked()!, }.Should().AllBeNonNull();
 
-        SingletonUserClass depend1 = depenedMock1!.GetMocked(), depend2 = dependMock2!.GetMocked();
-        new[] {
-            obj1!, obj2!,
-            depend1.SingletonProp!, depend1.SingletonField!,
-            depend2.SingletonProp!, depend2.SingletonField!,
-        }.Should().AllBe(singleton1!);
-
-        if (!callBase)
-        {
-            new[] { depend1.SingletonPropGet!, depend2.SingletonPropGet!, }.Should().AllBe(singleton1!);
-        }
-        else
-        {
-            new[] { depend1!.Class1!, depend1.Class2!, depend2!.Class1!, depend2.Class2!, }.Should().AllBe(singleton1!);
-        }
+        ((SingletonClass[])[
+            obj1!, obj2!, ..GetProps([depenedMock1!.Object, dependMock2!.Object], callBase),
+        ]).Should().AllBeSameAs(singleton1!);
     }
 
     [Test]
@@ -330,7 +247,7 @@ internal class Freeze_Tests
         mock1.Should().NotBeNull();
         mock2.Should().NotBeNull();
 
-        mock2.Should().NotBe(mock1);
+        mock2.Should().NotBeSameAs(mock1);
     }
 
     [Test]
@@ -343,7 +260,7 @@ internal class Freeze_Tests
         obj1.Should().NotBeNull();
         obj2.Should().NotBeNull();
 
-        obj2.Should().NotBe(obj1);
+        obj2.Should().NotBeSameAs(obj1);
     }
 
     [Test]
@@ -356,7 +273,8 @@ internal class Freeze_Tests
         mock1.Should().NotBeNull();
         mock2.Should().NotBeNull();
 
-        mock2.Should().NotBe(mock1);
+        mock2.Should().NotBeSameAs(mock1);
+        mock2!.Object.Should().NotBeSameAs(mock1!.Object);
     }
 
     [Test]
@@ -374,7 +292,12 @@ internal class Freeze_Tests
 
     #endregion
 
-    #region Freeze
+    #region Freeze Non Singleton
+
+    private NonSingletonClass[] GetProps(NonSingletonUserClass userClass, bool callBase = false) =>
+        !callBase && userClass is IAutoMocked ? [userClass.NonSingletonPropGet!, userClass.NonSingletonProp!, userClass.NonSingletonField!]
+            : [userClass.Class1, userClass.Class2, userClass.NonSingletonProp!, userClass.NonSingletonField!];
+
 
     [Test]
     public void Test_Works_UnitFixture_WithCreateAutoMock()
@@ -507,6 +430,7 @@ internal class Freeze_Tests
         obj.Should().NotBeNull();
         obj2.Should().NotBeNull();
 
+        obj!.Class1.Should().NotBeSameAs(frozen);
         new[] {
             obj!.Class1, obj!.Class2, obj!.NonSingletonProp, obj!.NonSingletonField,
             obj2!.Class1, obj2!.Class2, obj2!.NonSingletonProp, obj2!.NonSingletonField,
@@ -546,10 +470,8 @@ internal class Freeze_Tests
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
-        obj!.Class1.Should().Be(frozen);
-        obj!.Class2.Should().Be(frozen);
-        obj!.NonSingletonProp.Should().Be(frozen);
-        obj!.NonSingletonField.Should().Be(frozen);
+
+        GetProps(obj!).Should().AllBeSameAs(frozen!);
     }
 
     [Test]
@@ -563,10 +485,8 @@ internal class Freeze_Tests
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
-        obj!.Class1.Should().Be(frozen);
-        obj!.Class2.Should().Be(frozen);
-        obj!.NonSingletonProp.Should().Be(frozen);
-        obj!.NonSingletonField.Should().Be(frozen);
+
+        GetProps(obj!).Should().AllBeSameAs(frozen!);
     }
 
 
@@ -591,15 +511,11 @@ internal class Freeze_Tests
         obj1.Should().NotBeNull();
         obj1!.Class1.Should().NotBeNull();
         obj1.Class1.Should().BeAssignableTo<NonSingletonClass>();
-        obj1.Class2.Should().Be(obj1.Class1);
-        obj1.NonSingletonProp.Should().Be(obj1.Class1);
-        obj1.NonSingletonField.Should().Be(obj1.Class1);
+
+        GetProps(obj1!, true).Should().AllBeSameAs(obj1.Class1!);
 
         obj2.Should().NotBeNull();
-        obj2!.Class1.Should().Be(obj1.Class1);
-        obj2.Class2.Should().Be(obj1.Class1);
-        obj2.NonSingletonProp.Should().Be(obj1.Class1);
-        obj2.NonSingletonField.Should().Be(obj1.Class1);
+        GetProps(obj2!, true).Should().AllBeSameAs(obj1.Class1!);
 
         nonSingletonMock1.Should().Be(obj1.Class1);
         nonSngletonMock2.Should().Be(obj1.Class1);
@@ -610,16 +526,10 @@ internal class Freeze_Tests
         mock2!.GetMocked().Should().Be(obj1.Class1);
 
         depend1.Should().NotBeNull();
-        depend1!.Class1.Should().Be(obj1.Class1);
-        depend1.Class2.Should().Be(obj1.Class1);
-        depend1.NonSingletonProp.Should().Be(obj1.Class1);
-        depend1.NonSingletonField.Should().Be(obj1.Class1);
+        GetProps(depend1!, true).Should().AllBeSameAs(obj1.Class1!);
 
         depend2.Should().NotBeNull();
-        depend2!.Class1.Should().Be(obj1.Class1);
-        depend2.Class2.Should().Be(obj1.Class1);
-        depend2.NonSingletonProp.Should().Be(obj1.Class1);
-        depend2.NonSingletonField.Should().Be(obj1.Class1);
+        GetProps(depend2!, true).Should().AllBeSameAs(obj1.Class1!);
     }
 
     [Test]
@@ -670,16 +580,26 @@ internal class Freeze_Tests
     }
 
     [Test]
-    public void Test_Freeze_IsDifferent_ByCallBase()
+    public void Test_Freeze_NonSingleton_AutoMock_IsDifferent_ByCallBase()
     {
         var fixture = new AbstractAutoMockFixture();
+        fixture.JustFreeze<NonSingletonClass>();
         var obj1 = fixture.CreateAutoMock<NonSingletonClass>(false);
+        var obj12 = fixture.CreateAutoMock<NonSingletonClass>(false);
+
         var obj2 = fixture.CreateAutoMock<NonSingletonClass>(true);
+        var obj22 = fixture.CreateAutoMock<NonSingletonClass>(true);
 
         obj1.Should().NotBeNull();
+        obj12.Should().NotBeNull();
         obj2.Should().NotBeNull();
+        obj22.Should().NotBeNull();
 
-        obj2.Should().NotBe(obj1);
+        obj2.Should().NotBeSameAs(obj1);
+        obj2.Should().NotBeSameAs(obj1);
+
+        obj12.Should().BeSameAs(obj1);
+        obj22.Should().BeSameAs(obj2);
     }
 
     #endregion
@@ -718,7 +638,6 @@ internal class Freeze_Tests
         public virtual NonSingletonClass? NonSingletonPropGet { get; }
         public NonSingletonClass? NonSingletonField;
     }
-
 
     #endregion
 }

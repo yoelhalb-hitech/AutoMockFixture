@@ -18,7 +18,7 @@ internal static class InternalSimpleTestClassExtensions
     {
         using (var scope = new AssertionScope())
         {
-            assertions.AllNonNull();
+            assertions.AllBeNonNull();
             CollectionAssertions.ExecuteInternal(assertions, item => item.InternalTest is not null,
                                         $"having {nameof(InternalSimpleTestClass.InternalTest)} null");
             assertions.AllHaveAutoMockState(callBase);
@@ -102,7 +102,7 @@ internal class NonAutoMock_Tests
             obj.TestClassPropWithPrivateSet!,
             obj.TestClassPropWithProtectedSet!,
             obj.TestClassPropGet!,
-        }.Should().AllNull();
+        }.Should().AllBeNull();
 
         obj.TestClassField.Should().NotBeNull();
     }
