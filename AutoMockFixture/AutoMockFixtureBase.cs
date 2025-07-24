@@ -173,11 +173,24 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         return Create<T>();
     }
 
+    public virtual T? Freeze<T>(bool? callBase)
+    {
+        JustFreeze<T>();
+        return Create<T>(callBase);
+    }
+
     public virtual object? Freeze(Type type)
     {
         JustFreeze(type);
 
         return Create(type);
+    }
+
+    public virtual object? Freeze(Type type, bool? callBase)
+    {
+        JustFreeze(type);
+
+        return Create(type, callBase);
     }
 
     public virtual async Task<T?> FreezeAsync<T>()
@@ -187,11 +200,24 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
         return await CreateAsync<T>().ConfigureAwait(false);
     }
 
+    public virtual async Task<T?> FreezeAsync<T>(bool? callBase)
+    {
+        JustFreeze<T>();
+        return await CreateAsync<T>(callBase).ConfigureAwait(false);
+    }
+
     public virtual async Task<object?> FreezeAsync(Type type)
     {
         JustFreeze(type);
 
         return await CreateAsync(type).ConfigureAwait(false);
+    }
+
+    public virtual async Task<object?> FreezeAsync(Type type, bool? callBase)
+    {
+        JustFreeze(type);
+
+        return await CreateAsync(type, callBase).ConfigureAwait(false);
     }
 
     #endregion

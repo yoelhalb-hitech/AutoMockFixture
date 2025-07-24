@@ -38,6 +38,11 @@ public interface IAutoMockFixture
     object? Freeze(Type type);
     Task<object?> FreezeAsync(Type type);
 
+    T? Freeze<T>(bool? callBase);
+    Task<T?> FreezeAsync<T>(bool? callBase);
+    object? Freeze(Type type, bool? callBase);
+    Task<object?> FreezeAsync(Type type, bool? callBase);
+
     #endregion
 
     #region Create
