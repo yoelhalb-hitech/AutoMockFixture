@@ -17,13 +17,13 @@ internal class Path_Tests
         new object[] { AutoMockType.AutoMock },
         new object[] { AutoMockType.AutoMockDependencies },
     };
-    private T? GetObj<T>(AbstractAutoMockFixture fixture, AutoMockType type) where T : class
+    private T? GetObj<T>(AbstractAutoMockFixture fixture, AutoMockType type, bool? callBase = null) where T : class
     {
         return type switch
         {
-            AutoMockType.NonAutoMock => fixture.CreateNonAutoMock<T>(),
-            AutoMockType.AutoMock => fixture.CreateAutoMock<T>(),
-            AutoMockType.AutoMockDependencies => fixture.CreateWithAutoMockDependencies<T>(),
+            AutoMockType.NonAutoMock => fixture.CreateNonAutoMock<T>(callBase),
+            AutoMockType.AutoMock => fixture.CreateAutoMock<T>(callBase),
+            AutoMockType.AutoMockDependencies => fixture.CreateWithAutoMockDependencies<T>(callBase),
             _ => throw new InvalidEnumArgumentException(),
         };
     }
@@ -102,7 +102,7 @@ internal class Path_Tests
         var obj = GetObj<InternalTestMethods>(fixture, type);
         obj.Should().NotBeNull();
 
-        var f = obj!.InternalTestMethod(); // We need first to invoke the property is it might be lazy
+        var f = obj!.InternalTestMethod(); // We need first to invoke the property as it might be lazy
         var paths = fixture.GetPaths(obj);
 
         paths.Should().Contain(".InternalTestMethod");
@@ -142,6 +142,31 @@ internal class Path_Tests
     {
         int IExplicit.Test() { return 0; }
         void IExplicit.TestWithOut(out object? obj) { obj = null; }
+    }
+
+    public class CtorAgrs(int i, string s)
+    {
+        public int ArgI { get; } = i;
+        public string ArgS { get; } = s;
+    }
+
+    [Test]
+    [TestCase(AutoMockType.AutoMock)]
+    [TestCase(AutoMockType.NonAutoMock)]
+    [TestCase(AutoMockType.AutoMockDependencies)]
+    public void Test_CtorArgs(AutoMockType type)
+    {
+        using var fixture = new AbstractAutoMockFixture();
+
+        var obj = GetObj<CtorAgrs>(fixture, type, true);
+        obj.Should().NotBeNull();
+
+        var paths = fixture.GetPaths(obj!);
+        paths.Should().Contain("..ctor->i");
+        paths.Should().Contain("..ctor->s");
+
+        fixture.GetAt(obj!, "..ctor->i").First().Should().Be(obj!.ArgI);
+        fixture.GetAt(obj!, "..ctor->s").First().Should().Be(obj!.ArgS);
     }
 
     [Test]
