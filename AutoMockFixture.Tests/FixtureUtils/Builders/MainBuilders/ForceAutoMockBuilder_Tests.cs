@@ -34,7 +34,7 @@ internal class ForceAutoMockBuilder_Tests
     }
 
     [Test]
-    public void Test_Create_PassesThrough_WhenRequestIsAutoMock([Values(true, false)] bool callBase)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsAutoMock([Values(true, false)] bool callBase)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -47,7 +47,7 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == callBase)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 
@@ -147,7 +147,7 @@ internal class ForceAutoMockBuilder_Tests
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_AsksForCallBase_WhenRequestIsInterfaceAbstract_WhenNoCallBaseSpecified_AndItIsStartTracker(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenNoCallBaseSpecified_AndItIsStartTracker(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -159,14 +159,14 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == true)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_DoesNotAskForCallBase_WhenRequestIsInterfaceAbstract_WhenCallBaseIsExplicitFalse_EvenItIsStartTracker(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenCallBaseIsExplicitFalse_EvenItIsStartTracker(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -178,14 +178,14 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == false)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_DoesNotAskForCallBase_WhenRequestIsInterfaceAbstract_WhenCallBaseIsExplicitFalse_WhenNotStartTracker(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenCallBaseIsExplicitFalse_WhenNotStartTracker(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -198,14 +198,14 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == false)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_AsksForCallBase_WhenRequestIsInterfaceAbstract_WhenNoCallBaseSpecified(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenNoCallBaseSpecified(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -218,7 +218,7 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == true)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 
@@ -322,7 +322,7 @@ internal class ForceAutoMockBuilder_Tests
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_DoesNotAskForCallBase_WhenRequestIsInterfaceAbstract_WhenCallBaseIsExplicitFalse(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenCallBaseIsExplicitFalse(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -334,14 +334,14 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == false)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_DoesNotAskForCallBase_WhenRequestIsInterfaceAbstract_WhenMainCallBaseIsFalse(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenMainCallBaseIsFalse(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -361,7 +361,7 @@ internal class ForceAutoMockBuilder_Tests
     [Test]
     [TestCase(typeof(TestInterface))]
     [TestCase(typeof(TestAbstract))]
-    public void Test_Create_AsksForCallBase_WhenRequestIsInterfaceAbstract_WhenMainCallBaseIsNull(Type type)
+    public void Test_Create_LeavesCallBaseOnDefault_WhenRequestIsInterfaceAbstract_WhenMainCallBaseIsNull(Type type)
     {
         var fixture = new AbstractAutoMockFixture();
 
@@ -373,7 +373,7 @@ internal class ForceAutoMockBuilder_Tests
 
         builder.Create(request, contextMock.Object);
 
-        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == true)));
+        contextMock.Verify(c => c.Resolve(It.Is<AutoMockRequest>(r => r.MockShouldCallBase == null)));
         contextMock.VerifyNoOtherCalls();
     }
 

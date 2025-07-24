@@ -216,13 +216,19 @@ internal class SubclassCustomization_Tests
     }
 
     [Test]
-    [TestCase<ITestIface, BaseTestType>]
-    [TestCase<ITestIface, SubTestType>]
-    [TestCase<ISubTestIface, SubTestType>]
-    [TestCase<BaseTestType, SubTestType>]
-    [TestCase<ITestIface, ISubTestIface>]
-    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>]
-    public void Test_FreezesCorrectly_When_ForceAutoMock<TOriginal, TSubClass>()
+    [TestCase<ITestIface, BaseTestType>(true)]
+    [TestCase<ITestIface, BaseTestType>(false)]
+    [TestCase<ITestIface, SubTestType>(true)]
+    [TestCase<ITestIface, SubTestType>(false)]
+    [TestCase<ISubTestIface, SubTestType>(true)]
+    [TestCase<ISubTestIface, SubTestType>(false)]
+    [TestCase<BaseTestType, SubTestType>(true)]
+    [TestCase<BaseTestType, SubTestType>(false)]
+    [TestCase<ITestIface, ISubTestIface>(true)]
+    [TestCase<ITestIface, ISubTestIface>(false)]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>(true)]
+    [TestCase<IGenericIface<BaseTestType>, GenericImplementation>(false)]
+    public void Test_FreezesCorrectly_When_ForceAutoMock<TOriginal, TSubClass>(bool callBase)
         where TOriginal : class where TSubClass : class, TOriginal
     {
         var fixture = new UnitFixture();
@@ -231,9 +237,10 @@ internal class SubclassCustomization_Tests
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(TOriginal));
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(TSubClass));
 
-        var result = fixture.Freeze(typeof(TOriginal));
-        var result2 = fixture.CreateAutoMock<TOriginal>();
-        var result3 = fixture.CreateWithAutoMockDependencies<TOriginal>();
+        // NOTE: Only explicit callBase will work here because by default `UnitFixture.CreateAutoMock` has a different default for the SUT than `Freeze` and `CreateWithAutoMockDependencies`
+        var result = fixture.Freeze(typeof(TOriginal), callBase);
+        var result2 = fixture.CreateAutoMock<TOriginal>(callBase);
+        var result3 = fixture.CreateWithAutoMockDependencies<TOriginal>(callBase);
 
         result.Should().NotBeNull();
         result.Should().BeAssignableTo<TSubClass>();

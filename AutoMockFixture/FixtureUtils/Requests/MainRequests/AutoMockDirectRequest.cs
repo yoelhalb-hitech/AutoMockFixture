@@ -40,10 +40,13 @@ internal record AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IF
     private Type GetInner() => Fixture.AutoMockHelpers.GetMockedType(Request)!;
 
     public bool ShouldCallBase() => !GetInner().IsDelegate() // Moq does not allow to callbase for delegates
-                    && (MockShouldCallBase // This is the only place where we concern ourselves with the request explicit `MockShouldCallBase` as in general we should follow what the user requested
-                                ?? StartTracker.MockShouldCallBase
-                                ?? StartTracker.Fixture.CallBase // TBH: This should be the same as the `StartTracker`
-                                ?? !MockDependencies);
+            && (MockShouldCallBase // This is the only place where we concern ourselves with the request explicit `MockShouldCallBase` as in general we should follow what the user requested
+                    ?? StartTracker.MockShouldCallBase
+                    ?? StartTracker.Fixture.CallBase // TBH: This should be the same as the `StartTracker`
+                    ?? (!MockDependencies ? true :
+                            Path == ""
+                            && StartTracker.Children?.FirstOrDefault() is not AutoMockRequest { IsStartRequest: true}));
+
 
     public void Dispose() => SetCompleted((ISpecimenBuilder?)null);
 }

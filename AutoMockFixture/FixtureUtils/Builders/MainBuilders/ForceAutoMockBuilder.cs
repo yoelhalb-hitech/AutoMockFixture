@@ -38,23 +38,10 @@ internal class ForceAutoMockBuilder : ISpecimenBuilder
 
             if(!AutoMockHelpers.IsAutoMockAllowed(typeToUse)) return new NoSpecimen();
 
-            var autoMockRequest = new AutoMockRequest(typeToUse, fixtureTracker)
-            {
-                MockShouldCallBase = fixtureTracker.MockShouldCallBase, // Forward any explicit `MockShouldCallBase` on the request
-            };
+            var autoMockRequest = new AutoMockRequest(typeToUse, fixtureTracker);
 
             var start = fixtureTracker.StartTracker;
             var startType = (start as IRequestWithType)?.Request ?? type;
-
-            // We might arrive here because of some creation logic and not because the user asked for a non mock
-            // When a user requests `AutoMockDependenciesRequest` then even if he specifies `CallBase = false` he probably refers to the dependencies and not to the SUT
-            // But if he asked for `NonAutoMockRequest` then he meant situations like this
-            var userAskedForNonMock = fixtureTracker.StartTracker.MockShouldCallBase != false
-                && (fixtureTracker.StartTracker is NonAutoMockRequest
-                || (fixtureTracker.StartTracker is AutoMockDependenciesRequest && fixtureTracker.Path == string.Empty));
-
-            // In general we want to set to CallBase when abstract etc. because we want to emulate the original object as much as we can
-            if (userAskedForNonMock && autoMockRequest.MockShouldCallBase is null) autoMockRequest.MockShouldCallBase = true;
 
             var result = context.Resolve(autoMockRequest); // The AutoMockDirectRequest commands handles correctly the `NonAutoMock` dependecies so no worries
 

@@ -10,6 +10,7 @@ internal record AutoMockRequest : TrackerWithFixture, IAutoMockRequest, IDisposa
     [SetsRequiredMembers]
     public AutoMockRequest(Type request, IAutoMockFixture fixture) : base(request, fixture) { }
 
+    public bool IsStartRequest { get; set; }
 
     public virtual bool BypassChecks { get; set; }
 

@@ -89,6 +89,37 @@ internal class WithCtorArgsTestClass
     public InternalAbstractSimpleTestClass? TestClassField;
 }
 
+internal class SUT_WithNonAbtsractInner
+{
+    public InternalSimpleTestClass? TestClassProp { get; set; }
+    public InternalSimpleTestClass? TestClassField;
+}
+
+internal class SUT_WithAbtsractInner
+{
+    public InternalAbstractSimpleTestClass? TestClassProp { get; set; }
+    public InternalAbstractSimpleTestClass? TestClassField;
+}
+
+internal class SUT_WithIfaceInner
+{
+    public ITestInterface? TestClassProp { get; set; }
+    public ITestInterface? TestClassField;
+}
+
+internal class SUT_WithNonAbtsractInner_AbstractInnerInner
+{
+    public SUT_WithAbtsractInner? TestClassProp { get; set; }
+    public SUT_WithAbtsractInner? TestClassField;
+}
+
+internal class SUT_WithNonIfaceInner_IfaceInnerInner
+{
+    public SUT_WithIfaceInner? TestClassProp { get; set; }
+    public SUT_WithIfaceInner? TestClassField;
+}
+
+
 internal class WithComplexTestClass
 {
     public WithCtorArgsTestClass? WithCtorArgs { get; set; }
