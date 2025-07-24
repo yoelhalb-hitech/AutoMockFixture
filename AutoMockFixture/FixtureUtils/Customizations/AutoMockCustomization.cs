@@ -34,6 +34,10 @@ public class AutoMockCustomization : ICustomization
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
         fixture.Customizations.Add(new FilteringSpecimenBuilder(
+                                        new ReflectionBuilder(),
+                                        new TypeMatchSpecification(typeof(IRequestWithType))));
+
+        fixture.Customizations.Add(new FilteringSpecimenBuilder(
                                         new TaskBuilder(),
                                         new TypeMatchSpecification(typeof(IRequestWithType))));
 
