@@ -17,13 +17,10 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
     {
         var type = GetRequest(ctorArgsRequest);
 
-        // Caution: Cannot just use FirstOrDefault and check for nullability as the custom value itself can be null
-        var hasCustomValue = ConstructorArgumentValues.Any(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path));
-        if (hasCustomValue)
+        var customArgValue = ConstructorArgumentValues.FirstOrDefault(v => IsValidArgumentValue(type, v, ctorArgsRequest));
+        if (customArgValue is not null)
         {
-            var customValue = ConstructorArgumentValues
-                                .First(v => IsValidArgumentValue(type, v, ctorArgsRequest.Path))
-                                .Value;
+            var customValue = customArgValue.Value;
             ctorArgsRequest.SetResult(customValue, this);
             return customValue;
         }
@@ -31,9 +28,14 @@ internal class ConstructorArgumentBuilder : HelperBuilderBase<ConstructorArgumen
         return base.HandleInternal(ctorArgsRequest, context);
     }
 
-    private bool IsValidArgumentValue(Type type, ConstructorArgumentValue argumentValue, string path)
+    private bool IsValidArgumentValue(Type type, ConstructorArgumentValue argumentValue, ConstructorArgumentRequest ctorArgsRequest)
     {
-        if (!string.IsNullOrWhiteSpace(argumentValue.Path) && argumentValue.Path != path) return false;
+        if(argumentValue.ConstructorType is not null
+                    && !argumentValue.ConstructorType.IsAssignableFrom(ctorArgsRequest.DeclaringType)) return false;
+        if (!string.IsNullOrWhiteSpace(argumentValue.Path)
+                    && argumentValue.Path != ctorArgsRequest.Path) return false;
+        if (!string.IsNullOrWhiteSpace(argumentValue.ArgumentName)
+                    && argumentValue.ArgumentName != ctorArgsRequest.ParameterInfo.Name) return false;
 
         if (argumentValue.Value is not null) return type.IsInstanceOfType(argumentValue.Value)
                 || (argumentValue.Value is IAutoMock mock && type.IsInstanceOfType(mock.GetMocked()));
