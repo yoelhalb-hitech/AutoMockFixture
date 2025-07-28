@@ -370,4 +370,18 @@ internal class AutoMockDependencies_Tests
         obj.TestClassField!.InternalTest.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.TestClassField).Should().BeTrue();
     }
+
+    [Test]
+    public void Test_Fields_AutoMocked_WhenFieldsAutoMock_BugRepro()
+    {
+        // Arrange
+        var fixture = new AbstractAutoMockFixture();
+        // Act
+        var obj = fixture.CreateWithAutoMockDependencies<WithAutoMockArgsTestClass>();
+        // Assert
+        obj.Should().NotBeNull();
+        obj!.TestClassField.Should().NotBeNull();
+        obj.TestClassField!.Object.InternalTest.Should().NotBeNull();
+        AutoMock.IsAutoMock(obj.TestClassField).Should().BeTrue();
+    }
 }

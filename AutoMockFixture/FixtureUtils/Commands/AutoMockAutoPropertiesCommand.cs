@@ -71,12 +71,9 @@ internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
             Logger.LogInfo("Resolved field: " + fieldValue.GetType().Name);
 
             if (fieldValue is NoSpecimen || fieldValue is OmitSpecimen) { return; }
-            else if (fieldValue is null || fieldValue is not IAutoMock mock)
-            {
-                fi.SetValue(specimen, fieldValue);
-                return;
-            }
-            else if (mock.GetInnerType() == fi.FieldType) fi.SetValue(specimen, mock.GetMocked());
+
+            var valueToUse = fieldValue is IAutoMock mock && mock.GetInnerType() == fi.FieldType ? mock.GetMocked() : fieldValue;
+            fi.SetValue(specimen, valueToUse);
         }
         catch
         {

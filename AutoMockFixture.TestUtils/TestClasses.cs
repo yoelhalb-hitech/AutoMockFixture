@@ -1,4 +1,6 @@
 ﻿
+using AutoMockFixture.Moq4;
+
 namespace AutoMockFixture.TestUtils;
 
 // CAUTION : The classes are `internal` so to test if AutoMockFixture also works correctly with internal
@@ -87,6 +89,31 @@ internal class WithCtorArgsTestClass
     public InternalSimpleTestClass? TestClassPropWithProtectedSet { get; protected set; }
     public virtual InternalAbstractMethodTestClass? TestClassPropGet { get; }
     public InternalAbstractSimpleTestClass? TestClassField;
+}
+
+internal class WithAutoMockArgsTestClass
+{
+    public AutoMock<InternalSimpleTestClass> TestCtorArg { get; } // non virtual readonly so it will only be set by the ctor
+    public AutoMock<InternalSimpleTestClass> TestCtorArgProp { get; set; }
+    public AutoMock<InternalSimpleTestClass> TestCtorArgPrivateProp { get; private set; }
+    public virtual AutoMock<InternalSimpleTestClass> TestCtorArgVirtualProp { get; set; }
+    public virtual AutoMock<InternalSimpleTestClass> TestCtorArgVirtualPrivateProp { get; private set; }
+    public WithAutoMockArgsTestClass(AutoMock<InternalSimpleTestClass> testArg,
+        AutoMock<InternalSimpleTestClass> testCtorArgProp, AutoMock<InternalSimpleTestClass> testCtorArgVirtualProp,
+        AutoMock<InternalSimpleTestClass> testCtorArgVirtualPrivateProp, AutoMock<InternalSimpleTestClass> testCtorArgPrivateProp)
+    {
+        TestCtorArg = testArg;
+        TestCtorArgProp = testCtorArgProp;
+        TestCtorArgVirtualProp = testCtorArgVirtualProp;
+        TestCtorArgVirtualPrivateProp = testCtorArgVirtualPrivateProp;
+        TestCtorArgPrivateProp = testCtorArgPrivateProp;
+    }
+    public AutoMock<InternalSimpleTestClass>? TestClassProp { get; set; }
+    public AutoMock<InternalSimpleTestClass>? TestClassPrivateNonVirtualProp { get; private set; }
+    public virtual AutoMock<InternalSimpleTestClass>? TestClassPropWithPrivateSet { get; private set; }
+    public AutoMock<InternalSimpleTestClass>? TestClassPropWithProtectedSet { get; protected set; }
+    public virtual AutoMock<InternalAbstractMethodTestClass>? TestClassPropGet { get; }
+    public AutoMock<InternalAbstractSimpleTestClass>? TestClassField;
 }
 
 internal class SUT_WithNonAbtsractInner
