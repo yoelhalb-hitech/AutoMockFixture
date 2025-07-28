@@ -30,17 +30,72 @@ public interface IAutoMockFixture
 
     #region Freeze
 
+    /// <summary>
+    /// Freezes the type <typeparamref name="T"/>, meaning anytime it encounters type <typeparamref name="T"/> it will return the same instance.
+    /// </summary>
+    /// <typeparam name="T">The type to freeze</typeparam>
+    /// <remarks>
+    /// Even when frozen it will still return different instances for differences in 1) CallBase, 2) Mocking, 3) Mocking Dependencies
+    /// <br /><br />
+    /// Also note that if the type <typeparamref name="T"/> is AutoMock it will only freeze mocked instances, but not non mocked instances.
+    /// <br /><br />
+    /// Also note that it will also freeze subtypes of the type <typeparamref name="T"/> as well as mocked versions of the type <typeparamref name="T"/> if it is a class.
+    /// </remarks>
     void JustFreeze<T>();
+
+    /// <summary>
+    /// Freezes the <paramref name="type" />, meaning anytime it encounters the <paramref name="type" /> it will return the same instance.
+    /// </summary>
+    /// <param name="type">The type to freeze</param>
+    /// <remarks>
+    /// Even when frozen it will still return different instances for differences in 1) CallBase, 2) Mocking, 3) Mocking Dependencies
+    /// <br /><br />
+    /// Also note that if the <paramref name="type" /> parameter is AutoMock it will only freeze mocked instances, but not non mocked instances.
+    /// <br /><br />
+    /// Also note that it will also freeze subtypes of the <paramref name="type" /> as well as mocked versions of the type <paramref name="type" /> if it is a class.
+    /// </remarks>
     void JustFreeze(Type type);
 
+    /// <summary>
+    /// Freezes the <typeparamref name="T"/>, meaning anytime it encounters type <typeparamref name="T"/> it will return the <paramref name="frozenObject" />.
+    /// </summary>
+    /// <typeparam name="T">The type to freeze</typeparam>
+    /// <param name="frozenObject">The object to return on every encounter of type <typeparamref name="T" /></param>
+    void JustFreeze<T>(T frozenObject);
+
+    /// <summary>
+    /// Freezes the <paramref name="type" />, meaning anytime it encounters the <paramref name="type" /> it will return the <paramref name="frozenObject" />.
+    /// </summary>
+    /// <param name="type">The type to freeze</param>
+    /// <param name="frozenObject">The object to return on every encounter of type <paramref name="type" /></param>
+    void JustFreeze(Type type, object? frozenObject);
+
+    /// <inheritdoc cref="JustFreeze{T}()" />
+    /// <returns>An instance of type <typeparamref name="T"/></returns>
     T? Freeze<T>();
+
+    /// <inheritdoc cref="Freeze{T}()" />
     Task<T?> FreezeAsync<T>();
+
+    /// <inheritdoc cref="JustFreeze(Type)" />
+    /// <returns>An instance of <paramref name="type" /></returns>
     object? Freeze(Type type);
+
+    /// <inheritdoc cref="Freeze(Type)" />
     Task<object?> FreezeAsync(Type type);
 
+    /// <inheritdoc cref="Freeze{T}()" />
+    /// <param name="callBase">If the returned object should be callBase</param>
     T? Freeze<T>(bool? callBase);
+
+    /// <inheritdoc cref="Freeze{T}(bool?)" />/>
     Task<T?> FreezeAsync<T>(bool? callBase);
+
+    /// <inheritdoc cref="Freeze(Type)" />
+    /// <param name="callBase">If the returned object should be callBase</param>
     object? Freeze(Type type, bool? callBase);
+
+    /// <inheritdoc cref="Freeze(Type, bool?)" />
     Task<object?> FreezeAsync(Type type, bool? callBase);
 
     #endregion

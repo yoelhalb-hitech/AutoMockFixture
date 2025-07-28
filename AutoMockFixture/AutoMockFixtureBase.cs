@@ -5,6 +5,7 @@ using AutoMockFixture.FixtureUtils.Commands;
 using AutoMockFixture.FixtureUtils.Customizations;
 using AutoMockFixture.FixtureUtils.Postprocessors;
 using AutoMockFixture.FixtureUtils.Requests;
+using AutoMockFixture.FixtureUtils.Requests.MainRequests;
 using AutoMockFixture.FixtureUtils.Specifications;
 using AutoMockFixture.FixtureUtils.Trace;
 using SequelPay.DotNetPowerExtensions;
@@ -157,7 +158,7 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     /// <summary>
     /// A list of <see cref="Type"/> for which we should setup the properties with the private getters (private setters will always be setup for non <see cref="IAutoMock.CallBase">)
     /// </summary>
-    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>
+    /// <remarks>Only applicable when the instance of the <see cref="Type"/> will be an <see cref="IAutoMock"/> and will not have set <see cref="IAutoMock.CallBase"></remarks>
     public IList<Type> TypesToSetupPrivateGetters { get; } = new List<Type>();
 
     #region Freeze
@@ -165,6 +166,63 @@ public abstract partial class AutoMockFixtureBase : Fixture, ISpecimenBuilder, I
     public virtual void JustFreeze<T>() => JustFreeze(typeof(T));
     public virtual void JustFreeze(Type type)
             => Customize(new FreezeCustomization(new TypeOrRequestSpecification(new TypeSpecification(type, this.AutoMockHelpers), AutoMockHelpers)));
+
+    public virtual void JustFreeze<T>(T frozenObject) => JustFreeze(typeof(T), frozenObject);
+
+    public virtual void JustFreeze(Type type, object? frozenObject)
+    {
+        if (frozenObject is not null && !type.IsAssignableFrom(frozenObject.GetType()))
+            throw new ArgumentException($"The frozen object of type {frozenObject.GetType().FullName} is not assignable to the requested type {type.FullName}", nameof(frozenObject));
+        if(frozenObject is null && type.IsValueType
+            && (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Nullable<>)))
+                throw new ArgumentException($"The frozen object cannot be null for a value type {type.FullName}", nameof(frozenObject));
+
+        JustFreeze(type);
+
+        if (frozenObject is not IAutoMock && frozenObject is not IAutoMocked)
+        {
+            // We no longer care about dependencies as everything is what the user provided
+            Cache.AddIfNeeded(new NonAutoMockRequest(type, this) { MockShouldCallBase = true }, frozenObject);
+            Cache.AddIfNeeded(new NonAutoMockRequest(type, this) { MockShouldCallBase = false }, frozenObject);
+            Cache.AddIfNeeded(new AutoMockDependenciesRequest(type, this) { MockShouldCallBase = true }, frozenObject);
+            Cache.AddIfNeeded(new AutoMockDependenciesRequest(type, this) { MockShouldCallBase = false }, frozenObject);
+        }
+        else
+        {
+            // We no longer care about dependencies as everything is what the user provided
+            var outer = (frozenObject as IAutoMock) ?? AutoMockHelpers.GetFromObj(frozenObject);
+            var outerType = frozenObject is IAutoMock ? type : AutoMockHelpers.GetAutoMockType(type)!;
+            var callBase = outer!.CallBase;
+
+            // The Cache only cares about AutoMockDirectRequest and ignores AutoMockRequest
+            Cache.AddIfNeeded(new AutoMockDirectRequest(outerType, this)
+            {
+                MockShouldCallBase = callBase,
+            }, outer);
+
+            var outerMostNonAuto = new NonAutoMockRequest(outerType, this) { MockShouldCallBase = callBase };
+            var mockWithNonAutoStart = new AutoMockRequest(outerType, outerMostNonAuto)
+            {
+                IsStartRequest = true,
+                MockShouldCallBase = callBase,
+            };
+            Cache.AddIfNeeded(new AutoMockDirectRequest(outerType, mockWithNonAutoStart)
+            {
+                MockShouldCallBase = callBase,
+            }, outer);
+
+            var outerMostMockDepend = new AutoMockDependenciesRequest(outerType, this) { MockShouldCallBase = callBase };
+            var mockWithDependStart = new AutoMockRequest(outerType, outerMostMockDepend)
+            {
+                IsStartRequest = true,
+                MockShouldCallBase = callBase,
+            };
+            Cache.AddIfNeeded(new AutoMockDirectRequest(outerType, outerMostMockDepend)
+            {
+                MockShouldCallBase = callBase,
+            }, outer);
+        }
+    }
 
     public virtual T? Freeze<T>()
     {

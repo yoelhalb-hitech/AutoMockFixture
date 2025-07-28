@@ -1,4 +1,5 @@
-﻿using AutoMockFixture.FixtureUtils;
+﻿using AutoFixture;
+using AutoMockFixture.FixtureUtils;
 using AutoMockFixture.NUnit3;
 using SequelPay.DotNetPowerExtensions;
 
@@ -6,14 +7,14 @@ namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
 internal class Freeze_Tests
 {
-    #region Singleton
-
     private (T t1, T t2) Exec<T>(Func<bool?, AutoMockTypeControl?, T> func, bool callBase) => (func(callBase, null), func(callBase, null));
-    private SingletonClass[] GetProps(SingletonUserClass userClass, bool callBase) =>
-        !callBase && userClass is IAutoMocked ? [userClass.SingletonPropGet!, userClass.SingletonProp!, userClass.SingletonField!]
-            : [userClass.Class1, userClass.Class2, userClass.SingletonProp!, userClass.SingletonField!];
-    private SingletonClass[] GetProps(SingletonUserClass[] objs, bool callBase) =>
+    private T[] GetProps<T>(UserClass<T> userClass, bool callBase) =>
+        !callBase && userClass is IAutoMocked ? [userClass.ReadOnlyProp!, userClass.ReadWriteProp!, userClass.Field!]
+            : [userClass.Arg1, userClass.Arg2, userClass.ReadWriteProp!, userClass.Field!];
+    private T[] GetProps<T>(UserClass<T>[] objs, bool callBase) =>
         objs.SelectMany(o => GetProps(o, callBase)).ToArray();
+
+    #region Singleton
 
     [Test]
     public void Test_ClassMarkedSingleton_IsFrozen_WhenAutoMock_AutoMockDependencies([Values(true, false)] bool callBase)
@@ -23,11 +24,11 @@ internal class Freeze_Tests
         var fixture = new AbstractAutoMockFixture();
 
         var (singletonMock1, singletonMock2)    = exec(fixture.CreateAutoMock<SingletonClass>);
-        var (obj1, obj2)                        = exec(fixture.CreateAutoMock<SingletonUserClass>);
+        var (obj1, obj2)                        = exec(fixture.CreateAutoMock<UserClass<SingletonClass>>);
         var (mock1, mock2)                      = exec(fixture.CreateAutoMock<AutoMock<SingletonClass>>);
-        var (mockByDepend1, mockByDepend2)      = exec(fixture.CreateAutoMock<AutoMock<SingletonUserClass>>);
+        var (mockByDepend1, mockByDepend2)      = exec(fixture.CreateAutoMock<AutoMock<UserClass<SingletonClass>>>);
 
-        var (depend1, depend2)                  = exec(fixture.CreateWithAutoMockDependencies<SingletonUserClass>);
+        var (depend1, depend2)                  = exec(fixture.CreateWithAutoMockDependencies<UserClass<SingletonClass>>);
         var (dependMock1, dependMock2)          = exec(fixture.CreateWithAutoMockDependencies<AutoMock<SingletonClass>>);
 
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(SingletonClass));
@@ -45,26 +46,26 @@ internal class Freeze_Tests
             mockAuto1!, mockAuto2!,
         }.Should().AllBeNonNull();
 
-        SingletonUserClass mockDep1 = mockByDepend1.GetMocked(), mockDep2 = mockByDepend2.GetMocked();
+        UserClass<SingletonClass> mockDep1 = mockByDepend1.GetMocked(), mockDep2 = mockByDepend2.GetMocked();
         new[] {
             singletonMock2!, mock1!.GetMocked()!, mock2!.GetMocked()!,
 
-            obj1!.SingletonProp!, obj1.SingletonField!, obj2!.SingletonProp!, obj2.SingletonField!,
-            mockDep1.SingletonProp!, mockDep1.SingletonField!, mockDep2.SingletonProp!, mockDep2.SingletonField!,
-            depend1!.SingletonProp!, depend1.SingletonField!, depend2!.SingletonProp!, depend2.SingletonField!,
+            obj1!.ReadWriteProp!, obj1.Field!, obj2!.ReadWriteProp!, obj2.Field!,
+            mockDep1.ReadWriteProp!, mockDep1.Field!, mockDep2.ReadWriteProp!, mockDep2.Field!,
+            depend1!.ReadWriteProp!, depend1.Field!, depend2!.ReadWriteProp!, depend2.Field!,
         }.Should().AllBeSameAs(singletonMock1!);
 
         if(!callBase)
         {
             new[] {
-                obj1.SingletonPropGet!, obj2.SingletonPropGet!, mockDep1.SingletonPropGet!, mockDep2.SingletonPropGet!,
+                obj1.ReadOnlyProp!, obj2.ReadOnlyProp!, mockDep1.ReadOnlyProp!, mockDep2.ReadOnlyProp!,
             }.Should().AllBeSameAs(singletonMock1!);
         }
         else
         {
-            new[] { obj1!.Class1!, obj1.Class2!, obj2!.Class1!, obj2.Class2!,
-                mockDep1.Class1!, mockDep1.Class2!, mockDep2.Class1!, mockDep2.Class2!,
-                depend1!.Class1!, depend1.Class2!, depend2!.Class1!, depend2.Class2!,
+            new[] { obj1!.Arg1!, obj1.Arg2!, obj2!.Arg1!, obj2.Arg2!,
+                mockDep1.Arg1!, mockDep1.Arg2!, mockDep2.Arg1!, mockDep2.Arg2!,
+                depend1!.Arg1!, depend1.Arg2!, depend2!.Arg1!, depend2.Arg2!,
             }.Should().AllBeSameAs(singletonMock1!);
         }
     }
@@ -80,9 +81,9 @@ internal class Freeze_Tests
 
         fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(SingletonClass));
 
-        var (obj1, obj2) = exec(fixture.CreateAutoMock<SingletonUserClass>);
-        var (depend1, depend2) = exec(fixture.CreateWithAutoMockDependencies<SingletonUserClass>);
-        var (dependMock1, dependMock2) = exec(fixture.CreateWithAutoMockDependencies<AutoMock<SingletonUserClass>>);
+        var (obj1, obj2) = exec(fixture.CreateAutoMock<UserClass<SingletonClass>>);
+        var (depend1, depend2) = exec(fixture.CreateWithAutoMockDependencies<UserClass<SingletonClass>>);
+        var (dependMock1, dependMock2) = exec(fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<SingletonClass>>>);
 
         var (dependAuto1, dependAuto2) = exec(fixture.CreateWithAutoMockDependencies<SingletonClass>);
         var (mockAuto1, mockAuto2) = exec(fixture.CreateAutoMock<SingletonClass>);
@@ -110,7 +111,7 @@ internal class Freeze_Tests
 
         var singletonMock1 = fixture.CreateAutoMock<SingletonClass>(callBase);
 
-        var (plain1, plain2)            = Exec(fixture.Create<SingletonUserClass>, callBase);
+        var (plain1, plain2)            = Exec(fixture.Create<UserClass<SingletonClass>>, callBase);
         var (plainMock1, plainMock2)    = Exec(fixture.Create<AutoMock<SingletonClass>>, callBase);
 
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(SingletonClass));
@@ -136,8 +137,8 @@ internal class Freeze_Tests
 
         fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(SingletonClass));
 
-        var (plainMock1, plainMock2) = Exec(fixture.Create<AutoMock<SingletonUserClass>>, callBase);
-        var (auto1, auto2) = Exec(fixture.Create<SingletonUserClass>, callBase);
+        var (plainMock1, plainMock2) = Exec(fixture.Create<AutoMock<UserClass<SingletonClass>>>, callBase);
+        var (auto1, auto2) = Exec(fixture.Create<UserClass<SingletonClass>>, callBase);
 
         new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllBeNonNull();
 
@@ -156,7 +157,7 @@ internal class Freeze_Tests
 
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(SingletonClass));
 
-        var (depend1, depend2)                  = Exec(fixture.CreateNonAutoMock<SingletonUserClass>,callBase);
+        var (depend1, depend2)                  = Exec(fixture.CreateNonAutoMock<UserClass<SingletonClass>>,callBase);
         var (dependAuto1, dependAuto2)          = Exec(fixture.CreateNonAutoMock<SingletonClass>,callBase);
 
         new object[] {
@@ -176,11 +177,11 @@ internal class Freeze_Tests
         var fixture = new AbstractAutoMockFixture();
 
         var (singleton1, singleton2) = Exec(fixture.CreateNonAutoMock<SingletonClass>, callBase);
-        var (depend1, depend2) = Exec(fixture.CreateNonAutoMock<SingletonUserClass>, callBase);
+        var (depend1, depend2) = Exec(fixture.CreateNonAutoMock<UserClass<SingletonClass>>, callBase);
 
         fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(SingletonClass));
 
-        var (dependAuto1, dependAuto2) = Exec(fixture.CreateNonAutoMock<AutoMock<SingletonUserClass>>, callBase);
+        var (dependAuto1, dependAuto2) = Exec(fixture.CreateNonAutoMock<AutoMock<UserClass<SingletonClass>>>, callBase);
 
         new object[] {
             singleton1!, singleton2!,
@@ -205,7 +206,7 @@ internal class Freeze_Tests
 
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(SingletonClass));
 
-        var (plain1, plain2)        = Exec(fixture.Create<SingletonUserClass>, callBase);
+        var (plain1, plain2)        = Exec(fixture.Create<UserClass<SingletonClass>>, callBase);
         var (auto1, auto2)          = Exec(fixture.Create<SingletonClass>, callBase);
 
         new object[] { singletonMock1!, plainMock1!, plainMock2!, plain1!, plain2!, auto1!, auto2! }.Should().AllBeNonNull();
@@ -227,7 +228,7 @@ internal class Freeze_Tests
 
         fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(SingletonClass));
 
-        var (depenedMock1, dependMock2) = Exec(fixture.Create<AutoMock<SingletonUserClass>>, callBase);
+        var (depenedMock1, dependMock2) = Exec(fixture.Create<AutoMock<UserClass<SingletonClass>>>, callBase);
 
         new object[] { singleton1!, obj1!, obj2!,
             depenedMock1!, depenedMock1!.GetMocked(), dependMock2!, dependMock2!.GetMocked()!, }.Should().AllBeNonNull();
@@ -293,11 +294,6 @@ internal class Freeze_Tests
     #endregion
 
     #region Freeze Non Singleton
-
-    private NonSingletonClass[] GetProps(NonSingletonUserClass userClass, bool callBase = false) =>
-        !callBase && userClass is IAutoMocked ? [userClass.NonSingletonPropGet!, userClass.NonSingletonProp!, userClass.NonSingletonField!]
-            : [userClass.Class1, userClass.Class2, userClass.NonSingletonProp!, userClass.NonSingletonField!];
-
 
     [Test]
     public void Test_Works_UnitFixture_WithCreateAutoMock()
@@ -423,23 +419,23 @@ internal class Freeze_Tests
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(NonSingletonClass));
 
         var frozen = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
-        var obj = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
-        var obj2 = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
+        var obj = fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>();
+        var obj2 = fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>();
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
         obj2.Should().NotBeNull();
 
-        obj!.Class1.Should().NotBeSameAs(frozen);
+        obj!.Arg1.Should().NotBeSameAs(frozen);
         new[] {
-            obj!.Class1, obj!.Class2, obj!.NonSingletonProp, obj!.NonSingletonField,
-            obj2!.Class1, obj2!.Class2, obj2!.NonSingletonProp, obj2!.NonSingletonField,
+            obj!.Arg1, obj!.Arg2, obj!.ReadWriteProp, obj!.Field,
+            obj2!.Arg1, obj2!.Arg2, obj2!.ReadWriteProp, obj2!.Field,
         }.Should().OnlyContain(x => x != frozen);
 
         new[] {
-            obj!.Class2, obj!.NonSingletonProp, obj!.NonSingletonField,
-            obj2.Class1, obj2!.Class2, obj2!.NonSingletonProp, obj2!.NonSingletonField,
-        }.Should().OnlyContain(x => x == obj.Class1);
+            obj!.Arg2, obj!.ReadWriteProp, obj!.Field,
+            obj2.Arg1, obj2!.Arg2, obj2!.ReadWriteProp, obj2!.Field,
+        }.Should().OnlyContain(x => x == obj.Arg1);
     }
 
     [Test]
@@ -449,14 +445,14 @@ internal class Freeze_Tests
         fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(NonSingletonClass));
 
         var frozen = fixture.Freeze<NonSingletonClass>();
-        var obj = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>();
+        var obj = fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>();
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
-        obj!.Class1.Should().Be(frozen);
-        obj!.Class2.Should().Be(frozen);
-        obj!.NonSingletonProp.Should().Be(frozen);
-        obj!.NonSingletonField.Should().Be(frozen);
+        obj!.Arg1.Should().Be(frozen);
+        obj!.Arg2.Should().Be(frozen);
+        obj!.ReadWriteProp.Should().Be(frozen);
+        obj!.Field.Should().Be(frozen);
     }
 
     [Test]
@@ -466,12 +462,12 @@ internal class Freeze_Tests
         fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(NonSingletonClass));
 
         var frozen = fixture.Freeze<AutoMock<NonSingletonClass>>()!.Object;
-        var obj = fixture.CreateNonAutoMock<NonSingletonUserClass>();
+        var obj = fixture.CreateNonAutoMock<UserClass<NonSingletonClass>>();
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
 
-        GetProps(obj!).Should().AllBeSameAs(frozen!);
+        GetProps(obj!, false).Should().AllBeSameAs(frozen!);
     }
 
     [Test]
@@ -481,102 +477,99 @@ internal class Freeze_Tests
         fixture.AutoMockTypeControl.NeverAutoMockTypes.Add(typeof(NonSingletonClass));
 
         var frozen = fixture.Freeze<NonSingletonClass>();
-        var obj = fixture.CreateNonAutoMock<NonSingletonUserClass>();
+        var obj = fixture.CreateNonAutoMock<UserClass<NonSingletonClass>>();
 
         frozen.Should().NotBeNull();
         obj.Should().NotBeNull();
 
-        GetProps(obj!).Should().AllBeSameAs(frozen!);
+        GetProps(obj!, false).Should().AllBeSameAs(frozen!);
     }
 
 
     [Test]
-    public void Test_Freeze_IsFrozen_WhenAutoMock_AndCallBase()
+    public void Test_Freeze_IsFrozen_WhenFreezeIsNotAutoMock_WhenAutoMock_ByCallBase([Values(true, false)] bool callBase)
     {
-        var fixture = new AbstractAutoMockFixture();
-        fixture.Freeze<NonSingletonClass>();
+        var fixture = new UnitFixture();
+        fixture.Freeze<NonSingletonClass>(callBase);
+        var frozen = fixture.CreateAutoMock<NonSingletonClass>(callBase)!;
 
-        var obj1 = fixture.CreateAutoMock<NonSingletonUserClass>(true);
-        var obj2 = fixture.CreateAutoMock<NonSingletonUserClass>(true);
+        GetAllTestClasses(callBase).Should().AllBeSameAs(frozen);
 
-        var nonSingletonMock1 = fixture.CreateAutoMock<NonSingletonClass>(true);
-        var nonSngletonMock2 = fixture.CreateAutoMock<NonSingletonClass>(true);
+        var nonDirectlyFrozenCallBase = !callBase;
+        var differentFrozen = fixture.CreateAutoMock<NonSingletonClass>(nonDirectlyFrozenCallBase)!;
 
-        var mock1 = fixture.CreateAutoMock<AutoMock<NonSingletonClass>>(true);
-        var mock2 = fixture.CreateAutoMock<AutoMock<NonSingletonClass>>(true);
+        differentFrozen.Should().NotBeSameAs(frozen);
 
-        var depend1 = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>(true);
-        var depend2 = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>(true);
+        GetAllTestClasses(nonDirectlyFrozenCallBase).Should().AllBeSameAs(differentFrozen);
+        GetAllTestClasses(nonDirectlyFrozenCallBase).Should().AllNotBeSameAs(frozen);
 
-        obj1.Should().NotBeNull();
-        obj1!.Class1.Should().NotBeNull();
-        obj1.Class1.Should().BeAssignableTo<NonSingletonClass>();
+        NonSingletonClass[] GetAllTestClasses(bool callBase)
+        {
+            return ((NonSingletonClass[])[
+                fixture.CreateAutoMock<NonSingletonClass>(callBase)!,
+                fixture.CreateAutoMockAsync<NonSingletonClass>(callBase).Result!,
 
-        GetProps(obj1!, true).Should().AllBeSameAs(obj1.Class1!);
+                fixture.CreateAutoMock<AutoMock<NonSingletonClass>>(callBase)!.Object,
+                fixture.CreateAutoMockAsync<AutoMock<NonSingletonClass>>(callBase).Result!.Object,
 
-        obj2.Should().NotBeNull();
-        GetProps(obj2!, true).Should().AllBeSameAs(obj1.Class1!);
+                ..GetProps(fixture.CreateAutoMock<UserClass<NonSingletonClass>>(callBase)!, callBase),
+                ..GetProps(fixture.CreateAutoMockAsync<UserClass<NonSingletonClass>>(callBase).Result!, callBase),
 
-        nonSingletonMock1.Should().Be(obj1.Class1);
-        nonSngletonMock2.Should().Be(obj1.Class1);
+                ..GetProps(fixture.CreateAutoMock<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object!, callBase),
+                ..GetProps(fixture.CreateAutoMockAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object, callBase),
 
-        mock1.Should().NotBeNull();
-        mock2.Should().NotBeNull();
-        mock1!.GetMocked().Should().Be(obj1.Class1);
-        mock2!.GetMocked().Should().Be(obj1.Class1);
+                ..GetProps(fixture.CreateAutoMock<UserClass<AutoMock<NonSingletonClass>>>(callBase)!, callBase),
+                ..GetProps(fixture.CreateAutoMockAsync<UserClass<AutoMock<NonSingletonClass>>>(callBase).Result!, callBase),
 
-        depend1.Should().NotBeNull();
-        GetProps(depend1!, true).Should().AllBeSameAs(obj1.Class1!);
+                ..GetProps(fixture.CreateAutoMock<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase)!.Object!, callBase),
+                ..GetProps(fixture.CreateAutoMockAsync<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase).Result!.Object, callBase),
 
-        depend2.Should().NotBeNull();
-        GetProps(depend2!, true).Should().AllBeSameAs(obj1.Class1!);
-    }
+                fixture.CreateWithAutoMockDependencies<AutoMock<NonSingletonClass>>(callBase)!.Object,
+                fixture.CreateWithAutoMockDependenciesAsync<AutoMock<NonSingletonClass>>(callBase).Result!.Object,
 
-    [Test]
-    public void Test_Freeze_IsFrozen_WhenAutoMock_AndNonCallBase()
-    {
-        var fixture = new AbstractAutoMockFixture();
-        fixture.Freeze<NonSingletonClass>();
+                ..GetProps(fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>(callBase)!, callBase),
+                ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<UserClass<NonSingletonClass>>(callBase).Result!, callBase),
 
-        var obj1 = fixture.CreateAutoMock<NonSingletonUserClass>(false);
-        var obj2 = fixture.CreateAutoMock<NonSingletonUserClass>(false);
+                ..GetProps(fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object, callBase),
+                ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object, callBase),
 
-        var nonSingletonMock1 = fixture.CreateAutoMock<NonSingletonClass>(false);
-        var nonSingletonMock2 = fixture.CreateAutoMock<NonSingletonClass>(false);
+                ..GetProps(fixture.CreateWithAutoMockDependencies<UserClass<AutoMock<NonSingletonClass>>>(callBase)!, callBase),
+                ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<UserClass<AutoMock<NonSingletonClass>>>(callBase).Result!, callBase),
 
-        var mock1 = fixture.CreateAutoMock<AutoMock<NonSingletonClass>>(false);
-        var mock2 = fixture.CreateAutoMock<AutoMock<NonSingletonClass>>(false);
+                ..GetProps(fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase)!.Object, callBase),
+                ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase).Result!.Object, callBase),
 
-        var depend1 = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>(false);
-        var depend2 = fixture.CreateWithAutoMockDependencies<NonSingletonUserClass>(false);
+                fixture.Create<AutoMock<NonSingletonClass>>(callBase)!.Object,
+                fixture.CreateAsync<AutoMock<NonSingletonClass>>(callBase).Result!.Object,
 
-        obj1.Should().NotBeNull();
-        obj1!.NonSingletonProp.Should().NotBeNull();
-        obj1.NonSingletonField.Should().Be(obj1.NonSingletonProp);
+                ..GetProps(fixture.Create<UserClass<NonSingletonClass>>(callBase)!, callBase),
+                ..GetProps(fixture.CreateAsync<UserClass<NonSingletonClass>>(callBase).Result!, callBase),
 
-        obj2.Should().NotBeNull();
-        obj2!.NonSingletonProp.Should().Be(obj1.NonSingletonProp);
-        obj2.NonSingletonField.Should().Be(obj1.NonSingletonProp);
+                ..GetProps(fixture.Create<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object, callBase),
+                ..GetProps(fixture.CreateAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object, callBase),
 
-        nonSingletonMock1.Should().Be(obj1.NonSingletonProp);
-        nonSingletonMock2.Should().Be(obj1.NonSingletonProp);
+                ..GetProps(fixture.Create<UserClass<AutoMock<NonSingletonClass>>>(callBase)!, callBase),
+                ..GetProps(fixture.CreateAsync<UserClass<AutoMock<NonSingletonClass>>>(callBase).Result!, callBase),
 
-        mock1.Should().NotBeNull();
-        mock2.Should().NotBeNull();
-        mock1!.GetMocked().Should().Be(obj1.NonSingletonProp);
-        mock2!.GetMocked().Should().Be(obj1.NonSingletonProp);
+                ..GetProps(fixture.Create<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase)!.Object, callBase),
+                ..GetProps(fixture.CreateAsync<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase).Result!.Object, callBase),
 
-        depend1.Should().NotBeNull();
-        depend1!.Class1.Should().Be(obj1.NonSingletonProp);
-        depend1.Class2.Should().Be(obj1.NonSingletonProp);
-        depend1.NonSingletonProp.Should().Be(obj1.NonSingletonProp);
-        depend1.NonSingletonField.Should().Be(obj1.NonSingletonProp);
+                fixture.Freeze<AutoMock<NonSingletonClass>>(callBase)!.Object,
+                fixture.FreezeAsync<AutoMock<NonSingletonClass>>(callBase).Result!.Object,
 
-        depend2.Should().NotBeNull();
-        depend2!.Class1.Should().Be(obj1.NonSingletonProp);
-        depend2.Class2.Should().Be(obj1.NonSingletonProp);
-        depend2.NonSingletonProp.Should().Be(obj1.NonSingletonProp);
-        depend2.NonSingletonField.Should().Be(obj1.NonSingletonProp);
+                ..GetProps(fixture.Freeze<UserClass<NonSingletonClass>>(callBase)!, callBase),
+                ..GetProps(fixture.FreezeAsync<UserClass<NonSingletonClass>>(callBase).Result!, callBase),
+
+                ..GetProps(fixture.Freeze<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object, callBase),
+                ..GetProps(fixture.FreezeAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object, callBase),
+
+                ..GetProps(fixture.Freeze<UserClass<AutoMock<NonSingletonClass>>>(callBase)!, callBase),
+                ..GetProps(fixture.FreezeAsync<UserClass<AutoMock<NonSingletonClass>>>(callBase).Result!, callBase),
+
+                ..GetProps(fixture.Freeze<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase)!.Object, callBase),
+                ..GetProps(fixture.FreezeAsync<AutoMock<UserClass<AutoMock<NonSingletonClass>>>>(callBase).Result!.Object, callBase),
+            ]);
+        }
     }
 
     [Test]
@@ -604,39 +597,164 @@ internal class Freeze_Tests
 
     #endregion
 
+    #region Freeze Outside Arg
+
+    [Test]
+    [TestCase<UnitFixture>]
+    [TestCase<IntegrationFixture>]
+    public void Test_FreezeOutsideObject_NonAutoMock_NotDifferentByCallbase_AndAlsoNotByDependencies<TFixture>()
+            where TFixture : AutoMockFixtureBase, new()
+    {
+        using var fixture = new TFixture();
+        var userClass = new UserClass<NonSingletonClass>(new NonSingletonClass(), new NonSingletonClass());
+
+        fixture.JustFreeze(userClass);
+
+        ((UserClass<NonSingletonClass>[])[
+            fixture.CreateNonAutoMock<UserClass<NonSingletonClass>>(false)!,
+            fixture.CreateNonAutoMock<UserClass<NonSingletonClass>>(true)!,
+            fixture.CreateNonAutoMock<UserClass<NonSingletonClass>>()!, // Remember that default is not always false
+            fixture.CreateNonAutoMockAsync<UserClass<NonSingletonClass>>(false).Result!,
+            fixture.CreateNonAutoMockAsync<UserClass<NonSingletonClass>>(true).Result!,
+            fixture.CreateNonAutoMockAsync<UserClass<NonSingletonClass>>().Result!, // Remember that default is not always false
+
+            fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>(false)!,
+            fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>(true)!,
+            fixture.CreateWithAutoMockDependencies<UserClass<NonSingletonClass>>()!,
+            fixture.CreateWithAutoMockDependenciesAsync<UserClass<NonSingletonClass>>(false).Result!,
+            fixture.CreateWithAutoMockDependenciesAsync<UserClass<NonSingletonClass>>(true).Result!,
+            fixture.CreateWithAutoMockDependenciesAsync<UserClass<NonSingletonClass>>().Result!,
+
+            fixture.Create<UserClass<NonSingletonClass>>(false)!,
+            fixture.Create<UserClass<NonSingletonClass>>(true)!,
+            fixture.Create<UserClass<NonSingletonClass>>()!,
+            fixture.CreateAsync<UserClass<NonSingletonClass>>(false).Result!,
+            fixture.CreateAsync<UserClass<NonSingletonClass>>(true).Result!,
+            fixture.CreateAsync<UserClass<NonSingletonClass>>().Result!,
+
+            fixture.Freeze<UserClass<NonSingletonClass>>(false)!,
+            fixture.Freeze<UserClass<NonSingletonClass>>(true)!,
+            fixture.Freeze<UserClass<NonSingletonClass>>()!,
+            fixture.FreezeAsync<UserClass<NonSingletonClass>>(false).Result!,
+            fixture.FreezeAsync<UserClass<NonSingletonClass>>(true).Result!,
+            fixture.FreezeAsync<UserClass<NonSingletonClass>>().Result!,
+
+            ..GetProps(fixture.CreateNonAutoMock<UserClass<UserClass<NonSingletonClass>>>(false)!, false),
+            ..GetProps(fixture.CreateNonAutoMock<UserClass<UserClass<NonSingletonClass>>>(true)!, false),
+            ..GetProps(fixture.CreateNonAutoMock<UserClass<UserClass<NonSingletonClass>>>()!, false), // Remember that default is not always false
+            ..GetProps(fixture.CreateNonAutoMockAsync<UserClass<UserClass<NonSingletonClass>>>(false).Result!, false),
+            ..GetProps(fixture.CreateNonAutoMockAsync<UserClass<UserClass<NonSingletonClass>>>(true).Result!, false),
+            ..GetProps(fixture.CreateNonAutoMockAsync<UserClass<UserClass<NonSingletonClass>>>().Result!, false), // Remember that default is not always false
+
+        ]).Should().AllBeSameAs(userClass);
+    }
+
+    [Test]
+    [TestCase<UnitFixture>(true)]
+    [TestCase<UnitFixture>(false)]
+    [TestCase<IntegrationFixture>(true)]
+    [TestCase<IntegrationFixture>(false)]
+    public void Test_FreezeOutsideObject_AutoMock_ProvidedObject_DependsOnCallbase<TFixture>(bool callBase)
+        where TFixture : AutoMockFixtureBase, new()
+    {
+        using var fixture = new TFixture();
+        var userClass = new AutoMock<UserClass<NonSingletonClass>>(new NonSingletonClass(), new NonSingletonClass())
+        {
+            CallBase = callBase
+        }.Object;
+
+        fixture.JustFreeze(userClass);
+
+        ((UserClass<NonSingletonClass>[])[
+            fixture.CreateNonAutoMock<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object,
+            fixture.CreateNonAutoMockAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object,
+
+            fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object,
+            fixture.CreateWithAutoMockDependenciesAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object,
+
+            fixture.CreateAutoMock<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object,
+            fixture.CreateAutoMockAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object,
+
+            fixture.CreateAutoMock<UserClass<NonSingletonClass>>(callBase)!,
+            fixture.CreateAutoMockAsync<UserClass<NonSingletonClass>>(callBase).Result!,
+
+            fixture.Create<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object,
+            fixture.CreateAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!.Object,
+
+            fixture.Freeze<AutoMock<UserClass<NonSingletonClass>>>(callBase)!.Object,
+
+            ..GetProps(fixture.CreateWithAutoMockDependencies<UserClass<UserClass<NonSingletonClass>>>(callBase)!, callBase),
+            ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<UserClass<UserClass<NonSingletonClass>>>(callBase).Result!, callBase),
+
+            ..GetProps(fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<UserClass<NonSingletonClass>>>>(callBase)!.Object, callBase),
+            ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<AutoMock<UserClass<UserClass<NonSingletonClass>>>>(callBase).Result!.Object, callBase),
+        ]).Should().AllBeSameAs(userClass);
+    }
+
+    // The differenc ebetween and the one above is that the above worked with the mocked Object while this deal with the AutoMock itself
+    [Test]
+    [TestCase<UnitFixture>(true)]
+    [TestCase<UnitFixture>(false)]
+    [TestCase<IntegrationFixture>(true)]
+    [TestCase<IntegrationFixture>(false)]
+    public void Test_FreezeOutsideObject_AutoMock_ProvidedMock_DependsOnCallbase<TFixture>(bool callBase)
+        where TFixture : AutoMockFixtureBase, new()
+    {
+        using var fixture = new TFixture();
+        var userMock = new AutoMock<UserClass<NonSingletonClass>>(new NonSingletonClass(), new NonSingletonClass())
+        {
+            CallBase = callBase
+        };
+
+        fixture.JustFreeze(userMock);
+
+        ((AutoMock<UserClass<NonSingletonClass>>[])[
+            fixture.CreateNonAutoMock<AutoMock<UserClass<NonSingletonClass>>>(callBase)!,
+            fixture.CreateNonAutoMockAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!,
+
+            fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<NonSingletonClass>>>(callBase)!,
+            fixture.CreateWithAutoMockDependenciesAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!,
+
+            fixture.CreateAutoMock<AutoMock<UserClass<NonSingletonClass>>>(callBase)!,
+            fixture.CreateAutoMockAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!,
+
+            AutoMock.Get(fixture.CreateAutoMock<UserClass<NonSingletonClass>>(callBase)!)!,
+            AutoMock.Get(fixture.CreateAutoMockAsync<UserClass<NonSingletonClass>>(callBase).Result!)!,
+
+            fixture.Create<AutoMock<UserClass<NonSingletonClass>>>(callBase)!,
+            fixture.CreateAsync<AutoMock<UserClass<NonSingletonClass>>>(callBase).Result!,
+
+            fixture.Freeze<AutoMock<UserClass<NonSingletonClass>>>(callBase)!,
+
+            ..GetProps(fixture.CreateWithAutoMockDependencies<UserClass<UserClass<NonSingletonClass>>>(callBase)!, callBase)
+                .Select(x => AutoMock.Get(x)!),
+            ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<UserClass<UserClass<NonSingletonClass>>>(callBase).Result!, callBase)
+                .Select(x => AutoMock.Get(x)!),
+
+            ..GetProps(fixture.CreateWithAutoMockDependencies<AutoMock<UserClass<UserClass<NonSingletonClass>>>>(callBase)!.Object, callBase)
+                .Select(x => AutoMock.Get(x)!),
+            ..GetProps(fixture.CreateWithAutoMockDependenciesAsync<AutoMock<UserClass<UserClass<NonSingletonClass>>>>(callBase).Result!.Object, callBase)
+                .Select(x => AutoMock.Get(x)!),
+        ]).Should().AllBeSameAs(userMock);
+    }
+
+    #endregion
+
     #region Classes
 
     [Singleton]
     public class SingletonClass { }
 
-    public class SingletonUserClass
-    {
-        public SingletonClass Class1 { get; } // Non virtual to only work with the ctor
-        public SingletonClass Class2 { get; } // Non virtual to only work with the ctor
-        public SingletonUserClass(SingletonClass class1, SingletonClass class2)
-        {
-            Class1 = class1;
-            Class2 = class2;
-        }
-        public virtual SingletonClass? SingletonProp { get; set; }
-        public virtual SingletonClass? SingletonPropGet { get; }
-        public SingletonClass? SingletonField;
-    }
-
     public class NonSingletonClass { }
 
-    public class NonSingletonUserClass
+    public class UserClass<T>(T arg1, T arg2)
     {
-        public NonSingletonClass Class1 { get; } // Non virtual to only work with the ctor
-        public NonSingletonClass Class2 { get; } // Non virtual to only work with the ctor
-        public NonSingletonUserClass(NonSingletonClass class1, NonSingletonClass class2)
-        {
-            Class1 = class1;
-            Class2 = class2;
-        }
-        public virtual NonSingletonClass? NonSingletonProp { get; set; }
-        public virtual NonSingletonClass? NonSingletonPropGet { get; }
-        public NonSingletonClass? NonSingletonField;
+        public T Arg1 => arg1; // Non virtual to only work with the ctor
+        public T Arg2 => arg2; // Non virtual to only work with the ctor
+
+        public virtual T? ReadWriteProp { get; set; }
+        public virtual T? ReadOnlyProp { get; }
+        public T? Field;
     }
 
     #endregion

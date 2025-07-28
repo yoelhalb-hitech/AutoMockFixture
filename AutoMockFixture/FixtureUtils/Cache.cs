@@ -70,7 +70,7 @@ internal class Cache
         var defaultCallBase = !mockDepend;
 
         // Verify the start tracker callbase status as it will affect the dependencies
-        // Since we are not dealing with an AutoMock possibility we don't care on the object itself
+        // Since we are not dealing with an AutoMock possibility (as for AutoMock we forwarded it already) we don't care on the object itself
         // Similarly we don't care on the difference for MockDependencies between the SUT and dependecies
         // This is due the fact that callbase is only relevent for mocks...
         if ((start.MockShouldCallBase ?? defaultCallBase) != (inCache.StartTracker.MockShouldCallBase ?? defaultCallBase)) return false;

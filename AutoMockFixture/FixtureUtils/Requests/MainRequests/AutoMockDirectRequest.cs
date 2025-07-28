@@ -37,7 +37,7 @@ internal record AutoMockDirectRequest : TrackerWithFixture, IRequestWithType, IF
                         .All(i => i.GetMethods(BindingFlagsExtensions.AllBindings).All(m => m.IsAbstract));
     }
 
-    private Type GetInner() => Fixture.AutoMockHelpers.GetMockedType(Request)!;
+    private Type GetInner() => Fixture.AutoMockHelpers.GetMockedType(Request)! ?? Request;
 
     public bool ShouldCallBase() => !GetInner().IsDelegate() // Moq does not allow to callbase for delegates
             && (MockShouldCallBase // This is the only place where we concern ourselves with the request explicit `MockShouldCallBase` as in general we should follow what the user requested
