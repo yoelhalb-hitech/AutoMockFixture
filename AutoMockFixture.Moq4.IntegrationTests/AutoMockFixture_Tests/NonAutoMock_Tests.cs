@@ -2,6 +2,7 @@
 using FluentAssertions.Collections;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
+using static AutoMockFixture.Tests.AutoMockFixture_Tests.AutoMockDependencies_Tests;
 
 namespace AutoMockFixture.Tests.AutoMockFixture_Tests;
 
@@ -257,5 +258,14 @@ internal class NonAutoMock_Tests
 
         obj!.TestProp.Should().NotBeNull();
         obj.TestMethod().Should().NotBeNull();
+    }
+
+    [Test]
+    public void Test_CreatesStruct_WhenNoCtor_BugRepro()
+    {
+        // Arrange
+        using var fixture = new AbstractAutoMockFixture();
+        // Act Assert
+        Assert.DoesNotThrow(() => fixture.CreateWithAutoMockDependencies<TestStruct>());
     }
 }

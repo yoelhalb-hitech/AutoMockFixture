@@ -62,7 +62,7 @@ internal class CustomAutoPropertiesCommand : AutoPropertiesCommand, ISpecimenCom
             try
             {
                 // If it is already set (possibly by the constructor or if it's static) then no need to set again
-                if (fi.GetValue(specimen) != fi.FieldType.GetDefault()) continue;
+                if (!object.Equals(fi.GetValue(specimen), fi.FieldType.GetDefault())) continue; // Use object.Equals because of primitive types
 
                 HandleField(specimen, context, fi, tracker);
             }

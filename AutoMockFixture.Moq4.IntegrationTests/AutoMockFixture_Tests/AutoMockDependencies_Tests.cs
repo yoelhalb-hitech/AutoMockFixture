@@ -384,4 +384,30 @@ internal class AutoMockDependencies_Tests
         obj.TestClassField!.Object.InternalTest.Should().NotBeNull();
         AutoMock.IsAutoMock(obj.TestClassField).Should().BeTrue();
     }
+
+    public struct TestStruct { public int TestProp { get; set; } }
+    public class TestClassWithStructField { public TestStruct TestField { get; set; } }
+
+    [Test]
+    public void Test_CreatesStruct_WhenNoCtor_BugRepro()
+    {
+        // Arrange
+        using var fixture = new AbstractAutoMockFixture();
+        // Act Assert
+        Assert.DoesNotThrow(() => fixture.CreateWithAutoMockDependencies<TestStruct>());
+    }
+
+    [Test]
+    public void Test_SetsUpStructField_BugRepro()
+    {
+        // Arrange
+        using var fixture = new AbstractAutoMockFixture();
+        // Act
+        var result = fixture.CreateWithAutoMockDependencies<TestClassWithStructField>();
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.TestField.Should().NotBeNull();
+        result!.TestField.TestProp.Should().NotBe(0); // Default value for int
+    }
 }

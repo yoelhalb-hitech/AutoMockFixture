@@ -23,8 +23,6 @@ internal class AutoMockFixtureEngine
 
     public object? CreateWithAutoMockDependencies(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
     {
-        if (t.IsValueType) return new SpecimenContext(fixture).Resolve(new SeededRequest(t, t.GetDefault()));
-
         var result = Execute(new AutoMockDependenciesRequest(t, fixture) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl);
 
         return result;
@@ -32,8 +30,6 @@ internal class AutoMockFixtureEngine
 
     public async Task<object?> CreateWithAutoMockDependenciesAsync(Type t, bool? callBase = null, AutoMockTypeControl? autoMockTypeControl = null)
     {
-        if (t.IsValueType) return new SpecimenContext(fixture).Resolve(new SeededRequest(t, t.GetDefault()));
-
         var result = await ExecuteAsync(new AutoMockDependenciesRequest(t, fixture) { MockShouldCallBase = callBase ?? fixture.CallBase }, autoMockTypeControl).ConfigureAwait(false);
 
         return result;

@@ -65,6 +65,12 @@ internal class MethodInvokerWithRecursion : ISpecimenBuilder
                 }
             }
 
+            // A value type might not have a ctor if the user didn't specify one, it is still constructible however
+            if(requestedType.IsValueType && !requestedType.IsPrimitive && requestedType.Namespace != nameof(System))
+            {
+                return Activator.CreateInstance(requestedType)!;
+            }
+
             return new NoSpecimen();
         }
         finally
@@ -81,7 +87,9 @@ internal class MethodInvokerWithRecursion : ISpecimenBuilder
     {
         object argRequest = (request, context) switch
         {
-            (ITracker { StartTracker.MockDependencies: true } tracker, _) => new AutoMockConstructorArgumentRequest(declaringType, pi, tracker),
+            // Handling value types seperately is important as otherwise it won't use the cache if there is already a frozen version via AutoMockDependencies or NonAutoMock, but it should
+            (ITracker { StartTracker.MockDependencies: true } tracker, _) when !pi.ParameterType.IsValueType
+                                  => new AutoMockConstructorArgumentRequest(declaringType, pi, tracker),
             (ITracker tracker, _) => new ConstructorArgumentRequest(declaringType, pi, tracker),
             (_, RecursionContext recursionContext) => new NonAutoMockRequest(pi.ParameterType, recursionContext.Fixture),
             (_,_) => pi,

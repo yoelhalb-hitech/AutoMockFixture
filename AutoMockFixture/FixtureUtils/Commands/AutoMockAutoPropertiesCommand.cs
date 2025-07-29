@@ -42,6 +42,9 @@ internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
 
     protected override object? GetPropertyValue(object specimen, ISpecimenContext context, PropertyInfo pi, ITracker tracker)
     {
+        // This is important as otherwise it won't use the cache if there is already a frozen version via AutoMockDependencies or NonAutoMock, but it should
+        if (pi.PropertyType.IsValueType) return base.GetPropertyValue(specimen, context, pi, tracker);
+
         try
         {
             Logger.LogInfo("Before Resolved ");
@@ -63,6 +66,13 @@ internal class AutoMockAutoPropertiesCommand : CustomAutoPropertiesCommand
 
     protected override void HandleField(object specimen, ISpecimenContext context, FieldInfo fi, ITracker tracker)
     {
+        // This is important as otherwise it won't use the cache if there is already a frozen version via AutoMockDependencies or NonAutoMock, but it should
+        if (fi.FieldType.IsValueType)
+        {
+            base.HandleField(specimen, context, fi, tracker);
+            return;
+        }
+
         try
         {
             Logger.LogInfo("Before field Resolved ");

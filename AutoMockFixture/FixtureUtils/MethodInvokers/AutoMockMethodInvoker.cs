@@ -121,7 +121,8 @@ internal class AutoMockMethodInvoker : ISpecimenBuilder
 
     protected virtual object ResolveParamater(AutoMockDirectRequest mockRequest, ParameterInfo pi, ISpecimenContext context)
     {
-        var argsRequest = !mockRequest.StartTracker.MockDependencies
+        // Handling value types seperately is important as otherwise it won't use the cache if there is already a frozen version via AutoMockDependencies or NonAutoMock, but it should
+        var argsRequest = !mockRequest.StartTracker.MockDependencies || pi.ParameterType.IsValueType
                 ? new ConstructorArgumentRequest(mockRequest.Request, pi, mockRequest)
                 : new AutoMockConstructorArgumentRequest(mockRequest.Request, pi, mockRequest);
 

@@ -42,10 +42,15 @@ internal class Cache
 
         if (!CacheSpecifications.Any(s => s.IsSatisfiedBy(tracker))) return;
 
-        var existing = Get(tracker);
-        if(existing.HasValue && object.Equals(existing.Value, specimen)) return;
+        if(Get(tracker) is var existing && existing.HasValue)
+        {
+            if (existing.Value is null && specimen is null) return;
 
-        if(existing.HasValue) throw new Exception("A different object is already in cache");
+            // For value types we have to use the `.Equals()` instead of `object.Equals`
+            if (existing.Value is not null && existing.Value.Equals(specimen)) return;
+
+            throw new Exception("A different object is already in cache");
+        }
 
         CacheDictionary[tracker] = specimen;
     }
