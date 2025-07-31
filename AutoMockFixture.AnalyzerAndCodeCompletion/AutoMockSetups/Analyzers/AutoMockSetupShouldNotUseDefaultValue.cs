@@ -13,7 +13,7 @@ public class AutoMockSetupShouldNotUseDefaultValue : DiagnosticAnalyzer
 {
     public const string DiagnosticId = "AMF0003";
     protected const string Title = "AutoMockSetupShouldNotUseDefaultValue";
-    protected const string Message = "Do not use default values (such as null or 0) for parameters in `.Setup()`, for matching all values use the `default` keyword, while for matching only the default value use `Is.DefaultValue<T>()` (or in case of bool you can use `Is.False()`)";
+    protected const string Message = "Do not use default values (such as null or 0) for parameters in `.Setup()`, for matching all values use the `default` keyword, while for matching only the default value use `ItIs.DefaultValue<T>()` (or in case of bool you can use `ItIs.False()`)";
 
     protected DiagnosticDescriptor Diagnostic = new DiagnosticDescriptor(DiagnosticId, Title, Message, "Language", DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Message + ".");
 

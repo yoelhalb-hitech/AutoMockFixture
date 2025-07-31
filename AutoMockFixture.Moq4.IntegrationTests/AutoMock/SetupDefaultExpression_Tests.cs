@@ -29,11 +29,11 @@ internal class SetupDefaultExpression_Tests
         obj.TestString(default).Should().Be("Works");
         obj.TestString("").Should().Be("Works");
 
-        autoMock.Setup(x => x.TestString(Is.DefaultValue<string>())).Returns("Is.DefaultValue() Works");
+        autoMock.Setup(x => x.TestString(ItIs.DefaultValue<string>())).Returns("ItIs.DefaultValue() Works");
 
         obj.TestString("TestArg").Should().Be("Works");
-        obj.TestString(null).Should().Be("Is.DefaultValue() Works");
-        obj.TestString(default).Should().Be("Is.DefaultValue() Works");
+        obj.TestString(null).Should().Be("ItIs.DefaultValue() Works");
+        obj.TestString(default).Should().Be("ItIs.DefaultValue() Works");
         obj.TestString("").Should().Be("Works");
     }
 
@@ -49,10 +49,10 @@ internal class SetupDefaultExpression_Tests
         obj.TestInt(default).Should().Be("Works");
         obj.TestInt(0).Should().Be("Works");
 
-        autoMock.Setup(x => x.TestInt(Is.DefaultValue<int>())).Returns("Is.DefaultValue() Works");
+        autoMock.Setup(x => x.TestInt(ItIs.DefaultValue<int>())).Returns("ItIs.DefaultValue() Works");
         obj.TestInt(20).Should().Be("Works");
-        obj.TestInt(default).Should().Be("Is.DefaultValue() Works");
-        obj.TestInt(0).Should().Be("Is.DefaultValue() Works");
+        obj.TestInt(default).Should().Be("ItIs.DefaultValue() Works");
+        obj.TestInt(0).Should().Be("ItIs.DefaultValue() Works");
     }
 
     [Test]
@@ -70,17 +70,17 @@ internal class SetupDefaultExpression_Tests
         obj.TestNullableInt(default(int)).Should().Be("Works");
         obj.TestNullableInt(0).Should().Be("Works");
 
-        autoMock.Setup(x => x.TestNullableInt(Is.DefaultValue<int?>())).Returns("Is.DefaultValue<int?>() Works");
+        autoMock.Setup(x => x.TestNullableInt(ItIs.DefaultValue<int?>())).Returns("ItIs.DefaultValue<int?>() Works");
         obj.TestNullableInt(20).Should().Be("Works");
-        obj.TestNullableInt(null).Should().Be("Is.DefaultValue<int?>() Works");
-        obj.TestNullableInt(default).Should().Be("Is.DefaultValue<int?>() Works");
-        obj.TestNullableInt(default(int?)).Should().Be("Is.DefaultValue<int?>() Works");
+        obj.TestNullableInt(null).Should().Be("ItIs.DefaultValue<int?>() Works");
+        obj.TestNullableInt(default).Should().Be("ItIs.DefaultValue<int?>() Works");
+        obj.TestNullableInt(default(int?)).Should().Be("ItIs.DefaultValue<int?>() Works");
         obj.TestNullableInt(default(int)).Should().Be("Works");
         obj.TestNullableInt(0).Should().Be("Works");
 
-        autoMock.Setup(x => x.TestNullableInt(Is.DefaultValue<int>())).Returns("Is.DefaultValue<int>() Works");
-        obj.TestNullableInt(default(int)).Should().Be("Is.DefaultValue<int>() Works");
-        obj.TestNullableInt(0).Should().Be("Is.DefaultValue<int>() Works");
+        autoMock.Setup(x => x.TestNullableInt(ItIs.DefaultValue<int>())).Returns("ItIs.DefaultValue<int>() Works");
+        obj.TestNullableInt(default(int)).Should().Be("ItIs.DefaultValue<int>() Works");
+        obj.TestNullableInt(0).Should().Be("ItIs.DefaultValue<int>() Works");
     }
 
     [Test]
@@ -95,15 +95,15 @@ internal class SetupDefaultExpression_Tests
         obj.TestBool(false).Should().Be("Works");
         obj.TestBool(default).Should().Be("Works");
 
-        autoMock.Setup(a => a.TestBool(Is.False()), "Is.False() Works");
+        autoMock.Setup(a => a.TestBool(ItIs.False()), "ItIs.False() Works");
         obj.TestBool(true).Should().Be("Works");
-        obj.TestBool(false).Should().Be("Is.False() Works");
-        obj.TestBool(default).Should().Be("Is.False() Works");
+        obj.TestBool(false).Should().Be("ItIs.False() Works");
+        obj.TestBool(default).Should().Be("ItIs.False() Works");
 
-        autoMock.Setup(a => a.TestBool(Is.True()), "Is.True() Works");
-        obj.TestBool(true).Should().Be("Is.True() Works");
-        obj.TestBool(false).Should().Be("Is.False() Works");
-        obj.TestBool(default).Should().Be("Is.False() Works");
+        autoMock.Setup(a => a.TestBool(ItIs.True()), "ItIs.True() Works");
+        obj.TestBool(true).Should().Be("ItIs.True() Works");
+        obj.TestBool(false).Should().Be("ItIs.False() Works");
+        obj.TestBool(default).Should().Be("ItIs.False() Works");
     }
 
     [Test]
@@ -121,23 +121,23 @@ internal class SetupDefaultExpression_Tests
         obj.TestNullableBool(default(bool)).Should().Be("Works");
         obj.TestNullableBool(default(bool?)).Should().Be("Works");
 
-        autoMock.Setup(a => a.TestNullableBool(Is.False()), "Is.False() Works");
+        autoMock.Setup(a => a.TestNullableBool(ItIs.False()), "ItIs.False() Works");
         obj.TestNullableBool(true).Should().Be("Works");
-        obj.TestNullableBool(false).Should().Be("Is.False() Works");
+        obj.TestNullableBool(false).Should().Be("ItIs.False() Works");
         obj.TestNullableBool(default).Should().Be("Works");
         obj.TestNullableBool(null).Should().Be("Works");
 
-        autoMock.Setup(a => a.TestNullableBool(Is.True()), "Is.True() Works");
-        obj.TestNullableBool(true).Should().Be("Is.True() Works");
-        obj.TestNullableBool(false).Should().Be("Is.False() Works");
+        autoMock.Setup(a => a.TestNullableBool(ItIs.True()), "ItIs.True() Works");
+        obj.TestNullableBool(true).Should().Be("ItIs.True() Works");
+        obj.TestNullableBool(false).Should().Be("ItIs.False() Works");
         obj.TestNullableBool(default).Should().Be("Works");
         obj.TestNullableBool(null).Should().Be("Works");
 
-        autoMock.Setup(a => a.TestNullableBool(Is.DefaultValue<bool?>()), "Is.DefaultValue() Works");
-        obj.TestNullableBool(true).Should().Be("Is.True() Works");
-        obj.TestNullableBool(false).Should().Be("Is.False() Works");
-        obj.TestNullableBool(default).Should().Be("Is.DefaultValue() Works");
-        obj.TestNullableBool(null).Should().Be("Is.DefaultValue() Works");
+        autoMock.Setup(a => a.TestNullableBool(ItIs.DefaultValue<bool?>()), "ItIs.DefaultValue() Works");
+        obj.TestNullableBool(true).Should().Be("ItIs.True() Works");
+        obj.TestNullableBool(false).Should().Be("ItIs.False() Works");
+        obj.TestNullableBool(default).Should().Be("ItIs.DefaultValue() Works");
+        obj.TestNullableBool(null).Should().Be("ItIs.DefaultValue() Works");
     }
 
     [Test]
