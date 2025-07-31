@@ -1,13 +1,8 @@
 ﻿using AutoMockFixture.AnalyzerAndCodeCompletion.Attributes.Analyzers;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Testing;
-using Microsoft.CodeAnalysis.Testing;
-using NUnit.Framework;
 
 namespace AutoMockFixture.AnalyzerAndCodeCompletion.Test.Attributes.Analyzers;
 
-internal class AutoMockShouldOnlyBeReferenceType_Tests
-    : AnalyzerVerifier<AutoMockShouldOnlyBeReferenceType, CSharpAnalyzerTest<AutoMockShouldOnlyBeReferenceType, DefaultVerifier>, DefaultVerifier>
+internal class AutoMockShouldOnlyBeReferenceType_Tests : AnalyzerVerifierBase<AutoMockShouldOnlyBeReferenceType>
 {
     [Test]
     public async Task Test_Warns_WhenValueType()
@@ -109,17 +104,5 @@ internal class AutoMockShouldOnlyBeReferenceType_Tests
             """;
 
         await VerifyAsync(code).ConfigureAwait(false);
-    }
-
-    private static async Task VerifyAsync(string code)
-    {
-        var test = new CSharpAnalyzerTest<AutoMockShouldOnlyBeReferenceType, DefaultVerifier>
-        {
-            TestCode = code,
-            ReferenceAssemblies = ReferenceAssemblies.Net.Net60,
-        };
-        test.TestState.AdditionalReferences.Add(MetadataReference.CreateFromFile(typeof(AutoMockAttribute).Assembly.Location));
-        //await VerifyAnalyzerAsync(code);
-        await test.RunAsync().ConfigureAwait(false);
     }
 }

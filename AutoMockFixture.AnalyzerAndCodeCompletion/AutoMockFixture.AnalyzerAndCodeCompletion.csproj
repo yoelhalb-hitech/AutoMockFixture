@@ -6,7 +6,7 @@
     <AnalysisMode>recommended</AnalysisMode>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <IncludeBuildOutput>false</IncludeBuildOutput><!-- Needed for .net 4.5 to be able to referene this -->
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

@@ -7,3 +7,4 @@ Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 AMF0001 | Language | Warning | AutoMockShouldOnlyBeReferenceType
 AMF0002 | Language | Warning | FrozenShouldBeBeforeUsage
+AMF0003 | Language | Warning | AutoMockSetupShouldNotUseDefaultValue
