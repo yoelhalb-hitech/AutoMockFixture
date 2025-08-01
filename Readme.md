@@ -9,9 +9,10 @@
   <br /><br />
   It's currently based on <a href="https://github.com/moq/moq4">Moq</a> and <a href="https://github.com/AutoFixture/AutoFixture">AutoFixture</a> but with many added features
 </div>
+<br />
 
-<div align="center">
-# $${\color{red}Please \space note,  \space there   \space are   \space breaking   \space changes   \space in   \space  version  \space 8.0 }$$
+$${\color{red}Please \space note,  \space there   \space are   \space breaking   \space changes   \space in   \space  version  \space 8.0 }$$
+
 
 ## Table of Contents
 - [Motivation](#motivation)
