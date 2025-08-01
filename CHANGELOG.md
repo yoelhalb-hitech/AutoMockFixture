@@ -1,3 +1,30 @@
+## [8.0.0] - 2024-08-09
+
+### Breaking changes
+- Overhauled the CallBase system. See README for details.
+- Revised the Freeze system. Refer to README for new behavior.
+- IntegrationFixture now defaults to transform based on DI attributes in DotNetPowerExtensions.
+- The path for setting up a mock by path will use c# keyword strings for the built in types (i.e. string instead of String, int instead of Int32, int[] instead of Int32[])
+
+### Added
+- Option to transform to subclasses based on DI attributes in DotNetPowerExtensions via AutoTransformBySericeAttributes on the fixture.
+- Option in `.Freeze()` to specify callBase on the returned object
+- Add methods `ItIs.DefaultValues<T>()` and `ItIs.False()`/`ItIs.True()`
+
+### Changed
+- FreezeCustomization and SubclassCustomization (all variants) are now removable.
+- Updated behavior differences between UnitFixture and IntegrationFixture.
+- Optimized virtual read-write properties creation when not CallBase.
+- For nullable value types a default on the inside type (such as default(int) instead of default(int?)) will also setup everything
+
+### Removed
+- NoConfigureMembers option from individual requests.
+
+### Fixed
+- Various bug fixes and optimizations.
+- Fixed creating a reflection object (such as Type, MethodInfo etc.)
+- Fixed creating value types as well as freezing value types
+
 ## [7.0.1] - 2024-07-26
 
 ### Added
@@ -48,7 +75,7 @@
 ## [5.0.4] - 2024-02-06
 
 ### Added
-- `IAutoMockFixture.TypesToSetupPrivateGetters` property 
+- `IAutoMockFixture.TypesToSetupPrivateGetters` property
 
 ### Fixed
 - Fix to consider the start tracker `MockShouldCallBase` setting, in particular when creating `Enumerable` mocks
@@ -56,7 +83,7 @@
 
 ### Changed
 - Allow creation of selaed classes with `AutoMockDependency` and `NonAutoMock`
-- To setup properties/fields private/missing getters on an `AutoMock` one has to add the type containing the property/field to the `IAutoMockFixture.TypesToSetupPrivateGetters` list (and only if `!CallBase`), the default is changed to only handle private setters but not private or missing getters 
+- To setup properties/fields private/missing getters on an `AutoMock` one has to add the type containing the property/field to the `IAutoMockFixture.TypesToSetupPrivateGetters` list (and only if `!CallBase`), the default is changed to only handle private setters but not private or missing getters
 
 ### Removed
 - Remove support for .Net core 2.1 as .Net has security warnings on it
