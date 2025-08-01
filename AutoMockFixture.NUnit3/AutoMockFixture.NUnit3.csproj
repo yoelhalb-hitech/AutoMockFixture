@@ -22,7 +22,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture.NUnit3</PackageId>
-    <PackageVersion>7.0.1</PackageVersion>
+    <PackageVersion>8.0.0-beta.1</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
@@ -32,8 +32,8 @@
     <Copyright>Copyright HiTech $([System.DateTime]::UtcNow.ToString("yyyy"))</Copyright>
     <PackageTags>Moq;TDD;Mock;Mocking;Mocks;AutoMocking;Agile;Testing;UnitTest;UnitTesting;IntegrationTest;IntegrationTesting;AutoFixture;AutoMockFixture</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-	<Company>SequelPay</Company>
-	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	  <Company>SequelPay</Company>
+	  <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
