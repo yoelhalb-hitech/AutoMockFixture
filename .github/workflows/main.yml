@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
         matrix:
             package:
@@ -34,6 +34,8 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 5.0.x
+    - name: Install libssl (for .NET 6+)
+      run: sudo apt-get update && sudo apt-get install -y libssl-dev
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
