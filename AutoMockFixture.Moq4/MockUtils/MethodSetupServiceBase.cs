@@ -14,6 +14,7 @@ internal abstract class MethodSetupServiceBase : ISetupService
     protected readonly ITracker? tracker;
     protected readonly string trackingPath;
     protected readonly bool noMockDependencies;
+    protected Func<object?>? resultFunc;
 
     public MethodSetupServiceBase(IAutoMock mock, MethodDetail method, ISpecimenContext context, string trackingPath)
     {
@@ -100,6 +101,13 @@ internal abstract class MethodSetupServiceBase : ISetupService
 
     protected object? GenerateResult(MethodInfo method)
     {
+        if(resultFunc is not null)
+        {
+            var result = resultFunc.Invoke();
+            Logger.LogInfo("Returning from custom resultFunc: " + (result?.GetType().FullName ?? "null"));
+            return result;
+        }
+
         Logger.LogInfo("In generate result - Is generic definition: " + method.IsGenericMethodDefinition);
 
         // Can actually happen if this is an explicit interface implementation while there is another method on the class with the same signature
@@ -133,5 +141,11 @@ internal abstract class MethodSetupServiceBase : ISetupService
             mock.MethodsNotSetup[trackingPath] = new CannotSetupMethodException(CannotSetupMethodException.CannotSetupReason.Exception, ex);
             throw;
         }
+    }
+
+    public void SetupWithResult(Func<object?> resultFunc)
+    {
+        this.resultFunc = resultFunc;
+        this.Setup();
     }
 }

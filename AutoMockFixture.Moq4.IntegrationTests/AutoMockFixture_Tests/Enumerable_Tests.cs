@@ -54,6 +54,8 @@ internal class Enumerable_Tests
     public class NonAbstractListWithAdd<T> : AbstractListWithAdd<T> { }
     public class NonAbstractListWithAddRange<T> : AbstractListWithAddRange<T> { }
 
+    public class InnerType { }
+
     [Test]
     [TestCase<AbstractList<string>>()]
     [TestCase<AbstractListWithAdd<string>>]
@@ -76,6 +78,43 @@ internal class Enumerable_Tests
         result = fixture.CreateWithAutoMockDependencies<T>(callBase: true); // So the list should have a value otherwise it will be handled by AutoFixture
         result.Should().NotBeNull();
         AutoMockT.Get(result).Should().NotBeNull();
+    }
+
+    [Test]
+    [TestCase<AbstractListWithAdd<InnerType>>]
+    [TestCase<AbstractListWithAddRange<InnerType>>]
+    public void Test_Populates_WithAutoMocks_NonAutoMockType_ForAbstract_DefaultCallBase<T>()
+        where T : class, IEnumerable<InnerType>
+    {
+        using var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateAutoMock<T>(); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+        AutoMockT.Get(result).Should().NotBeNull();
+        result!.ToArray().Should().HaveCount(3);
+        result!.ToArray().Should().BeEquivalentTo(result!.ToArray());
+        result!.Select(result => AutoMockT.Get(result)).Should().NotContainNulls();
+
+        result = fixture.CreateWithAutoMockDependencies<T>(); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+        AutoMockT.Get(result).Should().NotBeNull();
+
+        result!.ToArray().Should().HaveCount(3);
+        result!.ToArray().Should().BeEquivalentTo(result!.ToArray());
+        result!.Select(result => AutoMockT.Get(result)).Should().NotContainNulls();
+    }
+
+    [Test]
+    public void Test_Populates_CreateAutoMock_NonAutoMockType_ForAbstract_DefaultCallBase_EvenNoAdd()
+    {
+        using var fixture = new AbstractAutoMockFixture();
+
+        var result = fixture.CreateAutoMock<AbstractList<InnerType>>(); // So the list should have a value otherwise it will be handled by AutoFixture
+        result.Should().NotBeNull();
+        AutoMockT.Get(result).Should().NotBeNull();
+        result!.ToArray().Should().HaveCount(3);
+        result!.ToArray().Should().BeEquivalentTo(result!.ToArray());
+        result!.Select(result => AutoMockT.Get(result)).Should().NotContainNulls();
     }
 
     [Test]

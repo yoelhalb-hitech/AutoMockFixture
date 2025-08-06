@@ -22,4 +22,9 @@ internal class ReadWritePropertyLazySetupService : ISetupService
     {
         SetupHelpers.SetupLazyReadWriteProperty(mockedType, propertyType, mock, prop, propValueGenerator);
     }
+
+    public void SetupWithResult(Func<object?> resultFunc)
+    {
+        SetupHelpers.SetupLazyReadWriteProperty(mockedType, propertyType, mock, prop, resultFunc);
+    }
 }

@@ -27,6 +27,7 @@ internal class PopulateEnumerableCommand : ISpecimenCommand
 
         var obj = (specimen as IAutoMock)?.GetMocked() ?? specimen;
         if (obj is not IEnumerable enumerable || obj is string) return;
+        if (AutoMockHelpers.GetFromObj(specimen) is var mock && mock?.CallBase is false) return; // Should be handled already by the AutoMockPopulateEnumerableCommand
 
         // TODO... handle the type as par https://github.com/dotnet/csharpstandard/blob/standard-v7/standard/statements.md#1395-the-foreach-statement
         // We can shortcut it possibly if there is only one `Add` method, but if there are more (and not object) then we need to go directly
@@ -36,6 +37,7 @@ internal class PopulateEnumerableCommand : ISpecimenCommand
         if(enumerableIface is null && !obj.GetType().IsArray) return;
 
         var innerType = enumerableIface?.GetInnerTypes().First() ?? obj.GetType().GetElementType()!;
+
         try
         {
             if (enumerable.GetEnumerator() is not null) // Can happen if not setup correctly
@@ -64,6 +66,7 @@ internal class PopulateEnumerableCommand : ISpecimenCommand
                 .MethodDetails.FirstOrDefault(md => md.Name == "AddRange" && !md.ReflectionInfo.IsAbstract
                             && !md.GenericArguments.Any() && !md.ReflectionInfo.IsStatic
                     && md.ArgumentTypes.Length == 1 && md.ArgumentTypes.First().IsAssignableFrom(typeof(IEnumerable<>).MakeGenericType(innerType)))?.ReflectionInfo;
+
         if (singleMethod is null && addRangeMethod is null) return;
 
         try

@@ -24,6 +24,7 @@ internal class InnerBuilder : ISpecimenBuilder
             { } when AutoMockHelpers.IsAutoMock(type) => new AutoMockDirectRequest(type, innerRequest),
             AutoMockDependenciesRequest => new AutoMockDependenciesRequest(type, innerRequest),
             AutoMockRequest => new AutoMockRequest(type, innerRequest),
+            AutoMockDirectRequest => new AutoMockRequest(type, innerRequest),
             NonAutoMockRequest => new NonAutoMockRequest(type, innerRequest),
             _ => type,
         };

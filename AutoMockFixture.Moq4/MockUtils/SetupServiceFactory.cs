@@ -7,6 +7,7 @@ internal class SetupServiceFactory : SetupServiceFactoryBase
     class AutoPropertyEagerService : ISetupService
     {
         public void Setup() { throw new Exception("Not setting up read-write properties when `MethodSetupTypes.Eager`"); }
+        public void SetupWithResult(Func<object?> resultFunc) { throw new Exception("Not setting up read-write properties when `MethodSetupTypes.Eager`"); }
     }
 
     public SetupServiceFactory(Func<MethodSetupTypes> setupTypeFunc) : base(setupTypeFunc) { }

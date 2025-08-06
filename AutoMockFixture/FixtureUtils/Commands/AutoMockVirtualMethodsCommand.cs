@@ -23,7 +23,8 @@ internal class AutoMockVirtualMethodsCommand : ISpecimenCommand
             var mock = autoMockHelpers.GetFromObj(specimen);
             if (mock is null) return;
 
-            var setupService = new MockSetupService(mock, context, setupServiceFactory, autoMockHelpers);
+            var setupHelper = new MockSetupHelperService(mock, context, setupServiceFactory, autoMockHelpers);
+            var setupService = new MockSetupService(mock, setupHelper);
             setupService.Setup();
         }
         catch { }

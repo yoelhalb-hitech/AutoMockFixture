@@ -117,6 +117,8 @@ public class AutoMockCustomization : ICustomization
                                     builder: mockBuilder,
                                     command: new CompositeSpecimenCommand(
                                                 mockFixture.AutoMockHelpers.GetStubAllPropertiesCommand(),
+                                                // Populate enumerables first so that the AutoMockVirtualMethodsCommand will not setup the GetEnumerator methods
+                                                new AutoMockPopulateEnumerableCommand(mockFixture.AutoMockHelpers, setupFactory, mockFixture.RepeatCount),
                                                 new AutoMockVirtualMethodsCommand(mockFixture.AutoMockHelpers, setupFactory),
                                                 // This one has to be after `AutoMockStubAllPropertiesCommand`
                                                 new AutoMockAutoPropertiesHandlerCommand(mockFixture.AutoMockHelpers),
