@@ -45,7 +45,7 @@
 
   <PropertyGroup>
     <PackageId>AutoMockFixture</PackageId>
-    <PackageVersion>8.0.0-beta.2</PackageVersion>
+    <PackageVersion>8.0.0-beta.3</PackageVersion>
     <Authors>Yoel</Authors>
     <PackageProjectUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yoelhalb-hitech/AutoMockFixture</RepositoryUrl>
