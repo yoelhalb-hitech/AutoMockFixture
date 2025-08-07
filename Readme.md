@@ -676,6 +676,8 @@ CAUTION: In `LazyDifferent` the object retrieved might not reflect the one of a 
 	
 ### Get Mock by type
 TODO
+Freeze and Create if not exists (especially for the default lazy loading)
+CallBase handling
 
 ### Get by path
 TODO (will return the mocked object always)

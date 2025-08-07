@@ -1,4 +1,6 @@
-﻿
+﻿using AutoMockFixture.FixtureUtils;
+using AutoMockFixture.NUnit3;
+
 namespace AutoMockFixture.Moq4.IntegrationTests.AutoMockFixture_Tests;
 
 internal class Extensions_Tests
@@ -7,6 +9,12 @@ internal class Extensions_Tests
     {
         public virtual void TestMethod() { }
     }
+
+    public class TestOuter
+    {
+        public virtual Test? TestProperty { get; set; }
+    }
+
     [Test]
     public void Test_GetAutoMocks_Creates_OnFreezeAndCreate()
     {
@@ -21,11 +29,32 @@ internal class Extensions_Tests
     }
 
     [Test]
+    [TestCase<UnitFixture>(false)]
+    [TestCase<IntegrationFixture>(true)]
+    public void Test_GetAutoMocks_FreezeAndCreate_MatchesDependencies_AndCallBase<TFixture>(bool callBase)
+        where TFixture : AutoMockFixtureBase, new()
+    {
+        var fixture = new TFixture();
+
+        var mock = fixture.GetAutoMock<Test>(true);
+        mock.Should().NotBeNull();
+        mock!.CallBase.Should().Be(callBase);
+
+        fixture.AutoMockTypeControl.AlwaysAutoMockTypes.Add(typeof(Test)); // This way the dependencies will be mocked even for IntegrationFixture, otheriwse they won't match
+
+        var outer = fixture.Create<TestOuter>();
+        outer!.TestProperty.Should().BeSameAs(mock.Object);
+
+        var fromMock = fixture.CreateAutoMock<Test>();
+        fromMock.Should().BeSameAs(mock.Object);
+    }
+
+    [Test]
     public void Test_Verify_DoesNotThrow_BugRepro()
     {
         var fixture = new UnitFixture();
         fixture.GetAutoMock<Test>(true);
-        fixture.Verify();
+        Assert.DoesNotThrow(() => fixture.Verify());
     }
 
     [Test]

@@ -15,7 +15,6 @@ public static class AutoMockFixtureExtensions
         return mock;
     }
 
-
     public static IEnumerable<AutoMock<T>> GetAutoMocks<T>(this IAutoMockFixture fixture, object obj) where T : class
                                 => fixture.GetAutoMocks(obj, typeof(T)).OfType<AutoMock<T>>();
 
@@ -27,9 +26,16 @@ public static class AutoMockFixtureExtensions
         var existing = fixture.TrackerDict.Keys.Where(k => k.IsAlive && k.Target is not null).SelectMany(k => fixture.GetAutoMocks(k.Target!, typeof(T)).OfType<AutoMock<T>>());
         if (!existing.Any() && freezeAndCreate)
         {
-            fixture.Freeze<T>();
-            var newMock = fixture.Create<AutoMock<T>>();
-            if (newMock is not null) return new AutoMock<T>[] { newMock };
+            fixture.JustFreeze<T>();
+            var newMock = fixture.CreateAutoMock<T>(); // Use this and not Create<AutoMock<T>>() so it will match the callBase of the dependencies
+            if (newMock is not null)
+            {
+                try
+                {
+                    return new AutoMock<T>[] { AutoMock.Get(newMock)! };
+                }
+                catch {}
+            }
         }
 
         return existing;
